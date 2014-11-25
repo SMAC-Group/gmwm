@@ -32,7 +32,7 @@ plot.avar = function(x, ...){
 }
 
 summary.avar = function(x, ...) {
-  out_matrix = matrix(0, nrow = length(x$clusters), ncol = 5)
+  out_matrix = matrix(0, nrow = length(x$clusters), ncol = 6)
   colnames(out_matrix) = c("Time", "AVAR", "ADEV", "Lower CI", "Upper CI", "Error")
   out_matrix[,"Time"] = x$clusters
   out_matrix[,"AVAR"] = x$allan
