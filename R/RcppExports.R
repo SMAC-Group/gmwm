@@ -2,15 +2,27 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @title Compute Allan Variance
-#' @description Computation of allan variance
+#' @description Computation of Allan Variance
 #' @usage allan_variance(x)
 #' @param x A \code{vector} with dimensions N x 1. 
-#' @return av A \code{matrix} that contains the cluster size as the first column and the allan variance as the second.
+#' @return av A \code{list} that contains:
+#' \itemize{
+#'  \item{"clusters"}{The size of the cluster}
+#'  \item{"allan"}{The allan variance}
+#'  \item{"errors"}{The error associated with the variance calculation.}
+#' }
 #' @author JJB
 #' @examples
-#' white.noise = rnorm(500, 0, 1)
-#' allan_variance(white.noise)
-allan_variance <- function(x) {
-    .Call('GMWM_allan_variance', PACKAGE = 'GMWM', x)
+#' set.seed(999)
+#' # Simulate white noise (P 1) with sigma^2 = 4
+#' N = 100000
+#' white.noise = rnorm(N, 0, 2)
+#' #plot(white.noise,ylab="Simulated white noise process",xlab="Time",type="o")
+#' #Simulate random walk (P 4)
+#' random.walk = cumsum(0.1*rnorm(N, 0, 2))
+#' combined.ts = white.noise+random.walk
+#' av_mat = allan_variance(combined.ts)
+avar_arma <- function(x) {
+    .Call('GMWM_avar_arma', PACKAGE = 'GMWM', x)
 }
 

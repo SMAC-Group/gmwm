@@ -6,15 +6,15 @@
 
 using namespace Rcpp;
 
-// allan_variance
-arma::mat allan_variance(arma::vec x);
-RcppExport SEXP GMWM_allan_variance(SEXP xSEXP) {
+// avar_arma
+Rcpp::List avar_arma(arma::vec x);
+RcppExport SEXP GMWM_avar_arma(SEXP xSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        arma::mat __result = allan_variance(x);
+        Rcpp::List __result = avar_arma(x);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
