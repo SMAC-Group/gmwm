@@ -3,7 +3,7 @@ avar = function(x, ...) UseMethod("avar")
 
 avar.default = function(x, ...) {
   x = as.vector(x)
-  av = .Call('GMWM_avar_arma', PACKAGE = 'GMWM', x)
+  av = .Call('GMWM_avar_fixed_arma', PACKAGE = 'GMWM', x)
   av$adev = sqrt(av$allan)
   av$lci = av$adev - av$errors*av$adev
   av$uci = av$adev + av$errors*av$adev
