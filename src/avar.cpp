@@ -4,7 +4,7 @@ using namespace arma;
 
 //' @title Compute Tau-Overlap Allan Variance
 //' @description Computation of Tau-Overlap Allan Variance
-//' @usage avarto_arma(x)
+//' @usage avar_to_arma(x)
 //' @param x A \code{vector} with dimensions N x 1. 
 //' @return av A \code{list} that contains:
 //' \itemize{
