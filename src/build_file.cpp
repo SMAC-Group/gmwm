@@ -161,7 +161,7 @@ arma::field<arma::vec> select_filter(String filter_name = "haar")
   if(filter_name == "haar"){  
       info = haar_filter();
   }else{
-      ::Rf_error("Wave Filter is not supported! See ?select_filter for supported types."); 
+      stop("Wave Filter is not supported! See ?select_filter for supported types."); 
   }
   
   return info;
@@ -190,7 +190,7 @@ arma::field<arma::vec> select_filter(String filter_name = "haar")
 //' set.seed(999)
 // [[Rcpp::export]]
 arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar", 
-                                unsigned int nlevels = 4, String boundary = "periodic") {
+                                 unsigned int nlevels = 4, String boundary = "periodic") {
   if(boundary == "periodic"){
     //
   }else if(boundary == "reflection"){
@@ -199,7 +199,7 @@ arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar",
     x.resize(2*temp_N);
     x.rows(temp_N, 2*temp_N-1) = rev_vec;
   }else{
-      ::Rf_error("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
+      stop("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
   }
 
   unsigned int N = x.n_elem;
@@ -209,10 +209,10 @@ arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar",
   unsigned int tau = pow(2,J);
   
   if(double(N)/double(tau) != floor(double(N)/double(tau))){
-    ::Rf_error("The supplied sample size ('x') must be divisible by 2^(nlevels). Either truncate or expand the number of samples.");
+    stop("The supplied sample size ('x') must be divisible by 2^(nlevels). Either truncate or expand the number of samples.");
   }
   if(tau > N){
-    ::Rf_error("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
+    stop("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
   }
 
   arma::field<arma::vec> filter_info = select_filter(filter_name);
@@ -221,7 +221,7 @@ arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar",
   arma::vec h = filter_info(1); //check the pulls
   arma::vec g = filter_info(2);
   
-  arma::field<arma::vec> y(J+1);
+  arma::field<arma::vec> y(J);
   
   for(unsigned int j = 1; j <= J; j++) {
     
@@ -255,7 +255,6 @@ arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar",
     x = Vj;
   }
   
-  y(J) = x;
   return y;
 }
 
@@ -281,8 +280,8 @@ arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar",
 //' @examples
 //' set.seed(999)
 // [[Rcpp::export]]
-arma::field<arma::vec> modwt_arma(arma::vec x,  String filter_name = "haar", 
-                                  unsigned int nlevels = 4, String boundary = "periodic") {
+arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar", 
+                                   unsigned int nlevels = 4, String boundary = "periodic") {
   if(boundary == "periodic"){
     //
   }else if(boundary == "reflection"){
@@ -291,7 +290,7 @@ arma::field<arma::vec> modwt_arma(arma::vec x,  String filter_name = "haar",
     x.resize(2*temp_N);
     x.rows(temp_N, 2*temp_N-1) = rev_vec;
   }else{
-      ::Rf_error("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
+      stop("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
   }
 
   unsigned int N = x.n_elem;
@@ -301,7 +300,7 @@ arma::field<arma::vec> modwt_arma(arma::vec x,  String filter_name = "haar",
   unsigned int tau = pow(2,J);
   
   if(tau > N)
-    ::Rf_error("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
+    stop("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
 
   arma::field<arma::vec> filter_info = select_filter(filter_name);
   
@@ -314,7 +313,7 @@ arma::field<arma::vec> modwt_arma(arma::vec x,  String filter_name = "haar",
   ht /= transform_factor;
   gt /= transform_factor;
 
-  arma::field<arma::vec> y(J+1);
+  arma::field<arma::vec> y(J);
   
   arma::vec Wj(N);
   arma::vec Vj(N);
@@ -344,7 +343,6 @@ arma::field<arma::vec> modwt_arma(arma::vec x,  String filter_name = "haar",
     x = Vj;
   }
   
-  y(J) = x;
   return y;
 }
 
@@ -359,7 +357,7 @@ arma::field<arma::vec> modwt_arma(arma::vec x,  String filter_name = "haar",
 //' @examples
 //' Mod_squared_arma(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_squared_arma(const arma::cx_vec& x){
+arma::vec Mod_squared_arma( arma::cx_vec x){
    return pow(real(x),2) + pow(imag(x),2);
 }
 
@@ -372,7 +370,7 @@ arma::vec Mod_squared_arma(const arma::cx_vec& x){
 //' @examples
 //' Mod_arma(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_arma(const arma::cx_vec& x){
+arma::vec Mod_arma( arma::cx_vec x){
    return sqrt(pow(real(x),2) + pow(imag(x),2));
 }
 
@@ -414,49 +412,60 @@ arma::vec dft_acf(arma::vec x){
 //' x=rnorm(100)
 //' brick_wall(modwt_arma(x))
 // [[Rcpp::export]]
-arma::field<arma::vec> brick_wall(arma::field<arma::vec> x, Rcpp::List wave_filter, String method = "modwt") 
+arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::vec> wave_filter, String method = "modwt") 
 {
-    int m = wave_filter(0);
-    unsigned int n = 0;
-    unsigned int j = 0;
-    unsigned int temp_size = 0;
+    int m = as_scalar(wave_filter(0));
 
-    while(j < x.n_elem - 1)
+    for(unsigned int j = 0; j < x.n_elem; j++)
     {
         double binary_power = pow(2,j+1);
+
+        unsigned int n = (binary_power - 1.0) * (m - 1.0);
+
         if (method == "dwt"){
             n = ceil((m - 2) * (1.0 - 1.0/binary_power));
         }
-        else{
-            n = (binary_power - 1.0) * (m - 1.0);
-        }
         arma::vec temp = x(j);
-        temp_size = temp.n_elem;
+        unsigned int temp_size = temp.n_elem;
         n = std::min(n, temp_size);
         x(j) = temp.rows(n,temp_size-1);
-        j++;
     }
     
-    arma::vec temp = x(j);
-    x(j) = temp.rows(n,temp_size-1);
     return x;
 }
 
 
-
+//' @title Generate eta3 confidence interval
+//' @description Computes the eta3 CI
+//' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
+//' @param dims A \code{String} indicating the confidence interval being calculated.
+//' @param p A \code{double} that indicates the (1-p)*alpha confidence level 
+//' @return A \code{matrix} with the structure:
+//' \itemize{
+//'  \item{Column 1}{Wavelet Variance}
+//'  \item{Column 2}{Lower Bounds}
+//'  \item{Column 3}{Upper Bounds}
+//' }
+//' @details 
+//' @example
+//' x=rnorm(100)
+//' wave_variance(brick_wall(modwt_arma(x), haar_filter()))
 // [[Rcpp::export]]
-arma::vec ci_eta3(arma::vec dims) {
+arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
     
     unsigned int num_elem = dims.n_elem;
-    arma::vec eta3(num_elem);
-    
-    double binary_power = 2.0;
+
+    arma::mat out(num_elem, 3);
+
     for(unsigned int i = 0; i<num_elem;i++){
-      eta3(i) = std::max(dims(i)/binary_power,1.0);
-      binary_power *= 2.0;
+      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
+      out(i,1) = eta3 * y(i)/R::qchisq(1-p, eta3, 1, 0); // Lower CI
+      out(i,2) = eta3 * y(i)/R::qchisq(p, eta3, 1, 0); // Upper CI
     }
 
-    return eta3;
+    out.col(0) = y;
+
+    return out;
 }
 
 
@@ -476,38 +485,123 @@ arma::vec ci_eta3(arma::vec dims) {
 //' x=rnorm(100)
 //' wave_variance(brick_wall(modwt_arma(x), haar_filter()))
 // [[Rcpp::export]]
-arma::mat wave_variance(arma::field<arma::vec> x, String type = "eta3", double p = 0.025){
+arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double p = 0.025){
   
   unsigned int num_fields = x.n_elem;
-  arma::vec x_ss(num_fields);
   arma::vec y(num_fields);
   arma::vec dims(num_fields);
   
   for(unsigned int i=0; i<num_fields;i++){
     arma::vec temp = x(i);
     dims(i) = temp.n_elem;
-    x_ss(i) = dot(temp,temp);
-    y(i) = x_ss(i)/dims(i);
+    y(i) = dot(temp,temp)/dims(i);
   }
   
   arma::mat out(num_fields, 3);
   
   if(type == "eta3"){
-      arma::vec eta3 = ci_eta3(dims);      
-      arma::vec lower(num_fields);
-      arma::vec upper(num_fields);
-      
-      for(unsigned int i =0; i<num_fields; i++){
-        lower(i) = eta3(i) * y(i)/R::qchisq(1-p, eta3(i), 1, 0);
-        upper(i) = eta3(i) * y(i)/R::qchisq(p, eta3(i), 1, 0);
-      }
-    
-      out.col(0) = y;
-      out.col(1) = lower;
-      out.col(2) = upper;
+      out = ci_eta3(y,dims,p);      
   }else{
-      ::Rf_error("The wave variance type supplied is not supported. Please use: eta3");
+      stop("The wave variance type supplied is not supported. Please use: eta3");
   }
 
   return out;
 }
+
+//' @title Computes the (MODWT) wavelet variance
+//' @description Calculates the (MODWT) wavelet variance
+//' @param x A \code{vec} that contains the signal
+//' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
+//' @param compute_v A \code{String} that indicates covariance matrix multiplication. 
+//' @return A \code{list} with the structure:
+//' \itemize{
+//'   \item{"variance"}{Wavelet Variance},
+//'   \item{"low"}{Lower CI}
+//'   \item{"high"}{Upper CI}
+//'   \item{"wavelet"}{Filter Used}
+//'   \item{"scales"}{Scales}
+//'   \item{"V"}{Asymptotic Covariance Matrix}
+//'   \item{"up_gauss"}{Upper Gaussian CI}
+//'   \item{"dw_gauss"}{Lower Guassian CI}
+//' }
+//' @details 
+//' The underlying code should be rewritten as a class for proper export.
+//' @example
+//' x=rnorm(100)
+//' wave_variance(brick_wall(modwt_arma(x), haar_filter()))
+// [[Rcpp::export]]
+Rcpp::List wavelet_variance_arma(arma::vec signal, String strWavelet="haar", String compute_v = "no") {
+
+  // Set p-value for (1-p)*100 ci
+  double p = 0.025;
+  
+  // Length of the time series
+  unsigned int n_ts = signal.n_elem;
+  
+  // Compute number of scales considered
+  unsigned int nb_level = floor(log2(n_ts));
+  
+  // MODWT transform
+  arma::field<arma::vec> signal_modwt = modwt_arma(signal, strWavelet, nb_level);
+  arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, select_filter(strWavelet));
+  
+  // Compute wavelet variance  
+  arma::mat vmod = wave_variance(signal_modwt_bw, "eta3", p);
+  
+  // Define scales
+  arma::vec scales(nb_level);
+  for(unsigned int i=0; i< nb_level;i++){
+    scales(i) = pow(2,i+1);
+  }
+
+  // Compute asymptotic covariance matrix
+  arma::mat V = diagmat(arma::ones<arma::vec>(nb_level));
+  arma::vec up_gauss(nb_level);
+  arma::vec dw_gauss(nb_level);
+  if (compute_v == "full" || compute_v == "diag"){
+    if (compute_v == "full"){
+      //V = compute_full_V(signal_modwt) // missing in action. Roberto's code I think had it.
+    } 
+    if (compute_v == "diag"){
+      
+      unsigned int num_field = signal_modwt.n_elem;
+      
+      arma::vec Aj(signal_modwt.n_elem);
+      
+      for(unsigned int i = 0; i < num_field; i++){
+        // Autocovariance using the Discrete Fourier Transform
+        arma::vec temp = dft_acf(signal_modwt(i));
+        
+        // Sum(V*V) - first_element^2 /2
+        Aj(i) = dot(temp,temp) - temp(0)*temp(0)/2;
+      }
+      // Create diagnoal matrix (2 * Aj / length(modwt_d1)). Note: All modwt lengths are the same. Update if dwt is used.      
+      V = diagmat(2 * Aj / signal_modwt(0).n_elem);
+    }
+    
+    // Compute confidence intervals
+    up_gauss = vmod.col(0) + R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
+    dw_gauss = vmod.col(0) - R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
+  }
+  else{
+    arma::vec temp = arma::ones<arma::vec>(nb_level);
+    V = diagmat(temp);
+    up_gauss.fill(datum::nan);
+    dw_gauss.fill(datum::nan);
+  }
+  
+  arma::vec out_var = vmod.col(0);
+  arma::vec out_low = vmod.col(1);
+  arma::vec out_high = vmod.col(2);
+  
+  // Define structure "wav.var"        
+  return Rcpp::List::create(Rcpp::Named("variance") = out_var,
+                          Rcpp::Named("low") = out_low,
+                          Rcpp::Named("high") = out_high,
+                          Rcpp::Named("scales") = scales,
+                          Rcpp::Named("V") = V,
+                          Rcpp::Named("up_gauss") = up_gauss,
+                          Rcpp::Named("dw_gauss") = dw_gauss
+                          ); 
+}
+
