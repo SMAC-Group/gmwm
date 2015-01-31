@@ -61,6 +61,102 @@ arma::vec gen_ar1(unsigned int N, double phi, double sig2)
 	return gm;
 }
 
+//' @title Logit Inverse Function
+//' @description This function computes the probabilities
+//' @param x A \code{vec} containing real numbers.
+//' @return A \code{vec} containing logit probabilities.
+//' @example
+//' x.sim = rnorm(100)
+//' pseudo_logit_inv(x.sim)
+// [[Rcpp::export]]
+arma::vec pseudo_logit_inv(arma::vec x){
+  return 2*exp(x)/(1 + exp(x)) -1;
+}
+
+//' @title Logit Function
+//' @description This function compute the link term.
+//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
+//' @return A \code{vec} containing logit terms.
+//' @example
+//' x.sim = runif(100)
+//' pseudo_logit(x.sim)
+// [[Rcpp::export]]
+arma::vec pseudo_logit(arma::vec x){
+  arma::vec p = (x+1)/2;
+  return log(p/(1 - p));
+}
+
+
+//' @title White Noise to WV
+//' @description This function compute the WV (haar) of a White Noise process
+//' @param sig2 A \code{double} corresponding to variance of WN
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the white noise.
+//' @example
+//' x.sim = cumsum(rnorm(100000))
+//' waveletVariance(x.sim)
+//' wv.theo = wn_to_wv(1, floor(log(length(x.sim),2)))
+//' lines(wv.theo$scales,wv.theo$WV, col = "red")
+// [[Rcpp::export]]
+arma::vec wn_to_wv(double sig2, arma::vec Tau){
+	return sig2/Tau;
+}
+
+
+//' @title Random Walk to WV
+//' @description This function compute the WV (haar) of a Random Walk process
+//' @param sig2 A \code{double} corresponding to variance of RW
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the random walk.
+//' @example
+//' x.sim = cumsum(rnorm(100000))
+//' waveletVariance(x.sim)
+//' wv.theo = rw_to_wv(1,x.sim)
+//' lines(wv.theo$scales,wv.theo$WV, col = "red")
+// [[Rcpp::export]]
+arma::vec rw_to_wv(double sig2, const arma::vec& Tau){
+	return sig2*((2*arma::square(Tau) + 2)/(24*Tau));
+}
+
+
+//' @title Drift to WV
+//' @description This function compute the WV (haar) of a Drift process
+//' @param omega A \code{double} corresponding to variance of drift
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the drift.
+//' @example
+//' x.sim = 1:1000
+//' waveletVariance(x.sim)
+//' wv.theo = dr_to_wv(1,floor(log(length(x.sim),2)))
+//' lines(wv.theo$scales,wv.theo$WV, col = "red")
+// [[Rcpp::export]]
+arma::vec dr_to_wv(double omega,const arma::vec& Tau){
+	return (omega*omega)*arma::square(Tau)/16;
+}
+
+//' @title AR1 process to WV
+//' @description This function compute the WV (haar) of an AR(1) process
+//' @param omega A \code{double} corresponding to variance of drift
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the drift.
+//' @example
+//' x.sim = gen_ar1( N = 10000, phi = 0.9, sig2 = 4 )
+//' waveletVariance(x.sim)
+//' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, floor(log(length(x.sim),2)))
+//' lines(wv.theo$scales,wv.theo$WV, col = "red")
+// [[Rcpp::export]]
+arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
+  unsigned int size_tau = Tau.n_elem;
+  arma::vec temp_term(size_tau);
+  arma::vec temp_term_redux(size_tau);
+  for(unsigned int i=0; i< size_tau; i++){
+    temp_term(i) = 4*pow(phi,(Tau(i)/2 + 1));
+    temp_term_redux(i) = pow(phi,(Tau(i)+1));
+  }
+	return ((Tau/2 - 3*phi - Tau/2*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(Tau/2)*pow(1-phi,2)*(1-pow(phi,2)))*sig2)/2;
+}
+
+
 //' @title Reverse Armadillo Vector
 //' @description Reverses the order of an Armadillo Vector
 //' @usage reverse_vec(x)
@@ -357,8 +453,8 @@ arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar",
 //' @examples
 //' Mod_squared_arma(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_squared_arma( arma::cx_vec x){
-   return pow(real(x),2) + pow(imag(x),2);
+arma::vec Mod_squared_arma(arma::cx_vec x){
+   return arma::square(arma::real(x)) + arma::square(arma::imag(x));
 }
 
 //' @title Absolute Value or Modulus of a Complex Number.
@@ -370,8 +466,8 @@ arma::vec Mod_squared_arma( arma::cx_vec x){
 //' @examples
 //' Mod_arma(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_arma( arma::cx_vec x){
-   return sqrt(pow(real(x),2) + pow(imag(x),2));
+arma::vec Mod_arma(arma::cx_vec x){
+   return arma::sqrt(arma::square(arma::real(x)) + arma::square(arma::imag(x)));
 }
 
 //' @title Discrete Fourier Transformation for Autocovariance Function
@@ -392,7 +488,7 @@ arma::vec dft_acf(arma::vec x){
     
     arma::cx_vec ff = arma::fft(x);
     
-    arma::cx_vec iff = arma::conv_to< arma::cx_vec >::from( pow(real(ff),2) + pow(imag(ff),2) ); //expensive
+    arma::cx_vec iff = arma::conv_to< arma::cx_vec >::from( arma::square(arma::real(x)) + arma::square(arma::imag(x)) ); //expensive
     
     arma::vec out = arma::real( arma::ifft(iff) ) / n; // Divide out the n to normalize ifft
     
@@ -513,7 +609,7 @@ arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double 
 //' @param x A \code{vec} that contains the signal
 //' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
 //' @param compute_v A \code{String} that indicates covariance matrix multiplication. 
-//' @return A \code{list} with the structure:
+//' @return A \code{field<mat>} with the structure:
 //' \itemize{
 //'   \item{"variance"}{Wavelet Variance},
 //'   \item{"low"}{Lower CI}
@@ -528,9 +624,9 @@ arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double 
 //' The underlying code should be rewritten as a class for proper export.
 //' @example
 //' x=rnorm(100)
-//' wave_variance(brick_wall(modwt_arma(x), haar_filter()))
+//' wavelet_variance_arma(x, "haar", "diag")
 // [[Rcpp::export]]
-Rcpp::List wavelet_variance_arma(arma::vec signal, String strWavelet="haar", String compute_v = "no") {
+arma::field<arma::mat> wavelet_variance_arma(arma::vec signal, String strWavelet="haar", String compute_v = "no") {
 
   // Set p-value for (1-p)*100 ci
   double p = 0.025;
@@ -590,17 +686,24 @@ Rcpp::List wavelet_variance_arma(arma::vec signal, String strWavelet="haar", Str
     dw_gauss.fill(datum::nan);
   }
   
-  arma::vec out_var = vmod.col(0);
-  arma::vec out_low = vmod.col(1);
-  arma::vec out_high = vmod.col(2);
+  // export
+  arma::field<arma::mat> out(7);
+  out(0) = vmod.col(0); // wave variance
+  out(1) = vmod.col(1); // low ci
+  out(2) = vmod.col(2); // high ci
+  out(3) = scales; // scales
+  out(4) = V; //V
+  out(5) = up_gauss; // up_guass ci
+  out(6) = dw_gauss; // low_guass ci
   
-  // Define structure "wav.var"        
-  return Rcpp::List::create(Rcpp::Named("variance") = out_var,
+  // Define structure "wav.var"
+  return out;
+  /*return Rcpp::List::create(Rcpp::Named("variance") = out_var,
                           Rcpp::Named("low") = out_low,
                           Rcpp::Named("high") = out_high,
                           Rcpp::Named("scales") = scales,
                           Rcpp::Named("V") = V,
                           Rcpp::Named("up_gauss") = up_gauss,
                           Rcpp::Named("dw_gauss") = dw_gauss
-                          ); 
+                          );*/
 }
