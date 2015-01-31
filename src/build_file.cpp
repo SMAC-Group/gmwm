@@ -11,7 +11,7 @@ using namespace Rcpp;
 //' @examples
 //' gen_white_noise(10, 1.5)
 // [[Rcpp::export]]
-arma::vec gen_white_noise(unsigned int N, double sigma_WN)
+arma::vec gen_white_noise(const unsigned int N, const double sigma_WN)
 {
 	arma::vec wn(N);
   
@@ -30,7 +30,7 @@ arma::vec gen_white_noise(unsigned int N, double sigma_WN)
 //' @examples
 //' gen_drift(10, 8.2)
 // [[Rcpp::export]]
-arma::vec gen_drift(unsigned int N, double slope)
+arma::vec gen_drift(const unsigned int N, const double slope)
 {
   arma::vec gd(N);
   gd.fill(slope);
@@ -48,7 +48,7 @@ arma::vec gen_drift(unsigned int N, double slope)
 //' @examples
 //' gen_ar(10, 5, 1.2)
 // [[Rcpp::export]]
-arma::vec gen_ar1(unsigned int N, double phi, double sig2)
+arma::vec gen_ar1(const unsigned int N, const double phi, const double sig2)
 {
 
 	arma::vec wn = gen_white_noise(N, sqrt(sig2));
@@ -262,9 +262,11 @@ arma::vec qmf(arma::vec g, bool inverse = true) {
 // [[Rcpp::export]]
 arma::field<arma::vec> haar_filter() {
   
-    arma::vec L = arma::vec("2");
+    arma::vec L(1);
+    L(0) = 2.0;
     
-    arma::vec g = arma::vec("0.7071067811865475 0.7071067811865475");
+    arma::vec g(2);
+    g.fill(0.7071067811865475);
     
     arma::vec h = qmf(g);
     
