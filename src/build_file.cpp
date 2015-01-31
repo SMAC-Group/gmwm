@@ -156,6 +156,49 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
 	return ((Tau/2 - 3*phi - Tau/2*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(Tau/2)*pow(1-phi,2)*(1-pow(phi,2)))*sig2)/2;
 }
 
+//' @title Expected value DR
+//' @description This function computes the expected value of a drift process.
+//' @param omega A \code{double} corresponding to variance of drift.
+//' @param n_ts An \code{int} indicating the length of the time series.
+//' @return A \code{vec} containing the expected value of the drift.
+//' @example
+//' # Add at a later time
+// [[Rcpp::export]]
+double e_drift(double omega, int n_ts){
+  return omega*(n_ts + 1.0)/2.0;
+}
+
+//' @title Second moment DR
+//' @description This function computes the second moment of a drift process.
+//' @param omega A \code{double} corresponding to variance of drift.
+//' @param n_ts An \code{int} indicating the length of the time series.
+//' @return A \code{vec} containing the second moment of the drift.
+//' @example
+//' # Add at a later time
+// [[Rcpp::export]]
+double m2_drift(double omega, int n_ts){
+  return (omega*omega)*(double(n_ts*n_ts)/3.0 + double(n_ts)/2.0 + 1.0/6.0);
+}
+
+//' @title Variance DR
+//' @description This function computes the variance of a drift process.
+//' @param omega A \code{double} corresponding to variance of drift.
+//' @param n_ts An \code{int} indicating the length of the time series.
+//' @return A \code{vec} containing the variance of the drift.
+//' @example
+//' # Add at a later time
+// [[Rcpp::export]]
+double var_drift(double omega, int n_ts){
+	// Compute m1
+	double m1 = e_drift(omega, n_ts);
+	
+	// Compute m2
+	double m2 = m2_drift(omega, n_ts);
+	
+	// Compute var
+	return (m2 - m1*m1)*double(n_ts)/double(n_ts-1.0);
+}
+
 
 //' @title Reverse Armadillo Vector
 //' @description Reverses the order of an Armadillo Vector
