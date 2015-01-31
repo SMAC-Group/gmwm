@@ -604,4 +604,3 @@ Rcpp::List wavelet_variance_arma(arma::vec signal, String strWavelet="haar", Str
                           Rcpp::Named("dw_gauss") = dw_gauss
                           ); 
 }
-
