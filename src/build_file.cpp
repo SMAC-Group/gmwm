@@ -9,9 +9,9 @@ using namespace Rcpp;
 //' @param sigma_WN A \code{double} that contains process standard deviation.
 //' @return wn A \code{vec} containing the white noise.
 //' @examples
-//' gen_white_noise(10, 1.5)
+//' gen_wn(10, 1.5)
 // [[Rcpp::export]]
-arma::vec gen_white_noise(const unsigned int N, const double sigma_WN)
+arma::vec gen_wn(const unsigned int N, const double sigma_WN)
 {
 	arma::vec wn(N);
   
@@ -28,9 +28,9 @@ arma::vec gen_white_noise(const unsigned int N, const double sigma_WN)
 //' @param slope A \code{double} that contains drift slope
 //' @return gd A \code{vec} containing the drift.
 //' @examples
-//' gen_drift(10, 8.2)
+//' gen_dr(10, 8.2)
 // [[Rcpp::export]]
-arma::vec gen_drift(const unsigned int N, const double slope)
+arma::vec gen_dr(const unsigned int N, const double slope)
 {
   arma::vec gd(N);
   gd.fill(slope);
@@ -51,7 +51,7 @@ arma::vec gen_drift(const unsigned int N, const double slope)
 arma::vec gen_ar1(const unsigned int N, const double phi, const double sig2)
 {
 
-	arma::vec wn = gen_white_noise(N, sqrt(sig2));
+	arma::vec wn = gen_wn(N, sqrt(sig2));
 	arma::vec gm = arma::zeros<arma::vec>(N);
 	for(unsigned int i=1; i < N; i++ )
 	{		
@@ -60,6 +60,22 @@ arma::vec gen_ar1(const unsigned int N, const double phi, const double sig2)
 
 	return gm;
 }
+
+//' @title Generate a random walk without drift
+//' @description Generates a random walk without drift.
+//' @param N An \code{integer} for signal length.
+//' @return grw A \code{vec} containing the random walk without drift.
+//' @examples
+//' gen_rw(10, 8.2)
+// [[Rcpp::export]]
+arma::vec gen_rw(const unsigned int N)
+{
+  arma::vec grw(N);
+  grw.imbue( norm_rand );
+  return cumsum(grw);
+}
+
+
 
 //' @title Logit Inverse Function
 //' @description This function computes the probabilities
@@ -164,8 +180,10 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
 //' @example
 //' # Add at a later time
 // [[Rcpp::export]]
-double e_drift(double omega, int n_ts){
-  return omega*(n_ts + 1.0)/2.0;
+arma::vec e_drift(double omega, int n_ts){
+  arma::vec out(1);
+  out(0) = omega*(n_ts + 1.0)/2.0;
+  return out;
 }
 
 //' @title Second moment DR
@@ -176,8 +194,10 @@ double e_drift(double omega, int n_ts){
 //' @example
 //' # Add at a later time
 // [[Rcpp::export]]
-double m2_drift(double omega, int n_ts){
-  return (omega*omega)*(double(n_ts*n_ts)/3.0 + double(n_ts)/2.0 + 1.0/6.0);
+arma::vec m2_drift(double omega, int n_ts){
+  arma::vec out(1);
+  out(0)=(omega*omega)*(double(n_ts*n_ts)/3.0 + double(n_ts)/2.0 + 1.0/6.0);
+  return out;
 }
 
 //' @title Variance DR
@@ -188,16 +208,17 @@ double m2_drift(double omega, int n_ts){
 //' @example
 //' # Add at a later time
 // [[Rcpp::export]]
-double var_drift(double omega, int n_ts){
-	// Compute m1
-	double m1 = e_drift(omega, n_ts);
+arma::vec var_drift(double omega, int n_ts){
+  // Compute m1
+	arma::vec m1 = e_drift(omega, n_ts);
 	
 	// Compute m2
-	double m2 = m2_drift(omega, n_ts);
+	arma::vec m2 = m2_drift(omega, n_ts);
 	
 	// Compute var
-	return (m2 - m1*m1)*double(n_ts)/double(n_ts-1.0);
+  return (m2 - m1*m1)*double(n_ts)/double(n_ts-1.0);
 }
+
 
 
 //' @title Reverse Armadillo Vector
@@ -642,7 +663,11 @@ arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double 
   
   if(type == "eta3"){
       out = ci_eta3(y,dims,p);      
-  }else{
+  }
+  else if(type == "none"){
+      out.col(0) = y;
+  }
+  else{
       stop("The wave variance type supplied is not supported. Please use: eta3");
   }
 
@@ -671,7 +696,7 @@ arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double 
 //' x=rnorm(100)
 //' wavelet_variance_arma(x, "haar", "diag")
 // [[Rcpp::export]]
-arma::field<arma::mat> wavelet_variance_arma(arma::vec signal, String strWavelet="haar", String compute_v = "no") {
+arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String strWavelet="haar", String compute_v = "no") {
 
   // Set p-value for (1-p)*100 ci
   double p = 0.025;
@@ -743,12 +768,288 @@ arma::field<arma::mat> wavelet_variance_arma(arma::vec signal, String strWavelet
   
   // Define structure "wav.var"
   return out;
-  /*return Rcpp::List::create(Rcpp::Named("variance") = out_var,
-                          Rcpp::Named("low") = out_low,
-                          Rcpp::Named("high") = out_high,
-                          Rcpp::Named("scales") = scales,
-                          Rcpp::Named("V") = V,
-                          Rcpp::Named("up_gauss") = up_gauss,
-                          Rcpp::Named("dw_gauss") = dw_gauss
-                          );*/
 }
+
+
+// hiding this function for the moment
+arma::vec objFun(const arma::vec& theta, const arma::mat& omega,
+                 const CharacterVector& desc, const arma::vec& wv_empir,
+                 const arma::vec& tau, int N){
+  
+  unsigned int num_desc = desc.size();
+  unsigned int i_theta = 0;
+  
+  arma::vec wv_theo = arma::zeros<arma::vec>(tau.n_elem);
+  
+  for(unsigned int i = 0; i < num_desc; i++){
+    // AR 1
+    if(desc[i] == "AR1"){
+      double phi = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
+      ++i_theta;
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      
+      // Compute theoretical WV
+      wv_theo += ar1_to_wv(arma::as_scalar(phi),sig2,tau);
+    }
+    // AR 1p
+    else if(desc[i] == "AR1P"){
+      // revise this
+      arma::vec phi = pseudo_logit_inv(theta.row(i_theta));
+      ++i_theta;
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo = arma::join_cols(sig2/(1-arma::square(phi)), ar1_to_wv(arma::as_scalar(phi),sig2,tau));
+    }
+    // RW
+    else if(desc[i] == "RW"){
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo += rw_to_wv(sig2,tau);
+    }
+    // DR
+    else if(desc[i] == "DR"){
+      double drift = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo += dr_to_wv(drift,tau);
+    }
+    // WN
+    else if(desc[i] == "WN"){
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo += wn_to_wv(sig2,tau);
+    }
+    // EX
+    else{
+      double drift = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo = arma::join_cols(e_drift(drift, N), wv_theo);
+    }
+    
+  }
+
+	// Compute quandratic form
+	arma::vec dif = wv_theo - wv_empir;
+	arma::vec Q = trans(dif)*omega*dif;
+	return Q;
+}
+
+// [[Rcpp::export]]
+arma::vec Rcpp_Optim(const arma::vec&  theta, const CharacterVector& desc, const arma::mat& omega, const arma::vec& tau, const arma::vec& wv_empir, int N){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFun),
+                        _["omega"] = omega,
+                        _["desc"] = desc,
+                        _["wv_empir"] = wv_empir,
+                        _["tau"] = tau,
+                        _["N"] = N);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
+// [[Rcpp::export]]
+arma::vec gen_model(unsigned int N, const arma::vec& theta, const CharacterVector& desc){
+    arma::vec x  = arma::zeros<arma::vec>(N);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+  	for(unsigned int i = 0; i < num_desc; i++){
+  	  // AR 1
+  	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
+  	    double phi = theta(i_theta);
+  	    ++i_theta;
+  	    double sig2 = theta(i_theta);
+  	    ++i_theta;
+  	    
+  	    // Compute theoretical WV
+  	    x += gen_ar1(N, phi, sig2);
+  	  }
+  	  // RW
+  	  else if(desc[i] == "RW"){
+  	    ++i_theta;
+  	    x += gen_rw(N);
+  	  }
+  	  // DR
+  	  else if(desc[i] == "DR"){
+  	    double drift = theta(i_theta);
+  	    ++i_theta;
+  	    x += gen_dr(N, drift);
+  	  }
+  	  // WN
+  	  else if(desc[i] == "WN"){
+  	    double sigmaWN = theta(i_theta);
+  	    ++i_theta;
+  	    x += gen_wn(N, sigmaWN);
+  	  }
+  	  // EX
+  	  else{
+  	    ++i_theta;
+  	  }
+  }  
+    
+  return x;
+}
+
+
+// [[Rcpp::export]]
+arma::vec set_starting_values(const arma::vec& theta, const CharacterVector& desc){
+    arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+    for(unsigned int i = 0; i < num_desc; i++){
+  	  // AR 1
+  	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
+  	    starting(i_theta) = arma::as_scalar(pseudo_logit(theta.row(i_theta)));
+  	    ++i_theta;
+  	    starting(i_theta) = log(theta(i_theta));
+  	    ++i_theta;
+  	  }
+  	  else if(desc[i] != "EX"){
+        starting(i_theta) = log(theta(i_theta));
+  	    ++i_theta;
+  	  }else{
+        // EX
+  	    ++i_theta;
+  	  }
+  }  
+    
+  return starting;
+}
+
+
+// [[Rcpp::export]]
+arma::rowvec set_result_values(const arma::vec& theta, const CharacterVector& desc){
+    arma::rowvec result  = arma::zeros<arma::vec>(theta.n_elem);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+    for(unsigned int i = 0; i < num_desc; i++){
+      // AR 1
+  	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
+  	    result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.col(i_theta)));
+  	    ++i_theta;
+  	    result(i_theta) = exp(theta(i_theta));
+  	    ++i_theta;
+  	  }
+  	  else if(desc[i] != "EX"){
+        result(i_theta) = exp(theta(i_theta));
+  	    ++i_theta;
+  	  }
+      else{
+        // EX
+        ++i_theta;
+  	  }
+  }  
+    
+  return result;
+}
+
+// [[Rcpp::export]]
+arma::vec gmwm_bootstrapper(const arma::vec&  theta, const CharacterVector& desc, 
+                            unsigned int tau, unsigned int N, 
+                            unsigned int B = 100, bool var_or_mu = false){
+  unsigned int nb_level = floor(log2(N));
+  	
+	arma::mat res(B, tau+1);
+	for(unsigned int i=0; i<B; i++){
+		arma::vec x = gen_model(N, theta, desc);
+
+    // MODWT transform
+    arma::field<arma::vec> signal_modwt = modwt_arma(x, "haar", nb_level);
+    arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter());
+  
+		arma::vec wv_x = wave_variance(signal_modwt_bw, "none").col(0);
+    //waveletVariance(x, compute.v = "diag", verbose = FALSE)$variance
+    
+    arma::vec temp(1);
+    if(var_or_mu){
+      temp(0) = arma::var(x);
+    }
+    else{
+      temp(0) = arma::mean(x);
+    }
+	  res.row(i) = arma::trans(join_cols(temp,wv_x));
+	}
+	return cov(res);
+}
+
+//' @title Simulate GMWM
+//' 
+//' @example
+//' x=rnorm(100)
+//' wavelet_variance_arma(x, "haar", "diag")
+// [[Rcpp::export]]
+arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
+                               const CharacterVector& desc, const arma::vec& wv_empir,
+                               const arma::vec& tau, unsigned int N, unsigned int B = 500, bool var_or_mu = false){
+  
+  // Number of parameters
+  unsigned int num_param = theta.n_elem;
+  
+  // Initialisation of results structures
+  arma::mat GMWM(B,num_param);
+  arma::mat GMWM_plus(B,num_param);
+  
+  // Starting values
+	arma::vec starting_theta = set_result_values(theta, desc);
+
+  // Start bootstrap
+  for(unsigned int b=0; b<B; b++){  	
+  	// Simulate  	
+  	arma::vec x = gen_model(N, theta, desc);
+    
+  	// ------------------------------------
+  	// Compute standard GMWM
+  	// ------------------------------------
+  	// Compute WV
+  	arma::field<arma::mat> wv_x = wavelet_variance_arma(x, "haar", "diag");
+  	
+  	// Omega matrix
+  	arma::mat omega = arma::inv(diagmat(wv_x(4)));
+  	
+  	// Empirical WV
+  	arma::vec wv_empir = wv_x(0);
+      	
+  	// Find GMWM estimator
+  	arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, omega, tau, wv_empir, N);
+  	
+  	// Save results
+  	GMWM.row(b) = set_result_values(estim_GMWM, desc);
+  	
+  	// ------------------------------------
+  	// Compute augmented GMWM
+  	// ------------------------------------
+  	// Compute Omega
+  	arma::mat V = gmwm_bootstrapper(GMWM.row(b), max(tau), N, B, var_or_mu);
+  	arma::mat omega_v = arma::inv(diagmat(V));
+  	
+  	// Empirical WV + variance
+    arma::vec temp(1);
+    if(var_or_mu){
+      temp(0) = arma::var(x);
+    }
+    else{
+      temp(0) = arma::mean(x);
+    }
+    
+  	arma::vec wv_empir_v = join_cols(temp,wv_empir);
+  	
+  	// Find GMWM+ estimator
+  	arma::vec estim_GMWM_plus = Rcpp_Optim(theta, desc, omega_v, tau, wv_empir_v, N);
+  	
+  	// Save results
+  	GMWM_plus.row(b) = set_result_values(estim_GMWM_plus, desc);
+  }
+  
+  arma::field<arma::mat> out(2);
+  out(0) = GMWM;
+  out(1) = GMWM_plus;
+  
+  return out;
+} 
