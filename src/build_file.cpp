@@ -1,6 +1,9 @@
 #include <RcppArmadillo.h>
+// #include <omp.h>
 using namespace arma;
 using namespace Rcpp;
+
+// // [[Rcpp::plugins(openmp)]]
 
 
 //' @title Generate a white noise sequence
@@ -85,7 +88,7 @@ arma::vec gen_rw(const unsigned int N)
 //' x.sim = rnorm(100)
 //' pseudo_logit_inv(x.sim)
 // [[Rcpp::export]]
-arma::vec pseudo_logit_inv(arma::vec x){
+arma::vec pseudo_logit_inv(const arma::vec& x){
   return 2*exp(x)/(1 + exp(x)) -1;
 }
 
@@ -97,7 +100,7 @@ arma::vec pseudo_logit_inv(arma::vec x){
 //' x.sim = runif(100)
 //' pseudo_logit(x.sim)
 // [[Rcpp::export]]
-arma::vec pseudo_logit(arma::vec x){
+arma::vec pseudo_logit(const arma::vec& x){
   arma::vec p = (x+1)/2;
   return log(p/(1 - p));
 }
@@ -469,7 +472,7 @@ arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar",
   int L = arma::as_scalar(filter_info(0));
   arma::vec ht = filter_info(1); 
   arma::vec gt = filter_info(2);
-    
+  
   // modwt transform
   double transform_factor = sqrt(2);
   ht /= transform_factor;
@@ -487,7 +490,7 @@ arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar",
 
       double Wjt = ht(0)*x(k);
       double Vjt = gt(0)*x(k);
-      
+  
       for(int n = 1; n < L; n++){
         k -= pow(2, j-1);
         if(k < 0){
@@ -507,7 +510,6 @@ arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar",
   
   return y;
 }
-
 
 //' @title Absolute Value or Modulus of a Complex Number Squared.
 //' @description Computes the squared value of the Modulus.
@@ -925,14 +927,14 @@ arma::vec set_starting_values(const arma::vec& theta, const CharacterVector& des
 
 // [[Rcpp::export]]
 arma::rowvec set_result_values(const arma::vec& theta, const CharacterVector& desc){
-    arma::rowvec result  = arma::zeros<arma::vec>(theta.n_elem);
+    arma::rowvec result  = arma::zeros<arma::rowvec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
     
     for(unsigned int i = 0; i < num_desc; i++){
       // AR 1
   	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
-  	    result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.col(i_theta)));
+  	    result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
   	    ++i_theta;
   	    result(i_theta) = exp(theta(i_theta));
   	    ++i_theta;
@@ -977,6 +979,45 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const CharacterVector& desc
 	  res.row(i) = arma::trans(join_cols(temp,wv_x));
 	}
 	return cov(res);
+}
+
+
+//' @title GMWM Step
+//' 
+//' @example
+//' x=rnorm(100)
+//' GMWM_adv
+// [[Rcpp::export]]
+arma::field<arma::mat> GMWM_adv(const arma::vec& theta,const CharacterVector& desc,
+                                const arma::mat& V, const arma::vec& wv_empir,
+                               const arma::vec& tau, unsigned int N){
+                                 
+       // Number of parameters
+  unsigned int num_param = theta.n_elem;
+  
+  // Initialisation of results structures
+  arma::mat GMWM(1,num_param);
+
+  // Starting values
+  arma::vec starting_theta = set_starting_values(theta, desc);
+      
+  // ------------------------------------
+  // Compute standard GMWM
+  // ------------------------------------
+    	
+  // Omega matrix
+  arma::mat omega = arma::inv(diagmat(V));
+  
+  // Find GMWM estimator
+  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, omega, tau, wv_empir, N);
+
+  // Save results
+  GMWM.row(0) = set_result_values(estim_GMWM, desc);
+
+  arma::field<arma::mat> out(1);
+  out(0) = GMWM;
+  
+  return out;                          
 }
 
 //' @title Simulate GMWM
