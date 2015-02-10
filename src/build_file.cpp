@@ -1,10 +1,17 @@
 #include <RcppArmadillo.h>
+#include <string>
+#include <map>
 // #include <omp.h>
 using namespace arma;
 using namespace Rcpp;
 
 // // [[Rcpp::plugins(openmp)]]
 
+// [[Rcpp::export]]
+arma::vec diff_arma(const arma::vec& x, unsigned int lag = 1){
+  unsigned int n=x.n_elem;
+  return (x.rows(lag,n-1) - x.rows(0,n-lag-1));
+}
 
 //' @title Generate a white noise sequence
 //' @description Generates a white noise sequence given sigma.
@@ -102,6 +109,11 @@ arma::vec pseudo_logit_inv(const arma::vec& x){
 // [[Rcpp::export]]
 arma::vec pseudo_logit(const arma::vec& x){
   arma::vec p = (x+1)/2;
+  return log(p/(1 - p));
+}
+
+double pseudo_logit(double x){
+  double p = (x+1)/2;
   return log(p/(1 - p));
 }
 
@@ -634,15 +646,15 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
 
 
 //' @title Generate a Confidence intervval for a Univariate Time Series
-//' @description Computes an estimate of the multiscale variance and a confidence interval
+//' @description Computes an estimate of the multiscale variance and a chi-squared confidence interval
 //' @param x A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
 //' @param type A \code{String} indicating the confidence interval being calculated.
 //' @param p A \code{double} that indicates the (1-p)*alpha confidence level 
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Wavelet Variance}
-//'  \item{Column 2}{Lower Bounds}
-//'  \item{Column 3}{Upper Bounds}
+//'  \item{Column 2}{Chi-squared Lower Bounds}
+//'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
 //' @details 
 //' @example
@@ -724,8 +736,8 @@ arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String str
 
   // Compute asymptotic covariance matrix
   arma::mat V = diagmat(arma::ones<arma::vec>(nb_level));
-  arma::vec up_gauss(nb_level);
-  arma::vec dw_gauss(nb_level);
+  //arma::vec up_gauss(nb_level);
+  //arma::vec dw_gauss(nb_level);
   if (compute_v == "full" || compute_v == "diag"){
     if (compute_v == "full"){
       //V = compute_full_V(signal_modwt) // missing in action. Roberto's code I think had it.
@@ -748,39 +760,37 @@ arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String str
     }
     
     // Compute confidence intervals
-    up_gauss = vmod.col(0) + R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
-    dw_gauss = vmod.col(0) - R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
+    //up_gauss = vmod.col(0) + R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
+    //dw_gauss = vmod.col(0) - R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
   }
   else{
     arma::vec temp = arma::ones<arma::vec>(nb_level);
     V = diagmat(temp);
-    up_gauss.fill(datum::nan);
-    dw_gauss.fill(datum::nan);
+    //up_gauss.fill(datum::nan);
+    //dw_gauss.fill(datum::nan);
   }
   
   // export
-  arma::field<arma::mat> out(7);
+  arma::field<arma::mat> out(5);
   out(0) = vmod.col(0); // wave variance
   out(1) = vmod.col(1); // low ci
   out(2) = vmod.col(2); // high ci
   out(3) = scales; // scales
   out(4) = V; //V
-  out(5) = up_gauss; // up_guass ci
-  out(6) = dw_gauss; // low_guass ci
+  //out(5) = up_gauss; // up_guass ci
+  //out(6) = dw_gauss; // low_guass ci
   
   // Define structure "wav.var"
   return out;
 }
 
-
-// hiding this function for the moment
-arma::vec objFun(const arma::vec& theta, const arma::mat& omega,
-                 const CharacterVector& desc, const arma::vec& wv_empir,
-                 const arma::vec& tau, int N){
+// 
+inline arma::vec theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc,
+                                const arma::vec& wv_empir,
+                                const arma::vec& tau, int N){
   
   unsigned int num_desc = desc.size();
   unsigned int i_theta = 0;
-  
   arma::vec wv_theo = arma::zeros<arma::vec>(tau.n_elem);
   
   for(unsigned int i = 0; i < num_desc; i++){
@@ -792,16 +802,7 @@ arma::vec objFun(const arma::vec& theta, const arma::mat& omega,
       ++i_theta;
       
       // Compute theoretical WV
-      wv_theo += ar1_to_wv(arma::as_scalar(phi),sig2,tau);
-    }
-    // AR 1p
-    else if(desc[i] == "AR1P"){
-      // revise this
-      arma::vec phi = pseudo_logit_inv(theta.row(i_theta));
-      ++i_theta;
-      double sig2 = exp(theta(i_theta));
-      ++i_theta;
-      wv_theo = arma::join_cols(sig2/(1-arma::square(phi)), ar1_to_wv(arma::as_scalar(phi),sig2,tau));
+      wv_theo += ar1_to_wv(phi,sig2,tau);
     }
     // RW
     else if(desc[i] == "RW"){
@@ -816,28 +817,60 @@ arma::vec objFun(const arma::vec& theta, const arma::mat& omega,
       wv_theo += dr_to_wv(drift,tau);
     }
     // WN
-    else if(desc[i] == "WN"){
+    else{
       double sig2 = exp(theta(i_theta));
       ++i_theta;
       wv_theo += wn_to_wv(sig2,tau);
     }
-    // EX
-    else{
-      double drift = exp(theta(i_theta));
-      ++i_theta;
-      wv_theo = arma::join_cols(e_drift(drift, N), wv_theo);
-    }
     
   }
 
+  return wv_theo;
+}
+
+// hiding this function for the moment
+double objFunStarting(const arma::vec& theta, const std::vector<std::string>& desc, 
+                         const arma::vec& wv_empir, const arma::vec& tau, int N){
+                   
+  arma::vec wv_theo = theoretical_wv(theta, desc, wv_empir, tau, N);
+  arma::vec standardized = 1-wv_theo/wv_empir;
 	// Compute quandratic form
+	return arma::as_scalar(trans(standardized)*(standardized));
+}
+
+double objFun(const arma::vec& theta, const arma::mat& omega,
+                 const std::vector<std::string>& desc, const arma::vec& wv_empir,
+                 const arma::vec& tau, int N){
+                   
+  arma::vec wv_theo = theoretical_wv(theta, desc, wv_empir, tau, N);
+
+  // Compute quandratic form
 	arma::vec dif = wv_theo - wv_empir;
-	arma::vec Q = trans(dif)*omega*dif;
-	return Q;
+	return arma::as_scalar(trans(dif)*omega*dif);
 }
 
 // [[Rcpp::export]]
-arma::vec Rcpp_Optim(const arma::vec&  theta, const CharacterVector& desc, const arma::mat& omega, const arma::vec& tau, const arma::vec& wv_empir, int N){
+arma::vec Rcpp_OptimStart(const arma::vec&  theta, const std::vector<std::string>& desc,
+                          const arma::vec& tau, const arma::vec& wv_empir, int N){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting),
+                        _["desc"] = desc,
+                        _["wv_empir"] = wv_empir,
+                        _["tau"] = tau,
+                        _["N"] = N);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
+
+
+// [[Rcpp::export]]
+arma::vec Rcpp_Optim(const arma::vec&  theta, const std::vector<std::string>& desc, const arma::mat& omega, const arma::vec& tau, const arma::vec& wv_empir, int N){
    Rcpp::Environment stats("package:stats"); 
    Rcpp::Function optim = stats["optim"];    
 
@@ -855,7 +888,7 @@ arma::vec Rcpp_Optim(const arma::vec&  theta, const CharacterVector& desc, const
 }
 
 // [[Rcpp::export]]
-arma::vec gen_model(unsigned int N, const arma::vec& theta, const CharacterVector& desc){
+arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc){
     arma::vec x  = arma::zeros<arma::vec>(N);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
@@ -899,24 +932,21 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const CharacterVecto
 
 
 // [[Rcpp::export]]
-arma::vec set_starting_values(const arma::vec& theta, const CharacterVector& desc){
+arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::string>& desc){
     arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
     
     for(unsigned int i = 0; i < num_desc; i++){
   	  // AR 1
-  	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
+  	  if(desc[i] == "AR1" ){
   	    starting(i_theta) = arma::as_scalar(pseudo_logit(theta.row(i_theta)));
   	    ++i_theta;
   	    starting(i_theta) = log(theta(i_theta));
   	    ++i_theta;
   	  }
-  	  else if(desc[i] != "EX"){
+  	  else{
         starting(i_theta) = log(theta(i_theta));
-  	    ++i_theta;
-  	  }else{
-        // EX
   	    ++i_theta;
   	  }
   }  
@@ -926,7 +956,7 @@ arma::vec set_starting_values(const arma::vec& theta, const CharacterVector& des
 
 
 // [[Rcpp::export]]
-arma::rowvec set_result_values(const arma::vec& theta, const CharacterVector& desc){
+arma::rowvec set_result_values(const arma::vec& theta, const std::vector<std::string>& desc){
     arma::rowvec result  = arma::zeros<arma::rowvec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
@@ -953,7 +983,7 @@ arma::rowvec set_result_values(const arma::vec& theta, const CharacterVector& de
 }
 
 // [[Rcpp::export]]
-arma::vec gmwm_bootstrapper(const arma::vec&  theta, const CharacterVector& desc, 
+arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::string>& desc, 
                             unsigned int tau, unsigned int N, 
                             unsigned int B = 100, bool var_or_mu = false){
   unsigned int nb_level = floor(log2(N));
@@ -981,6 +1011,201 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const CharacterVector& desc
 	return cov(res);
 }
 
+inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot){
+  
+  unsigned int num_params = 2*num_ars;
+  arma::vec temp(num_params);
+  
+  for(unsigned int i = 0; i < num_ars; i++){
+    // Draw from triangle distributions for phi
+    double U = R::runif(0.0, 2.0/3.0);
+    Rcpp::Rcout << "Random Draw: " << U << std::endl;
+    if(U < 1.0/3.0){
+      temp(2*i) = 1.0/3 - sqrt(1.0/9.0 - U/3.0);
+      Rcpp::Rcout << "Case 1: " << temp(2*i) << std::endl;
+    }else{
+      temp(2*i) = 0.5 + sqrt(2.0/3.0*(U-1.0/3.0));
+      Rcpp::Rcout << "Case 2: " << temp(2*i) << std::endl;
+    }
+    // Draw from uniform for 
+    temp(2*i+1) = R::runif(sigma_tot/100000.0, sigma_tot);
+    Rcpp::Rcout << "Sampled sigma: " << temp(2*i+1) << std::endl;
+  }
+  
+  Rcpp::Rcout << "Temp Vector looks like: " << temp << std::endl;
+      
+  return temp;
+}
+
+inline arma::vec unif_sigma_sample(unsigned int num, double sigma_tot){
+  arma::vec temp(num);
+  
+  for(int i = 0; i<num; i++){
+    temp(i) = R::runif(0.0,sigma_tot);
+  }
+  
+  return temp;
+}
+
+//' @title Randomly guess a starting parameter
+//' @description Sets starting parameters for each of the given parameters. 
+//' @param signal A \code{vec} that contains the data
+//' @param w A \code{std::map<std::string,int>} that lists supported models and the amount in the model.
+//' @param num_params An \code{unsigned int} 
+//' @param compute_v A \code{String} that indicates covariance matrix multiplication. 
+//' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const std::vector<std::string>& desc,
+                        unsigned int num_param, const arma::vec& wv_empir, const arma::vec& tau, 
+                        unsigned int N, unsigned int B=1000){
+  
+    // Obtain the sum of variances for sigma^2_total.
+  double sigma_tot = arma::sum(wv_empir);
+  
+  Rcpp::Rcout << "Sum of wv_empir for sigma^2_total: " << sigma_tot << std::endl;
+  
+  arma::vec starting_theta = arma::zeros<arma::vec>(num_param);
+  arma::vec temp_theta = arma::zeros<arma::vec>(num_param);
+    
+  double min_obj_value = std::numeric_limits<double>::max();
+  
+  // Generate parameters for the model
+  for(unsigned int b = 0; b < B; b++){
+    
+    unsigned int i_theta = 0;
+    
+    for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
+      int out = p->second;
+      if(out > 0){
+        std::string type = p->first;
+        if(type == "AR1"){
+          temp_theta.rows(i_theta, i_theta + 2*out - 1) = ar1_draw(out, sigma_tot);
+          i_theta += 2*out;
+        }
+        else if(type == "DR"){   
+          temp_theta.rows(i_theta, i_theta + out - 1).fill( mean(diff_arma(signal,1))  );
+          i_theta += out;
+        }
+        else if(type == "QN"){
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot);
+          i_theta += out;
+        }
+        else if(type == "RW"){
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot)/signal.n_elem;
+          i_theta += out;
+        }
+        else{ // WN
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot);
+          i_theta += out;
+        }
+      }
+    }
+    Rcpp::Rcout << "Temp Theta looks like: " << temp_theta << std::endl;
+
+    double obj = objFunStarting(temp_theta, desc, wv_empir, tau, N);
+    
+    Rcpp::Rcout << "Objective value is:" << obj << std::endl;
+    if(min_obj_value > obj){
+      Rcpp::Rcout << "Objective value " << obj << " was lower than " << min_obj_value << std::endl;
+      min_obj_value = obj;
+      starting_theta = temp_theta;
+    }
+  }
+  
+  Rcpp::Rcout << "Final Objective value " << min_obj_value << std::endl;
+
+  return starting_theta;
+}
+
+
+//' @title Count Number of Model instances 
+//' @description Return a model count
+//' @param desc A \code{vec} that contains the model type
+//' @return A \code{vec} with the model counts.
+//' @details Hard coded value for the number of models we currently support. 
+//' The types of models supported are:
+//' \itemize{
+//'   \item{0}{AR1}
+//'   \item{1}{Drift}
+//'   \item{2}{White Noise}
+//'   \item{3}{Random Walk}
+//'   \item{4}{Q Noise}
+//' }
+//' @details
+//' old counting method
+//' @example
+//' count_models(1,2,3,4,4,0,0,0,3,4)
+// [[Rcpp::export]]
+arma::vec count_models_numeric(arma::vec desc) {
+    arma::vec models = arma::zeros<arma::vec>(5); // Change if we add / subtract more terms 
+    for (int i = 0; i < desc.n_elem; i++) {
+        models(desc(i)) += 1;
+    }
+    return models;
+}
+
+
+// Counts 
+inline std::map<std::string, int> counted_map(const std::vector<std::string>& desc){
+  std::map<std::string, int> w;
+  w["AR1"]=0;
+  w["DR"]=0;
+  w["RW"]=0;
+  w["QN"]=0;
+  w["WN"]=0;
+
+  for (int i = 0; i < desc.size(); i++) {
+        ++w[desc[i]];
+  }
+  
+  return w;
+} 
+
+// 
+inline unsigned int count_params(std::map<std::string, int>& w) {
+  unsigned int num_params = 0;     
+  for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
+    std::string type = p->first;
+    int num_models = p->second;
+    if(type != "AR1" && num_models != 0){
+      ++num_params;
+    }
+    else{
+      if(num_models > 0){
+        num_params += (2*num_models);
+      }
+    }
+  }
+  return num_params;
+}
+
+//' @title Count Number of Models (Alphanumeric)
+//' @description Return a model count
+//' @param desc A \code{vector<string>} that contains the model type
+//' @return A \code{vec} with the model counts.
+//' @details 
+//' The types of models supported are:
+//' \itemize{
+//'   \item{AR1}
+//'   \item{DR}
+//'   \item{QN}
+//'   \item{RW}
+//'   \item{WN}
+//' }
+//' Note: This order is due to the fact that the models are created by inserting into a C++ Map. The map sorts these values...
+//' @example
+//' count_models_alpha(c("AR1","AR1","DR","WN"))
+arma::vec count_models_alpha(const std::vector<std::string>& desc) {
+  
+    std::map<std::string, int> w = counted_map(desc);
+
+    arma::vec num_models = arma::zeros<arma::vec>(w.size());
+    
+    for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
+              int out = p->second;
+              num_models(std::distance(w.begin(), p)) = out;
+    }
+    return num_models;
+}
 
 //' @title GMWM Step
 //' 
@@ -988,23 +1213,82 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const CharacterVector& desc
 //' x=rnorm(100)
 //' GMWM_adv
 // [[Rcpp::export]]
-arma::field<arma::mat> GMWM_adv(const arma::vec& theta,const CharacterVector& desc,
-                                const arma::mat& V, const arma::vec& wv_empir,
-                               const arma::vec& tau, unsigned int N){
+arma::mat GMWM(const std::vector<std::string>& desc, const arma::vec& signal,
+               const arma::mat& V, const arma::vec& wv_empir,
+               const arma::vec& tau, unsigned int N, unsigned int B = 1000){
+  
+  // Count the number of models we are working with
+  std::map<std::string, int> w = counted_map(desc);
+  
+  // Return the total number of parameters we need to setup.
+  unsigned int num_param = count_params(w);
+  
+  Rcpp::Rcout << "Number params in model: " << num_param << std::endl;
+
+
+  // Initialize it
+  arma::mat GMWM(1,num_param);
+  
+  // Give it a guess
+  arma::vec guess_me = guess_initial(signal, w, desc, num_param, wv_empir, tau, N, B);
+
+  Rcpp::Rcout << "Initial Guess (untransformed) is: " << guess_me << std::endl;
+
+  // Starting values
+  arma::vec starting_theta = set_starting_values(guess_me, desc);
+  
+  Rcpp::Rcout << "Initial Guess (transformed) is: " << starting_theta << std::endl;
+  
+  // Optimize using the idea Yannick proposed in GMWM for INF Design.
+  starting_theta = Rcpp_OptimStart(starting_theta, desc, tau, wv_empir, N);
+
+  Rcpp::Rcout << "Optimized starting values (transformed) by Yannick are: " << starting_theta << std::endl;
+      
+  // ------------------------------------
+  // Compute standard GMWM
+  // ------------------------------------
+    	
+  // Omega matrix
+  arma::mat omega = arma::inv(diagmat(V));
+    
+  // Find GMWM estimator
+  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, omega, tau, wv_empir, N);
+  
+  Rcpp::Rcout << "GMWM estimator transformed" << estim_GMWM << std::endl;
+
+  // Save results
+  GMWM.row(0) = set_result_values(estim_GMWM, desc);
+
+  Rcpp::Rcout << "GMWM estimator: " << GMWM << std::endl;
+  
+  return GMWM;                          
+}
+
+//' @title GMWM Step
+//' @details
+//' Allows the user to supply their "guess" instead of a random draw.
+//' @example
+//' x=rnorm(100)
+// [[Rcpp::export]]
+arma::mat GMWM_adv(const arma::vec& theta, const std::vector<std::string>& desc,
+                   const arma::mat& V, const arma::vec& wv_empir,
+                   const arma::vec& tau, unsigned int N){
                                  
        // Number of parameters
   unsigned int num_param = theta.n_elem;
   
   // Initialisation of results structures
   arma::mat GMWM(1,num_param);
-
+    
   // Starting values
   arma::vec starting_theta = set_starting_values(theta, desc);
+  
+  starting_theta = Rcpp_OptimStart(starting_theta, desc, tau, wv_empir, N);
       
   // ------------------------------------
   // Compute standard GMWM
   // ------------------------------------
-    	
+      
   // Omega matrix
   arma::mat omega = arma::inv(diagmat(V));
   
@@ -1013,12 +1297,11 @@ arma::field<arma::mat> GMWM_adv(const arma::vec& theta,const CharacterVector& de
 
   // Save results
   GMWM.row(0) = set_result_values(estim_GMWM, desc);
-
-  arma::field<arma::mat> out(1);
-  out(0) = GMWM;
   
-  return out;                          
+  return GMWM;                          
 }
+
+
 
 //' @title Simulate GMWM
 //' 
@@ -1027,7 +1310,7 @@ arma::field<arma::mat> GMWM_adv(const arma::vec& theta,const CharacterVector& de
 //' wavelet_variance_arma(x, "haar", "diag")
 // [[Rcpp::export]]
 arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
-                               const CharacterVector& desc, const arma::vec& wv_empir,
+                               const std::vector<std::string>& desc, const arma::vec& wv_empir,
                                const arma::vec& tau, unsigned int N, unsigned int B = 500, bool var_or_mu = false){
   
   // Number of parameters
@@ -1067,7 +1350,7 @@ arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
   	// Compute augmented GMWM
   	// ------------------------------------
   	// Compute Omega
-  	arma::mat V = gmwm_bootstrapper(GMWM.row(b), max(tau), N, B, var_or_mu);
+  	arma::mat V = gmwm_bootstrapper(GMWM.row(b), desc, max(tau), N, B, var_or_mu);
   	arma::mat omega_v = arma::inv(diagmat(V));
   	
   	// Empirical WV + variance
