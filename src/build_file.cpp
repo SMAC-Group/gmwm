@@ -2,10 +2,699 @@
 #include <string>
 #include <map>
 // #include <omp.h>
+
 using namespace arma;
 using namespace Rcpp;
 
 // // [[Rcpp::plugins(openmp)]]
+
+// Support functions
+
+inline double square(double x){
+  return x*x;
+}
+
+#define my_isok(x) (!ISNA(x) & !ISNAN(x))
+
+//' @title Reverse Subset Column
+//' @description Subsets the column by going from high indices to low (the reverse of the supported practice)
+//' @usage rev_col_subset(x, start, end)
+//' @param x A \code{matrix} of dimensions M x N
+//' @param start A \code{unsigned int} that indicates the starting column.
+//' @param end A \code{unsigned int} that indicates the ending column.
+//' @return x A \code{matrix} with matrix rows displayed in reversed order
+//' @details Consider a vector x=[[1,2],[3,4]].
+//' By setting \code{start=1} and \code{end=0}, the function would output x=[[2,1],[4,1]].
+//' Start and end must be valid C++ matrix locations. (e.g. matrix cols start at 0 and not 1)
+//' @author JJB
+//' @examples
+//' x = matrix(c(1,2,3,4), nrow=2,byrow=T)
+//' rev_col_subset(x, 1, 0)
+// [[Rcpp::export]]
+arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
+  arma::mat A = arma::mat(x.n_rows, start-end+1);
+  for(unsigned int i = 0; i < start-end+1; i++){
+    A.col(i) = x.col(start-i);
+  }
+  return A;
+}
+
+
+//' @title Reverse Subset Row
+//' @description Subsets the row by going from high indices to low (the reverse of the supported practice)
+//' @usage rev_row_subset(x, start, end)
+//' @param x A \code{matrix} of dimensions M x N
+//' @param start A \code{unsigned int} that indicates the starting row.
+//' @param end A \code{unsigned int} that indicates the ending row.
+//' @return x A \code{matrix} with matrix rows displayed in reversed order
+//' @details Consider a vector x=[[1,2],[3,4]], the function would output x=[[3,4],[1,2]].
+//' Start and end must be valid C++ matrix locations. (e.g. matrix rows start at 0 and not 1)
+//' @author JJB
+//' @examples
+//' x = matrix(c(1,2,3,4), nrow=2,byrow=T)
+//' rev_row_subset(x, 1, 0)
+// [[Rcpp::export]]
+arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end){
+  arma::mat A = arma::mat(start-end+1, x.n_cols);
+  for(unsigned int i = 0; i < start-end+1; i++){
+    A.row(i) = x.row(start-i);
+  }
+  return A;
+}
+
+//' @title Reverse Armadillo Vector
+//' @description Reverses the order of an Armadillo Vector
+//' @usage reverse_vec(x)
+//' @param x A \code{column vector} of length N
+//' @return x A \code{column vector} with its contents reversed.
+//' @details Consider a vector x=[1,2,3,4,5], the function would output x=[5,4,3,2,1].
+//' @author JJB
+//' @examples
+//' x = 1:5
+//' reverse_vec(x)
+// [[Rcpp::export]]
+arma::vec reverse_vec(arma::vec x) {
+   std::reverse(x.begin(), x.end());
+   return x;
+}
+
+
+//' @title Converting an ARMA Process to an Infinite MA Process
+//' @description Takes an ARMA function and converts it to its infinite MA process.
+//' @usage ARMAtoMA_arma(x)
+//' @param ar A \code{column vector} of length p
+//' @param ma A \code{column vector} of length q
+//' @param lag_max A \code{int} of the largest MA(Inf) coefficient required.
+//' @return x A \code{column vector} with its contents reversed.
+//' @details Consider a vector x=[1,2,3,4,5], the function would output x=[5,4,3,2,1].
+//' @author R Core Team and JJB
+//' @examples
+//' # ARMA(2,1)
+//' ARMAtoMA_arma(c(1.0, -0.25), 1.0, 10)
+//' # ARMA(0,1)
+//' ARMAtoMA_arma(numeric(0), 1.0, 10)
+// [[Rcpp::export]]
+arma::vec ARMAtoMA_arma(arma::vec ar, arma::vec ma, int lag_max)
+{
+  int p = ar.n_elem;
+  int q = ma.n_elem;
+  int m = lag_max;
+  
+  double tmp;
+  
+  arma::vec phi = ar;
+  arma::vec theta = ma;
+  arma::vec psi = arma::zeros<arma::vec>(m);
+  
+  if(m <= 0 || m == NA_INTEGER){
+    Rcpp::stop("invalid value of lag.max");
+  }
+  
+  for(int i = 0; i < m; i++) {
+    tmp = (i < q) ? theta(i) : 0.0;
+    for(int j = 0; j < std::min(i+1, p); j++){
+      tmp += phi(j) * ((i-j-1 >= 0) ? psi(i-j-1) : 1.0);
+    }
+    psi(i) = tmp;
+  }
+  return psi;
+}
+
+//' @title Time Series Convolution Filters
+//' @description Applies a convolution filter to a univariate time series.
+//' @usage cfilter(x, filter, sides, scircular)
+//' @param x A \code{column vector} of length T
+//' @param filter A \code{column vector} of length f
+//' @param sides An \code{int} that takes either 1:for using past values only or 2: filter coefficients are centered around lag 0.
+//' @param circular A \code{bool} that indicates if the filter should be wrapped around the ends of the time series.
+//' @return x A \code{column vector} with its contents reversed.
+//' @details Consider a vector x=[1,2,3,4,5], the function would output x=[5,4,3,2,1].
+//' @author R Core Team and JJB
+//' @examples
+//' x = 1:100
+//' # 
+//' cfilter(x, rep(1, 3))
+//' # Using R's function
+//' filter(x, rep(1, 3))
+//' #
+//' cfilter(x, rep(1, 3), sides = 1)
+//' # Using R's function
+//' filter(x, rep(1, 3), sides = 1)
+//' #
+//' cfilter(x, rep(1, 3), sides = 1, circular = TRUE)
+//' # Using R's function
+//' filter(x, rep(1, 3), sides = 1, circular = TRUE)
+// [[Rcpp::export]]
+arma::vec cfilter(arma::vec x, arma::vec filter, int sides = 2, bool circular = false)
+{
+  
+  int nx = x.n_elem;
+  int nf = filter.n_elem;
+  int nshift;
+  
+  if(sides == NA_INTEGER || circular == NA_LOGICAL)  Rcpp::stop("invalid input");
+  
+  double z, tmp;
+  
+  if(sides == 2){
+    nshift = nf /2;
+  }
+  else{
+    nshift = 0;
+  }
+    
+  arma::vec out = arma::zeros<arma::vec>(nx);
+  
+  if(!circular) {
+    for(int i = 0; i < nx; i++) {
+      z = 0;
+      if(i + nshift - (nf - 1) < 0 || i + nshift >= nx) {
+        out(i) = NA_REAL;
+        continue;
+      }
+      for(int j = std::max(0, nshift + i - nx); j < std::min(nf, i + nshift + 1) ; j++) {
+        tmp = x(i + nshift - j);
+        z += filter(j) * tmp;
+      }
+      out(i) = z;
+    }
+  } else { /* circular */
+  for(int i = 0; i < nx; i++)
+  {
+    z = 0;
+    for(int j = 0; j < nf; j++) {
+      int ii = i + nshift - j;
+      if(ii < 0) ii += nx;
+      if(ii >= nx) ii -= nx;
+      tmp = x(ii);
+      z += filter(j) * tmp;
+    }
+    out(i) = z;
+  }
+  }
+  return out;
+}
+
+
+//' @title Time Series Recursive Filters
+//' @description Applies a recursive filter to a univariate time series.
+//' @usage rfilter(x, filter, sides, scircular)
+//' @param x A \code{column vector} of length T
+//' @param filter A \code{column vector} of length f
+//' @param init A \code{column vector} of length f that contains the initial values of the time series in reverse.
+//' @return x A \code{column vector} with its contents reversed.
+//' @details The length of 'init' must be equal to the length of 'filter'
+//' @author R Core Team and JJB
+//' @examples
+//' x = 1:100
+//' # 
+//' rfilter(x, rep(1, 3), rep(1, 3))
+//' # Using R's function
+//' filter(x, rep(1, 3), method="recursive", init=rep(1, 3))
+// [[Rcpp::export]]
+arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init)
+{
+ 
+  int nx = x.n_elem, nf = filter.n_elem;
+    
+  double sum;
+  arma::vec r = arma::join_cols(reverse_vec(init), arma::zeros<arma::vec>(nx) ); 
+  // see filter source
+  // .Call(C_rfilter, x, filter, c(rev(init[, 1L]), double(n)))[-ind]
+  // r is then c(rev(init[, 1L]), double(n))
+  arma::vec rx = x;
+  arma::vec rf = filter;
+  
+  for(int i = 0; i < nx; i++) {
+    sum = rx(i);
+    for (int j = 0; j < nf; j++) {
+      if(nf + i - j - 1 >= 0){
+        sum += r(nf + i - j - 1) * rf(j);
+      }else{
+        r[nf + i] = NA_REAL; goto bad3; 
+      }
+    }
+    r(nf + i) = sum;
+    bad3:
+  continue;
+  }
+
+  return r.rows(nf,r.n_elem-1); // returns truncated vec (discards filter)
+}
+
+//' @title Expand Grid for Same Dimensional Case
+//' @description Creates the different pairings possible with two different variables.
+//' @usage expand_grid_red(nx)
+//' @param nx An \code{integer} of length f that contains the initial values of the time series in reverse.
+//' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
+//' @details 
+//' @author R Core Team and JJB
+//' @examples
+//' p = 2
+//' # 
+//' expand_grid_red(p)
+//' # Using R's function
+//' expand.grid(1L:(p+1),1L:(p+1))[, 2L:1L]
+// [[Rcpp::export]]
+arma::mat expand_grid_red(int nx){
+  
+  arma::mat g(nx*nx,2);
+  int j = 1;
+  
+  for(int i = 1; i <= nx*nx; i++){
+    int mod = i%nx;
+    if(mod == 0){
+      mod = nx;
+    }
+    g(i-1,0) = mod;
+    g(i-1,1) = j;
+    if(i%nx == 0){
+      j++;
+    }
+  }
+  
+  return g;
+}
+
+
+//' @title Compute Theoretical ACF for an ARMA Process
+//' @description Compute the theoretical autocorrelation function for an ARMA process.
+//' @usage ARMAacf_arma(ar,ma,lag_max)
+//' @param ar A \code{vector} of length p containing AR coefficients
+//' @param ma A \code{vector} of length q containing MA coefficients
+//' @param lag_max A \code{unsigned integer} indicating the maximum lag necessary
+//' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
+//' @details 
+//' @author R Core Team and JJB
+//' @examples
+//' # ARMA(2,1)
+//' ARMAacf_arma(c(1.0, -0.25), 1.0, lag.max = 10)
+//' # ARMA(0,1)
+//' ARMAacf_arma(numeric(0), .35, lag.max = 10)
+// [[Rcpp::export]]
+arma::vec ARMAacf_arma(arma::vec ar, arma::vec ma, unsigned int lag_max) 
+{
+  unsigned int p = ar.n_elem;
+  unsigned int q = ma.n_elem;
+  
+  arma::vec Acf;
+  if (!p && !q){
+    Rcpp::stop("empty model supplied");
+  }
+  unsigned int r = std::max(p, q + 1);
+  if (p > 0) {
+    if (r > 1) {
+      if (r > p) {
+        unsigned int temp_size = ar.n_elem;
+        ar.resize(temp_size+r-p);
+        ar.rows(temp_size, temp_size+r-p-1) = 0;
+        p = r;
+      }
+      
+      arma::mat A = arma::zeros<arma::mat>(p + 1, 2 * p + 1);
+            
+      // A[ind] <- c(1, -ar)
+      arma::rowvec temp = arma::rowvec(p + 1);
+      temp(0) = 1; 
+      temp.cols(1,p) = -1*arma::conv_to<arma::rowvec>::from(ar);
+            
+      for(unsigned int i = 0; i <= p; i++){
+        //row,col, row, col
+        A.submat(i,i,i,i+p) = temp;
+      }
+            
+      // A[, (2L * p + 1L):(p + 2L)]
+      arma::mat tempmat = rev_col_subset(A,2 * p,p + 1); // start to end
+        
+      // A[, 1L:p] <- A[, 1L:p] + A[, (2L * p + 1L):(p + 2L)]
+      A.cols(0,p-1) = A.cols(0,p-1) + tempmat;
+            
+      // rhs <- c(1, rep(0, p))
+      arma::vec rhs = arma::zeros<arma::vec>(p+1);
+      rhs(0) = 1;
+            
+      if (q > 0) {
+        arma::vec psi = arma::vec(q+1);
+        psi(0) = 1;
+        psi.rows(1,q) = ARMAtoMA_arma(ar, ma, q);
+                
+        arma::vec theta = arma::zeros<arma::vec>(2*q+2);
+        theta(0) = 1;
+        theta.rows(1,q) = ma;
+
+        // in 1 + 0:q
+        for (unsigned int k = 0; k <= q; k++){
+          rhs(k) = sum(psi % theta.rows(k,k+q));
+        }
+      }
+      Acf = solve(rev_row_subset(rev_col_subset(A,p,0),p,0), rhs);
+      Acf = Acf.rows(1,Acf.n_rows-1)/Acf(0);
+    }
+    else{
+      Acf = ar;
+    }
+    
+    if (lag_max > p) {
+      arma::vec xx = arma::zeros<arma::vec>(lag_max - p);
+      Acf = arma::join_cols(Acf, rfilter(xx, ar, reverse_vec(Acf) ) );
+    }
+    
+    //  Acf = c(1, Acf[1L:lag.max])
+    arma::vec temp = arma::vec(lag_max+1);
+    temp(0) = 1;
+    temp.rows(1,lag_max) = Acf.rows(0,lag_max-1);
+    
+    Acf = temp;
+  }
+  else if (q > 0) {
+    
+    //  x = c(1, ma)
+    arma::vec x(q+1);
+    x(0) = 1;
+    x.rows(1,q) = ma;
+    Rcpp::Rcout << "x=" << x << std::endl;
+    Acf = cfilter(arma::join_cols(x, arma::zeros<arma::vec>(q)), reverse_vec(x), 1);
+    
+    // [-(1L:q)]
+    Acf = Acf.rows(q,Acf.n_elem-1);
+    
+    if (lag_max > q){
+      Acf = arma::join_cols(Acf, arma::zeros<arma::vec>(lag_max - q));
+    }
+    Acf = Acf/Acf(0);
+  }
+  
+  return Acf;
+}
+
+//' @title ARMA process to WV
+//' @description This function computes the WV (haar) of an ARMA process
+//' @param ar A \code{vec} containing the coefficients of the AR process
+//' @param ma A \code{vec} containing the coefficients of the MA process
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
+//' @param sigma A \code{double} containing variance
+//' @return A \code{vec} containing the wavelet variance of the ARMA process.
+//' @example
+//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+// [[Rcpp::export]]
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
+  
+  arma::vec n = arma::sort(tau/2);
+  unsigned int ntau = tau.n_elem;
+  double sig2 = (arma::sum(arma::square(ARMAtoMA_arma(ar,ma,1000)))+1)*sigma;
+  
+  arma::vec wvar(ntau);
+  
+  // initial starting term
+  arma::vec term4=ARMAacf_arma(ar, ma, n(0));
+  wvar(0)=( ( ( n(0)*(1.0-term4(term4.n_elem-1))) / square(n(0)))*sig2)/2.0;
+
+  for(unsigned int j = 1; j < ntau; j++){
+    arma::vec boh(n(j) - 1);
+    for (int i=1; i<= n(j) - 1; i++){
+      arma::vec term1=ARMAacf_arma(ar, ma, (n(j)-i));
+      arma::vec term2=ARMAacf_arma(ar, ma, i);
+      arma::vec term3=ARMAacf_arma(ar, ma, (2*n(j)-i));
+      // Account for starting loop at 1 instead of 0.
+      boh(i-1)=i*((2.0*term1(term1.n_elem-1))-term2(term2.n_elem-1)-term3(term3.n_elem-1));
+    }
+    arma::vec term4=ARMAacf_arma(ar, ma, n(j));
+    wvar(j)=((( (n(j)*(1.0-term4(term4.n_elem-1)) ) + arma::sum(boh) ) /square(n(j)))*sig2)/2.0;
+  }
+  
+  return wvar;
+}
+
+
+//' @title Compute Tau-Overlap Allan Variance
+//' @description Computation of Tau-Overlap Allan Variance
+//' @usage avar_to_arma(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @return av A \code{list} that contains:
+//' \itemize{
+//'  \item{"clusters"}{The size of the cluster}
+//'  \item{"allan"}{The allan variance}
+//'  \item{"errors"}{The error associated with the variance calculation.}
+//' }
+//' @details
+//' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
+//' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
+//' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
+//' Then, a sampling of \eqn{m = \left\lfloor {\frac{{N - 1}}{n}} \right\rfloor  - 1} samples exist. 
+//' The tau-overlap estimator is given as:
+//' 
+//' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
+//' 
+//' @author JJB
+//' @references Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
+//' @examples
+//' set.seed(999)
+//' # Simulate white noise (P 1) with sigma^2 = 4
+//' N = 100000
+//' white.noise = rnorm(N, 0, 2)
+//' #plot(white.noise,ylab="Simulated white noise process",xlab="Time",type="o")
+//' #Simulate random walk (P 4)
+//' random.walk = cumsum(0.1*rnorm(N, 0, 2))
+//' combined.ts = white.noise+random.walk
+//' av_mat = avar_to_arma(combined.ts)
+// [[Rcpp::export]]
+Rcpp::List avar_to_arma(arma::vec x) {
+  
+   // Length of vector
+   unsigned int T = x.n_elem;
+   // Create the number of halves possible and use it to find the number of clusters
+   unsigned int J = floor(log10(T)/log10(2))-1;
+   
+   // Allan Variance Matrix
+   arma::mat av = arma::zeros<arma::mat>(J,3);
+   
+   for (unsigned int i = 1; i <= J; i++){
+     // Tau
+     unsigned int tau = pow(2,i);
+
+     // Y.Bar
+     unsigned int N = floor(T/tau);
+     arma::vec yBar = arma::zeros<arma::vec>(N);
+     for(unsigned int j = 0; j < N;j++){
+       yBar(j) = sum( x.rows(tau*j, tau*j+tau - 1) )/tau;
+     }
+
+     // Clusters
+     unsigned int M = floor(T/(2*tau) );
+  	 double summed = 0;
+		 for(unsigned int k = 0; k < M; k++){
+			 summed +=  pow(yBar(2*k+1) - yBar(2*k),2);
+		 }
+     
+     // Cluster size
+     av(i-1,0) = tau; 
+     // Compute the Allan Variance estimate
+     av(i-1,1) = summed/(2*M); 
+     // Compute Error
+     av(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
+  }
+  
+  
+  // Prep export
+  arma::vec clusters = av.col(0);
+  arma::vec allan = av.col(1);
+  arma::vec errors = av.col(2);
+  
+  // Return as list
+  return Rcpp::List::create(
+            Rcpp::Named("clusters", clusters),
+            Rcpp::Named("allan", allan),
+            Rcpp::Named("errors", errors)
+          );
+}
+
+/*
+//' @title Estimate the Wavelet Variance
+//' @description Estimation of the MODWT Haar wavelet variance
+//' @usage ...(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @param robust A \code{bool} indicating if the function should estimate the robust wavelet variance (by default = FALSE).
+//' @return wv A \code{list} that contains:
+//' \itemize{
+//'  \item{"haarwv"}{The estimated wavelet variance}
+//'  \item{"J"}{The scales of wavelet decomposition.}
+//' }
+//' @details
+//' Given a time series \eqn{x} of length \eqn{T}, this function estimates the MODWT Haar-based wavelet variance. The output
+//' will be a \eqn{J \times 1} vector (with \eqn{J = \floor{\log_2(T)}}). If \eqn{robust = TRUE}, the robust wavelet variance
+//' is estimated using the Tukey biweight function.
+//' 
+//' @author JJB
+//' @references On the Estimation of Wavelet Variance, D. B. Percival and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @examples
+//' ...
+// [[Rcpp::export]]
+Rcpp::List ...(arma::vec x) {
+  
+   // Length of vector
+   unsigned int T = x.n_elem;
+  
+  // Prep export
+  ...
+  
+  // Return as list
+  ...
+}
+
+//' @title GMWM Estimator
+//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
+//' @usage ...(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
+//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
+//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
+//' @return gmwm A \code{list} that contains:
+//' \itemize{
+//'  \item{"par"}{The estimated model parameters}
+//'  \item{"CI"}{The 95% confidence intervals for the estimated model parameters.}
+//' }
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item "AR", a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}
+//'   \item "WN", a white noise process with parameter \eqn{\sigma^2}
+//'   \item "RW", a random walk process with parameter \eqn{\sigma^2}
+//'   \item "QN", a quantization noise process with parameter \eqn{Q}
+//'   \item "DR", a drift with parameter \eqn{\omega}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @examples
+//' ...
+// [[Rcpp::export]]
+Rcpp::List ...(arma::vec x) {
+  
+   // Length of vector
+   unsigned int T = x.n_elem;
+  
+  // Prep export
+  ...
+  
+  // Return as list
+  ...
+}
+
+//' @title Simulate a latent time series model or state-space model
+//' @description This function simulates a latent time series model or state-space model
+//' @usage ...(x)
+//' @param T A \code{scalar} indicating the length of the simulated time series. 
+//' @param params A \code{vector} character string associated to a numeric scalar or vector indicating the models and parameters that compose the time series to simulate from.
+//' @return sim A \code{vector} containing the simulated time series model 
+//' @details
+//' The function simulates a time series of size \eqn{T} issued from the model specified in params (see example).
+//' 
+//' @author JJB
+//' @references ...
+//' @examples
+//' ...
+// [[Rcpp::export]]
+Rcpp::List ...(arma::vec x) {
+  
+   // Length of vector
+   unsigned int T = x.n_elem;
+  
+  // Prep export
+  ...
+  
+  // Return as list
+  ...
+}
+*/
+
+//' @title Compute Maximal-Overlap Allan Variance using Means
+//' @description Computation of Maximal-Overlap Allan Variance
+//' @usage avar_mo_arma(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @return av A \code{list} that contains:
+//' \itemize{
+//'  \item{"clusters"}{The size of the cluster}
+//'  \item{"allan"}{The allan variance}
+//'  \item{"errors"}{The error associated with the variance calculation.}
+//' }
+//' @details
+//' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
+//' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
+//' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
+//' Then, \eqn{M = N - 2n} samples exist. 
+//' The Maximal-overlap estimator is given as:
+//' \eqn{\frac{1}{{2\left( {N - 2k + 1} \right)}}\sum\limits_{t = 2k}^N {{{\left[ {{{\bar Y}_t}\left( k \right) - {{\bar Y}_{t - k}}\left( k \right)} \right]}^2}} }
+//' 
+//' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
+//' @author JJB
+//' @references Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
+//' @examples
+//' set.seed(999)
+//' # Simulate white noise (P 1) with sigma^2 = 4
+//' N = 100000
+//' white.noise = rnorm(N, 0, 2)
+//' #plot(white.noise,ylab="Simulated white noise process",xlab="Time",type="o")
+//' #Simulate random walk (P 4)
+//' random.walk = cumsum(0.1*rnorm(N, 0, 2))
+//' combined.ts = white.noise+random.walk
+//' av_mat = avar_mo_arma(combined.ts)
+// [[Rcpp::export]]
+Rcpp::List avar_mo_arma(arma::vec x) {
+  
+   // Length of vector
+   unsigned int T = x.n_elem;
+   
+   // Create the number of halves possible and use it to find the number of clusters
+   unsigned int J = floor(log10(T)/log10(2))-1;
+   
+   // Allan Variance Matrix
+   arma::mat av = arma::zeros<arma::mat>(J,3);
+   
+   for (unsigned int i = 1; i <= J; i++){
+     // Tau
+     unsigned int tau = pow(2,i);
+
+     // Y.Bar
+     arma::vec yBar = arma::zeros<arma::vec>(T);
+     for(unsigned int j = 0; j <= T-tau; j++){
+       yBar(j) = sum( x.rows(j, tau+j -1) ) / tau;
+     }
+     
+     // Clusters
+     unsigned int M = T-2*tau;
+		 double summed = 0;
+		 for(unsigned int k = 0; k < M; k++){
+			 summed +=  pow(yBar(k) - yBar(k+tau),2);
+		 }
+     
+     // Cluster size
+     av(i-1,0) = tau; 
+     // Compute the Allan Variance estimate
+     av(i-1,1) = summed/(2*(T - 2*tau + 1)); 
+     // Compute Error
+     av(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
+  }
+  
+  
+  // Prep export
+  arma::vec clusters = av.col(0);
+  arma::vec allan = av.col(1);
+  arma::vec errors = av.col(2);
+  
+  // Return as list
+  return Rcpp::List::create(
+            Rcpp::Named("clusters", clusters),
+            Rcpp::Named("allan", allan),
+            Rcpp::Named("errors", errors)
+          );
+}
+
 
 // [[Rcpp::export]]
 arma::vec diff_arma(const arma::vec& x, unsigned int lag = 1){
@@ -95,8 +784,26 @@ arma::vec gen_rw(const unsigned int N)
 //' x.sim = rnorm(100)
 //' pseudo_logit_inv(x.sim)
 // [[Rcpp::export]]
-arma::vec pseudo_logit_inv(const arma::vec& x){
+arma::vec pseudo_logit_inv2(const arma::vec& x){
   return 2*exp(x)/(1 + exp(x)) -1;
+}
+
+// [[Rcpp::export]]
+arma::vec pseudo_logit_inv(const arma::vec& x){
+  return 1/(1 + exp(-x));
+}
+
+//' @title Pseudo Logit Function
+//' @description This function compute the link term.
+//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
+//' @return A \code{vec} containing logit terms.
+//' @example
+//' x.sim = runif(100)
+//' pseudo_logit2(x.sim)
+// [[Rcpp::export]]
+arma::vec pseudo_logit2(const arma::vec& x){
+  arma::vec p = (x+1)/2;
+  return log(p/(1 - p));
 }
 
 //' @title Logit Function
@@ -108,13 +815,16 @@ arma::vec pseudo_logit_inv(const arma::vec& x){
 //' pseudo_logit(x.sim)
 // [[Rcpp::export]]
 arma::vec pseudo_logit(const arma::vec& x){
-  arma::vec p = (x+1)/2;
+  return log(x/(1 - x));
+}
+
+double pseudo_logit2(double x){
+  double p = (x+1)/2;
   return log(p/(1 - p));
 }
 
 double pseudo_logit(double x){
-  double p = (x+1)/2;
-  return log(p/(1 - p));
+  return log(x/(1 - x));
 }
 
 
@@ -234,23 +944,6 @@ arma::vec var_drift(double omega, int n_ts){
   return (m2 - m1*m1)*double(n_ts)/double(n_ts-1.0);
 }
 
-
-
-//' @title Reverse Armadillo Vector
-//' @description Reverses the order of an Armadillo Vector
-//' @usage reverse_vec(x)
-//' @param x A \code{column vector} of length N
-//' @return x A \code{column vector} with its contents reversed.
-//' @details Consider a vector x=[1,2,3,4,5], the function would output x=[5,4,3,2,1].
-//' @author JJB
-//' @examples
-//' x = 1:5
-//' reverse_vec(x)
-// [[Rcpp::export]]
-arma::vec reverse_vec(arma::vec x) {
-   std::reverse(x.begin(), x.end());
-   return x;
-}
 
 //' @title Quadrature Mirror Filter
 //' @description Calculate the series quadrature mirror filter (QMF). Requires a series of an even length.
@@ -650,6 +1343,7 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
 //' @param x A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
 //' @param type A \code{String} indicating the confidence interval being calculated.
 //' @param p A \code{double} that indicates the (1-p)*alpha confidence level 
+//' @param robust A \code{bool} that indicates whether the robust version of the wavelet variance should be calculated.
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Wavelet Variance}
@@ -688,6 +1382,111 @@ arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double 
   return out;
 }
 
+
+
+// [[Rcpp::export]]
+arma::mat field_to_matrix(arma::field<arma::vec> x, unsigned int row){
+  unsigned int nx = x.n_elem;
+  arma::mat A(row,nx);
+  for(unsigned int i =0; i<nx; i++){
+    A.col(i) = x(i);
+  }
+  return A; 
+}
+
+
+// Implemented for Robust
+
+// Objective function to find tuning constant
+double objFun_find_biwc(double crob, double eff){
+  
+  // q, mean, sd, lower.tail, log.p
+  double norm_prob = R::pnorm(crob,0.0,1.0,1,0);
+  double norm_density = R::dnorm(crob,0.0,1.0,0);
+  
+  // avoid using pow as much as possible
+  double crob_sq = square(crob);
+  double crob_quad = square(crob_sq);
+  double crob_eight = square(crob_quad);
+  
+  double mu20c=1309458150*norm_prob-2*crob*(654729075+218243025*crob_sq+43648605*crob_quad+6235515*(crob_sq*crob_quad)+692835*crob_eight+62985*(crob_eight*crob_sq)+4845*(crob_quad*crob_eight)+323*(crob_sq*crob_quad*crob_eight)+19*(crob_eight*crob_eight)+(crob_eight*crob_eight*crob_sq))*norm_density-654729075;
+  double mu18c=68918850*norm_prob-2*crob*(34459425+11486475*crob_sq+2297295*crob_quad+328185*(crob_sq*crob_quad)+36465*crob_eight+3315*(crob_eight*crob_sq)+255*(crob_quad*crob_eight)+17*(crob_sq*crob_quad*crob_eight)+(crob_eight*crob_eight))*norm_density-34459425;
+  double mu16c=4054050*norm_prob-2*crob*(2027025+675675*crob_sq+135135*crob_quad+19305*(crob_sq*crob_quad)+2145*crob_eight+195*(crob_eight*crob_sq)+15*(crob_quad*crob_eight)+(crob_sq*crob_quad*crob_eight))*norm_density-2027025;
+  double mu14c=270270*norm_prob-2*crob*(135135+45045*crob_sq+9009*crob_quad+1287*(crob_sq*crob_quad)+143*crob_eight+13*(crob_eight*crob_sq)+(crob_quad*crob_eight))*norm_density-135135;
+  double mu12c=20790*norm_prob-2*crob*(10395+3465*crob_sq+693*crob_quad+99*(crob_sq*crob_quad)+11*crob_eight+(crob_eight*crob_sq))*norm_density-10395;
+  double mu10c=1890*norm_prob-2*crob*(945+315*crob_sq+63*crob_quad+9*(crob_sq*crob_quad)+crob_eight)*norm_density-945;
+  double mu8c=210*norm_prob-2*crob*(105+35*crob_sq+7*crob_quad+(crob_sq*crob_quad))*norm_density-105;
+  double mu6c=30*norm_prob-2*crob*(15+5*crob_sq+crob_quad)*norm_density-15;
+  double mu4c=6*norm_prob-2*crob*(3+crob_sq)*norm_density-3;
+  double mu2c=2*norm_prob-2*crob*norm_density-1;
+  double ac=(1/crob_eight)*mu10c-(4/(crob_sq*crob_quad))*mu8c+(6/crob_quad)*mu6c-(4/crob_sq)*mu4c+mu2c;
+  double Q=(28/crob_quad)*mu8c-(8/crob_sq)*mu6c+(1/(crob_eight*crob_eight))*mu20c+(8/(crob_sq*crob_quad*crob_eight))*mu18c+(28/(crob_quad*crob_eight))*mu16c-(56/(crob_eight*crob_sq))*mu14c+(70/crob_eight)*mu12c-(56/(crob_sq*crob_quad))*mu10c+mu4c-ac*ac;
+  double M=(1/crob_eight)*mu12c-(4/(crob_sq*crob_quad))*mu10c+(6/crob_quad)*mu8c-(4/crob_sq)*mu6c+mu4c-ac;
+  return square((0.5*M*M)/Q - eff);
+}
+
+// Obtain tuning constant crob.bw. Input is a desired level of efficiency compared to the classic MLE
+// [[Rcpp::export]]
+double find_biwc(double eff){
+  Rcpp::Environment stats("package:stats"); 
+  Rcpp::Function optimize = stats["optimize"];    
+
+  Rcpp::List crob_t = optimize(_["f"]  = Rcpp::InternalFunction(&objFun_find_biwc),
+                          _["lower"] = 0,
+                          _["upper"] = 10,
+                          _["eff"] = eff);
+                          
+  double out = as<double>(crob_t[0]);
+
+  return out;
+}
+
+
+// Objective funcion for robust WV
+double objFun_sig_rob_bw(double sig2_bw, arma::vec x, double a_of_c, double crob_bw){
+  arma::vec r = x/sqrt(sig2_bw);
+  arma::vec rsq = arma::square(r);
+  arma::uvec ivec = (abs(r) > crob_bw);
+  arma::vec w = ((1 - ivec) % arma::square(1 - rsq/square(crob_bw)) );
+  return square(arma::mean(arma::square(r)%arma::square(w)) - a_of_c);
+}
+
+// Robust estimator. Inputs are wavelet coefficients (y) and desired level of efficiency. 
+// [[Rcpp::export]]
+double sig_rob_bw(arma::vec y, double eff=0.6){
+  double crob_bw = find_biwc(eff);
+
+  arma::vec x = y/arma::stddev(y);  
+  
+  // q, mean, sd, lower.tail, log.p
+  double norm_prob = R::pnorm(crob_bw,0.0,1.0,1,0);
+  double norm_density = R::dnorm(crob_bw,0.0,1.0,0);
+  
+  // avoid using pow as much as possible
+  double crob_sq = square(crob_bw);
+  double crob_quad = square(crob_sq);
+  double crob_eight = square(crob_quad);
+  
+  double a_of_c = (1/crob_eight)*(1890*norm_prob-2*crob_bw*(945+315*crob_sq+63*crob_quad+9*(crob_sq*crob_quad)+crob_eight)*norm_density-945)
+                  -(4/(crob_sq*crob_quad))*(210*norm_prob-2*crob_bw*(105+35*crob_sq+7*crob_quad+(crob_sq*crob_quad))*norm_density-105)
+                  +(6/crob_quad)*(30*norm_prob-2*crob_bw*(15+5*crob_sq+crob_quad)*norm_density-15)
+                  -(4/crob_sq)*(6*norm_prob-2*crob_bw*(3+crob_sq)*norm_density-3)
+                  +2*norm_prob-2*crob_bw*norm_density-1;
+
+  Rcpp::Environment stats("package:stats"); 
+  Rcpp::Function optimize = stats["optimize"];    
+
+  Rcpp::List opt_val = optimize(_["f"]  = Rcpp::InternalFunction(&objFun_sig_rob_bw),
+                          _["lower"] = 0,
+                          _["upper"] = 5,
+                          _["x"] = x,
+                          _["a_of_c"] = a_of_c,
+                          _["crob_bw"] = crob_bw);
+          
+  double sig2_hat_rob_bw = as<double>(opt_val[0])*var(y);
+  return sig2_hat_rob_bw;
+}
+
 //' @title Computes the (MODWT) wavelet variance
 //' @description Calculates the (MODWT) wavelet variance
 //' @param x A \code{vec} that contains the signal
@@ -710,7 +1509,7 @@ arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double 
 //' x=rnorm(100)
 //' wavelet_variance_arma(x, "haar", "diag")
 // [[Rcpp::export]]
-arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String strWavelet="haar", String compute_v = "no") {
+arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String strWavelet="haar", String compute_v = "no", bool robust=false, double eff = 0.95) {
 
   // Set p-value for (1-p)*100 ci
   double p = 0.025;
@@ -727,6 +1526,15 @@ arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String str
   
   // Compute wavelet variance  
   arma::mat vmod = wave_variance(signal_modwt_bw, "eta3", p);
+  
+  // Create wv_robust
+  arma::vec wv_rob = arma::zeros<arma::vec>(nb_level);
+  if(robust){
+    for(unsigned int i=0; i < nb_level; i++){
+      arma::vec wav_coef = sort(signal_modwt_bw(i));
+      wv_rob(i) = sig_rob_bw(wav_coef, eff);
+    }  
+  }
   
   // Define scales
   arma::vec scales(nb_level);
@@ -757,6 +1565,10 @@ arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String str
       }
       // Create diagnoal matrix (2 * Aj / length(modwt_d1)). Note: All modwt lengths are the same. Update if dwt is used.      
       V = diagmat(2 * Aj / signal_modwt(0).n_elem);
+      
+      if(robust){
+        V = 1/eff*V;
+      }
     }
     
     // Compute confidence intervals
@@ -771,12 +1583,13 @@ arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String str
   }
   
   // export
-  arma::field<arma::mat> out(5);
+  arma::field<arma::mat> out(6);
   out(0) = vmod.col(0); // wave variance
   out(1) = vmod.col(1); // low ci
   out(2) = vmod.col(2); // high ci
   out(3) = scales; // scales
   out(4) = V; //V
+  out(5) = wv_rob; //Robust wavelet variance
   //out(5) = up_gauss; // up_guass ci
   //out(6) = dw_gauss; // low_guass ci
   
@@ -1018,17 +1831,21 @@ inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot){
   
   for(unsigned int i = 0; i < num_ars; i++){
     // Draw from triangle distributions for phi
-    double U = R::runif(0.0, 2.0/3.0);
+    double U = R::runif(0.0, 1.0/3.0);
     Rcpp::Rcout << "Random Draw: " << U << std::endl;
-    if(U < 1.0/3.0){
-      temp(2*i) = 1.0/3 - sqrt(1.0/9.0 - U/3.0);
+    if(i == 0){
+      temp(2*i) = 1.0/5.0*(1.0-sqrt(1.0-3.0*U));
       Rcpp::Rcout << "Case 1: " << temp(2*i) << std::endl;
+      temp(2*i+1) = R::runif(0.95*sigma_tot*(1-square(temp(2*i))), sigma_tot);
     }else{
-      temp(2*i) = 0.5 + sqrt(2.0/3.0*(U-1.0/3.0));
+      if(i!=1){
+          temp(2*i) = R::runif(temp(2*(i-1)),0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
+      }else{
+          temp(2*i) = R::runif(0.995,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
+      }
       Rcpp::Rcout << "Case 2: " << temp(2*i) << std::endl;
+      temp(2*i+1) = R::runif(0.0, 0.01*sigma_tot*(1-square(temp(2*i+1))) );
     }
-    // Draw from uniform for 
-    temp(2*i+1) = R::runif(sigma_tot/100000.0, sigma_tot);
     Rcpp::Rcout << "Sampled sigma: " << temp(2*i+1) << std::endl;
   }
   
@@ -1040,7 +1857,7 @@ inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot){
 inline arma::vec unif_sigma_sample(unsigned int num, double sigma_tot){
   arma::vec temp(num);
   
-  for(int i = 0; i<num; i++){
+  for(unsigned int i = 0; i<num; i++){
     temp(i) = R::runif(0.0,sigma_tot);
   }
   
@@ -1137,7 +1954,7 @@ arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const 
 // [[Rcpp::export]]
 arma::vec count_models_numeric(arma::vec desc) {
     arma::vec models = arma::zeros<arma::vec>(5); // Change if we add / subtract more terms 
-    for (int i = 0; i < desc.n_elem; i++) {
+    for (unsigned int i = 0; i < desc.n_elem; i++) {
         models(desc(i)) += 1;
     }
     return models;
@@ -1153,7 +1970,7 @@ inline std::map<std::string, int> counted_map(const std::vector<std::string>& de
   w["QN"]=0;
   w["WN"]=0;
 
-  for (int i = 0; i < desc.size(); i++) {
+  for (unsigned int i = 0; i < desc.size(); i++) {
         ++w[desc[i]];
   }
   
@@ -1377,3 +2194,28 @@ arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
   
   return out;
 } 
+
+
+
+/*
+//
+// Mondal and Percival estimator
+//
+
+//What/Where is get.slepians?
+arma::vec percival(arma::vec x){
+  arma::vec xsq = arma::square(x);
+  double Tn = log(median(xsq));
+  arma::mat beta = get.slepians(npoints=x.n_elem,nwin=5)/x.n_elem;
+  arma::rowvec colsums = arma::sum(beta); // 1 x n
+  arma::vec J = arma::trans(beta)*arma::sign(log(xsq)-Tn);
+  arma::vec mu = (J * colsums)/(colsums*arma::trans(colsums));
+  arma::mat Ahat = arma::mean(arma::square(J-mu*colsums));
+  
+  double temp = R::qnorm(3.0/4.0, 0.0, 1.0, 1,0); //0.6744898
+  // dnorm(qnorm(3/4)) = 0.3177766
+  
+  arma::vec muhat = Tn-2*log(temp)-(Ahat/square(-2*R::dnorm(temp, 0.0, 1.0, 0)*temp))/(2*x.n_elem);
+  return exp(muhat);
+}
+*/
