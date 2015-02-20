@@ -1,3 +1,6 @@
 useDynLib(GMWM)
 importFrom(Rcpp, evalCpp)
+import(ggplot2)
+import(scales)
+import(grid)
 exportPattern("^[[:alpha:]]+")
