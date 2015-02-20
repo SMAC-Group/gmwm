@@ -10,11 +10,65 @@ using namespace Rcpp;
 
 // Support functions
 
+#define my_isok(x) (!ISNA(x) & !ISNAN(x))
+
 inline double square(double x){
   return x*x;
 }
 
-#define my_isok(x) (!ISNA(x) & !ISNAN(x))
+//' @title Logit Inverse Function
+//' @description This function computes the inverse of a logit transformation of the parameters in order to constrain them to a positive domain 
+//' @param x A \code{vec} containing real numbers.
+//' @return A \code{vec} containing logit probabilities.
+//' @examples
+//' x.sim = rnorm(100)
+//' pseudo_logit_inv(x.sim)
+// [[Rcpp::export]]
+arma::vec pseudo_logit_inv(const arma::vec& x){
+  return 2*exp(x)/(1 + exp(x)) -1;
+}
+
+// [[Rcpp::export]]
+arma::vec logit_inv(const arma::vec& x){
+  return 1/(1 + exp(-x));
+}
+
+//' @title Pseudo Logit Function
+//' @description This function compute the link function to constrain parameters to a positive domain.
+//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
+//' @return A \code{vec} containing logit terms.
+//' @examples
+//' x.sim = runif(100)
+//' pseudo_logit2(x.sim)
+// [[Rcpp::export]]
+arma::vec pseudo_logit(const arma::vec& x){
+  arma::vec p = (x+1)/2;
+  return log(p/(1 - p));
+}
+
+double pseudo_logit(double x){
+  double p = (x+1)/2;
+  return log(p/(1 - p));
+}
+
+//' @title Logit Function
+//' @description This function computes the logit link function.
+//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
+//' @return A \code{vec} containing logit terms.
+//' @examples
+//' x.sim = runif(100)
+//' logit(x.sim)
+// [[Rcpp::export]]
+arma::vec logit(const arma::vec& x){
+  return log(x/(1 - x));
+}
+
+double logit(double x){
+  return log(x/(1 - x));
+}
+
+
+
 
 //' @title Reverse Subset Column
 //' @description Subsets the column by going from high indices to low (the reverse of the supported practice)
@@ -22,7 +76,7 @@ inline double square(double x){
 //' @param x A \code{matrix} of dimensions M x N
 //' @param start A \code{unsigned int} that indicates the starting column.
 //' @param end A \code{unsigned int} that indicates the ending column.
-//' @return x A \code{matrix} with matrix rows displayed in reversed order
+//' @return x A \code{matrix} with matrix rows displayed in reverse order
 //' @details Consider a vector x=[[1,2],[3,4]].
 //' By setting \code{start=1} and \code{end=0}, the function would output x=[[2,1],[4,1]].
 //' Start and end must be valid C++ matrix locations. (e.g. matrix cols start at 0 and not 1)
@@ -37,6 +91,12 @@ arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
     A.col(i) = x.col(start-i);
   }
   return A;
+}
+
+// [[Rcpp::export]]
+arma::vec diff_cpp(const arma::vec& x, unsigned int lag = 1){
+  unsigned int n=x.n_elem;
+  return (x.rows(lag,n-1) - x.rows(0,n-lag-1));
 }
 
 
@@ -80,21 +140,21 @@ arma::vec reverse_vec(arma::vec x) {
 
 
 //' @title Converting an ARMA Process to an Infinite MA Process
-//' @description Takes an ARMA function and converts it to its infinite MA process.
-//' @usage ARMAtoMA_arma(x)
+//' @description Takes an ARMA function and converts it to an infinite MA process.
+//' @usage ARMAtoMA_cpp(ar, ma, lag_max)
 //' @param ar A \code{column vector} of length p
 //' @param ma A \code{column vector} of length q
 //' @param lag_max A \code{int} of the largest MA(Inf) coefficient required.
-//' @return x A \code{column vector} with its contents reversed.
-//' @details Consider a vector x=[1,2,3,4,5], the function would output x=[5,4,3,2,1].
+//' @return A \code{column vector} containing coefficients
+//' @details This function is a port of the base stats package's ARMAtoMA. There is no significant speed difference between the two.
 //' @author R Core Team and JJB
 //' @examples
 //' # ARMA(2,1)
-//' ARMAtoMA_arma(c(1.0, -0.25), 1.0, 10)
+//' ARMAtoMA_cpp(c(1.0, -0.25), 1.0, 10)
 //' # ARMA(0,1)
-//' ARMAtoMA_arma(numeric(0), 1.0, 10)
+//' ARMAtoMA_cpp(numeric(0), 1.0, 10)
 // [[Rcpp::export]]
-arma::vec ARMAtoMA_arma(arma::vec ar, arma::vec ma, int lag_max)
+arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max)
 {
   int p = ar.n_elem;
   int q = ma.n_elem;
@@ -102,18 +162,16 @@ arma::vec ARMAtoMA_arma(arma::vec ar, arma::vec ma, int lag_max)
   
   double tmp;
   
-  arma::vec phi = ar;
-  arma::vec theta = ma;
-  arma::vec psi = arma::zeros<arma::vec>(m);
+  arma::vec psi(m);
   
   if(m <= 0 || m == NA_INTEGER){
     Rcpp::stop("invalid value of lag.max");
   }
   
   for(int i = 0; i < m; i++) {
-    tmp = (i < q) ? theta(i) : 0.0;
+    tmp = (i < q) ? ma(i) : 0.0;
     for(int j = 0; j < std::min(i+1, p); j++){
-      tmp += phi(j) * ((i-j-1 >= 0) ? psi(i-j-1) : 1.0);
+      tmp += ar(j) * ((i-j-1 >= 0) ? psi(i-j-1) : 1.0);
     }
     psi(i) = tmp;
   }
@@ -122,13 +180,14 @@ arma::vec ARMAtoMA_arma(arma::vec ar, arma::vec ma, int lag_max)
 
 //' @title Time Series Convolution Filters
 //' @description Applies a convolution filter to a univariate time series.
-//' @usage cfilter(x, filter, sides, scircular)
+//' @usage cfilter(x, filter, sides, circular)
 //' @param x A \code{column vector} of length T
 //' @param filter A \code{column vector} of length f
 //' @param sides An \code{int} that takes either 1:for using past values only or 2: filter coefficients are centered around lag 0.
 //' @param circular A \code{bool} that indicates if the filter should be wrapped around the ends of the time series.
-//' @return x A \code{column vector} with its contents reversed.
-//' @details Consider a vector x=[1,2,3,4,5], the function would output x=[5,4,3,2,1].
+//' @return A \code{column vec} that contains the results of the filtering process.
+//' @details This is a port of the cfilter function harnessed by the filter function in stats. 
+//' It is about 5-7 times faster than R's base function. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 //' @author R Core Team and JJB
 //' @examples
 //' x = 1:100
@@ -198,12 +257,14 @@ arma::vec cfilter(arma::vec x, arma::vec filter, int sides = 2, bool circular = 
 
 //' @title Time Series Recursive Filters
 //' @description Applies a recursive filter to a univariate time series.
-//' @usage rfilter(x, filter, sides, scircular)
+//' @usage rfilter(x, filter, init)
 //' @param x A \code{column vector} of length T
 //' @param filter A \code{column vector} of length f
 //' @param init A \code{column vector} of length f that contains the initial values of the time series in reverse.
 //' @return x A \code{column vector} with its contents reversed.
-//' @details The length of 'init' must be equal to the length of 'filter'
+//' @details Note: The length of 'init' must be equal to the length of 'filter'.
+//' This is a port of the rfilter function harnessed by the filter function in stats. 
+//' It is about 6-7 times faster than R's base function. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 //' @author R Core Team and JJB
 //' @examples
 //' x = 1:100
@@ -247,15 +308,11 @@ arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init)
 //' @usage expand_grid_red(nx)
 //' @param nx An \code{integer} of length f that contains the initial values of the time series in reverse.
 //' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
-//' @details 
 //' @author R Core Team and JJB
-//' @examples
-//' p = 2
-//' # 
-//' expand_grid_red(p)
-//' # Using R's function
-//' expand.grid(1L:(p+1),1L:(p+1))[, 2L:1L]
-// [[Rcpp::export]]
+//' @details This function is hidden and is not accessible from R.
+//' @name expand_grid_red
+//' @docType methods
+//' @rdname expand_grid_red-methods
 arma::mat expand_grid_red(int nx){
   
   arma::mat g(nx*nx,2);
@@ -279,20 +336,20 @@ arma::mat expand_grid_red(int nx){
 
 //' @title Compute Theoretical ACF for an ARMA Process
 //' @description Compute the theoretical autocorrelation function for an ARMA process.
-//' @usage ARMAacf_arma(ar,ma,lag_max)
+//' @usage ARMAacf_cpp(ar,ma,lag_max)
 //' @param ar A \code{vector} of length p containing AR coefficients
 //' @param ma A \code{vector} of length q containing MA coefficients
 //' @param lag_max A \code{unsigned integer} indicating the maximum lag necessary
 //' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
-//' @details 
+//' @details This is an implementaiton of the ARMAacf function in R. It is approximately 40x times faster. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 //' @author R Core Team and JJB
 //' @examples
 //' # ARMA(2,1)
-//' ARMAacf_arma(c(1.0, -0.25), 1.0, lag.max = 10)
+//' ARMAacf_cpp(c(1.0, -0.25), 1.0, lag_max = 10)
 //' # ARMA(0,1)
-//' ARMAacf_arma(numeric(0), .35, lag.max = 10)
+//' ARMAacf_cpp(numeric(0), .35, lag_max = 10)
 // [[Rcpp::export]]
-arma::vec ARMAacf_arma(arma::vec ar, arma::vec ma, unsigned int lag_max) 
+arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max) 
 {
   unsigned int p = ar.n_elem;
   unsigned int q = ma.n_elem;
@@ -336,7 +393,7 @@ arma::vec ARMAacf_arma(arma::vec ar, arma::vec ma, unsigned int lag_max)
       if (q > 0) {
         arma::vec psi = arma::vec(q+1);
         psi(0) = 1;
-        psi.rows(1,q) = ARMAtoMA_arma(ar, ma, q);
+        psi.rows(1,q) = ARMAtoMA_cpp(ar, ma, q);
                 
         arma::vec theta = arma::zeros<arma::vec>(2*q+2);
         theta(0) = 1;
@@ -372,7 +429,7 @@ arma::vec ARMAacf_arma(arma::vec ar, arma::vec ma, unsigned int lag_max)
     arma::vec x(q+1);
     x(0) = 1;
     x.rows(1,q) = ma;
-    Rcpp::Rcout << "x=" << x << std::endl;
+
     Acf = cfilter(arma::join_cols(x, arma::zeros<arma::vec>(q)), reverse_vec(x), 1);
     
     // [-(1L:q)]
@@ -388,37 +445,38 @@ arma::vec ARMAacf_arma(arma::vec ar, arma::vec ma, unsigned int lag_max)
 }
 
 //' @title ARMA process to WV
-//' @description This function computes the WV (haar) of an ARMA process
+//' @description This function computes the (haar) WV of an ARMA process
 //' @param ar A \code{vec} containing the coefficients of the AR process
 //' @param ma A \code{vec} containing the coefficients of the MA process
 //' @param tau A \code{vec} containing the scales e.g. 2^tau
-//' @param sigma A \code{double} containing variance
+//' @param sigma A \code{double} containing the residual variance
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
-//' @example
+//' @examples
 //' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+//' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
 arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   
   arma::vec n = arma::sort(tau/2);
   unsigned int ntau = tau.n_elem;
-  double sig2 = (arma::sum(arma::square(ARMAtoMA_arma(ar,ma,1000)))+1)*sigma;
+  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma;
   
   arma::vec wvar(ntau);
   
   // initial starting term
-  arma::vec term4=ARMAacf_arma(ar, ma, n(0));
+  arma::vec term4=ARMAacf_cpp(ar, ma, n(0));
   wvar(0)=( ( ( n(0)*(1.0-term4(term4.n_elem-1))) / square(n(0)))*sig2)/2.0;
 
   for(unsigned int j = 1; j < ntau; j++){
     arma::vec boh(n(j) - 1);
     for (int i=1; i<= n(j) - 1; i++){
-      arma::vec term1=ARMAacf_arma(ar, ma, (n(j)-i));
-      arma::vec term2=ARMAacf_arma(ar, ma, i);
-      arma::vec term3=ARMAacf_arma(ar, ma, (2*n(j)-i));
+      arma::vec term1=ARMAacf_cpp(ar, ma, (n(j)-i));
+      arma::vec term2=ARMAacf_cpp(ar, ma, i);
+      arma::vec term3=ARMAacf_cpp(ar, ma, (2*n(j)-i));
       // Account for starting loop at 1 instead of 0.
       boh(i-1)=i*((2.0*term1(term1.n_elem-1))-term2(term2.n_elem-1)-term3(term3.n_elem-1));
     }
-    arma::vec term4=ARMAacf_arma(ar, ma, n(j));
+    arma::vec term4=ARMAacf_cpp(ar, ma, n(j));
     wvar(j)=((( (n(j)*(1.0-term4(term4.n_elem-1)) ) + arma::sum(boh) ) /square(n(j)))*sig2)/2.0;
   }
   
@@ -428,20 +486,20 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
 
 //' @title Compute Tau-Overlap Allan Variance
 //' @description Computation of Tau-Overlap Allan Variance
-//' @usage avar_to_arma(x)
+//' @usage avar_to_cpp(x)
 //' @param x A \code{vector} with dimensions N x 1. 
-//' @return av A \code{list} that contains:
+//' @return av A \code{matrix} that contains:
 //' \itemize{
-//'  \item{"clusters"}{The size of the cluster}
-//'  \item{"allan"}{The allan variance}
-//'  \item{"errors"}{The error associated with the variance calculation.}
+//'  \item{Col 1}{The size of the cluster}
+//'  \item{Col 2}{The Allan variance}
+//'  \item{Col 3}{The error associated with the variance estimation.}
 //' }
 //' @details
 //' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
 //' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
 //' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
 //' Then, a sampling of \eqn{m = \left\lfloor {\frac{{N - 1}}{n}} \right\rfloor  - 1} samples exist. 
-//' The tau-overlap estimator is given as:
+//' The tau-overlap estimator is given by:
 //' 
 //' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
 //' 
@@ -456,9 +514,9 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
 //' #Simulate random walk (P 4)
 //' random.walk = cumsum(0.1*rnorm(N, 0, 2))
 //' combined.ts = white.noise+random.walk
-//' av_mat = avar_to_arma(combined.ts)
+//' av_mat = avar_to_cpp(combined.ts)
 // [[Rcpp::export]]
-Rcpp::List avar_to_arma(arma::vec x) {
+arma::mat avar_to_cpp(arma::vec x) {
   
    // Length of vector
    unsigned int T = x.n_elem;
@@ -494,141 +552,26 @@ Rcpp::List avar_to_arma(arma::vec x) {
      av(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
   }
   
-  
-  // Prep export
-  arma::vec clusters = av.col(0);
-  arma::vec allan = av.col(1);
-  arma::vec errors = av.col(2);
-  
   // Return as list
-  return Rcpp::List::create(
-            Rcpp::Named("clusters", clusters),
-            Rcpp::Named("allan", allan),
-            Rcpp::Named("errors", errors)
-          );
+  return av;
 }
-
-/*
-//' @title Estimate the Wavelet Variance
-//' @description Estimation of the MODWT Haar wavelet variance
-//' @usage ...(x)
-//' @param x A \code{vector} with dimensions N x 1. 
-//' @param robust A \code{bool} indicating if the function should estimate the robust wavelet variance (by default = FALSE).
-//' @return wv A \code{list} that contains:
-//' \itemize{
-//'  \item{"haarwv"}{The estimated wavelet variance}
-//'  \item{"J"}{The scales of wavelet decomposition.}
-//' }
-//' @details
-//' Given a time series \eqn{x} of length \eqn{T}, this function estimates the MODWT Haar-based wavelet variance. The output
-//' will be a \eqn{J \times 1} vector (with \eqn{J = \floor{\log_2(T)}}). If \eqn{robust = TRUE}, the robust wavelet variance
-//' is estimated using the Tukey biweight function.
-//' 
-//' @author JJB
-//' @references On the Estimation of Wavelet Variance, D. B. Percival and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-//' @examples
-//' ...
-// [[Rcpp::export]]
-Rcpp::List ...(arma::vec x) {
-  
-   // Length of vector
-   unsigned int T = x.n_elem;
-  
-  // Prep export
-  ...
-  
-  // Return as list
-  ...
-}
-
-//' @title GMWM Estimator
-//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @usage ...(x)
-//' @param x A \code{vector} with dimensions N x 1. 
-//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
-//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
-//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
-//' @return gmwm A \code{list} that contains:
-//' \itemize{
-//'  \item{"par"}{The estimated model parameters}
-//'  \item{"CI"}{The 95% confidence intervals for the estimated model parameters.}
-//' }
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
-//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-//' options are:
-//' \itemize{
-//'   \item "AR", a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}
-//'   \item "WN", a white noise process with parameter \eqn{\sigma^2}
-//'   \item "RW", a random walk process with parameter \eqn{\sigma^2}
-//'   \item "QN", a quantization noise process with parameter \eqn{Q}
-//'   \item "DR", a drift with parameter \eqn{\omega}
-//' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
-//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
-//' @author JJB
-//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-//' @examples
-//' ...
-// [[Rcpp::export]]
-Rcpp::List ...(arma::vec x) {
-  
-   // Length of vector
-   unsigned int T = x.n_elem;
-  
-  // Prep export
-  ...
-  
-  // Return as list
-  ...
-}
-
-//' @title Simulate a latent time series model or state-space model
-//' @description This function simulates a latent time series model or state-space model
-//' @usage ...(x)
-//' @param T A \code{scalar} indicating the length of the simulated time series. 
-//' @param params A \code{vector} character string associated to a numeric scalar or vector indicating the models and parameters that compose the time series to simulate from.
-//' @return sim A \code{vector} containing the simulated time series model 
-//' @details
-//' The function simulates a time series of size \eqn{T} issued from the model specified in params (see example).
-//' 
-//' @author JJB
-//' @references ...
-//' @examples
-//' ...
-// [[Rcpp::export]]
-Rcpp::List ...(arma::vec x) {
-  
-   // Length of vector
-   unsigned int T = x.n_elem;
-  
-  // Prep export
-  ...
-  
-  // Return as list
-  ...
-}
-*/
 
 //' @title Compute Maximal-Overlap Allan Variance using Means
 //' @description Computation of Maximal-Overlap Allan Variance
-//' @usage avar_mo_arma(x)
+//' @usage avar_mo_cpp(x)
 //' @param x A \code{vector} with dimensions N x 1. 
 //' @return av A \code{list} that contains:
 //' \itemize{
 //'  \item{"clusters"}{The size of the cluster}
-//'  \item{"allan"}{The allan variance}
-//'  \item{"errors"}{The error associated with the variance calculation.}
+//'  \item{"allan"}{The Allan variance}
+//'  \item{"errors"}{The error associated with the variance estimation.}
 //' }
 //' @details
 //' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
 //' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
 //' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
 //' Then, \eqn{M = N - 2n} samples exist. 
-//' The Maximal-overlap estimator is given as:
+//' The Maximal-overlap estimator is given by:
 //' \eqn{\frac{1}{{2\left( {N - 2k + 1} \right)}}\sum\limits_{t = 2k}^N {{{\left[ {{{\bar Y}_t}\left( k \right) - {{\bar Y}_{t - k}}\left( k \right)} \right]}^2}} }
 //' 
 //' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
@@ -643,9 +586,9 @@ Rcpp::List ...(arma::vec x) {
 //' #Simulate random walk (P 4)
 //' random.walk = cumsum(0.1*rnorm(N, 0, 2))
 //' combined.ts = white.noise+random.walk
-//' av_mat = avar_mo_arma(combined.ts)
+//' av_mat = avar_mo_cpp(combined.ts)
 // [[Rcpp::export]]
-Rcpp::List avar_mo_arma(arma::vec x) {
+arma::mat avar_mo_cpp(arma::vec x) {
   
    // Length of vector
    unsigned int T = x.n_elem;
@@ -681,29 +624,11 @@ Rcpp::List avar_mo_arma(arma::vec x) {
      av(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
   }
   
-  
-  // Prep export
-  arma::vec clusters = av.col(0);
-  arma::vec allan = av.col(1);
-  arma::vec errors = av.col(2);
-  
-  // Return as list
-  return Rcpp::List::create(
-            Rcpp::Named("clusters", clusters),
-            Rcpp::Named("allan", allan),
-            Rcpp::Named("errors", errors)
-          );
+  return av;
 }
 
-
-// [[Rcpp::export]]
-arma::vec diff_arma(const arma::vec& x, unsigned int lag = 1){
-  unsigned int n=x.n_elem;
-  return (x.rows(lag,n-1) - x.rows(0,n-lag-1));
-}
-
-//' @title Generate a white noise sequence
-//' @description Generates a white noise sequence given sigma.
+//' @title Generate a white noise process
+//' @description Generates a white noise process with variance parameter sigma.
 //' @param N An \code{integer} for signal length.
 //' @param sigma_WN A \code{double} that contains process standard deviation.
 //' @return wn A \code{vec} containing the white noise.
@@ -774,66 +699,12 @@ arma::vec gen_rw(const unsigned int N)
   return cumsum(grw);
 }
 
-
-
-//' @title Logit Inverse Function
-//' @description This function computes the probabilities
-//' @param x A \code{vec} containing real numbers.
-//' @return A \code{vec} containing logit probabilities.
-//' @example
-//' x.sim = rnorm(100)
-//' pseudo_logit_inv(x.sim)
-// [[Rcpp::export]]
-arma::vec pseudo_logit_inv2(const arma::vec& x){
-  return 2*exp(x)/(1 + exp(x)) -1;
-}
-
-// [[Rcpp::export]]
-arma::vec pseudo_logit_inv(const arma::vec& x){
-  return 1/(1 + exp(-x));
-}
-
-//' @title Pseudo Logit Function
-//' @description This function compute the link term.
-//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
-//' @return A \code{vec} containing logit terms.
-//' @example
-//' x.sim = runif(100)
-//' pseudo_logit2(x.sim)
-// [[Rcpp::export]]
-arma::vec pseudo_logit2(const arma::vec& x){
-  arma::vec p = (x+1)/2;
-  return log(p/(1 - p));
-}
-
-//' @title Logit Function
-//' @description This function compute the link term.
-//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
-//' @return A \code{vec} containing logit terms.
-//' @example
-//' x.sim = runif(100)
-//' pseudo_logit(x.sim)
-// [[Rcpp::export]]
-arma::vec pseudo_logit(const arma::vec& x){
-  return log(x/(1 - x));
-}
-
-double pseudo_logit2(double x){
-  double p = (x+1)/2;
-  return log(p/(1 - p));
-}
-
-double pseudo_logit(double x){
-  return log(x/(1 - x));
-}
-
-
 //' @title White Noise to WV
 //' @description This function compute the WV (haar) of a White Noise process
 //' @param sig2 A \code{double} corresponding to variance of WN
 //' @param Tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the white noise.
-//' @example
+//' @examples
 //' x.sim = cumsum(rnorm(100000))
 //' waveletVariance(x.sim)
 //' wv.theo = wn_to_wv(1, floor(log(length(x.sim),2)))
@@ -849,7 +720,7 @@ arma::vec wn_to_wv(double sig2, arma::vec Tau){
 //' @param sig2 A \code{double} corresponding to variance of RW
 //' @param Tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the random walk.
-//' @example
+//' @examples
 //' x.sim = cumsum(rnorm(100000))
 //' waveletVariance(x.sim)
 //' wv.theo = rw_to_wv(1,x.sim)
@@ -865,7 +736,7 @@ arma::vec rw_to_wv(double sig2, const arma::vec& Tau){
 //' @param omega A \code{double} corresponding to variance of drift
 //' @param Tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the drift.
-//' @example
+//' @examples
 //' x.sim = 1:1000
 //' waveletVariance(x.sim)
 //' wv.theo = dr_to_wv(1,floor(log(length(x.sim),2)))
@@ -880,7 +751,7 @@ arma::vec dr_to_wv(double omega,const arma::vec& Tau){
 //' @param omega A \code{double} corresponding to variance of drift
 //' @param Tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the drift.
-//' @example
+//' @examples
 //' x.sim = gen_ar1( N = 10000, phi = 0.9, sig2 = 4 )
 //' waveletVariance(x.sim)
 //' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, floor(log(length(x.sim),2)))
@@ -902,7 +773,7 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
 //' @param omega A \code{double} corresponding to variance of drift.
 //' @param n_ts An \code{int} indicating the length of the time series.
 //' @return A \code{vec} containing the expected value of the drift.
-//' @example
+//' @examples
 //' # Add at a later time
 // [[Rcpp::export]]
 arma::vec e_drift(double omega, int n_ts){
@@ -916,7 +787,7 @@ arma::vec e_drift(double omega, int n_ts){
 //' @param omega A \code{double} corresponding to variance of drift.
 //' @param n_ts An \code{int} indicating the length of the time series.
 //' @return A \code{vec} containing the second moment of the drift.
-//' @example
+//' @examples
 //' # Add at a later time
 // [[Rcpp::export]]
 arma::vec m2_drift(double omega, int n_ts){
@@ -930,7 +801,7 @@ arma::vec m2_drift(double omega, int n_ts){
 //' @param omega A \code{double} corresponding to variance of drift.
 //' @param n_ts An \code{int} indicating the length of the time series.
 //' @return A \code{vec} containing the variance of the drift.
-//' @example
+//' @examples
 //' # Add at a later time
 // [[Rcpp::export]]
 arma::vec var_drift(double omega, int n_ts){
@@ -947,15 +818,15 @@ arma::vec var_drift(double omega, int n_ts){
 
 //' @title Quadrature Mirror Filter
 //' @description Calculate the series quadrature mirror filter (QMF). Requires a series of an even length.
-//' @usage qmf(g, TRUE)
+//' @usage qmf(g, inverse)
 //' @param g A \code{vector} that contains the filter constants.
 //' @param inverse A \code{bool} that indicates whether the inverse quadrature mirror filter is computed. 
 //' By default, the inverse quadrature mirror is computed.
 //' @return A \code{vector} that contains either the forward QMF (evalute in order) or the inverse QMF (reverse order). 
-//' @details
-//' @author
+//' @author JJB
 //' @examples
-//' g = rep(1/sqrt(2))
+//' # Haar values
+//' g = rep(1/sqrt(2),2)
 //' qmf(g)
 // [[Rcpp::export]]
 arma::vec qmf(arma::vec g, bool inverse = true) {
@@ -985,7 +856,8 @@ arma::vec qmf(arma::vec g, bool inverse = true) {
 //'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
 //' }
 //' @details
-//' @author 
+//' This template can be used to increase the amount of filters available for selection.
+//' @author JJB
 //' @examples
 //' haar_filter()
 // [[Rcpp::export]]
@@ -1040,26 +912,22 @@ arma::field<arma::vec> select_filter(String filter_name = "haar")
 
 
 //' @title Discrete Wavelet Transform
-//' @description Calculation of the coefficients for the discrete wavelet transformation
-//' @usage dwt_arma(x)
+//' @description Calculation of the coefficients for the discrete wavelet transformation. 
+//' @usage dwt_cpp(x, filter_name, nlevels, boundary)
 //' @param x A \code{vector} with dimensions N x 1. 
-//' @param filter A \code{string} indicating the filter.
-//' @param n.levels An \code{integer} indicating the level of the decomposition.
+//' @param filter_name A \code{string} indicating the filter.
+//' @param nlevels An \code{integer} indicating the level of the decomposition.
 //' @param boundary A \code{string} indicating the type of boundary method to use. Either \code{boundary="periodic"} or \code{"reflection"}.
-//' @return y A \code{field<vec>} that contains:
-//' \itemize{
-//'  \item{" "}{}
-//'  \item{""}{}
-//'  \item{" "}{}
-//' }
+//' @return y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 //' @details
-//' 
+//' Performs a level J decomposition of the time series using the pyramid algorithm
 //' @author JJB
-//' @references 
 //' @examples
 //' set.seed(999)
+//' x=rnorm(100)
+//' dwt_cpp(x, "haar", 4, boundary="periodic")
 // [[Rcpp::export]]
-arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar", 
+arma::field<arma::vec> dwt_cpp(arma::vec x, String filter_name = "haar", 
                                  unsigned int nlevels = 4, String boundary = "periodic") {
   if(boundary == "periodic"){
     //
@@ -1132,25 +1000,21 @@ arma::field<arma::vec> dwt_arma(arma::vec x, String filter_name = "haar",
 
 //' @title Maximum Overlap Discrete Wavelet Transform
 //' @description Calculation of the coefficients for the discrete wavelet transformation
-//' @usage modwt_arma(x)
+//' @usage modwt_cpp(x, filter_name, nlevels, boundary)
 //' @param x A \code{vector} with dimensions N x 1. 
-//' @param filter A \code{string} indicating the filter.
-//' @param n.levels An \code{integer} indicating the level of the decomposition.
+//' @param filter_name A \code{string} indicating the filter.
+//' @param nlevels An \code{integer} indicating the level of the decomposition.
 //' @param boundary A \code{string} indicating the type of boundary method to use. Either \code{boundary="periodic"} or \code{"reflection"}.
-//' @return y A \code{field<vec>} that contains:
-//' \itemize{
-//'  \item{"clusters"}{The size of the cluster}
-//'  \item{"allan"}{The allan variance}
-//'  \item{"errors"}{The error associated with the variance calculation.}
-//' }
+//' @return y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 //' @details
-//' 
+//' Performs a level J decomposition of the time series using the pyramid algorithm
 //' @author JJB
-//' @references 
 //' @examples
 //' set.seed(999)
+//' x=rnorm(100)
+//' modwt_cpp(x, "haar", 4, boundary="periodic")
 // [[Rcpp::export]]
-arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar", 
+arma::field<arma::vec> modwt_cpp(arma::vec x, String filter_name = "haar", 
                                    unsigned int nlevels = 4, String boundary = "periodic") {
   if(boundary == "periodic"){
     //
@@ -1216,17 +1080,18 @@ arma::field<arma::vec> modwt_arma(arma::vec x, String filter_name = "haar",
   return y;
 }
 
+
 //' @title Absolute Value or Modulus of a Complex Number Squared.
 //' @description Computes the squared value of the Modulus.
 //' @param x A \code{cx_vec}. 
 //' @return A \code{vec} containing the modulus squared for each element.
 //' @details Consider a complex number defined as: \eqn{z = x + i y} with real \eqn{x} and \eqn{y},
-//' The modulus is defined as: \eqn{r = Mod(z) = \sqrt{(x^2 + y^2)}}
-//' This function will return: \eqn{r^2 = Mod(z)^2 = x^2 + y^2}}
+//' The modulus is defined as: \eqn{r = Mod\left(z\right) = \sqrt{\left(x^2 + y^2\right)}}{r = Mod(z) = sqrt(x^2 + y^2)}
+//' This function will return: \eqn{r^2 = Mod\left(z\right)^2 = x^2 + y^2}
 //' @examples
-//' Mod_squared_arma(c(1+.5i, 2+1i, 5+9i))
+//' Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_squared_arma(arma::cx_vec x){
+arma::vec Mod_squared_cpp(arma::cx_vec x){
    return arma::square(arma::real(x)) + arma::square(arma::imag(x));
 }
 
@@ -1237,9 +1102,9 @@ arma::vec Mod_squared_arma(arma::cx_vec x){
 //' @details Consider a complex number defined as: \eqn{z = x + i y} with real \eqn{x} and \eqn{y},
 //' The modulus is defined as: \eqn{r = Mod(z) = \sqrt{(x^2 + y^2)}}
 //' @examples
-//' Mod_arma(c(1+.5i, 2+1i, 5+9i))
+//' Mod_cpp(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_arma(arma::cx_vec x){
+arma::vec Mod_cpp(arma::cx_vec x){
    return arma::sqrt(arma::square(arma::real(x)) + arma::square(arma::imag(x)));
 }
 
@@ -1251,7 +1116,7 @@ arma::vec Mod_arma(arma::cx_vec x){
 //' This implementation is 2x as slow as Rs. 
 //' Two issues: 1. memory resize and 2. unoptimized fft algorithm in arma.
 //' Consider piping back into R and rewrapping the object. (Decrease of about 10 microseconds.)
-//' @example
+//' @examples
 //' x=rnorm(100)
 //' dft_acf(x)
 // [[Rcpp::export]]
@@ -1277,9 +1142,12 @@ arma::vec dft_acf(arma::vec x){
 //' @param method A \code{string} to describe the mode.
 //' @return A \code{field<vec>} with boundary modwt or dwt taken care of.
 //' @details 
-//' @example
+//' The vectors are truncated by removing the first n wavelet coefficients. 
+//' These vectors are then stored into the field that is returned.
+//' Note: As a result, there are no NA's introduced and hence the na.omit is not needed.
+//' @examples
 //' x=rnorm(100)
-//' brick_wall(modwt_arma(x))
+//' brick_wall(modwt_cpp(x))
 // [[Rcpp::export]]
 arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::vec> wave_filter, String method = "modwt") 
 {
@@ -1308,17 +1176,19 @@ arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::v
 //' @description Computes the eta3 CI
 //' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
 //' @param dims A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the (1-p)*alpha confidence level 
+//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Wavelet Variance}
-//'  \item{Column 2}{Lower Bounds}
-//'  \item{Column 3}{Upper Bounds}
+//'  \item{Column 2}{Chi-squared Lower Bounds}
+//'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
-//' @details 
-//' @example
+//' @examples
 //' x=rnorm(100)
-//' wave_variance(brick_wall(modwt_arma(x), haar_filter()))
+//' out = brick_wall(modwt_cpp(x), haar_filter())
+//' sample = out[[1]]
+//' y = sample*sample/length(sample)
+//' ci_eta3(y, length(sample), 0.025)
 // [[Rcpp::export]]
 arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
     
@@ -1337,13 +1207,29 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
     return out;
 }
 
+// [[Rcpp::export]]
+arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
+    
+    unsigned int num_elem = dims.n_elem;
+
+    arma::mat out(num_elem, 3);
+    eff = sqrt(eff);
+    for(unsigned int i = 0; i<num_elem;i++){
+      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
+      out(i,1) = eff* eta3 * y(i)/(R::qchisq(1-p, eta3, 1, 0)); // Lower CI
+      out(i,2) = eta3 * y(i)/(eff*R::qchisq(p, eta3, 1, 0)); // Upper CI
+    }
+
+    out.col(0) = y;
+
+    return out;
+}
 
 //' @title Generate a Confidence intervval for a Univariate Time Series
 //' @description Computes an estimate of the multiscale variance and a chi-squared confidence interval
 //' @param x A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
 //' @param type A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the (1-p)*alpha confidence level 
-//' @param robust A \code{bool} that indicates whether the robust version of the wavelet variance should be calculated.
+//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Wavelet Variance}
@@ -1351,9 +1237,10 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
 //'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
 //' @details 
-//' @example
+//' This function can be expanded to allow for other confidence interval calculations.
+//' @examples
 //' x=rnorm(100)
-//' wave_variance(brick_wall(modwt_arma(x), haar_filter()))
+//' wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
 // [[Rcpp::export]]
 arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double p = 0.025){
   
@@ -1397,7 +1284,16 @@ arma::mat field_to_matrix(arma::field<arma::vec> x, unsigned int row){
 
 // Implemented for Robust
 
-// Objective function to find tuning constant
+//' @title Objective Function for Tuning Constant
+//' @description Objective function that finds tuning constant
+//' @usage objFun_find_biwc(crob, eff)
+//' @param crob A \code{double} that indicates the value to optimize. Normally between [0,5].
+//' @param eff A \code{double} that represents the efficiency.
+//' @return A \code{double} that contains the biwc.
+//' @details This function is not available from within R.
+//' @name objFun_find_biwc
+//' @docType methods
+//' @rdname objFun_find_biwc-methods
 double objFun_find_biwc(double crob, double eff){
   
   // q, mean, sd, lower.tail, log.p
@@ -1425,7 +1321,13 @@ double objFun_find_biwc(double crob, double eff){
   return square((0.5*M*M)/Q - eff);
 }
 
-// Obtain tuning constant crob.bw. Input is a desired level of efficiency compared to the classic MLE
+//' @title Obtain Tuning Constant crob.bw
+//' @description Objective function that finds tuning constant
+//' @usage find_biwc(eff)
+//' @param eff A \code{double} that represents the desired level of efficiency as compared to the classic MLE.
+//' @return A \code{double} that contains the optimized biwc.
+//' @examples
+//' find_biwc(0.6)
 // [[Rcpp::export]]
 double find_biwc(double eff){
   Rcpp::Environment stats("package:stats"); 
@@ -1489,60 +1391,86 @@ double sig_rob_bw(arma::vec y, double eff=0.6){
 
 //' @title Computes the (MODWT) wavelet variance
 //' @description Calculates the (MODWT) wavelet variance
-//' @param x A \code{vec} that contains the signal
+//' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
+//' @param nb_level A \code{integer} that contains the level of decomposition J.
+//' @param robust A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+//' @param ci_type A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"
 //' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
-//' @param compute_v A \code{String} that indicates covariance matrix multiplication. 
-//' @return A \code{field<mat>} with the structure:
+//' @return A \code{mat} with the structure:
 //' \itemize{
 //'   \item{"variance"}{Wavelet Variance},
 //'   \item{"low"}{Lower CI}
 //'   \item{"high"}{Upper CI}
-//'   \item{"wavelet"}{Filter Used}
-//'   \item{"scales"}{Scales}
-//'   \item{"V"}{Asymptotic Covariance Matrix}
-//'   \item{"up_gauss"}{Upper Gaussian CI}
-//'   \item{"dw_gauss"}{Lower Guassian CI}
 //' }
 //' @details 
-//' The underlying code should be rewritten as a class for proper export.
-//' @example
+//' This function powers the wvar object. It is also extendable...
+//' @examples
 //' x=rnorm(100)
-//' wavelet_variance_arma(x, "haar", "diag")
+//' decomp = modwt(x)
+//' wvar_cpp(decomp$data, decomp$nlevels, robust=false, eff=0.6, p = 0.025, strWavelet = "haar")
 // [[Rcpp::export]]
-arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String strWavelet="haar", String compute_v = "no", bool robust=false, double eff = 0.95) {
-
-  // Set p-value for (1-p)*100 ci
-  double p = 0.025;
-  
-  // Length of the time series
-  unsigned int n_ts = signal.n_elem;
-  
-  // Compute number of scales considered
-  unsigned int nb_level = floor(log2(n_ts));
+arma::mat wvar_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, bool robust=false, double eff=0.6, double p = 0.025, std::string ci_type="eta3", std::string strWavelet="haar") {
   
   // MODWT transform
-  arma::field<arma::vec> signal_modwt = modwt_arma(signal, strWavelet, nb_level);
   arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, select_filter(strWavelet));
   
-  // Compute wavelet variance  
-  arma::mat vmod = wave_variance(signal_modwt_bw, "eta3", p);
-  
-  // Create wv_robust
-  arma::vec wv_rob = arma::zeros<arma::vec>(nb_level);
+  arma::mat vmod;
   if(robust){
+    // Create wv_robust
+    arma::vec wv_rob(nb_level);
+    arma::vec dims(nb_level);
     for(unsigned int i=0; i < nb_level; i++){
       arma::vec wav_coef = sort(signal_modwt_bw(i));
+      dims(i) = wav_coef.n_elem;
       wv_rob(i) = sig_rob_bw(wav_coef, eff);
-    }  
+    }
+    vmod = ci_eta3_robust(wv_rob, dims, p, eff);
+    //vmod.col(0) = wv_rob;
+  }else{
+    // Compute wavelet variance  
+    vmod = wave_variance(signal_modwt_bw, ci_type, p);
   }
   
+  return vmod;
+}
+
+//' @title Computes the MODWT scales
+//' @description Calculates the MODWT scales
+//' @param nb_level A \code{integer} that contains the level of decomposition J.
+//' @return A \code{vec} that contains 2^1, ... , 2^J
+//' @details 
+//' Used in wvar object.
+//' @examples
+//' scales_cpp(5)
+// [[Rcpp::export]]
+arma::vec scales_cpp(int nb_level){
   // Define scales
   arma::vec scales(nb_level);
   for(unsigned int i=0; i< nb_level;i++){
     scales(i) = pow(2,i+1);
   }
+  return scales;
+}
 
-  // Compute asymptotic covariance matrix
+//' @title Computes the (MODWT) wavelet covariance matrix
+//' @description Calculates the (MODWT) wavelet covariance matrix
+//' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
+//' @param nb_level A \code{integer} that contains the level of decomposition J.
+//' @param compute_v A \code{string} that indicates what kind of matrix should be created. Possible options: "diag" or "none"
+//' @param robust A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @return A \code{mat} containing the covariance matrix.
+//' @examples
+//' \dontrun{
+//' x=rnorm(100)
+//' decomp = modwt(x)
+//' V = compute_cov_cpp(decomp$data, decomp$nlevels, compute_v="diag", robust = TRUE, eff=0.6)
+//' }
+// [[Rcpp::export]]
+arma::mat compute_cov_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, std::string compute_v="diag",bool robust = true, double eff=0.6){
+    // Compute asymptotic covariance matrix
   arma::mat V = diagmat(arma::ones<arma::vec>(nb_level));
   //arma::vec up_gauss(nb_level);
   //arma::vec dw_gauss(nb_level);
@@ -1575,30 +1503,108 @@ arma::field<arma::mat> wavelet_variance_arma(const arma::vec& signal, String str
     //up_gauss = vmod.col(0) + R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
     //dw_gauss = vmod.col(0) - R::qnorm(1-p, 0.0, 1.0, 1, 0)*sqrt(diagvec(V));
   }
-  else{
-    arma::vec temp = arma::ones<arma::vec>(nb_level);
-    V = diagmat(temp);
-    //up_gauss.fill(datum::nan);
-    //dw_gauss.fill(datum::nan);
-  }
   
-  // export
-  arma::field<arma::mat> out(6);
-  out(0) = vmod.col(0); // wave variance
-  out(1) = vmod.col(1); // low ci
-  out(2) = vmod.col(2); // high ci
-  out(3) = scales; // scales
-  out(4) = V; //V
-  out(5) = wv_rob; //Robust wavelet variance
-  //out(5) = up_gauss; // up_guass ci
-  //out(6) = dw_gauss; // low_guass ci
-  
-  // Define structure "wav.var"
-  return out;
+  return V;
 }
 
-// 
+
+
+// [[Rcpp::export]]
+arma::vec theo_wv(const arma::vec& theta, const std::vector<std::string>& desc,
+                                const arma::vec& wv_empir,
+                                const arma::vec& tau, int N){
+  
+  unsigned int num_desc = desc.size();
+  unsigned int i_theta = 0;
+  arma::vec wv_theo = arma::zeros<arma::vec>(tau.n_elem);
+  
+  for(unsigned int i = 0; i < num_desc; i++){
+    // AR 1
+    if(desc[i] == "AR1"){
+      double phi = theta(i_theta);
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      ++i_theta;
+      
+      // Compute theoretical WV
+      wv_theo += ar1_to_wv(phi,sig2,tau);
+    }
+    // RW
+    else if(desc[i] == "RW"){
+      double sig2 = theta(i_theta);
+      ++i_theta;
+      wv_theo += rw_to_wv(sig2,tau);
+    }
+    // DR
+    else if(desc[i] == "DR"){
+      double drift = theta(i_theta);
+      ++i_theta;
+      wv_theo += dr_to_wv(drift,tau);
+    }
+    // WN
+    else{
+      double sig2 = theta(i_theta);
+      ++i_theta;
+      wv_theo += wn_to_wv(sig2,tau);
+    }
+    
+  }
+
+  return wv_theo;
+}
+
+
+//////// OPTIM FUNCTIONS
+
+
+// computes theoretical wv
 inline arma::vec theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc,
+                                const arma::vec& wv_empir,
+                                const arma::vec& tau, int N){
+  
+  unsigned int num_desc = desc.size();
+  unsigned int i_theta = 0;
+  arma::vec wv_theo = arma::zeros<arma::vec>(tau.n_elem);
+  
+  for(unsigned int i = 0; i < num_desc; i++){
+    // AR 1
+    if(desc[i] == "AR1"){
+      double phi = arma::as_scalar(logit_inv(theta.row(i_theta)));
+      ++i_theta;
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      
+      // Compute theoretical WV
+      wv_theo += ar1_to_wv(phi,sig2,tau);
+    }
+    // RW
+    else if(desc[i] == "RW"){
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo += rw_to_wv(sig2,tau);
+    }
+    // DR
+    else if(desc[i] == "DR"){
+      double drift = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo += dr_to_wv(drift,tau);
+    }
+    // WN
+    else{
+      double sig2 = exp(theta(i_theta));
+      ++i_theta;
+      wv_theo += wn_to_wv(sig2,tau);
+    }
+    
+  }
+
+  return wv_theo;
+}
+
+
+
+// computes theoretical wv
+inline arma::vec pseudo_theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc,
                                 const arma::vec& wv_empir,
                                 const arma::vec& tau, int N){
   
@@ -1680,8 +1686,6 @@ arma::vec Rcpp_OptimStart(const arma::vec&  theta, const std::vector<std::string
    return out;
 }
 
-
-
 // [[Rcpp::export]]
 arma::vec Rcpp_Optim(const arma::vec&  theta, const std::vector<std::string>& desc, const arma::mat& omega, const arma::vec& tau, const arma::vec& wv_empir, int N){
    Rcpp::Environment stats("package:stats"); 
@@ -1700,6 +1704,155 @@ arma::vec Rcpp_Optim(const arma::vec&  theta, const std::vector<std::string>& de
    return out;
 }
 
+
+///////////// SSM SECTION
+
+
+// hiding this function for the moment
+double objFunStarting_SSM(const arma::vec& theta, const std::vector<std::string>& desc, 
+                         const arma::vec& wv_empir, const arma::vec& tau, int N){
+                   
+  arma::vec wv_theo = pseudo_theoretical_wv(theta, desc, wv_empir, tau, N);
+  arma::vec standardized = 1-wv_theo/wv_empir;
+  // Compute quandratic form
+	return arma::as_scalar(trans(standardized)*(standardized));
+}
+
+double objFun_SSM(const arma::vec& theta, const arma::mat& omega,
+                 const std::vector<std::string>& desc, const arma::vec& wv_empir,
+                 const arma::vec& tau, int N){
+                   
+  arma::vec wv_theo = pseudo_theoretical_wv(theta, desc, wv_empir, tau, N);
+
+  // Compute quandratic form
+	arma::vec dif = wv_theo - wv_empir;
+	return arma::as_scalar(trans(dif)*omega*dif);
+}
+
+// [[Rcpp::export]]
+arma::vec Rcpp_OptimStart_SSM(const arma::vec&  theta, const std::vector<std::string>& desc,
+                          const arma::vec& tau, const arma::vec& wv_empir, int N){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting_SSM),
+                        _["desc"] = desc,
+                        _["wv_empir"] = wv_empir,
+                        _["tau"] = tau,
+                        _["N"] = N);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
+// [[Rcpp::export]]
+arma::vec Rcpp_Optim_SSM(const arma::vec&  theta, const std::vector<std::string>& desc, const arma::mat& omega, const arma::vec& tau, const arma::vec& wv_empir, int N){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFun_SSM),
+                        _["omega"] = omega,
+                        _["desc"] = desc,
+                        _["wv_empir"] = wv_empir,
+                        _["tau"] = tau,
+                        _["N"] = N);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
+//////////// ARMA SECTION
+
+
+// hiding this function for the moment
+double objFunStarting_ARMA(const arma::vec& theta, int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
+  arma::vec ar;
+  arma::vec ma;
+
+  if(p == 0){
+    ar = arma::zeros<arma::vec>(0);
+  }else{
+    ar = theta.rows(0,p-1);
+  }
+  
+  if(q == 0){
+    ma = arma::zeros<arma::vec>(0); 
+  }else{
+    ma = theta.rows(p,p+q-1);
+  }
+  
+  double sigma2 = theta(theta.n_elem-1);
+  arma::vec wv_theo = arma_to_wv(ar, ma, tau, sigma2);
+
+  arma::vec standardized = 1-wv_theo/wv_empir;
+  // Compute quandratic form
+  return arma::as_scalar(trans(standardized)*(standardized));
+}
+
+arma::vec Rcpp_OptimStart_ARMA(const arma::vec& theta, int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting_ARMA),
+                        _["p"] = p,
+                        _["q"] = q,
+                        _["tau"] = tau,
+                        _["wv_empir"] = wv_empir);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
+double objFun_ARMA(const arma::vec& theta, const arma::mat& omega,  int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
+                   
+  arma::vec ar;
+  arma::vec ma;
+  
+  if(p == 0){
+    ar = arma::zeros<arma::vec>(0);
+  }else{
+    ar = pseudo_logit_inv(theta.rows(0,p-1));
+  }
+  
+  if(q == 0){
+    ma = arma::zeros<arma::vec>(0); 
+  }else{
+    ma = pseudo_logit_inv(theta.rows(p,p+q-1));
+  }
+  
+  arma::vec wv_theo = arma_to_wv(ar, ma, tau, exp(theta(theta.n_elem-1)) );
+  // Compute quandratic form
+  arma::vec dif = wv_theo - wv_empir;
+  return arma::as_scalar(trans(dif)*omega*dif);
+}
+
+// [[Rcpp::export]]
+arma::vec Rcpp_Optim_ARMA(const arma::vec& theta, const arma::mat& omega, int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFun_ARMA),
+                        _["omega"] = omega,
+                        _["p"] = p,
+                        _["q"] = q,
+                        _["tau"] = tau,
+                        _["wv_empir"] = wv_empir);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
+
+///// END ARMA
+
 // [[Rcpp::export]]
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc){
     arma::vec x  = arma::zeros<arma::vec>(N);
@@ -1708,7 +1861,7 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
     
   	for(unsigned int i = 0; i < num_desc; i++){
   	  // AR 1
-  	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
+  	  if(desc[i] == "AR1"){
   	    double phi = theta(i_theta);
   	    ++i_theta;
   	    double sig2 = theta(i_theta);
@@ -1729,14 +1882,10 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    x += gen_dr(N, drift);
   	  }
   	  // WN
-  	  else if(desc[i] == "WN"){
+  	  else {
   	    double sigmaWN = theta(i_theta);
   	    ++i_theta;
   	    x += gen_wn(N, sigmaWN);
-  	  }
-  	  // EX
-  	  else{
-  	    ++i_theta;
   	  }
   }  
     
@@ -1745,13 +1894,82 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
 
 
 // [[Rcpp::export]]
-arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::string>& desc){
+arma::vec set_starting_values_imu(const arma::vec& theta, const std::vector<std::string>& desc){
     arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
     
     for(unsigned int i = 0; i < num_desc; i++){
   	  // AR 1
+  	  if(desc[i] == "AR1" ){
+  	    starting(i_theta) = arma::as_scalar(logit(theta.row(i_theta)));
+  	    ++i_theta;
+  	    starting(i_theta) = log(theta(i_theta));
+  	    ++i_theta;
+  	  }
+  	  else{
+        starting(i_theta) = log(theta(i_theta));
+  	    ++i_theta;
+  	  }
+  }  
+    
+  return starting;
+}
+
+
+// [[Rcpp::export]]
+arma::rowvec set_result_values_imu(const arma::vec& theta, const std::vector<std::string>& desc){
+    arma::rowvec result  = arma::zeros<arma::rowvec>(theta.n_elem);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+    for(unsigned int i = 0; i < num_desc; i++){
+      // AR 1
+  	  if(desc[i] == "AR1"){
+  	    result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
+  	    ++i_theta;
+  	    result(i_theta) = exp(theta(i_theta));
+  	    ++i_theta;
+  	  }
+  	  else {
+        result(i_theta) = exp(theta(i_theta));
+  	    ++i_theta;
+  	  }
+  }  
+    
+  return result;
+}
+
+
+
+
+// [[Rcpp::export]]
+arma::vec set_starting_values_arma(arma::vec theta, int p, int q){
+  theta.rows(0,p+q-1) = pseudo_logit(theta.rows(0,p+q-1));
+  theta(theta.n_elem -1) = log(theta(theta.n_elem -1));
+  
+  return theta;
+}
+
+
+// [[Rcpp::export]]
+arma::vec set_result_values_arma(arma::vec theta, int p, int q){    
+  theta.rows(0,p+q-1) = pseudo_logit_inv(theta.rows(0,p+q-1));
+  theta(theta.n_elem -1) = exp(theta(theta.n_elem -1));
+  
+  return theta;
+}
+
+
+
+// [[Rcpp::export]]
+arma::vec set_starting_values_ssm(const arma::vec& theta, const std::vector<std::string>& desc){
+    arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+    for(unsigned int i = 0; i < num_desc; i++){
+      // AR 1
   	  if(desc[i] == "AR1" ){
   	    starting(i_theta) = arma::as_scalar(pseudo_logit(theta.row(i_theta)));
   	    ++i_theta;
@@ -1769,31 +1987,29 @@ arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::str
 
 
 // [[Rcpp::export]]
-arma::rowvec set_result_values(const arma::vec& theta, const std::vector<std::string>& desc){
+arma::rowvec set_result_values_ssm(const arma::vec& theta, const std::vector<std::string>& desc){
     arma::rowvec result  = arma::zeros<arma::rowvec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
     
     for(unsigned int i = 0; i < num_desc; i++){
       // AR 1
-  	  if(desc[i] == "AR1" || desc[i] == "AR1P"){
+  	  if(desc[i] == "AR1"){
   	    result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
   	    ++i_theta;
   	    result(i_theta) = exp(theta(i_theta));
   	    ++i_theta;
   	  }
-  	  else if(desc[i] != "EX"){
+  	  else {
         result(i_theta) = exp(theta(i_theta));
   	    ++i_theta;
-  	  }
-      else{
-        // EX
-        ++i_theta;
   	  }
   }  
     
   return result;
 }
+
+
 
 // [[Rcpp::export]]
 arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::string>& desc, 
@@ -1806,7 +2022,7 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::stri
 		arma::vec x = gen_model(N, theta, desc);
 
     // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_arma(x, "haar", nb_level);
+    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level);
     arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter());
   
 		arma::vec wv_x = wave_variance(signal_modwt_bw, "none").col(0);
@@ -1824,7 +2040,7 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::stri
 	return cov(res);
 }
 
-inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot){
+inline arma::vec ar1_draw_imu(unsigned int num_ars, double sigma_tot){
   
   unsigned int num_params = 2*num_ars;
   arma::vec temp(num_params);
@@ -1832,10 +2048,8 @@ inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot){
   for(unsigned int i = 0; i < num_ars; i++){
     // Draw from triangle distributions for phi
     double U = R::runif(0.0, 1.0/3.0);
-    Rcpp::Rcout << "Random Draw: " << U << std::endl;
     if(i == 0){
       temp(2*i) = 1.0/5.0*(1.0-sqrt(1.0-3.0*U));
-      Rcpp::Rcout << "Case 1: " << temp(2*i) << std::endl;
       temp(2*i+1) = R::runif(0.95*sigma_tot*(1-square(temp(2*i))), sigma_tot);
     }else{
       if(i!=1){
@@ -1843,43 +2057,66 @@ inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot){
       }else{
           temp(2*i) = R::runif(0.995,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
       }
-      Rcpp::Rcout << "Case 2: " << temp(2*i) << std::endl;
       temp(2*i+1) = R::runif(0.0, 0.01*sigma_tot*(1-square(temp(2*i+1))) );
     }
-    Rcpp::Rcout << "Sampled sigma: " << temp(2*i+1) << std::endl;
-  }
-  
-  Rcpp::Rcout << "Temp Vector looks like: " << temp << std::endl;
-      
+  }      
   return temp;
 }
 
-inline arma::vec unif_sigma_sample(unsigned int num, double sigma_tot){
+
+inline arma::vec ar1_draw_ssm(unsigned int num_ars, double sigma_tot){
+  
+  unsigned int num_params = 2*num_ars;
+  arma::vec temp(num_params);
+  
+  for(unsigned int i = 0; i < num_ars; i++){    
+    if(i == 0){
+      // Draw for phi
+      temp(2*i) = R::runif(-0.9999999999999, 0.9999999999999);
+      // Draw for sigma
+      temp(2*i+1) = R::runif(0.0000000000001, sigma_tot);
+    }else{
+      if(i!=1){
+          temp(2*i) = R::runif(temp(2*(i-1)),0.9999999); 
+      }else{
+          temp(2*i) = R::runif(0.995,0.9999999);
+      }
+      temp(2*i+1) = R::runif(0.0, 0.01*sigma_tot*(1-square(temp(2*i+1))) );
+    }
+  }
+        
+  return temp;
+}
+
+inline arma::vec unif_sigma_sample(unsigned int num, double start, double end){
   arma::vec temp(num);
   
   for(unsigned int i = 0; i<num; i++){
-    temp(i) = R::runif(0.0,sigma_tot);
+    temp(i) = R::runif(start,end);
   }
   
   return temp;
 }
 
-//' @title Randomly guess a starting parameter
-//' @description Sets starting parameters for each of the given parameters. 
-//' @param signal A \code{vec} that contains the data
-//' @param w A \code{std::map<std::string,int>} that lists supported models and the amount in the model.
-//' @param num_params An \code{unsigned int} 
-//' @param compute_v A \code{String} that indicates covariance matrix multiplication. 
-//' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
-arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const std::vector<std::string>& desc,
+
+// @title Randomly guess a starting parameter
+// @description Sets starting parameters for each of the given parameters. 
+// @usage guess_initial_imu
+// @param signal A \code{vec} that contains the data
+// @param w A \code{std::map<std::string,int>} that lists supported models and the amount in the model.
+// @param num_params An \code{unsigned int} 
+// @param compute_v A \code{String} that indicates covariance matrix multiplication. 
+// @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+// @name guess_initial
+// @docType methods
+// @rdname guess_initial-methods
+arma::vec guess_initial_imu(arma::vec signal, std::map< std::string ,int>& w, const std::vector<std::string>& desc,
                         unsigned int num_param, const arma::vec& wv_empir, const arma::vec& tau, 
                         unsigned int N, unsigned int B=1000){
   
-    // Obtain the sum of variances for sigma^2_total.
+  // Obtain the sum of variances for sigma^2_total.
   double sigma_tot = arma::sum(wv_empir);
-  
-  Rcpp::Rcout << "Sum of wv_empir for sigma^2_total: " << sigma_tot << std::endl;
-  
+    
   arma::vec starting_theta = arma::zeros<arma::vec>(num_param);
   arma::vec temp_theta = arma::zeros<arma::vec>(num_param);
     
@@ -1895,43 +2132,111 @@ arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const 
       if(out > 0){
         std::string type = p->first;
         if(type == "AR1"){
-          temp_theta.rows(i_theta, i_theta + 2*out - 1) = ar1_draw(out, sigma_tot);
+          temp_theta.rows(i_theta, i_theta + 2*out - 1) = ar1_draw_imu(out, sigma_tot);
           i_theta += 2*out;
         }
         else if(type == "DR"){   
-          temp_theta.rows(i_theta, i_theta + out - 1).fill( mean(diff_arma(signal,1))  );
+          
+          double dr_ed = mean(diff_cpp(signal,1));
+          if(dr_ed > 0){
+            dr_ed = R::runif(0,2*dr_ed);
+          }else{
+            dr_ed = R::runif(2*dr_ed,0);
+          }
+          temp_theta.rows(i_theta, i_theta + out - 1).fill( dr_ed  );
           i_theta += out;
         }
         else if(type == "QN"){
-          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot);
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, .0000001, sigma_tot);
           i_theta += out;
         }
         else if(type == "RW"){
-          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot)/signal.n_elem;
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot/(signal.n_elem*1000.0), 2.0*sigma_tot/signal.n_elem);
           i_theta += out;
         }
         else{ // WN
-          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot);
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot/2.0, sigma_tot);
           i_theta += out;
         }
       }
     }
-    Rcpp::Rcout << "Temp Theta looks like: " << temp_theta << std::endl;
 
     double obj = objFunStarting(temp_theta, desc, wv_empir, tau, N);
     
-    Rcpp::Rcout << "Objective value is:" << obj << std::endl;
     if(min_obj_value > obj){
-      Rcpp::Rcout << "Objective value " << obj << " was lower than " << min_obj_value << std::endl;
       min_obj_value = obj;
       starting_theta = temp_theta;
     }
   }
   
-  Rcpp::Rcout << "Final Objective value " << min_obj_value << std::endl;
-
   return starting_theta;
 }
+
+
+
+
+arma::vec guess_initial_ssm(arma::vec signal, std::map< std::string ,int>& w, const std::vector<std::string>& desc,
+                        unsigned int num_param, const arma::vec& wv_empir, const arma::vec& tau, 
+                        unsigned int N, unsigned int B=1000){
+  
+  // Obtain the sum of variances for sigma^2_total.
+  double sigma_tot = arma::sum(wv_empir);
+    
+  arma::vec starting_theta = arma::zeros<arma::vec>(num_param);
+  arma::vec temp_theta = arma::zeros<arma::vec>(num_param);
+    
+  double min_obj_value = std::numeric_limits<double>::max();
+  
+  // Generate parameters for the model
+  for(unsigned int b = 0; b < B; b++){
+    
+    unsigned int i_theta = 0;
+    
+    for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
+      int out = p->second;
+      if(out > 0){
+        std::string type = p->first;
+        if(type == "AR1"){
+          temp_theta.rows(i_theta, i_theta + 2*out - 1) = ar1_draw_ssm(out, sigma_tot);
+          i_theta += 2*out;
+        }
+        else if(type == "DR"){   
+          
+          double dr_ed = mean(diff_cpp(signal,1));
+          if(dr_ed > 0){
+            dr_ed = R::runif(0,2*dr_ed);
+          }else{
+            dr_ed = R::runif(2*dr_ed,0);
+          }
+          temp_theta.rows(i_theta, i_theta + out - 1).fill( dr_ed  );
+          i_theta += out;
+        }
+        else if(type == "QN"){
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, .0000001, sigma_tot);
+          i_theta += out;
+        }
+        else if(type == "RW"){
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot/(signal.n_elem*1000.0), 2.0*sigma_tot/signal.n_elem);
+          i_theta += out;
+        }
+        else{ // WN
+          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot/2.0, sigma_tot);
+          i_theta += out;
+        }
+      }
+    }
+
+    double obj = objFunStarting(temp_theta, desc, wv_empir, tau, N);
+    
+    if(min_obj_value > obj){
+      min_obj_value = obj;
+      starting_theta = temp_theta;
+    }
+  }
+  
+  return starting_theta;
+}
+
 
 
 //' @title Count Number of Model instances 
@@ -1949,7 +2254,7 @@ arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const 
 //' }
 //' @details
 //' old counting method
-//' @example
+//' @examples
 //' count_models(1,2,3,4,4,0,0,0,3,4)
 // [[Rcpp::export]]
 arma::vec count_models_numeric(arma::vec desc) {
@@ -2002,15 +2307,17 @@ inline unsigned int count_params(std::map<std::string, int>& w) {
 //' @details 
 //' The types of models supported are:
 //' \itemize{
-//'   \item{AR1}
-//'   \item{DR}
-//'   \item{QN}
-//'   \item{RW}
-//'   \item{WN}
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 //' }
 //' Note: This order is due to the fact that the models are created by inserting into a C++ Map. The map sorts these values...
-//' @example
-//' count_models_alpha(c("AR1","AR1","DR","WN"))
+//' This function is NOT available in R. 
+//' @name count_models_alpha
+//' @docType methods
+//' @rdname count_models_alpha-methods
 arma::vec count_models_alpha(const std::vector<std::string>& desc) {
   
     std::map<std::string, int> w = counted_map(desc);
@@ -2024,13 +2331,49 @@ arma::vec count_models_alpha(const std::vector<std::string>& desc) {
     return num_models;
 }
 
-//' @title GMWM Step
-//' 
-//' @example
-//' x=rnorm(100)
-//' GMWM_adv
 // [[Rcpp::export]]
-arma::mat GMWM(const std::vector<std::string>& desc, const arma::vec& signal,
+unsigned int num_model_params(const std::vector<std::string>& desc) {
+  // Count the number of models we are working with
+  std::map<std::string, int> w = counted_map(desc);
+  
+  // Return the total number of parameters we need to setup.
+  return count_params(w);
+}
+
+//' @title GMWM IMU
+//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
+//' @usage ...(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
+//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
+//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
+//' @return gmwm A \code{list} that contains:
+//' \itemize{
+//'  \item{par}{The estimated model parameters}
+//'  \item{CI}{The 95\% confidence intervals for the estimated model parameters.}
+//' }
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @examples
+//' ...
+// [[Rcpp::export]]
+arma::rowvec gmwm_imu_cpp(const std::vector<std::string>& desc, const arma::vec& signal,
                const arma::mat& V, const arma::vec& wv_empir,
                const arma::vec& tau, unsigned int N, unsigned int B = 1000){
   
@@ -2040,26 +2383,14 @@ arma::mat GMWM(const std::vector<std::string>& desc, const arma::vec& signal,
   // Return the total number of parameters we need to setup.
   unsigned int num_param = count_params(w);
   
-  Rcpp::Rcout << "Number params in model: " << num_param << std::endl;
-
-
-  // Initialize it
-  arma::mat GMWM(1,num_param);
-  
   // Give it a guess
-  arma::vec guess_me = guess_initial(signal, w, desc, num_param, wv_empir, tau, N, B);
-
-  Rcpp::Rcout << "Initial Guess (untransformed) is: " << guess_me << std::endl;
+  arma::vec guess_me = guess_initial_imu(signal, w, desc, num_param, wv_empir, tau, N, B);
 
   // Starting values
-  arma::vec starting_theta = set_starting_values(guess_me, desc);
-  
-  Rcpp::Rcout << "Initial Guess (transformed) is: " << starting_theta << std::endl;
-  
+  arma::vec starting_theta = set_starting_values_imu(guess_me, desc);
+    
   // Optimize using the idea Yannick proposed in GMWM for INF Design.
   starting_theta = Rcpp_OptimStart(starting_theta, desc, tau, wv_empir, N);
-
-  Rcpp::Rcout << "Optimized starting values (transformed) by Yannick are: " << starting_theta << std::endl;
       
   // ------------------------------------
   // Compute standard GMWM
@@ -2071,23 +2402,148 @@ arma::mat GMWM(const std::vector<std::string>& desc, const arma::vec& signal,
   // Find GMWM estimator
   arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, omega, tau, wv_empir, N);
   
-  Rcpp::Rcout << "GMWM estimator transformed" << estim_GMWM << std::endl;
+  return set_result_values_imu(estim_GMWM, desc);                          
+}
 
-  // Save results
-  GMWM.row(0) = set_result_values(estim_GMWM, desc);
 
-  Rcpp::Rcout << "GMWM estimator: " << GMWM << std::endl;
+
+//' @title GMWM IMU
+//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
+//' @usage ...(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
+//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
+//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
+//' @return gmwm A \code{list} that contains:
+//' \itemize{
+//'  \item{par}{The estimated model parameters}
+//'  \item{CI}{The 95\% confidence intervals for the estimated model parameters.}
+//' }
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @examples
+//' ...
+// [[Rcpp::export]]
+arma::rowvec gmwm_ssm_cpp(const std::vector<std::string>& desc, const arma::vec& signal,
+               const arma::mat& V, const arma::vec& wv_empir,
+               const arma::vec& tau, unsigned int N, unsigned int B = 1000){
   
+  // Count the number of models we are working with
+  std::map<std::string, int> w = counted_map(desc);
+  
+  // Return the total number of parameters we need to setup.
+  unsigned int num_param = count_params(w);
+  
+  // Give it a guess
+  arma::vec guess_me = guess_initial_ssm(signal, w, desc, num_param, wv_empir, tau, N, B);
+
+  // Starting values
+  arma::vec starting_theta = set_starting_values_ssm(guess_me, desc);
+    
+  // Optimize using the idea Yannick proposed in GMWM for INF Design.
+  starting_theta = Rcpp_OptimStart_SSM(starting_theta, desc, tau, wv_empir, N);
+      
+  // ------------------------------------
+  // Compute standard GMWM
+  // ------------------------------------
+      
+  // Omega matrix
+  arma::mat omega = arma::inv(diagmat(V));
+    
+  // Find GMWM estimator
+  arma::vec estim_GMWM = Rcpp_Optim_SSM(starting_theta, desc, omega, tau, wv_empir, N);
+  
+  return set_result_values_ssm(estim_GMWM, desc);                          
+}
+
+
+//' @title GMWM ARMA
+//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model based on ARMA.
+//' @usage ...(x)
+//' @param x A \code{vector} with dimensions N x 1. 
+//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
+//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
+//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
+//' @return gmwm A \code{list} that contains:
+//' \itemize{
+//'  \item{par}{The estimated model parameters}
+//'  \item{CI}{The 95\% confidence intervals for the estimated model parameters.}
+//' }
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). 
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @examples
+//' ...
+// [[Rcpp::export]]
+arma::rowvec gmwm_arma_cpp(const arma::vec& theta, const arma::mat& V, unsigned int p, unsigned int q,
+                const arma::vec& tau, const arma::vec& wv_empir){
+    
+  arma::vec starting_theta = set_starting_values_arma(theta, p, q);
+
+  // Omega matrix
+  arma::mat omega = arma::inv(diagmat(V));
+  
+  arma::vec values = Rcpp_Optim_ARMA(theta, omega, p, q, tau, wv_empir);
+  
+  // Find GMWM estimator
+    // Initialize it
+  arma::rowvec GMWM = arma::trans(set_result_values_arma(values, p, q));
+      
   return GMWM;                          
 }
 
-//' @title GMWM Step
+
+//' @title User Specified Initial Values for GMWM Estimator
+//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
+//' @usage adv_gmwm_cpp(theta, desc, V, wv_empir, tau, N)
+//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param V A \code{matrix} that represents the covariance matrix.
+//' @param wv_empir A \code{vector} that contains the empirical wavelet variance
+//' @param N A \code{integer} that indicates the length of the signal being studied.
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
 //' @details
-//' Allows the user to supply their "guess" instead of a random draw.
-//' @example
-//' x=rnorm(100)
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @examples
+//' ...
 // [[Rcpp::export]]
-arma::mat GMWM_adv(const arma::vec& theta, const std::vector<std::string>& desc,
+arma::mat adv_gmwm_imu_cpp(const arma::vec& theta, const std::vector<std::string>& desc,
                    const arma::mat& V, const arma::vec& wv_empir,
                    const arma::vec& tau, unsigned int N){
                                  
@@ -2098,7 +2554,7 @@ arma::mat GMWM_adv(const arma::vec& theta, const std::vector<std::string>& desc,
   arma::mat GMWM(1,num_param);
     
   // Starting values
-  arma::vec starting_theta = set_starting_values(theta, desc);
+  arma::vec starting_theta = set_starting_values_imu(theta, desc);
   
   starting_theta = Rcpp_OptimStart(starting_theta, desc, tau, wv_empir, N);
       
@@ -2113,18 +2569,19 @@ arma::mat GMWM_adv(const arma::vec& theta, const std::vector<std::string>& desc,
   arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, omega, tau, wv_empir, N);
 
   // Save results
-  GMWM.row(0) = set_result_values(estim_GMWM, desc);
+  GMWM.row(0) = set_result_values_imu(estim_GMWM, desc);
   
   return GMWM;                          
 }
 
 
+/*
 
 //' @title Simulate GMWM
 //' 
-//' @example
+//' @examples
 //' x=rnorm(100)
-//' wavelet_variance_arma(x, "haar", "diag")
+//' wavelet_variance_cpp(x, "haar", "diag")
 // [[Rcpp::export]]
 arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
                                const std::vector<std::string>& desc, const arma::vec& wv_empir,
@@ -2149,7 +2606,7 @@ arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
   	// Compute standard GMWM
   	// ------------------------------------
   	// Compute WV
-  	arma::field<arma::mat> wv_x = wavelet_variance_arma(x, "haar", "diag");
+  	arma::field<arma::mat> wv_x = wavelet_variance_cpp(x, "haar", "diag");
   	
   	// Omega matrix
   	arma::mat omega = arma::inv(diagmat(wv_x(4)));
@@ -2196,8 +2653,6 @@ arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
 } 
 
 
-
-/*
 //
 // Mondal and Percival estimator
 //
