@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{pseudo_logit_inv}
 \alias{pseudo_logit_inv}
-\title{Logit Inverse Function}
+\title{Pseudo Logit Inverse Function}
 \usage{
 pseudo_logit_inv(x)
 }
@@ -13,7 +13,7 @@ pseudo_logit_inv(x)
 A \code{vec} containing logit probabilities.
 }
 \description{
-This function computes the inverse of a logit transformation of the parameters in order to constrain them to a positive domain
+This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain
 }
 \examples{
 x.sim = rnorm(100)
