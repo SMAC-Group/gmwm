@@ -1,17 +1,16 @@
 Package: GMWM
 Type: Package
 Title: Estimate Latent Processes in Time Series
-Version: 0.6.2
-Date: 2015-02-17
+Version: 0.6.6
+Date: 2015-02-21
 Author: James Balamuta, Stephane Guerrier, Roberto Molinari
 Maintainer: James Balamuta <balamut2@illinois.edu>
-Description: GMWM implements the theoretical framework for Generalized Method of Wavelet Moments (GMWM). The package contains functions that allow a user to 
+Description: GMWM implements the theoretical framework for Generalized Method
+    of Wavelet Moments (GMWM). The package contains functions that allow a user
+    to
 License: MIT + file LICENSE
-Depends: ggplot2, 
-          scales, 
-            grid
-Imports: Rcpp (>= 0.11.3), 
-                  ggplot2, 
-                  scales, 
-                  grid
+Depends:
+    ggplot2
+Imports:
+    Rcpp (>= 0.11.3)
 LinkingTo: Rcpp, RcppArmadillo
