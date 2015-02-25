@@ -4,12 +4,12 @@
 \alias{autoplot.wvarcomp}
 \title{Compare Wavelet Variances Together}
 \usage{
-autoplot.wvarcomp(object, ...)
+\method{autoplot}{wvarcomp}(object, ...)
 }
 \arguments{
 \item{object}{A \code{data.frame} containing both sets of variances.}
 
-\item{...}{Not used...}
+\item{...}{other arguments passed to specific methods}
 }
 \value{
 A ggplot2 graph containing both the wavelet variances.

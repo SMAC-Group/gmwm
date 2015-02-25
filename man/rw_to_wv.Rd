@@ -19,8 +19,9 @@ This function compute the WV (haar) of a Random Walk process
 }
 \examples{
 x.sim = cumsum(rnorm(100000))
-waveletVariance(x.sim)
-wv.theo = rw_to_wv(1,x.sim)
-lines(wv.theo$scales,wv.theo$WV, col = "red")
+ntau = floor(log(length(x.sim),2))
+tau = 2^(1:ntau)
+wv.theo = rw_to_wv(1,tau)
+plot(tau, wv.theo, col = "red")
 }
 

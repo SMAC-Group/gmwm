@@ -20,6 +20,7 @@ Creates the different pairings possible with two different variables.
 This function is hidden and is not accessible from R.
 }
 \author{
-R Core Team and JJB
+JJB
 }
+\keyword{internal}
 

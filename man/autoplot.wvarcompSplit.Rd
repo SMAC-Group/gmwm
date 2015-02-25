@@ -4,12 +4,12 @@
 \alias{autoplot.wvarcompSplit}
 \title{Compare Wavelet Variances on Split}
 \usage{
-autoplot.wvarcomp(object, ...)
+\method{autoplot}{wvarcompSplit}(object, ...)
 }
 \arguments{
 \item{object}{A \code{data.frame} containing both sets of variances.}
 
-\item{...}{Not used...}
+\item{...}{other arguments passed to specific methods}
 }
 \value{
 A ggplot2 panel containing two graphs of the wavelet variance.

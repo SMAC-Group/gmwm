@@ -19,7 +19,7 @@ compute_cov_cpp(signal_modwt, nb_level, compute_v = "diag", robust = TRUE,
 \item{eff}{A \code{double} that indicates the efficiency as it relates to an MLE.}
 }
 \value{
-A \code{mat} containing the covariance matrix.
+A \code{field<mat>} containing the covariance matrix.
 }
 \description{
 Calculates the (MODWT) wavelet covariance matrix
