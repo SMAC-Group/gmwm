@@ -18,6 +18,6 @@ A \code{vec} containing the expected value of the drift.
 This function computes the expected value of a drift process.
 }
 \examples{
-# Add at a later time
+e_drift(1,200)
 }
 

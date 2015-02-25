@@ -18,6 +18,6 @@ A \code{vec} containing the variance of the drift.
 This function computes the variance of a drift process.
 }
 \examples{
-# Add at a later time
+var_drift(1, 200)
 }
 

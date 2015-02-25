@@ -26,7 +26,7 @@ Performs a level J decomposition of the time series using the pyramid algorithm
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 dwt_cpp(x, "haar", 4, boundary="periodic")
 }
 \author{

@@ -4,7 +4,7 @@
 \alias{gmwm_arma_cpp}
 \title{GMWM ARMA}
 \usage{
-...(x)
+gmwm_arma_cpp(theta, V, p, q, tau, wv_empir)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1.}
@@ -31,7 +31,7 @@ indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA
 If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 }
 \examples{
-...
+# Coming soon
 }
 \author{
 JJB
@@ -39,4 +39,5 @@ JJB
 \references{
 Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 }
+\keyword{internal}
 

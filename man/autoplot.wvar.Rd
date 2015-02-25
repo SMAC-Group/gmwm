@@ -4,12 +4,12 @@
 \alias{autoplot.wvar}
 \title{Graph Wavelet Variances}
 \usage{
-autoplot.wvar(object, ...)
+\method{autoplot}{wvar}(object, ...)
 }
 \arguments{
 \item{object}{A \code{wvar} object.}
 
-\item{...}{Not used...}
+\item{...}{other arguments passed to specific methods}
 }
 \value{
 A ggplot2 graph containing the wavelet variances.

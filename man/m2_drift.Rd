@@ -18,6 +18,6 @@ A \code{vec} containing the second moment of the drift.
 This function computes the second moment of a drift process.
 }
 \examples{
-# Add at a later time
+m2_drift(1, 200)
 }
 

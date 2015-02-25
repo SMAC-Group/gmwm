@@ -19,8 +19,9 @@ This function compute the WV (haar) of a White Noise process
 }
 \examples{
 x.sim = cumsum(rnorm(100000))
-waveletVariance(x.sim)
-wv.theo = wn_to_wv(1, floor(log(length(x.sim),2)))
-lines(wv.theo$scales,wv.theo$WV, col = "red")
+ntau = floor(log(length(x.sim),2))
+tau = 2^(1:ntau)
+wv.theo = wn_to_wv(1, tau)
+plot(tau, wv.theo, col = "red")
 }
 

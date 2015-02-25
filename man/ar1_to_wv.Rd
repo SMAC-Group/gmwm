@@ -7,20 +7,23 @@
 ar1_to_wv(phi, sig2, Tau)
 }
 \arguments{
-\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{phi}{A \code{double} that is the phi term of the AR(1) process}
 
-\item{omega}{A \code{double} corresponding to variance of drift}
+\item{sig2}{A \code{double} corresponding to variance of AR(1) process}
+
+\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
-A \code{vec} containing the wavelet variance of the drift.
+A \code{vec} containing the wavelet variance of the AR(1) process.
 }
 \description{
 This function compute the WV (haar) of an AR(1) process
 }
 \examples{
 x.sim = gen_ar1( N = 10000, phi = 0.9, sig2 = 4 )
-waveletVariance(x.sim)
-wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, floor(log(length(x.sim),2)))
-lines(wv.theo$scales,wv.theo$WV, col = "red")
+ntau = floor(log(length(x.sim),2))
+tau = 2^(1:ntau)
+wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
+plot(tau, wv.theo, col = "red")
 }
 
