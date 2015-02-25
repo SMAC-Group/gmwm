@@ -20,8 +20,9 @@
 #' @name GMWM-package
 #' @docType package
 #' @useDynLib GMWM
-#' @importFrom Rcpp sourceCpp
+#' @importFrom Rcpp evalCpp
 #' @import ggplot2
+#' @exportPattern ^[[:alpha:]]+
 #' @examples
 #' # Fill in at a later time
 #' @seealso \code{avar}
