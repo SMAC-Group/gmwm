@@ -4,12 +4,12 @@
 \alias{print.wvar}
 \title{Print Wavelet Variances}
 \usage{
-\method{print}{wvar}(object, ...)
+\method{print}{wvar}(x, ...)
 }
 \arguments{
-\item{object}{A \code{wvar} object.}
+\item{x}{A \code{wvar} object.}
 
-\item{...}{Not used...}
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 Summary table

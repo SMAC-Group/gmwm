@@ -4,12 +4,12 @@
 \alias{print.modwt}
 \title{Print Maximum Overlap Discrete Wavelet Transform}
 \usage{
-print.modwt(x, ...)
+\method{print}{modwt}(x, ...)
 }
 \arguments{
-\item{...}{Not used}
-
 \item{x}{A \code{modwt} object}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 Prints the modwt matrix decomposition
