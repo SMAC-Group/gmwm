@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.6.2\cr
-#' Date: \tab 2015-02-17\cr
-#' License: \tab MIT + file\cr
+#' Version: \tab 0.6.6\cr
+#' Date: \tab 2015-02-23\cr
+#' License: \tab MIT + file LICENSE\cr
 #' }
 #' Some details should be added  
 #' 
@@ -21,6 +21,7 @@
 #' @docType package
 #' @useDynLib GMWM
 #' @importFrom Rcpp sourceCpp
+#' @import ggplot2
 #' @examples
 #' # Fill in at a later time
 #' @seealso \code{avar}
