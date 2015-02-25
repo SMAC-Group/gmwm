@@ -4,12 +4,12 @@
 \alias{summary.wvar}
 \title{Summary of Wavelet Variances}
 \usage{
-summary.wvar(object, ...)
+\method{summary}{wvar}(object, ...)
 }
 \arguments{
 \item{object}{A \code{wvar} object.}
 
-\item{...}{Not used...}
+\item{...}{additional arguments affecting the summary produced.}
 }
 \value{
 Summary table and other properties of the object.

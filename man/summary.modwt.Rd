@@ -4,12 +4,12 @@
 \alias{summary.modwt}
 \title{Summary Maximum Overlap Discrete Wavelet Transform}
 \usage{
-summary.modwt(x, ...)
+\method{summary}{modwt}(object, ...)
 }
 \arguments{
-\item{...}{Not used}
+\item{object}{A \code{modwt} object}
 
-\item{x}{A \code{modwt} object}
+\item{...}{additional arguments affecting the summary produced.}
 }
 \value{
 Prints the modwt matrix decomposition
