@@ -310,16 +310,17 @@ arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init)
   return r.rows(nf,r.n_elem-1); // returns truncated vec (discards filter)
 }
 
-// @title Expand Grid for Same Dimensional Case
-// @description Creates the different pairings possible with two different variables.
-// @usage expand_grid_red(nx)
-// @param nx An \code{integer} of length f that contains the initial values of the time series in reverse.
-// @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
-// @author JJB
-// @details This function is hidden and is not accessible from R.
-// @name expand_grid_red
-// @docType methods
-// @rdname expand_grid_red-methods
+//' @title Expand Grid for Same Dimensional Case
+//' @description Creates the different pairings possible with two different variables.
+//' @usage expand_grid_red(nx)
+//' @param nx An \code{integer} of length f that contains the initial values of the time series in reverse.
+//' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
+//' @author JJB
+//' @details This function is hidden and is not accessible from R.
+//' @name expand_grid_red
+//' @docType methods
+//' @rdname expand_grid_red-methods
+//' @keywords internal
 arma::mat expand_grid_red(int nx){
   
   arma::mat g(nx*nx,2);
@@ -371,7 +372,6 @@ arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max)
       if (r > p) {
         unsigned int temp_size = ar.n_elem;
         ar.resize(temp_size+r-p);
-        ar.rows(temp_size, temp_size+r-p-1) = 0;
         p = r;
       }
       
@@ -471,7 +471,7 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   arma::vec wvar(ntau);
   
   // initial starting term
-  arma::vec term4=ARMAacf_cpp(ar, ma, n(0));
+  arma::vec term4 = ARMAacf_cpp(ar, ma, n(0));
   wvar(0)=( ( ( n(0)*(1.0-term4(term4.n_elem-1))) / square(n(0)))*sig2)/2.0;
 
   for(unsigned int j = 1; j < ntau; j++){
@@ -719,7 +719,7 @@ arma::vec gen_rw(const unsigned int N, const double sigma_rw = 1)
 //' ntau = floor(log(length(x.sim),2))
 //' tau = 2^(1:ntau)
 //' wv.theo = qn_to_wv(1, tau)
-//' lines(tau, wv.theo, col = "red")
+//' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec qn_to_wv(double q2, const arma::vec& Tau){
   return 3*q2/(2*arma::square(Tau));
@@ -735,7 +735,7 @@ arma::vec qn_to_wv(double q2, const arma::vec& Tau){
 //' ntau = floor(log(length(x.sim),2))
 //' tau = 2^(1:ntau)
 //' wv.theo = wn_to_wv(1, tau)
-//' lines(tau, wv.theo, col = "red")
+//' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec wn_to_wv(double sig2, arma::vec Tau){
 	return sig2/Tau;
@@ -752,7 +752,7 @@ arma::vec wn_to_wv(double sig2, arma::vec Tau){
 //' ntau = floor(log(length(x.sim),2))
 //' tau = 2^(1:ntau)
 //' wv.theo = rw_to_wv(1,tau)
-//' lines(tau, wv.theo, col = "red")
+//' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec rw_to_wv(double sig2, const arma::vec& Tau){
 	return sig2*((2*arma::square(Tau) + 2)/(24*Tau));
@@ -769,7 +769,7 @@ arma::vec rw_to_wv(double sig2, const arma::vec& Tau){
 //' ntau = floor(log(length(x.sim),2))
 //' tau = 2^(1:ntau)
 //' wv.theo = dr_to_wv(1, tau)
-//' lines(tau, wv.theo, col = "red")
+//' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec dr_to_wv(double omega,const arma::vec& Tau){
 	return square(omega)*arma::square(Tau)/16;
@@ -786,7 +786,7 @@ arma::vec dr_to_wv(double omega,const arma::vec& Tau){
 //' ntau = floor(log(length(x.sim),2))
 //' tau = 2^(1:ntau)
 //' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
-//' lines(tau, wv.theo, col = "red")
+//' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
   unsigned int size_tau = Tau.n_elem;
@@ -1361,7 +1361,6 @@ double objFun_find_biwc(double crob, double eff){
 // @return A \code{double} that contains the optimized biwc.
 // @examples
 // find_biwc(0.6)
-/// [[Rcpp::export]]
 double find_biwc(double eff){
   Rcpp::Environment stats("package:stats"); 
   Rcpp::Function optimize = stats["optimize"];    
@@ -1387,7 +1386,6 @@ double objFun_sig_rob_bw(double sig2_bw, arma::vec x, double a_of_c, double crob
 }
 
 // Robust estimator. Inputs are wavelet coefficients (y) and desired level of efficiency. 
-/// [[Rcpp::export]]
 double sig_rob_bw(arma::vec y, double eff=0.6){
   double crob_bw = find_biwc(eff);
 
@@ -2141,6 +2139,7 @@ inline unsigned int count_params(std::map<std::string, int>& w) {
 
 //' @title Count Number of Models (Alphanumeric)
 //' @description Return a model count
+//' @usage count_models_alpha(desc)
 //' @param desc A \code{vector<string>} that contains the model type
 //' @return A \code{vec} with the model counts.
 //' @details 
@@ -2205,8 +2204,9 @@ unsigned int num_model_params(const std::vector<std::string>& desc) {
 //' 
 //' @author JJB
 //' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
 //' @examples
-//' ...
+//' # Coming soon
 // [[Rcpp::export]]
 arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type,
                    const arma::mat& V, const arma::vec& wv_empir,
@@ -2218,8 +2218,9 @@ arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std:
   // Starting values
   arma::vec starting_theta = set_starting_values(theta, desc, model_type);
   
+  // Optimize Starting values via Jannick's Method
   starting_theta = Rcpp_OptimStart(starting_theta, desc, model_type, tau, wv_empir, N);
-      
+
   // ------------------------------------
   // Compute standard GMWM
   // ------------------------------------
@@ -2234,11 +2235,11 @@ arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std:
 }
 
 
-//' @title GMWM IMU
+//' @title GMWM for IMU and SSM
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @usage ...(x)
+//' @usage gmwm_imu_ssm_cpp(desc, signal, model_type, V, wv_empir, tau, N, B = 1000)
 //' @param x A \code{vector} with dimensions N x 1. 
-//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
+//' @param model_type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
 //' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
 //' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
 //' @return gmwm A \code{list} that contains:
@@ -2264,8 +2265,9 @@ arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std:
 //' 
 //' @author JJB
 //' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
 //' @examples
-//' ...
+//' # Coming soon
 // [[Rcpp::export]]
 arma::rowvec gmwm_imu_ssm_cpp(const std::vector<std::string>& desc, const arma::vec& signal, std::string model_type,
                const arma::mat& V, const arma::vec& wv_empir,
@@ -2279,13 +2281,14 @@ arma::rowvec gmwm_imu_ssm_cpp(const std::vector<std::string>& desc, const arma::
   
   // Give it a guess
   arma::vec guess_me = guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B);
-    
+
+  // And return value...
   return adv_gmwm_imu_ssm_cpp(guess_me, desc, model_type, V, wv_empir, tau, N);                        
 }
 
 //' @title GMWM ARMA
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model based on ARMA.
-//' @usage ...(x)
+//' @usage gmwm_arma_cpp(theta, V, p, q, tau, wv_empir)
 //' @param x A \code{vector} with dimensions N x 1. 
 //' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
 //' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
@@ -2302,8 +2305,9 @@ arma::rowvec gmwm_imu_ssm_cpp(const std::vector<std::string>& desc, const arma::
 //' 
 //' @author JJB
 //' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
 //' @examples
-//' ...
+//' # Coming soon
 // [[Rcpp::export]]
 arma::rowvec gmwm_arma_cpp(const arma::vec& theta, const arma::mat& V, unsigned int p, unsigned int q,
                 const arma::vec& tau, const arma::vec& wv_empir){
