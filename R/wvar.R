@@ -43,8 +43,8 @@ wvar = function(x, p = 0.025, robust = FALSE, eff = 0.6) {
 #' @title Print Wavelet Variances
 #' @description Displays the summary table of wavelet variance.
 #' @method print wvar
-#' @param object A \code{wvar} object.
-#' @param ... Not used...
+#' @param x A \code{wvar} object.
+#' @param ... further arguments passed to or from other methods.
 #' @author JJB
 #' @return Summary table
 #' @examples
@@ -52,19 +52,19 @@ wvar = function(x, p = 0.025, robust = FALSE, eff = 0.6) {
 #' x=rnorm(100)
 #' out = wvar(modwt(x))
 #' print( out )
-print.wvar = function(object, ...){
-  mat = matrix(unlist(object[1:3]),ncol=3,byrow=F)
+print.wvar = function(x, ...){
+  mat = matrix(unlist(x[1:3]),ncol=3,byrow=F)
   colnames(mat) = c("Variance", "Low CI", "High CI")
-  rownames(mat) = object$scales
+  rownames(mat) = x$scales
   print(mat)
 }
 
 #' @title Summary of Wavelet Variances
 #' @description Displays the summary table of wavelet variance in addition to CI values and supplied efficiency.
-#' @usage summary.wvar(object, ...)
+#' @method summary wvar
 #' @param object A \code{wvar} object.
-#' @param ... Not used...
 #' @return Summary table and other properties of the object.
+#' @param ... additional arguments affecting the summary produced.
 #' @author JJB
 #' @examples
 #' set.seed(999)
@@ -87,11 +87,29 @@ summary.wvar = function(object, ...){
   print(object)
 }
 
+
+#' @title Wrapper to ggplot Wavelet Variances Graph
+#' @description Creates the wavelet variance graph
+#' @method plot wvar
+#' @param x A \code{wvar} object.
+#' @param ... other arguments passed to specific methods
+#' @return A ggplot2 graph containing the wavelet variances.
+#' @author JJB
+#' @seealso \code{\link{autoplot.wvar}}
+#' @examples
+#' set.seed(999)
+#' x=rnorm(100)
+#' out = wvar(modwt(x))
+#' plot( out )
+plot.wvar = function(x, ...){
+  autoplot.wvar(x)
+}
+
 #' @title Graph Wavelet Variances
 #' @description Creates the wavelet variance graph
-#' @usage autoplot.wvar(object, ...)
+#' @method autoplot wvar
 #' @param object A \code{wvar} object.
-#' @param ... Not used...
+#' @param ... other arguments passed to specific methods
 #' @return A ggplot2 graph containing the wavelet variances.
 #' @author JJB
 #' @examples
@@ -100,6 +118,7 @@ summary.wvar = function(object, ...){
 #' out = wvar(modwt(x))
 #' autoplot( out )
 autoplot.wvar = function(object, ...){
+  .x=low=high=trans_breaks=trans_format=math_format=NULL
   name = if(object$robust){ "Robust"} else{ "Classic" }
   WV = data.frame(var = object$variance, low = object$ci_low, high = object$ci_high, scale = object$scales)
   CI = ggplot(WV, aes( x = scale, y = low), colour = "#003C7D") + geom_line(linetype = "dotted", colour = "#003C7D") + 
@@ -121,9 +140,9 @@ autoplot.wvar = function(object, ...){
 
 #' @title Compare Wavelet Variances Together
 #' @description Creates the wavelet variance graphs with classic and robust together
-#' @usage autoplot.wvarcomp(object, ...)
+#' @method autoplot wvarcomp
 #' @param object A \code{data.frame} containing both sets of variances.
-#' @param ... Not used...
+#' @param ... other arguments passed to specific methods
 #' @return A ggplot2 graph containing both the wavelet variances.
 #' @author JJB
 #' @examples
@@ -133,6 +152,8 @@ autoplot.wvar = function(object, ...){
 #' Robust = wvar(modwt(x), robust=TRUE)
 #' compare.WV(Classic = Classic, Robust = Robust, split = FALSE)
 autoplot.wvarcomp = function(object, ...){
+  
+  scales=low1=high1=WV1=low2=high2=WV2=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
   
   WV = data.frame(WV1 = object$WV1, low1 = object$low1, high1 = object$high1, 
                   WV2 = object$WV2, low2 = object$low2, high2 = object$high2, scales = object$scales)
@@ -167,9 +188,9 @@ autoplot.wvarcomp = function(object, ...){
 #' @title Compare Wavelet Variances on Split
 #' @description Creates the wavelet variance graphs with classic and robust 
 #' on separate graphs with the same panel
-#' @usage autoplot.wvarcomp(object, ...)
+#' @method autoplot wvarcompSplit
 #' @param object A \code{data.frame} containing both sets of variances.
-#' @param ... Not used...
+#' @param ... other arguments passed to specific methods
 #' @return A ggplot2 panel containing two graphs of the wavelet variance.
 #' @author JJB
 #' @examples
@@ -179,6 +200,7 @@ autoplot.wvarcomp = function(object, ...){
 #' Robust = wvar(modwt(x), robust=TRUE)
 #' compare.WV(Classic = Classic, Robust = Robust, split = TRUE)
 autoplot.wvarcompSplit = function(object, ...){
+  low=high=trans_breaks=trans_format=math_format=.x=NULL
   
   minval = min(c(object$low1,object$low2))
   maxval = max(c(object$high1,object$high2))
@@ -213,7 +235,7 @@ autoplot.wvarcompSplit = function(object, ...){
 #' @title Compare Wavelet Variances
 #' @description Compare the estimates given by the classical and robust methods
 #'  of calculating the wavelet variance.
-#' @usage compare_wvar(Classic, Robust, split = TRUE)
+#' @usage compare.wvar(Classic, Robust, split = TRUE)
 #' @param Classic A \code{wvar} object that has \code{robust=false}.
 #' @param Robust A \code{wvar} object that has \code{robust=true}.
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE)
@@ -225,10 +247,10 @@ autoplot.wvarcompSplit = function(object, ...){
 #' Classic = wvar(modwt(x))
 #' Robust = wvar(modwt(x), robust=TRUE)
 #' # Graph both the classic and the robust estimator on the same graph
-#' compare.WV(Classic = Classic, Robust = Robust, split = FALSE)
+#' compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
 #' # Graph both the classic and the robust estimator on split graphs next to each other
-#' compare.WV(Classic = Classic, Robust = Robust, split = TRUE)
-compare_wvar = function(Classic, Robust, split = TRUE){
+#' compare.wvar(Classic = Classic, Robust = Robust, split = TRUE)
+compare.wvar = function(Classic, Robust, split = TRUE){
   if(Classic$robust == TRUE){
     if(Robust$robust == TRUE){
       stop("Double robust estimates detected! You must supply different wavelet variance types to compare. e.g. Classic and Robust")
@@ -236,6 +258,7 @@ compare_wvar = function(Classic, Robust, split = TRUE){
       temp = Classic
       Classic = Robust
       Robust = temp
+      warning("Object types supplied were reversed (e.g. Robust instead of Classical). We've fixed that for you.")
     }
   }else{
     if(Robust$robust == FALSE){
