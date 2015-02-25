@@ -17,6 +17,6 @@ This function compute the link function to constrain parameters to a positive do
 }
 \examples{
 x.sim = runif(100)
-pseudo_logit2(x.sim)
+pseudo_logit(x.sim)
 }
 
