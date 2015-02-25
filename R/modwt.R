@@ -22,25 +22,25 @@ modwt = function(x) {
 
 #' @title Print Maximum Overlap Discrete Wavelet Transform
 #' @description Unlists MODWT object and places it in matrix form
-#' @usage print.modwt(x, ...)
+#' @method print modwt
 #' @param x A \code{modwt} object
-#' @param ... Not used
+#' @param ... further arguments passed to or from other methods.
 #' @return Prints the modwt matrix decomposition
 #' @author JJB
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
 #' print(modwt(x))
-print.modwt=function(object, ...){
-  cat("Results of the MODWT containing ",object$nlevels,"\n")
-  print(matrix(unlist(object$data),ncol=object$nlevels,byrow=F))
+print.modwt=function(x, ...){
+  cat("Results of the MODWT containing ",x$nlevels,"\n")
+  print(matrix(unlist(x$data),ncol=x$nlevels,byrow=F))
 }
 
 #' @title Summary Maximum Overlap Discrete Wavelet Transform
 #' @description Unlists MODWT object and places it in matrix form
-#' @usage summary.modwt(x, ...)
-#' @param x A \code{modwt} object
-#' @param ... Not used
+#' @method summary modwt
+#' @param object A \code{modwt} object
+#' @param ... additional arguments affecting the summary produced.
 #' @return Prints the modwt matrix decomposition
 #' @author JJB
 #' @examples
