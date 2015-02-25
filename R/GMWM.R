@@ -2,8 +2,8 @@
 
 #' @title GMWM for IMU, ARMA, SSM, and Robust
 #' @description GMM object
-#' @usage gmwm(desc, wvcov, signal, model.type="imu", params = list(ar = 1, ma = 2), B = 1000)
-#' @param desc A \code{vec<string>} containing one of the allowed models. Not used if \code{type="arma"}
+#' @usage gmwm(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma = 2), B = 1000)
+#' @param model A \code{ts.model} object containing one of the allowed models. Not used if \code{type="arma"}
 #' @param wvcov A \code{wvcov} object
 #' @param signal A \code{vec} that is the time series being studied
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU, ARMA, or SSM
@@ -23,17 +23,22 @@
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' save1 = gmwm(desc=c("AR1"), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' save2 = gmwm(desc=c("AR1","AR1"), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' save1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' save2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #'  
 #' # ARMA case
 #' set.seed(1336)
-#' x=arima.sim(n = 200, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)), sd = sqrt(0.1796))
+#' x = arima.sim(n = 200, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)), sd = sqrt(0.1796))
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' save = gmwm(wvcov=out, signal=x, model.type="arma", params=list(ar=2,ma=2))
-gmwm = function(desc, wvcov, signal, model.type="imu", params = list(ar = 1, ma = 2), B = 1000){
+gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma = 2), B = 1000){
+  
+  if(!is(model, "ts.model")){
+    stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN). Do NOT use params!")
+  }
+  desc = model$desc
   
   if(model.type == "imu" || model.type == "ssm"){
     if(length(desc) == 0 ){
@@ -60,9 +65,11 @@ gmwm = function(desc, wvcov, signal, model.type="imu", params = list(ar = 1, ma 
     }
     
     N = length(signal)
+    
     out = .Call('GMWM_gmwm_imu_ssm_cpp', PACKAGE = 'GMWM', desc, signal, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales, N, B)
-    print("made it!")
+
     theo = theo_wv(out, desc, wvcov$wv.empir, wvcov$scales, N)
+    
   } else if(model.type == "arma"){
     if(length(params) != 2){
       stop("params must be a list with a length of two. The AR component is first and the MA component is second.")
@@ -138,11 +145,15 @@ gmwm = function(desc, wvcov, signal, model.type="imu", params = list(ar = 1, ma 
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB
 #' @examples
-#' set.seed(999)
-#' x=rnorm(100)
-#' Classic = wvar(modwt(x))
-#' Robust = wvar(modwt(x), robust=TRUE)
-#' autoplot(out)
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
+#' decomp = modwt(x)
+#' wv = wvar(decomp, robust = TRUE)
+#' out = wvcov(decomp, wv, compute.v="diag")
+#' mod = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' autoplot(mod)
 autoplot.gmwm = function(object, ...){
   
   low=high=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
@@ -184,11 +195,16 @@ autoplot.gmwm = function(object, ...){
 #' @return A ggplot2 panel containing one graphs with two GMWM models plotted against each other.
 #' @author JJB
 #' @examples
-#' set.seed(999)
-#' x=rnorm(100)
-#' Classic = wvar(modwt(x))
-#' Robust = wvar(modwt(x), robust=TRUE)
-#' compare.WV(Classic = Classic, Robust = Robust, split = TRUE)
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
+#' decomp = modwt(x)
+#' wv = wvar(decomp, robust = TRUE)
+#' out = wvcov(decomp, wv, compute.v="diag")
+#' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' compare.models(GMWM1, GMWM2, split = FALSE)
 autoplot.comp = function(object, ...){
   
   low=high=emp=theo=model2=trans_breaks=trans_format=math_format=.x=NULL
@@ -234,11 +250,16 @@ autoplot.comp = function(object, ...){
 #' @return A ggplot2 panel containing two graphs of the wavelet variance.
 #' @author JJB
 #' @examples
-#' set.seed(999)
-#' x=rnorm(100)
-#' Classic = wvar(modwt(x))
-#' Robust = wvar(modwt(x), robust=TRUE)
-#' compare.WV(Classic = Classic, Robust = Robust, split = TRUE)
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
+#' decomp = modwt(x)
+#' wv = wvar(decomp, robust = TRUE)
+#' out = wvcov(decomp, wv, compute.v="diag")
+#' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' compare.models(GMWM1, GMWM2, split = TRUE)
 autoplot.compSplit = function(object, ...){
   
   low=high=emp=theo=model2=trans_breaks=trans_format=math_format=.x=NULL
@@ -309,8 +330,8 @@ autoplot.compSplit = function(object, ...){
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' GMWM1 = gmwm(desc=c("AR1"), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' GMWM2 = gmwm(desc=c("AR1","AR1"), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #' compare.models(GMWM1, GMWM2, split = FALSE)
 compare.models = function(GMWM1, GMWM2, split = FALSE){
   x = data.frame(wv.empir = GMWM1$wv.empir, ci_low = GMWM1$ci_low, 
