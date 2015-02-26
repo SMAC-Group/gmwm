@@ -1204,106 +1204,6 @@ arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::v
     return x;
 }
 
-
-//' @title Generate eta3 confidence interval
-//' @description Computes the eta3 CI
-//' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
-//' @param dims A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
-//' @return A \code{matrix} with the structure:
-//' \itemize{
-//'  \item{Column 1}{Wavelet Variance}
-//'  \item{Column 2}{Chi-squared Lower Bounds}
-//'  \item{Column 3}{Chi-squared Upper Bounds}
-//' }
-//' @examples
-//' x=rnorm(100)
-//' out = brick_wall(modwt_cpp(x), haar_filter())
-//' sample = out[[1]]
-//' y = sample*sample/length(sample)
-//' ci_eta3(y, length(sample), 0.025)
-// [[Rcpp::export]]
-arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
-    
-    unsigned int num_elem = dims.n_elem;
-
-    arma::mat out(num_elem, 3);
-
-    for(unsigned int i = 0; i<num_elem;i++){
-      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
-      out(i,1) = eta3 * y(i)/R::qchisq(1-p, eta3, 1, 0); // Lower CI
-      out(i,2) = eta3 * y(i)/R::qchisq(p, eta3, 1, 0); // Upper CI
-    }
-
-    out.col(0) = y;
-
-    return out;
-}
-
-// [[Rcpp::export]]
-arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
-    
-    unsigned int num_elem = dims.n_elem;
-
-    arma::mat out(num_elem, 3);
-    eff = sqrt(eff);
-    for(unsigned int i = 0; i<num_elem;i++){
-      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
-      out(i,1) = eff* eta3 * y(i)/(R::qchisq(1-p, eta3, 1, 0)); // Lower CI
-      out(i,2) = eta3 * y(i)/(eff*R::qchisq(p, eta3, 1, 0)); // Upper CI
-    }
-
-    out.col(0) = y;
-
-    return out;
-}
-
-//' @title Generate a Confidence intervval for a Univariate Time Series
-//' @description Computes an estimate of the multiscale variance and a chi-squared confidence interval
-//' @param x A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
-//' @param type A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
-//' @return A \code{matrix} with the structure:
-//' \itemize{
-//'  \item{Column 1}{Wavelet Variance}
-//'  \item{Column 2}{Chi-squared Lower Bounds}
-//'  \item{Column 3}{Chi-squared Upper Bounds}
-//' }
-//' @details 
-//' This function can be expanded to allow for other confidence interval calculations.
-//' @examples
-//' x=rnorm(100)
-//' wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
-// [[Rcpp::export]]
-arma::mat wave_variance( arma::field<arma::vec> x, String type = "eta3", double p = 0.025){
-  
-  unsigned int num_fields = x.n_elem;
-  arma::vec y(num_fields);
-  arma::vec dims(num_fields);
-  
-  for(unsigned int i=0; i<num_fields;i++){
-    arma::vec temp = x(i);
-    dims(i) = temp.n_elem;
-    y(i) = dot(temp,temp)/dims(i);
-  }
-  
-  arma::mat out(num_fields, 3);
-  
-  if(type == "eta3"){
-      out = ci_eta3(y,dims,p);      
-  }
-  else if(type == "none"){
-      out.col(0) = y;
-  }
-  else{
-      stop("The wave variance type supplied is not supported. Please use: eta3");
-  }
-
-  return out;
-}
-
-
-
 // [[Rcpp::export]]
 arma::mat field_to_matrix(arma::field<arma::vec> x, unsigned int row){
   unsigned int nx = x.n_elem;
@@ -1420,6 +1320,140 @@ double sig_rob_bw(arma::vec y, double eff=0.6){
   return sig2_hat_rob_bw;
 }
 
+//' @title Generate eta3 confidence interval
+//' @description Computes the eta3 CI
+//' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
+//' @param dims A \code{String} indicating the confidence interval being calculated.
+//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+//' @return A \code{matrix} with the structure:
+//' \itemize{
+//'  \item{Column 1}{Wavelet Variance}
+//'  \item{Column 2}{Chi-squared Lower Bounds}
+//'  \item{Column 3}{Chi-squared Upper Bounds}
+//' }
+//' @examples
+//' x=rnorm(100)
+//' out = brick_wall(modwt_cpp(x), haar_filter())
+//' sample = out[[1]]
+//' y = sample*sample/length(sample)
+//' ci_eta3(y, length(sample), 0.025)
+// [[Rcpp::export]]
+arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
+    
+    unsigned int num_elem = dims.n_elem;
+
+    arma::mat out(num_elem, 3);
+
+    for(unsigned int i = 0; i<num_elem;i++){
+      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
+      out(i,1) = eta3 * y(i)/R::qchisq(1-p, eta3, 1, 0); // Lower CI
+      out(i,2) = eta3 * y(i)/R::qchisq(p, eta3, 1, 0); // Upper CI
+    }
+
+    out.col(0) = y;
+
+    return out;
+}
+
+// [[Rcpp::export]]
+arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
+    
+    unsigned int num_elem = dims.n_elem;
+
+    arma::mat out(num_elem, 3);
+    eff = sqrt(eff);
+    for(unsigned int i = 0; i<num_elem;i++){
+      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
+      out(i,1) = eff * eta3 * y(i)/(R::qchisq(1-p, eta3, 1, 0)); // Lower CI
+      out(i,2) = eta3 * y(i)/(eff*R::qchisq(p, eta3, 1, 0)); // Upper CI
+    }
+
+    out.col(0) = y;
+
+    return out;
+}
+
+//' @title Generate a Confidence intervval for a Univariate Time Series
+//' @description Computes an estimate of the multiscale variance and a chi-squared confidence interval
+//' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
+//' @param y A \code{vec} that contains the wave variance.
+//' @param type A \code{String} indicating the confidence interval being calculated.
+//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
+//' @param robust A \code{boolean} to determine the type of wave estimation.
+//' @param eff A \code{double} that indicates the efficiency.
+//' @return A \code{matrix} with the structure:
+//' \itemize{
+//'  \item{Column 1}{Wavelet Variance}
+//'  \item{Column 2}{Chi-squared Lower Bounds}
+//'  \item{Column 3}{Chi-squared Upper Bounds}
+//' }
+//' @details 
+//' This function can be expanded to allow for other confidence interval calculations.
+//' @examples
+//' x=rnorm(100)
+//' wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
+// [[Rcpp::export]]
+arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y, String type = "eta3", double p = 0.025, bool robust = false, double eff = 0.6){
+    
+  unsigned int nb_level = y.n_elem;
+  arma::vec dims(nb_level);
+  
+  for(unsigned int i = 0; i < nb_level; i++){
+    dims(i) = signal_modwt_bw(i).n_elem;
+  }
+
+  arma::mat out(y.n_elem , 3);
+
+  
+  if(type == "eta3"){
+      if(robust){
+        out = ci_eta3_robust(y, dims, p, eff);
+      }
+      else{
+        out = ci_eta3(y, dims,p);  
+      }
+  }
+  else{
+      stop("The wave variance type supplied is not supported. Please use: eta3");
+  }
+
+  return out;
+}
+
+
+//' @title Generate a Wave Variance for a Univariate Time Series
+//' @description Computes an estimate of the wave variance
+//' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
+//' @param robust A \code{boolean} to determine the type of wave estimation.
+//' @param eff A \code{double} that indicates the efficiency.
+//' @return A \code{vec} that contains the wave variance.
+//' @examples
+//' x=rnorm(100)
+//' wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
+// [[Rcpp::export]]
+arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robust = false, double eff = 0.6){
+  
+  unsigned int nb_level = signal_modwt_bw.n_elem;
+  arma::vec y(nb_level);
+  
+  if(robust){
+    // Robust wavelet variance estimation
+    for(unsigned int i=0; i < nb_level; i++){
+      arma::vec wav_coef = sort(signal_modwt_bw(i));
+      y(i) = sig_rob_bw(wav_coef, eff);
+    }
+  }else{
+    // Classical wavelet variance estimation
+    for(unsigned int i=0; i < nb_level;i++){
+      arma::vec temp = signal_modwt_bw(i);
+      y(i) = dot(temp,temp)/temp.n_elem;
+    }
+  }
+  
+  return y;
+}
+
+
 //' @title Computes the (MODWT) wavelet variance
 //' @description Calculates the (MODWT) wavelet variance
 //' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
@@ -1442,29 +1476,16 @@ double sig_rob_bw(arma::vec y, double eff=0.6){
 //' decomp = modwt(x)
 //' wvar_cpp(decomp$data, decomp$nlevels, robust=false, eff=0.6, p = 0.025, strWavelet = "haar")
 // [[Rcpp::export]]
-arma::mat wvar_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, bool robust=false, double eff=0.6, double p = 0.025, std::string ci_type="eta3", std::string strWavelet="haar") {
+arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt, unsigned int nb_level, bool robust=false, double eff=0.6, double p = 0.025, std::string ci_type="eta3", std::string strWavelet="haar") {
   
   // MODWT transform
   arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, select_filter(strWavelet));
   
-  arma::mat vmod;
-  if(robust){
-    // Create wv_robust
-    arma::vec wv_rob(nb_level);
-    arma::vec dims(nb_level);
-    for(unsigned int i=0; i < nb_level; i++){
-      arma::vec wav_coef = sort(signal_modwt_bw(i));
-      dims(i) = wav_coef.n_elem;
-      wv_rob(i) = sig_rob_bw(wav_coef, eff);
-    }
-    vmod = ci_eta3_robust(wv_rob, dims, p, eff);
-    //vmod.col(0) = wv_rob;
-  }else{
-    // Compute wavelet variance  
-    vmod = wave_variance(signal_modwt_bw, ci_type, p);
-  }
+  // Wavelet Variance
+  arma::vec y = wave_variance(signal_modwt_bw, robust, eff);
   
-  return vmod;
+  // Confidence Interval
+  return ci_wave_variance(signal_modwt_bw, y, ci_type, p, robust, eff);
 }
 
 //' @title Computes the MODWT scales
@@ -1950,8 +1971,8 @@ arma::vec set_result_values_arma(arma::vec theta, int p, int q){
 
 // [[Rcpp::export]]
 arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::string>& desc, 
-                            unsigned int tau, unsigned int N, 
-                            unsigned int B = 100, bool var_or_mu = false){
+                            unsigned int tau, unsigned int N, bool robust, double eff,
+                            unsigned int B = 100){
   unsigned int nb_level = floor(log2(N));
   	
 	arma::mat res(B, tau+1);
@@ -1962,17 +1983,9 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::stri
     arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level);
     arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter());
   
-		arma::vec wv_x = wave_variance(signal_modwt_bw, "none").col(0);
-    //waveletVariance(x, compute.v = "diag", verbose = FALSE)$variance
+		arma::vec wv_x = wave_variance(signal_modwt_bw, robust, eff);
     
-    arma::vec temp(1);
-    if(var_or_mu){
-      temp(0) = arma::var(x);
-    }
-    else{
-      temp(0) = arma::mean(x);
-    }
-	  res.row(i) = arma::trans(join_cols(temp,wv_x));
+	  res.row(i) = arma::trans(wv_x);
 	}
 	return cov(res);
 }
@@ -2033,11 +2046,15 @@ inline arma::vec unif_sigma_sample(unsigned int num, double start, double end){
 
 // @title Randomly guess a starting parameter
 // @description Sets starting parameters for each of the given parameters. 
-// @usage guess_initial
+// @usage guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B)
 // @param signal A \code{vec} that contains the data
-// @param w A \code{std::map<std::string,int>} that lists supported models and the amount in the model.
-// @param num_params An \code{unsigned int} 
-// @param compute_v A \code{String} that indicates covariance matrix multiplication. 
+// @param w A \code{map<string,int>} that lists supported models and the amount in the model.
+// @param model_type A \code{string} that indicates whether it is an SSM or IMU.
+// @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+// @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+// @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+// @param N A \code{integer} that indicates the signal length
+// @param B A \code{integer} that indicates how many random draws that should be performed.
 // @return A \code{vec} containing smart parameter starting guesses to be iterated over.
 // @name guess_initial
 // @docType methods
