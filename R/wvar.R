@@ -150,7 +150,7 @@ autoplot.wvar = function(object, ...){
 #' x=rnorm(100)
 #' Classic = wvar(modwt(x))
 #' Robust = wvar(modwt(x), robust=TRUE)
-#' compare.WV(Classic = Classic, Robust = Robust, split = FALSE)
+#' compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
 autoplot.wvarcomp = function(object, ...){
   
   scales=low1=high1=WV1=low2=high2=WV2=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
@@ -198,7 +198,7 @@ autoplot.wvarcomp = function(object, ...){
 #' x=rnorm(100)
 #' Classic = wvar(modwt(x))
 #' Robust = wvar(modwt(x), robust=TRUE)
-#' compare.WV(Classic = Classic, Robust = Robust, split = TRUE)
+#' compare.wvar(Classic = Classic, Robust = Robust, split = TRUE)
 autoplot.wvarcompSplit = function(object, ...){
   low=high=trans_breaks=trans_format=math_format=.x=NULL
   
