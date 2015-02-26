@@ -6,7 +6,7 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.6.6\cr
+#' Version: \tab 0.6.7\cr
 #' Date: \tab 2015-02-23\cr
 #' License: \tab MIT + file LICENSE\cr
 #' }
@@ -21,7 +21,7 @@
 #' @docType package
 #' @useDynLib GMWM
 #' @importFrom Rcpp evalCpp
-#' @import ggplot2
+#' @import ggplot2 grid scales
 #' @exportPattern ^[[:alpha:]]+
 #' @examples
 #' # Fill in at a later time

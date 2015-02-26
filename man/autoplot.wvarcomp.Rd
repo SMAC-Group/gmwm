@@ -22,7 +22,7 @@ set.seed(999)
 x=rnorm(100)
 Classic = wvar(modwt(x))
 Robust = wvar(modwt(x), robust=TRUE)
-compare.WV(Classic = Classic, Robust = Robust, split = FALSE)
+compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
 }
 \author{
 JJB
