@@ -25,7 +25,7 @@ set.seed(1336)
 n = 200
 x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
 decomp = modwt(x)
-wv = wvar(decomp, robust = TRUE)
+wv = wvar(decomp, robust = FALSE)
 out = wvcov(decomp, wv, compute.v="diag")
 GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
