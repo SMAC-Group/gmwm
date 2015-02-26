@@ -21,7 +21,7 @@
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
 #' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
+#' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' save1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #' save2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
@@ -137,10 +137,11 @@ gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma
 #  .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, wvcovdesc, V, wv_empir, tau, N)
 #}
 
-#' @title Graph Solution of the Generalized Method of Wavelet Moments
+
+#' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
-#' @method autoplot gmwm
-#' @param object A \code{data.frame} containing both sets of variances.
+#' @method plot gmwm
+#' @param object A \code{GMWM} object
 #' @param ... other arguments passed to specific methods
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB
@@ -150,7 +151,28 @@ gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
 #' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
+#' wv = wvar(decomp, robust = FALSE)
+#' out = wvcov(decomp, wv, compute.v="diag")
+#' mod = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' plot(mod)
+plot.gmwm = function(x, ...){
+  autoplot(x)
+}
+
+#' @title Graph Solution of the Generalized Method of Wavelet Moments
+#' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
+#' @method autoplot gmwm
+#' @param object A \code{GMWM} object
+#' @param ... other arguments passed to specific methods
+#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
+#' @author JJB
+#' @examples
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
+#' decomp = modwt(x)
+#' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' mod = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #' autoplot(mod)
@@ -200,7 +222,7 @@ autoplot.gmwm = function(object, ...){
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
 #' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
+#' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
@@ -255,7 +277,7 @@ autoplot.comp = function(object, ...){
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
 #' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
+#' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
@@ -328,7 +350,7 @@ autoplot.compSplit = function(object, ...){
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
 #' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
+#' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
