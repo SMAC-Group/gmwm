@@ -2,12 +2,11 @@
 
 #' @title GMWM for IMU, ARMA, SSM, and Robust
 #' @description GMM object
-#' @usage gmwm(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma = 2), B = 1000)
+#' @usage gmwm(model, wvcov, signal, model.type="imu", B = 1000)
 #' @param model A \code{ts.model} object containing one of the allowed models. Not used if \code{type="arma"}
 #' @param wvcov A \code{wvcov} object
 #' @param signal A \code{vec} that is the time series being studied
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU, ARMA, or SSM
-#' @param params A \code{list} containing the numbers of AR and MA parameters. Only used if \code{type="arma"}
 #' @param B A \code{integer} to sample the space for IMU and SSM models to ensure AR1 identitability.
 #' @return A \code{gmwm} object that contains:
 #' \itemize{
@@ -32,8 +31,8 @@
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' save = gmwm(wvcov=out, signal=x, model.type="arma", params=list(ar=2,ma=2))
-gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma = 2), B = 1000){
+#' save = gmwm(ARMA(2,2),wvcov=out, signal=x, model.type="arma")
+gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   
   if(!is(model, "ts.model")){
     stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN). Do NOT use params!")
@@ -57,6 +56,9 @@ gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma
         stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
       }
       ind = 1:np
+      
+      temp.scales = wvcov$scales
+      
       wvcov$scales = wvcov$scales[ind]
       wvcov$wv.empir = wvcov$wv.empir[ind]
       wvcov$V = wvcov$V[ind,ind]
@@ -67,15 +69,16 @@ gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma
     N = length(signal)
     
     out = .Call('GMWM_gmwm_imu_ssm_cpp', PACKAGE = 'GMWM', desc, signal, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales, N, B)
-
+    
+    if(robust){
+      wvcov$scales = temp.scales
+    }
+    
     theo = theo_wv(out, desc, wvcov$wv.empir, wvcov$scales, N)
     
   } else if(model.type == "arma"){
-    if(length(params) != 2){
-      stop("params must be a list with a length of two. The AR component is first and the MA component is second.")
-    }
-    p = params[[1]]
-    q = params[[2]]
+    p = length(grep("\\<AR\\>", desc))
+    q = length(grep("\\<MA\\>", desc))
     np = p+q+1
     if(np > length(wvcov$scales)){
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
@@ -87,6 +90,9 @@ gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma
         stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
       }
       ind = 1:np
+      
+      temp.scales = wvcov$scales
+      
       wvcov$scales = wvcov$scales[ind]
       wvcov$wv.empir = wvcov$wv.empir[ind]
       wvcov$V = wvcov$V[ind,ind]
@@ -99,6 +105,9 @@ gmwm = function(model, wvcov, signal, model.type="imu", params = list(ar = 1, ma
     
     out = .Call('GMWM_gmwm_arma_cpp', PACKAGE = 'GMWM', theta, wvcov$V, p,  q, wvcov$scales, wvcov$wv.empir)
     
+    if(robust){
+      wvcov$scales = temp.scales
+    }
 
     if(p == 0){
       ar = numeric()
