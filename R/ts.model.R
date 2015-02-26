@@ -26,6 +26,7 @@ is.whole = function(x){ is.numeric(x) && floor(x)==x }
 #' @details
 #' A standard deviation is required since the model generation statements utilize 
 #' randomization functions expecting a standard deviation instead of a variance.
+
 #' @examples
 #' AR1()
 #' AR1(phi=.32, sigma=1.3)
@@ -52,6 +53,7 @@ AR1 = function(phi = 0.91, sigma = 1) {
 #' @details
 #' A standard deviation is required since the model generation statements utilize 
 #' randomization functions expecting a standard deviation instead of a variance.
+
 #' @examples
 #' QN()
 #' QN(q2=3.4)
@@ -78,6 +80,7 @@ QN = function(q2 = 1) {
 #' @details
 #' A standard deviation is required since the model generation statements utilize 
 #' randomization functions expecting a standard deviation instead of a variance.
+
 #' @examples
 #' WN()
 #' WN(sigma=3.4)
@@ -104,6 +107,7 @@ WN = function(sigma = 1) {
 #' A standard deviation is required since the model generation statements utilize 
 #' randomization functions expecting a standard deviation instead of a variance.
 #' @author JJB
+
 #' @examples
 #' RW()
 #' RW(sigma=3.4)
@@ -127,6 +131,7 @@ RW = function(sigma = 1) {
 #'  \item{theta}{slope}
 #' }
 #' @author JJB
+
 #' @examples
 #' DR()
 #' DR(slope=3.4)
@@ -155,6 +160,7 @@ DR = function(slope = 5) {
 #' A standard deviation is required since the model generation statements utilize 
 #' randomization functions expecting a standard deviation instead of a variance.
 #' @author JJB
+
 #' @examples
 #' # Create an ARMA(1,2) process
 #' ARMA(ar=1,2)
@@ -187,6 +193,7 @@ ARMA = function(ar = 1, ma = 1, sigma = 1.0) {
 #'  \item{theta}{y theta replicated x times}
 #' }
 #' @author JJB
+#' @export
 #' @examples
 #' 4*DR()+2*WN()
 #' DR()*4 + WN()*2
@@ -215,6 +222,7 @@ ARMA = function(ar = 1, ma = 1, sigma = 1.0) {
 #'  \item{theta}{combined x, y theta}
 #' }
 #' @author JJB
+#' @export
 #' @examples
 #' DR()+WN()
 #' AR1(phi=.3,sigma=.2)
