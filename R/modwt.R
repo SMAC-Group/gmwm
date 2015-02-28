@@ -5,7 +5,7 @@
 #' @return y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 #' @details
 #' Performs a level \eqn{J} decomposition of the time series using the pyramid algorithm.
-#' \eqn{J} is determined by \eqn{floor\left(log_2 \left(length(x\right)\right)\right)}{floor(log2(length(x)))}
+#' \eqn{J} is determined by \eqn{floor\left(log_2 \left(length\left(x\right)\right)\right)}{floor(log2(length(x)))}
 #' This function was designed to minimize the amount of work a user performs. 
 #' If you need more complex computations, see \code{\link{modwt_cpp}}.
 #' @author JJB
