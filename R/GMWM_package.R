@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.6.7\cr
-#' Date: \tab 2015-02-23\cr
+#' Version: \tab 0.7.0\cr
+#' Date: \tab 2015-02-28\cr
 #' License: \tab MIT + file LICENSE\cr
 #' }
 #' Some details should be added  
