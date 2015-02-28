@@ -27,7 +27,9 @@
 #'  
 #' # ARMA case
 #' set.seed(1336)
-#' x = arima.sim(n = 200, list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)), sd = sqrt(0.1796))
+#' x = arima.sim(n = 200, 
+#'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
+#'               sd = sqrt(0.1796))
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
@@ -70,7 +72,7 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
     
     out = .Call('GMWM_gmwm_imu_ssm_cpp', PACKAGE = 'GMWM', desc, signal, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales, N, B)
     
-    if(robust){
+    if(wvcov$robust){
       wvcov$scales = temp.scales
     }
     
@@ -105,7 +107,7 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
     
     out = .Call('GMWM_gmwm_arma_cpp', PACKAGE = 'GMWM', theta, wvcov$V, p,  q, wvcov$scales, wvcov$wv.empir)
     
-    if(robust){
+    if(wvcov$robust){
       wvcov$scales = temp.scales
     }
 
@@ -150,7 +152,7 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
 #' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method plot gmwm
-#' @param object A \code{GMWM} object
+#' @param x A \code{GMWM} object
 #' @param ... other arguments passed to specific methods
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB
