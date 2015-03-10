@@ -89,7 +89,7 @@ double logit(double x){
 //' Start and end must be valid C++ matrix locations. (e.g. matrix cols start at 0 and not 1)
 //' @author JJB
 //' @examples
-//' x = matrix(c(1,2,3,4), nrow=2,byrow=T)
+//' x = matrix(c(1,2,3,4), nrow = 2,byrow = TRUE)
 //' rev_col_subset(x, 1, 0)
 // [[Rcpp::export]]
 arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
@@ -99,13 +99,6 @@ arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
   }
   return A;
 }
-
-// [[Rcpp::export]]
-arma::vec diff_cpp(const arma::vec& x, unsigned int lag = 1){
-  unsigned int n=x.n_elem;
-  return (x.rows(lag,n-1) - x.rows(0,n-lag-1));
-}
-
 
 //' @title Reverse Subset Row
 //' @description Subsets the row by going from high indices to low (the reverse of the supported practice)
@@ -118,7 +111,7 @@ arma::vec diff_cpp(const arma::vec& x, unsigned int lag = 1){
 //' Start and end must be valid C++ matrix locations. (e.g. matrix rows start at 0 and not 1)
 //' @author JJB
 //' @examples
-//' x = matrix(c(1,2,3,4), nrow=2,byrow=T)
+//' x = matrix(c(1,2,3,4), nrow=2,byrow=TRUE)
 //' rev_row_subset(x, 1, 0)
 // [[Rcpp::export]]
 arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end){
@@ -145,6 +138,60 @@ arma::vec reverse_vec(arma::vec x) {
    return x;
 }
 
+//' @title Transform an Armadillo field<vec> to a matrix
+//' @description Unlists vectors in a field and places them into a matrix
+//' @param x A \code{field<vec>}.
+//' @return A \code{mat} containing the field elements within a column.
+//' @author JJB
+//' @examples
+//' x=rnorm(100)
+//' field_to_matrix(modwt_cpp(x))
+// [[Rcpp::export]]
+arma::mat field_to_matrix(arma::field<arma::vec> x){
+  unsigned int nx = x.n_elem;
+  unsigned int row;
+  if(nx > 0){
+    row = x(0).n_elem;
+  }else{
+    row = 99999999999999999;
+  }
+  arma::mat A(row,nx);
+  for(unsigned int i =0; i<nx; i++){
+    A.col(i) = x(i);
+  }
+  return A; 
+}
+
+
+/* ----------------- End Support Functions ------------------- */
+
+/* ----------------- R to Armadillo Functions ------------------ */
+
+//' @title Lagged Differences in Armadillo
+//' @description Returns the ith difference of a time series of rth lag.
+//' @usage diff_cpp(x, lag = 1, differences = 1)
+//' @param x A \code{vec} that is the time series
+//' @param lag A \code{unsigned int} that indicates the lag
+//' @param differences A \code{dif} that indicates how many differences should be taken
+//' @return A \code{vector} containing the differenced time series.
+//' @author JJB
+//' @examples
+//' x = rnorm(10000, 0, 1)
+//' diff_cpp(x,1,1)
+// [[Rcpp::export]]
+arma::vec diff_cpp(arma::vec x, unsigned int lag = 1, unsigned int differences = 1){
+  
+  // Difference the series i times
+  for(unsigned int i=0; i < differences; i++){
+    // Each difference will shorten series length
+    unsigned int n=x.n_elem;
+    // Take the difference based on number of lags
+    x = (x.rows(lag,n-1) - x.rows(0,n-lag-1));
+  }
+  
+  // Return differenced series:
+  return x;
+}
 
 //' @title Converting an ARMA Process to an Infinite MA Process
 //' @description Takes an ARMA function and converts it to an infinite MA process.
@@ -310,17 +357,17 @@ arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init)
   return r.rows(nf,r.n_elem-1); // returns truncated vec (discards filter)
 }
 
-//' @title Expand Grid for Same Dimensional Case
-//' @description Creates the different pairings possible with two different variables.
-//' @usage expand_grid_red(nx)
-//' @param nx An \code{integer} of length f that contains the initial values of the time series in reverse.
-//' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
-//' @author JJB
-//' @details This function is hidden and is not accessible from R.
-//' @name expand_grid_red
-//' @docType methods
-//' @rdname expand_grid_red-methods
-//' @keywords internal
+// @title Expand Grid for Same Dimensional Case
+// @description Creates the different pairings possible with two different variables.
+// @usage expand_grid_red(nx)
+// @param nx An \code{integer} of length f that contains the initial values of the time series in reverse.
+// @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
+// @author JJB
+// @details This function is hidden and is not accessible from R.
+// @name expand_grid_red
+// @docType methods
+// @rdname expand_grid_red-methods
+// @keywords internal
 arma::mat expand_grid_red(int nx){
   
   arma::mat g(nx*nx,2);
@@ -451,6 +498,147 @@ arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max)
   return Acf;
 }
 
+/* ------------------ End R to Armadillo Functions ----------------------- */
+
+
+/* ------------------ Start Analytical Deriative Matrix Functions ---------------------- */
+
+//' Analytic D matrix for AR(1) process
+//' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
+//' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
+//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+//' @details
+//' The haar wavelet variance is given as \eqn{\frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}}}{See PDF Manual for equation}
+//' Note: \eqn{\phi = \rho}{phi = rho} and \eqn{V _0^2 = \sigma _0^2}{V[0]^2 = sigma[0]^2}.
+//' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
+//' @author JJB
+//' @examples
+//' deriv_AR1(.3, 1, 2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_AR1(double phi, double sig2, arma::vec tau){
+     unsigned int ntau = tau.n_elem;
+     arma::mat D(ntau,2);
+     
+     //double phi_n = pow(phi, 0.5); // phi^(1/2)
+     
+     arma::vec phi_tau(ntau);
+     arma::vec phi_tau_1ov2(ntau);
+     arma::vec tausq = arma::square(tau);
+     
+     for(unsigned int i = 0; i<ntau; i++){
+         phi_tau(i) = pow(phi, tau(i)); // phi^(tau)
+         phi_tau_1ov2(i) = pow(phi, tau(i)/2.0); // phi^(tau/2)
+     }
+
+     // partial derivative with respect to phi
+     D.col(0) = (8.0*sig2)/(pow(phi - 1.0, 4.0)*pow(phi + 1.0, 2.0)*tausq) // common term (8v^2)/[(p-1)^4(p+1)^2*tau^2]
+                % ( -2.0 * (phi * ( phi * (tau - 6.0) - 4.0) - tau - 2.0) % phi_tau_1ov2
+                      + (phi * ( phi * (tau - 3.0) - 2.0) - tau - 1.0) % phi_tau
+                      - phi * (phi * (phi * tau + tau + 9) - tau + 6)
+                      + tau - 3.0
+                  );
+                  
+     // partial derivative with respect to sig2
+     D.col(1) = 4.0*(phi*(-8.0*phi_tau_1ov2+2.0*phi_tau+phi*tau+6.0)-tau)/(pow(phi-1.0,3.0)*(phi + 1.0)*tausq);
+     
+     return D;
+}
+
+//' Analytic D matrix for drift process
+//' @param omega A \code{double} that is the slope of the drift.
+//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\omega _0}{omega[0]}.
+//' @details
+//' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{{\tau ^2}\omega _0^2}}{2}}{nu^2(tau) = tau^2 omega_0^2 / 2}.
+//' Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
+//' @author JJB
+//' @examples
+//' deriv_DR(5.3, 2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_DR(double omega, arma::vec tau){
+     unsigned int ntau = tau.n_elem;
+     arma::mat D(ntau ,1);
+     D.col(0) = omega*arma::square(tau);
+     return D;
+}
+
+//' Analytic second derivative matrix for drift process
+//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\omega _0}{omega[0]}.
+//' @details
+//' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{{\tau ^2}\omega _0^2}}{2}}{nu^2(tau) = tau^2 omega_0^2 / 2}.
+//' Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
+//' Taking second derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{{{\partial ^2}}}{{\partial \omega _0^2}}{\nu ^2}\left( \tau  \right) = {\tau ^2}}{tau^2}
+//' @author JJB
+//' @examples
+//' deriv_2nd_DR(2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_2nd_DR(arma::vec tau){
+     unsigned int ntau = tau.n_elem;
+     arma::mat D(ntau, 1);
+     D.col(0) = arma::square(tau);
+     return D;
+}
+
+//' Analytic D matrix quantisation noise process
+//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{Q _0^2}{Q[0]^2}.
+//' @details
+//' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{3Q_0^2}}{{2{\tau ^2}}}}{nu^2(tau) = 3*Q[0]^2 / 2*tau^2}.
+//' Taking the derivative with respect to \eqn{Q _0^2}{Q[0]^2} yields: \deqn{\frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) = \frac{3}{{2{\tau ^2}}}}{3/(2*tau^2)}.
+//' The second derivative derivative with respect to \eqn{Q _0^2}{Q[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
+//' @author JJB
+//' @examples
+//' deriv_QN(2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_QN(arma::vec tau){
+     unsigned int ntau = tau.n_elem;
+     arma::mat D(ntau, 1);
+     D.col(0) = (2.0*arma::square(tau)+1.0)/(24.0*tau);
+     return D;
+}
+
+//' Analytic D matrix random walk process
+//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2}.
+//' @details
+//' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{\left( {2{\tau ^2} + 1} \right)\gamma _0^2}}{{24\tau }}}{nu^2(tau) = (2*tau^2+1)*gamma^2 / (24*tau)}.
+//' Taking the first derivative with respect to \eqn{\gamma _0^2}{gamma_0^2} yields: \deqn{\frac{{{\partial ^2}}}{{\partial \gamma _0^4}}{\nu ^2}\left( \tau  \right) = 0}{(2*tau^2+1) / (24*tau)}
+//' The second derivative derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial \sigma_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
+//' @author JJB
+//' @examples
+//' deriv_RW(2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_RW(arma::vec tau){
+     unsigned int ntau = tau.n_elem;
+     arma::mat D(ntau, 1);
+     D.col(0) = (2.0*arma::square(tau)+1.0)/(24.0*tau);
+     return D;
+}
+
+//' Analytic D matrix white noise process
+//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\sigma _0^2}{sigma[0]^2}.
+//' @details
+//' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{\sigma _0^2}}{\tau }}{nu^2(tau) = sigma_0^2 / tau}.
+//' Taking the derivative with respect to \eqn{\sigma _0^2}{sigma_0^2} yields: \eqn{\frac{\partial }{{\partial \sigma _0^2}}{\nu ^2}\left( \tau  \right) = \frac{1}{\tau }}{1/tau}
+//' @author JJB
+//' @examples
+//' deriv_WN(2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_WN(arma::vec tau){
+     unsigned int ntau = tau.n_elem;
+     arma::mat D(ntau, 1);
+     D.col(0) = 1.0/tau;
+     return D;
+}
+
+/* ----------------------------- End Analytical Deriative Matrix Functions ---------------------------------- */
+
+
+/* ----------------------------- Start Process to WV Functions ------------------------------- */
+
 //' @title ARMA process to WV
 //' @description This function computes the (haar) WV of an ARMA process
 //' @param ar A \code{vec} containing the coefficients of the AR process
@@ -490,6 +678,271 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   return wvar;
 }
 
+
+//' @title Quantisation Noise to WV
+//' @description This function compute the WV (haar) of a Quantisation Noise (QN) process
+//' @param q2 A \code{double} corresponding to variance of drift
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the QN.
+//' @examples
+//' x.sim = 1:1000
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = qn_to_wv(1, tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::vec qn_to_wv(double q2, const arma::vec& Tau){
+  return 3*q2/(2*arma::square(Tau));
+}
+
+//' @title White Noise to WV
+//' @description This function compute the WV (haar) of a White Noise process
+//' @param sig2 A \code{double} corresponding to variance of WN
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the white noise.
+//' @examples
+//' x.sim = cumsum(rnorm(100000))
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = wn_to_wv(1, tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::vec wn_to_wv(double sig2, arma::vec Tau){
+  return sig2/Tau;
+}
+
+
+//' @title Random Walk to WV
+//' @description This function compute the WV (haar) of a Random Walk process
+//' @param sig2 A \code{double} corresponding to variance of RW
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the random walk.
+//' @examples
+//' x.sim = cumsum(rnorm(100000))
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = rw_to_wv(1,tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::vec rw_to_wv(double sig2, const arma::vec& Tau){
+	return sig2*((2*arma::square(Tau) + 2)/(24*Tau));
+}
+
+
+//' @title Drift to WV
+//' @description This function compute the WV (haar) of a Drift process
+//' @param omega A \code{double} corresponding to variance of drift
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the drift.
+//' @examples
+//' x.sim = 1:1000
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = dr_to_wv(1, tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::vec dr_to_wv(double omega,const arma::vec& Tau){
+	return square(omega)*arma::square(Tau)/16;
+}
+
+//' @title AR1 process to WV
+//' @description This function compute the WV (haar) of an AR(1) process
+//' @param phi A \code{double} that is the phi term of the AR(1) process
+//' @param sig2 A \code{double} corresponding to variance of AR(1) process
+//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the AR(1) process.
+//' @examples
+//' x.sim = gen_ar1( N = 10000, phi = 0.9, sig2 = 4 )
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
+  unsigned int size_tau = Tau.n_elem;
+  arma::vec temp_term(size_tau);
+  arma::vec temp_term_redux(size_tau);
+  for(unsigned int i=0; i< size_tau; i++){
+    temp_term(i) = 4*pow(phi,(Tau(i)/2 + 1));
+    temp_term_redux(i) = pow(phi,(Tau(i)+1));
+  }
+	return ((Tau/2 - 3*phi - Tau/2*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(Tau/2)*pow(1-phi,2)*(1-pow(phi,2)))*sig2)/2;
+}
+
+/* ------------------------------ End Process to WV Functions --------------------------------- */
+
+/* ------------------------------ Start Process Generation Functions ------------------------------ */
+
+//' @title Generate a white noise process
+//' @description Generates a white noise process with variance parameter sigma.
+//' @param N An \code{integer} for signal length.
+//' @param sigma_WN A \code{double} that contains process standard deviation.
+//' @return wn A \code{vec} containing the white noise.
+//' @examples
+//' gen_wn(10, 1.5)
+// [[Rcpp::export]]
+arma::vec gen_wn(const unsigned int N, const double sigma_WN)
+{
+	arma::vec wn(N);
+  
+  for(unsigned int i = 0; i < N; i++){
+      wn(i) = R::rnorm(0.0, sigma_WN);
+  }
+
+	return wn;
+}
+
+//' @title Generate a drift
+//' @description Generates a drift sequence with a given slope.
+//' @param N An \code{integer} for signal length.
+//' @param slope A \code{double} that contains drift slope
+//' @return gd A \code{vec} containing the drift.
+//' @examples
+//' gen_dr(10, 8.2)
+// [[Rcpp::export]]
+arma::vec gen_dr(const unsigned int N, const double slope)
+{
+  arma::vec gd(N);
+  gd.fill(slope);
+	return cumsum(gd);
+}
+
+//' @title Generate a Quantisation Noise (QN) sequence
+//' @description Generate an QN sequence given q2
+//' @param N An \code{integer} for signal length.
+//' @param q2 A \code{double} that contains autocorrection.
+//' @return  A \code{vec} containing the QN process.
+//' @details 
+//' To generate the quantisation noise, we follow this recipe:
+//' First, we generate using a random uniform distribution:
+//' \deqn{U_k^*\sim U\left[ {0,1} \right]}{U_k^*~U[0,1]}
+//' 
+//' Then, we multiple the sequence by \eqn{\sqrt{12}}{sqrt(12)} so:
+//' \deqn{{U_k} = \sqrt{12} U_k^*}{U_k = sqrt(12)*U_k^*}
+//' 
+//' Next, we find the derivative of \eqn{{U_k}}{U_k}
+//' \deqn{{{\dot U}_k} = \frac{{{U_{k + \Delta t}} - {U_k}}}{{\Delta t}}}{U_k^. = (U_(k + (delta)t) - U_k)}
+//'
+//' In this case, we modify the derivative such that:
+//' \eqn{{{\dot U}_k}\Delta t = {U_{k + \Delta t}} - {U_k}}{U_k^. * (delta)t = U_{k + (delta)*t} - U_k}
+//'
+//' Thus, we end up with:
+//' \deqn{{x_k} = \sqrt Q {{\dot U}_k}\Delta t}{x_k = sqrt(Q)*U_k^.*(delta)t}
+//' \deqn{{x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)}{x_k = sqrt(Q)* (U_(k+1) - U_(k))}
+//'
+//' @examples
+//' gen_qn(10, 5)
+// [[Rcpp::export]]
+arma::vec gen_qn(const unsigned int N, double q2)
+{
+  double sqrt12 = sqrt(12);
+  
+  arma::vec gu(N+1);
+  
+	for(unsigned int i=0; i <= N; i++ )
+	{		
+		gu(i) = sqrt12*R::runif(0.0,1.0);
+	}
+
+	return sqrt(q2)*diff_cpp(gu);
+}
+
+
+//' @title Generate an AR(1) sequence
+//' @description Generate an AR sequence given phi and sig2.
+//' @details This needs to be extended to AR(p) see \code{arima.sim} and \code{filter}.
+//' @param N An \code{integer} for signal length.
+//' @param phi A \code{double} that contains autocorrection.
+//'	@param sig2 A \code{double} containing the residual variance.
+//' @return gm A \code{vec} containing the AR(1) process.
+//' @examples
+//' gen_ar1(10, 5, 1.2)
+// [[Rcpp::export]]
+arma::vec gen_ar1(const unsigned int N, const double phi, const double sig2)
+{
+
+	arma::vec wn = gen_wn(N, sqrt(sig2));
+	arma::vec gm = arma::zeros<arma::vec>(N);
+	for(unsigned int i=1; i < N; i++ )
+	{		
+		gm(i-1) = phi*gm(i-1) + wn(i-1);
+	}
+
+	return gm;
+}
+
+//' @title Generate a random walk without drift
+//' @description Generates a random walk without drift.
+//' @param N An \code{integer} for signal length.
+//' @param sigma_rw A \code{double} for the deviation of the random walk.
+//' @return grw A \code{vec} containing the random walk without drift.
+//' @examples
+//' gen_rw(10, 8.2)
+// [[Rcpp::export]]
+arma::vec gen_rw(const unsigned int N, const double sigma_rw = 1)
+{
+  arma::vec grw(N);
+  for(unsigned int i = 0; i < N; i++){
+      grw(i) = R::rnorm(0.0, sigma_rw);
+  }
+  return cumsum(grw);
+}
+
+/* --------------------- END Process Generation Functions -------------------------- */
+
+
+
+//' @title Expected value DR
+//' @description This function computes the expected value of a drift process.
+//' @param omega A \code{double} corresponding to variance of drift.
+//' @param n_ts An \code{int} indicating the length of the time series.
+//' @return A \code{vec} containing the expected value of the drift.
+//' @examples
+//' e_drift(1,200)
+// [[Rcpp::export]]
+arma::vec e_drift(double omega, int n_ts){
+  arma::vec out(1);
+  out(0) = omega*(n_ts + 1.0)/2.0;
+  return out;
+}
+
+//' @title Second moment DR
+//' @description This function computes the second moment of a drift process.
+//' @param omega A \code{double} corresponding to variance of drift.
+//' @param n_ts An \code{int} indicating the length of the time series.
+//' @return A \code{vec} containing the second moment of the drift.
+//' @examples
+//' m2_drift(1, 200)
+// [[Rcpp::export]]
+arma::vec m2_drift(double omega, int n_ts){
+  arma::vec out(1);
+  out(0)=(omega*omega)*(double(n_ts*n_ts)/3.0 + double(n_ts)/2.0 + 1.0/6.0);
+  return out;
+}
+
+//' @title Variance DR
+//' @description This function computes the variance of a drift process.
+//' @param omega A \code{double} corresponding to variance of drift.
+//' @param n_ts An \code{int} indicating the length of the time series.
+//' @return A \code{vec} containing the variance of the drift.
+//' @examples
+//' var_drift(1, 200)
+// [[Rcpp::export]]
+arma::vec var_drift(double omega, int n_ts){
+  // Compute m1
+	arma::vec m1 = e_drift(omega, n_ts);
+	
+	// Compute m2
+	arma::vec m2 = m2_drift(omega, n_ts);
+	
+	// Compute var
+  return (m2 - m1*m1)*double(n_ts)/double(n_ts-1.0);
+}
+
+
+
+
+/* ----------------------- Start Allan Variance Functions ------------------------ */
 
 //' @title Compute Tau-Overlap Allan Variance
 //' @description Computation of Tau-Overlap Allan Variance
@@ -546,7 +999,7 @@ arma::mat avar_to_cpp(arma::vec x) {
 
      // Clusters
      unsigned int M = floor(T/(2*tau) );
-  	 double summed = 0;
+     double summed = 0;
 		 for(unsigned int k = 0; k < M; k++){
 			 summed +=  pow(yBar(2*k+1) - yBar(2*k),2);
 		 }
@@ -634,218 +1087,10 @@ arma::mat avar_mo_cpp(arma::vec x) {
   return av;
 }
 
-//' @title Generate a white noise process
-//' @description Generates a white noise process with variance parameter sigma.
-//' @param N An \code{integer} for signal length.
-//' @param sigma_WN A \code{double} that contains process standard deviation.
-//' @return wn A \code{vec} containing the white noise.
-//' @examples
-//' gen_wn(10, 1.5)
-// [[Rcpp::export]]
-arma::vec gen_wn(const unsigned int N, const double sigma_WN)
-{
-	arma::vec wn(N);
-  
-  for(unsigned int i = 0; i < N; i++){
-      wn(i) = R::rnorm(0.0, sigma_WN);
-  }
-
-	return wn;
-}
-
-//' @title Generate a drift
-//' @description Generates a drift sequence with a given slope.
-//' @param N An \code{integer} for signal length.
-//' @param slope A \code{double} that contains drift slope
-//' @return gd A \code{vec} containing the drift.
-//' @examples
-//' gen_dr(10, 8.2)
-// [[Rcpp::export]]
-arma::vec gen_dr(const unsigned int N, const double slope)
-{
-  arma::vec gd(N);
-  gd.fill(slope);
-	return cumsum(gd);
-}
+/* --------------------- End Allan Variance Functions ---------------------- */
 
 
-//' @title Generate an AR(1) sequence
-//' @description Generate an AR sequence given phi and sig2.
-//' @details This needs to be extended to AR(p) see \code{arima.sim} and \code{filter}.
-//' @param N An \code{integer} for signal length.
-//' @param phi A \code{double} that contains autocorrection.
-//'	@param sig2 A \code{double} containing the residual variance.
-//' @return gm A \code{vec} containing the AR(1) process.
-//' @examples
-//' gen_ar(10, 5, 1.2)
-// [[Rcpp::export]]
-arma::vec gen_ar1(const unsigned int N, const double phi, const double sig2)
-{
-
-	arma::vec wn = gen_wn(N, sqrt(sig2));
-	arma::vec gm = arma::zeros<arma::vec>(N);
-	for(unsigned int i=1; i < N; i++ )
-	{		
-		gm(i-1) = phi*gm(i-1) + wn(i-1);
-	}
-
-	return gm;
-}
-
-//' @title Generate a random walk without drift
-//' @description Generates a random walk without drift.
-//' @param N An \code{integer} for signal length.
-//' @param sigma_rw A \code{double} for the deviation of the random walk.
-//' @return grw A \code{vec} containing the random walk without drift.
-//' @examples
-//' gen_rw(10, 8.2)
-// [[Rcpp::export]]
-arma::vec gen_rw(const unsigned int N, const double sigma_rw = 1)
-{
-  arma::vec grw(N);
-  for(unsigned int i = 0; i < N; i++){
-      grw(i) = R::rnorm(0.0, sigma_rw);
-  }
-  return cumsum(grw);
-}
-
-//' @title Quantisation Noise to WV
-//' @description This function compute the WV (haar) of a Quantisation Noise (QN) process
-//' @param q2 A \code{double} corresponding to variance of drift
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
-//' @return A \code{vec} containing the wavelet variance of the QN.
-//' @examples
-//' x.sim = 1:1000
-//' ntau = floor(log(length(x.sim),2))
-//' tau = 2^(1:ntau)
-//' wv.theo = qn_to_wv(1, tau)
-//' plot(tau, wv.theo, col = "red")
-// [[Rcpp::export]]
-arma::vec qn_to_wv(double q2, const arma::vec& Tau){
-  return 3*q2/(2*arma::square(Tau));
-}
-
-//' @title White Noise to WV
-//' @description This function compute the WV (haar) of a White Noise process
-//' @param sig2 A \code{double} corresponding to variance of WN
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
-//' @return A \code{vec} containing the wavelet variance of the white noise.
-//' @examples
-//' x.sim = cumsum(rnorm(100000))
-//' ntau = floor(log(length(x.sim),2))
-//' tau = 2^(1:ntau)
-//' wv.theo = wn_to_wv(1, tau)
-//' plot(tau, wv.theo, col = "red")
-// [[Rcpp::export]]
-arma::vec wn_to_wv(double sig2, arma::vec Tau){
-	return sig2/Tau;
-}
-
-
-//' @title Random Walk to WV
-//' @description This function compute the WV (haar) of a Random Walk process
-//' @param sig2 A \code{double} corresponding to variance of RW
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
-//' @return A \code{vec} containing the wavelet variance of the random walk.
-//' @examples
-//' x.sim = cumsum(rnorm(100000))
-//' ntau = floor(log(length(x.sim),2))
-//' tau = 2^(1:ntau)
-//' wv.theo = rw_to_wv(1,tau)
-//' plot(tau, wv.theo, col = "red")
-// [[Rcpp::export]]
-arma::vec rw_to_wv(double sig2, const arma::vec& Tau){
-	return sig2*((2*arma::square(Tau) + 2)/(24*Tau));
-}
-
-
-//' @title Drift to WV
-//' @description This function compute the WV (haar) of a Drift process
-//' @param omega A \code{double} corresponding to variance of drift
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
-//' @return A \code{vec} containing the wavelet variance of the drift.
-//' @examples
-//' x.sim = 1:1000
-//' ntau = floor(log(length(x.sim),2))
-//' tau = 2^(1:ntau)
-//' wv.theo = dr_to_wv(1, tau)
-//' plot(tau, wv.theo, col = "red")
-// [[Rcpp::export]]
-arma::vec dr_to_wv(double omega,const arma::vec& Tau){
-	return square(omega)*arma::square(Tau)/16;
-}
-
-//' @title AR1 process to WV
-//' @description This function compute the WV (haar) of an AR(1) process
-//' @param phi A \code{double} that is the phi term of the AR(1) process
-//' @param sig2 A \code{double} corresponding to variance of AR(1) process
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
-//' @return A \code{vec} containing the wavelet variance of the AR(1) process.
-//' @examples
-//' x.sim = gen_ar1( N = 10000, phi = 0.9, sig2 = 4 )
-//' ntau = floor(log(length(x.sim),2))
-//' tau = 2^(1:ntau)
-//' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
-//' plot(tau, wv.theo, col = "red")
-// [[Rcpp::export]]
-arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau){
-  unsigned int size_tau = Tau.n_elem;
-  arma::vec temp_term(size_tau);
-  arma::vec temp_term_redux(size_tau);
-  for(unsigned int i=0; i< size_tau; i++){
-    temp_term(i) = 4*pow(phi,(Tau(i)/2 + 1));
-    temp_term_redux(i) = pow(phi,(Tau(i)+1));
-  }
-	return ((Tau/2 - 3*phi - Tau/2*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(Tau/2)*pow(1-phi,2)*(1-pow(phi,2)))*sig2)/2;
-}
-
-//' @title Expected value DR
-//' @description This function computes the expected value of a drift process.
-//' @param omega A \code{double} corresponding to variance of drift.
-//' @param n_ts An \code{int} indicating the length of the time series.
-//' @return A \code{vec} containing the expected value of the drift.
-//' @examples
-//' e_drift(1,200)
-// [[Rcpp::export]]
-arma::vec e_drift(double omega, int n_ts){
-  arma::vec out(1);
-  out(0) = omega*(n_ts + 1.0)/2.0;
-  return out;
-}
-
-//' @title Second moment DR
-//' @description This function computes the second moment of a drift process.
-//' @param omega A \code{double} corresponding to variance of drift.
-//' @param n_ts An \code{int} indicating the length of the time series.
-//' @return A \code{vec} containing the second moment of the drift.
-//' @examples
-//' m2_drift(1, 200)
-// [[Rcpp::export]]
-arma::vec m2_drift(double omega, int n_ts){
-  arma::vec out(1);
-  out(0)=(omega*omega)*(double(n_ts*n_ts)/3.0 + double(n_ts)/2.0 + 1.0/6.0);
-  return out;
-}
-
-//' @title Variance DR
-//' @description This function computes the variance of a drift process.
-//' @param omega A \code{double} corresponding to variance of drift.
-//' @param n_ts An \code{int} indicating the length of the time series.
-//' @return A \code{vec} containing the variance of the drift.
-//' @examples
-//' var_drift(1, 200)
-// [[Rcpp::export]]
-arma::vec var_drift(double omega, int n_ts){
-  // Compute m1
-	arma::vec m1 = e_drift(omega, n_ts);
-	
-	// Compute m2
-	arma::vec m2 = m2_drift(omega, n_ts);
-	
-	// Compute var
-  return (m2 - m1*m1)*double(n_ts)/double(n_ts-1.0);
-}
-
+/* --------------------- Start DWT and MODWT Functions --------------------- */
 
 //' @title Quadrature Mirror Filter
 //' @description Calculate the series quadrature mirror filter (QMF). Requires a series of an even length.
@@ -945,9 +1190,9 @@ arma::field<arma::vec> select_filter(String filter_name = "haar")
 //' @title Discrete Wavelet Transform
 //' @description Calculation of the coefficients for the discrete wavelet transformation. 
 //' @usage dwt_cpp(x, filter_name, nlevels, boundary)
-//' @param x A \code{vector} with dimensions N x 1. 
+//' @param x A \code{vector} with dimensions \eqn{N\times 1}{N x 1}. 
 //' @param filter_name A \code{string} indicating the filter.
-//' @param nlevels An \code{integer} indicating the level of the decomposition.
+//' @param nlevels An \code{integer}, \eqn{J}, indicating the level of the decomposition.
 //' @param boundary A \code{string} indicating the type of boundary method to use. Either \code{boundary="periodic"} or \code{"reflection"}.
 //' @return y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 //' @details
@@ -955,7 +1200,7 @@ arma::field<arma::vec> select_filter(String filter_name = "haar")
 //' @author JJB
 //' @examples
 //' set.seed(999)
-//' x = rnorm(100)
+//' x = rnorm(2^8)
 //' dwt_cpp(x, "haar", 4, boundary="periodic")
 // [[Rcpp::export]]
 arma::field<arma::vec> dwt_cpp(arma::vec x, String filter_name = "haar", 
@@ -976,7 +1221,7 @@ arma::field<arma::vec> dwt_cpp(arma::vec x, String filter_name = "haar",
   unsigned int J = nlevels;
   
   unsigned int tau = pow(2,J);
-  
+    
   if(double(N)/double(tau) != floor(double(N)/double(tau))){
     stop("The supplied sample size ('x') must be divisible by 2^(nlevels). Either truncate or expand the number of samples.");
   }
@@ -1114,6 +1359,9 @@ arma::field<arma::vec> modwt_cpp(arma::vec x, String filter_name = "haar",
 }
 
 
+/* --------------------- End DWT and MODWT Functions --------------------- */
+
+
 //' @title Absolute Value or Modulus of a Complex Number Squared.
 //' @description Computes the squared value of the Modulus.
 //' @param x A \code{cx_vec}. 
@@ -1180,7 +1428,7 @@ arma::vec dft_acf(arma::vec x){
 //' Note: As a result, there are no NA's introduced and hence the na.omit is not needed.
 //' @examples
 //' x=rnorm(100)
-//' brick_wall(modwt_cpp(x))
+//' brick_wall(modwt_cpp(x), select_filter("haar"))
 // [[Rcpp::export]]
 arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::vec> wave_filter, String method = "modwt") 
 {
@@ -1204,18 +1452,11 @@ arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::v
     return x;
 }
 
-// [[Rcpp::export]]
-arma::mat field_to_matrix(arma::field<arma::vec> x, unsigned int row){
-  unsigned int nx = x.n_elem;
-  arma::mat A(row,nx);
-  for(unsigned int i =0; i<nx; i++){
-    A.col(i) = x(i);
-  }
-  return A; 
-}
+
+/* -------------------------------- END DWT and MODWT Functions ---------------------- */
 
 
-// Implemented for Robust
+/* -------------------------------- Start ROBUST FUNCTIONS -------------------------- */
 
 // @title Objective Function for Tuning Constant
 // @description Objective function that finds tuning constant
@@ -1320,6 +1561,10 @@ double sig_rob_bw(arma::vec y, double eff=0.6){
   return sig2_hat_rob_bw;
 }
 
+/* -------------------------------- End ROBUST FUNCTIONS -------------------------- */
+
+/* -------------------------------- Start Wavelet Variance FUNCTIONS -------------------------- */
+
 //' @title Generate eta3 confidence interval
 //' @description Computes the eta3 CI
 //' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
@@ -1332,11 +1577,10 @@ double sig_rob_bw(arma::vec y, double eff=0.6){
 //'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
 //' @examples
-//' x=rnorm(100)
-//' out = brick_wall(modwt_cpp(x), haar_filter())
-//' sample = out[[1]]
-//' y = sample*sample/length(sample)
-//' ci_eta3(y, length(sample), 0.025)
+//' x = rnorm(100)
+//' signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
+//' y = wave_variance(signal_modwt_bw)
+//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025, robust = FALSE)
 // [[Rcpp::export]]
 arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
     
@@ -1355,6 +1599,23 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
     return out;
 }
 
+//' @title Generate eta3 robust confidence interval
+//' @description Computes the eta3 robust CI
+//' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
+//' @param dims A \code{String} indicating the confidence interval being calculated.
+//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
+//' @param eff A \code{double} that indicates the efficiency.
+//' @return A \code{matrix} with the structure:
+//' \itemize{
+//'  \item{Column 1}{Robust Wavelet Variance}
+//'  \item{Column 2}{Chi-squared Lower Bounds}
+//'  \item{Column 3}{Chi-squared Upper Bounds}
+//' }
+//' @examples
+//' x = rnorm(100)
+//' signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
+//' y = wave_variance(signal_modwt_bw)
+//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
 arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
     
@@ -1390,8 +1651,11 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
 //' @details 
 //' This function can be expanded to allow for other confidence interval calculations.
 //' @examples
-//' x=rnorm(100)
-//' wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
+//' set.seed(1337)
+//' x = rnorm(100)
+//' signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
+//' y = wave_variance(signal_modwt_bw)
+//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025, robust = FALSE)
 // [[Rcpp::export]]
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y, String type = "eta3", double p = 0.025, bool robust = false, double eff = 0.6){
     
@@ -1428,8 +1692,12 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
 //' @param eff A \code{double} that indicates the efficiency.
 //' @return A \code{vec} that contains the wave variance.
 //' @examples
-//' x=rnorm(100)
-//' wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
+//' set.seed(1337)
+//' x = rnorm(100)
+//' signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
+//' wave_variance(signal_modwt_bw)
+//' 
+//' wave_variance(signal_modwt_bw, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
 arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robust = false, double eff = 0.6){
   
@@ -1474,7 +1742,7 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 //' @examples
 //' x=rnorm(100)
 //' decomp = modwt(x)
-//' wvar_cpp(decomp$data, decomp$nlevels, robust=false, eff=0.6, p = 0.025, strWavelet = "haar")
+//' wvar_cpp(decomp$data, decomp$nlevels, robust = FALSE, eff=0.6, p = 0.025, strWavelet = "haar")
 // [[Rcpp::export]]
 arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt, unsigned int nb_level, bool robust=false, double eff=0.6, double p = 0.025, std::string ci_type="eta3", std::string strWavelet="haar") {
   
@@ -1605,6 +1873,8 @@ arma::vec theo_wv(const arma::vec& theta, const std::vector<std::string>& desc,
 
   return wv_theo;
 }
+
+/* -------------------------------- END Wavelet Variance FUNCTIONS -------------------------- */
 
 
 //////// OPTIM FUNCTIONS
@@ -1855,7 +2125,7 @@ arma::vec Rcpp_Optim_ARMA(const arma::vec& theta, const arma::mat& omega, int p,
 
 ///// END ARMA
 
-// [[Rcpp::export]]
+/// [[Rcpp::export]]
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc){
     arma::vec x  = arma::zeros<arma::vec>(N);
     unsigned int i_theta = 0;
@@ -1872,30 +2142,37 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    // Compute theoretical WV
   	    x += gen_ar1(N, phi, sig2);
   	  }
-  	  // RW
-  	  else if(desc[i] == "RW"){
-  	    ++i_theta;
-  	    x += gen_rw(N);
-  	  }
-  	  // DR
+      // DR
   	  else if(desc[i] == "DR"){
   	    double drift = theta(i_theta);
   	    ++i_theta;
   	    x += gen_dr(N, drift);
   	  }
+      // QN
+  	  else if(desc[i] == "QN"){
+        double q2 = theta(i_theta);
+        ++i_theta;
+        
+  	    x += gen_qn(N, q2);
+  	  }
+      // RW
+  	  else if(desc[i] == "RW"){
+        double sigma = theta(i_theta);
+  	    ++i_theta;
+  	    x += gen_rw(N, sigma);
+  	  }
   	  // WN
   	  else {
-  	    double sigmaWN = theta(i_theta);
+  	    double sigma = theta(i_theta);
   	    ++i_theta;
-  	    x += gen_wn(N, sigmaWN);
+  	    x += gen_wn(N, sigma);
   	  }
   }  
     
   return x;
 }
 
-
-// [[Rcpp::export]]
+/// [[Rcpp::export]]
 arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type){
     arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
     unsigned int i_theta = 0;
@@ -1951,7 +2228,7 @@ arma::rowvec set_result_values(const arma::vec& theta, const std::vector<std::st
 }
 
 
-// [[Rcpp::export]]
+/// [[Rcpp::export]]
 arma::vec set_starting_values_arma(arma::vec theta, int p, int q){
   theta.rows(0,p+q-1) = pseudo_logit(theta.rows(0,p+q-1));
   theta(theta.n_elem -1) = log(theta(theta.n_elem -1));
@@ -1960,7 +2237,7 @@ arma::vec set_starting_values_arma(arma::vec theta, int p, int q){
 }
 
 
-// [[Rcpp::export]]
+/// [[Rcpp::export]]
 arma::vec set_result_values_arma(arma::vec theta, int p, int q){    
   theta.rows(0,p+q-1) = pseudo_logit_inv(theta.rows(0,p+q-1));
   theta(theta.n_elem -1) = exp(theta(theta.n_elem -1));
@@ -2085,7 +2362,7 @@ arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const 
           i_theta += 2*out;
         }
         else if(type == "DR"){   
-          double dr_ed = mean(diff_cpp(signal,1));
+          double dr_ed = mean(diff_cpp(signal));
           if(dr_ed > 0){
             dr_ed = R::runif(0,2*dr_ed);
           }else{
@@ -2168,8 +2445,8 @@ inline unsigned int count_params(std::map<std::string, int>& w) {
 //'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
 //'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 //' }
-//' Note: This order is due to the fact that the models are created by inserting into a C++ Map. The map sorts these values...
-//' This function is NOT available in R. 
+//' @examples
+//' count_models_alpha(c("AR1","DR","AR1","WN"))
 // [[Rcpp::export]]
 arma::vec count_models_alpha(const std::vector<std::string>& desc) {
   
@@ -2196,7 +2473,6 @@ unsigned int num_model_params(const std::vector<std::string>& desc) {
 
 //' @title User Specified Initial Values for GMWM Estimator
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @usage adv_gmwm_imu_cpp(theta, desc, V, wv_empir, tau, N)
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.
 //' @param V A \code{matrix} that represents the covariance matrix.
