@@ -25,10 +25,10 @@
 #' # Different p/2 value (e.g. alpha = 0.1)
 #' wvar(modwt(x), p = 0.05)
 wvar = function(x, p = 0.025, robust = FALSE, eff = 0.6) {
-  if(!is(x,"modwt")){
+  if(!is(x,"gmwm_modwt")){
     stop("Need to supply the modwt class.")
   }
-  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', x$data, x$nlevels, robust, eff, p, "eta3", "haar")
+  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', x$data, robust, eff, p, "eta3", "haar")
   scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', x$nlevels)
   out = structure(list(variance = out[,1],
                          ci_low = out[,2], 
