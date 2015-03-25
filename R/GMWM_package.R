@@ -13,10 +13,11 @@
 #' Some details should be added  
 #' 
 #' @author
+#' James Balamuta \email{balamut2@@illinois.edu},
 #' Stephane Guerrier \email{stephane@@illinois.edu},
-#' James Balamuta \email{balamut2@@illinois.edu}
+#' Roberto Molinari
 #'
-#' James Balamuta \email{balamut2@@illinois.edu}
+#' Stephane Guerrier \email{stephane@@illinois.edu}
 #' @name GMWM-package
 #' @docType package
 #' @useDynLib GMWM
