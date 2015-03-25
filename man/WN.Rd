@@ -4,24 +4,23 @@
 \alias{WN}
 \title{Create an White Noise (WN) Process}
 \usage{
-WN(sigma=1)
+WN(sigma2 = NULL)
 }
 \arguments{
-\item{sigma}{A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of a WN process.}
+\item{sigma2}{A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.}
 }
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
  \item{desc}{"WN"}
  \item{theta}{\eqn{\sigma}{sigma}}
+ \item{plength}{Number of Parameters}
+ \item{obj}{Depth of Parameters e.g. list(1)}
+ \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{
 Sets up the necessary backend for the WN process.
-}
-\details{
-A standard deviation is required since the model generation statements utilize
-randomization functions expecting a standard deviation instead of a variance.
 }
 \examples{
 WN()

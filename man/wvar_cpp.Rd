@@ -4,13 +4,11 @@
 \alias{wvar_cpp}
 \title{Computes the (MODWT) wavelet variance}
 \usage{
-wvar_cpp(signal_modwt, nb_level, robust = FALSE, eff = 0.6, p = 0.025,
+wvar_cpp(signal_modwt, robust = FALSE, eff = 0.6, p = 0.025,
   ci_type = "eta3", strWavelet = "haar")
 }
 \arguments{
 \item{signal_modwt}{A \code{field<vec>} that contains the modwt decomposition.}
-
-\item{nb_level}{A \code{integer} that contains the level of decomposition J.}
 
 \item{robust}{A \code{boolean} that triggers the use of the robust estimate.}
 
@@ -39,6 +37,6 @@ This function powers the wvar object. It is also extendable...
 \examples{
 x=rnorm(100)
 decomp = modwt(x)
-wvar_cpp(decomp$data, decomp$nlevels, robust=false, eff=0.6, p = 0.025, strWavelet = "haar")
+wvar_cpp(decomp$data, robust = FALSE)
 }
 

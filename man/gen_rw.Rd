@@ -4,12 +4,12 @@
 \alias{gen_rw}
 \title{Generate a random walk without drift}
 \usage{
-gen_rw(N, sigma_rw = 1)
+gen_rw(N, sigma2 = 1)
 }
 \arguments{
 \item{N}{An \code{integer} for signal length.}
 
-\item{sigma_rw}{A \code{double} for the deviation of the random walk.}
+\item{sigma2}{A \code{double} that contains process variance.}
 }
 \value{
 grw A \code{vec} containing the random walk without drift.

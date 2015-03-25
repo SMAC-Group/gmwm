@@ -9,9 +9,9 @@ brick_wall(x, wave_filter, method = "modwt")
 \arguments{
 \item{x}{A \code{field<vec>} that contains the nlevel decomposition using either modwt or dwt.}
 
-\item{wave_filter}{A \code{field<vec>} containing filter information.}
+\item{wave_filter}{A \code{field<vec>} containing filter information. Only "haar" is implemented.}
 
-\item{method}{A \code{string} to describe the mode.}
+\item{method}{A \code{string} to describe the mode. Choose between "modwt" and "dwt"}
 }
 \value{
 A \code{field<vec>} with boundary modwt or dwt taken care of.
@@ -26,6 +26,6 @@ Note: As a result, there are no NA's introduced and hence the na.omit is not nee
 }
 \examples{
 x=rnorm(100)
-brick_wall(modwt_cpp(x))
+brick_wall(modwt_cpp(x, "haar", 4, boundary="periodic"), select_filter("haar"), "modwt")
 }
 

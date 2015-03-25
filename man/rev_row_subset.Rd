@@ -24,7 +24,7 @@ Consider a vector x=[[1,2],[3,4]], the function would output x=[[3,4],[1,2]].
 Start and end must be valid C++ matrix locations. (e.g. matrix rows start at 0 and not 1)
 }
 \examples{
-x = matrix(c(1,2,3,4), nrow=2,byrow=T)
+x = matrix(c(1,2,3,4), nrow=2,byrow=TRUE)
 rev_row_subset(x, 1, 0)
 }
 \author{

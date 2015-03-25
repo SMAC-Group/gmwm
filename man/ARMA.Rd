@@ -4,20 +4,23 @@
 \alias{ARMA}
 \title{Create an Autoregressive Moving Average (ARMA) Process}
 \usage{
-ARMA(ar = 1, ma = 1, sigma = 1.0)
+ARMA(ar = 1, ma = 1, sigma2 = 1)
 }
 \arguments{
 \item{ar}{A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.}
 
 \item{ma}{A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.}
 
-\item{sigma}{A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.}
+\item{sigma2}{A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.}
 }
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
  \item{desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
  \item{theta}{\eqn{\sigma}{sigma}}
+ \item{plength}{Number of Parameters}
+ \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
+ \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{
@@ -34,7 +37,7 @@ ARMA(ar=1,2)
 ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3))
 
 # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
-ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma = 1.5)
+ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
 }
 \author{
 JJB

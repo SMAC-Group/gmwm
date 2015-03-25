@@ -1,0 +1,75 @@
+---
+title: "Analytical Derivatives for Haar Wavelet Variance"
+author: "JJB "
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analytical Derivatives for Haar Wavelet Variance}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+White Noise
+$$\begin{aligned}
+  {\nu ^2}\left( \tau  \right) &= \frac{{\sigma _0^2}}{\tau } \\
+  \frac{\partial }{{\partial \sigma _0^2}}{\nu ^2}\left( \tau  \right) &= \frac{1}{\tau } \\
+  \frac{\partial ^2 }{{\partial \sigma _0^4}}{\nu ^2}\left( \tau  \right) &= 0 \\
+\end{aligned}$$
+
+Random Walk
+$$\begin{aligned}
+  {\nu ^2}\left( \tau  \right) &= \frac{{\left( {2{\tau ^2} + 1} \right)\gamma _0^2}}{{24\tau }} \\
+  \frac{\partial }{{\partial \gamma _0^2}}{\nu ^2}\left( \tau  \right) &= \frac{{\left( {2{\tau ^2} + 1} \right)}}{{24\tau }} \\
+  \frac{\partial ^2 }{{\partial \gamma _0^4}}{\nu ^2}\left( \tau  \right) &= 0 \\
+\end{aligned}$$
+
+Drift Process
+$$\begin{aligned}
+  {\nu ^2}\left( \tau  \right) &= \frac{{{\tau ^2}\omega _0^2}}{2} \\
+  \frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) &= {\tau ^2}{\omega _0} \\
+  \frac{{{\partial ^2}}}{{\partial \omega _0^2}}{\nu ^2}\left( \tau  \right) &= {\tau ^2} \\
+\end{aligned}$$
+
+Quantisation Noise (QN)
+$$\begin{aligned}
+  {\nu ^2}\left( \tau  \right) &= \frac{{3Q_0^2}}{{2{\tau ^2}}} \\
+  \frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) &= \frac{3}{{2{\tau ^2}}} \\
+  \frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) &= 0 \\
+\end{aligned}$$
+
+AR 1 Process
+$$\begin{aligned}
+  {\nu ^2}\left( \tau  \right) &= \frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}} \\
+  \\
+  &{\text{Derivatives w}}{\text{.r}}{\text{.t to }}\nu _0^2 \\
+  \frac{\partial }{{\partial \nu _0^2}}{\nu ^2}\left( \tau  \right) &= \frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}} \\
+   &= \frac{{4\left( {{\rho _0}\left( { - 8\rho _0^{\tau /2} + 2\rho _0^\tau  + {\rho _0}\tau  + 6} \right) - \tau } \right)}}{{{{\left( {{\rho _0} - 1} \right)}^3}\left( {{\rho _0} + 1} \right){\tau ^2}}} \\
+  \frac{{{\partial ^2}}}{{\partial \nu _0^4}}{\nu ^2}\left( \tau  \right) &= 0 \\ 
+     \\
+   &{\text{Derivatives w}}{\text{.r}}{\text{.t to }}{\rho _0} \\
+\frac{\partial }{{\partial {\rho _0}}}{\nu ^2}\left( \tau  \right) &= \frac{{8\nu _0^2\left( {4\left( {\frac{\tau }{2} + 1} \right)\rho _0^{\tau /2} - (\tau  + 1)\rho _0^\tau  - {\rho _0}\tau  - 3} \right)}}{{{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right){\tau ^2}}} \\
+   &+ \frac{{16\nu _0^2\left( {4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1} - \frac{{\rho _0^2\tau }}{2} - 3{\rho _0} + \frac{\tau }{2}} \right)}}{{{{\left( {1 - {\rho _0}} \right)}^3}\left( {1 - \rho _0^2} \right){\tau ^2}}} \\
+   &+ \frac{{16\nu _0^2{\rho _0}\left( {4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1} - \frac{{\rho _0^2\tau }}{2} - 3{\rho _0} + \frac{\tau }{2}} \right)}}{{{{\left( {1 - {\rho _0}} \right)}^2}{{\left( {1 - \rho _0^2} \right)}^2}{\tau ^2}}} \\
+   &= \frac{{8\nu _0^2}}{{{{\left( {{\rho _0} - 1} \right)}^4}{{\left( {{\rho _0} + 1} \right)}^2}{\tau ^2}}}\left( \begin{gathered}
+   - 2\left( {{\rho _0}\left( {{\rho _0}(\tau  - 6) - 4} \right) - \tau  - 2} \right)\rho _0^{\tau /2} \\
+   + \left( {{\rho _0}\left( {{\rho _0}(\tau  - 3) - 2} \right) - \tau  - 1} \right)\rho _0^\tau  \\
+   - {\rho _0}\left( {{\rho _0}\left( {{\rho _0}\tau  + \tau  + 9} \right) - \tau  + 6} \right) \\
+   + \tau  - 3 \\ 
+\end{gathered}  \right) \\ 
+  \frac{{{\partial ^2}}}{{\partial \rho _0^2}}{\nu ^2}\left( \tau  \right) &= \frac{{8\nu _0^2}}{{{\tau ^2}}}\left( \begin{gathered}
+  \frac{{2\left( {\frac{\tau }{2} + 1} \right)\tau \rho _0^{\frac{\tau }{2} - 1} - \tau (\tau  + 1)\rho _0^{\tau  - 1} - \tau }}{{{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}} \\
+   + \left( {\frac{{8{\rho _0}}}{{{{\left( {1 - {\rho _0}} \right)}^3}{{\left( {1 - \rho _0^2} \right)}^2}}} + \frac{{\frac{{8\rho _0^2}}{{{{\left( {1 - \rho _0^2} \right)}^3}}} + \frac{2}{{{{\left( {1 - \rho _0^2} \right)}^2}}}}}{{{{\left( {1 - {\rho _0}} \right)}^2}}} + \frac{6}{{{{\left( {1 - {\rho _0}} \right)}^4}\left( {1 - \rho _0^2} \right)}}} \right)\left( {4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1} - \frac{{\rho _0^2\tau }}{2} - 3{\rho _0} + \frac{\tau }{2}} \right) \\
+   + 2\left( {\frac{{2{\rho _0}}}{{{{\left( {1 - {\rho _0}} \right)}^2}{{\left( {1 - \rho _0^2} \right)}^2}}} + \frac{2}{{{{\left( {1 - {\rho _0}} \right)}^3}\left( {1 - \rho _0^2} \right)}}} \right)\left( {4\left( {\frac{\tau }{2} + 1} \right)\rho _0^{\tau /2} - (\tau  + 1)\rho _0^\tau  - {\rho _0}\tau  - 3} \right) \\ 
+\end{gathered}  \right) \\
+   &= \frac{{8\nu _0^2}}{{{{\left( {{\rho _0} - 1} \right)}^5}{\rho _0}{{\left( {{\rho _0} + 1} \right)}^3}{\tau ^2}}}\left( \begin{gathered}
+   - \left( {{\rho _0}\left( {{\rho _0}\left( {{\rho _0}(\tau  - 8)\left( {{\rho _0}(\tau  - 6) - 8} \right) - 2(\tau  - 6)\tau  + 64} \right) + 8(\tau  + 2)} \right) + \tau (\tau  + 2)} \right)\rho _0^{\tau /2} \\
+   + \left( {{\rho _0}\left( {{\rho _0}\left( {{\rho _0}(\tau  - 4)\left( {{\rho _0}(\tau  - 3) - 4} \right) - 2(\tau  - 3)\tau  + 16} \right) + 4(\tau  + 1)} \right) + \tau (\tau  + 1)} \right)\rho _0^\tau  \\
+   + 3{\rho _0}\left( {{\rho _0}\left( {{\rho _0}\left( {\rho _0^2\tau  + 2{\rho _0}(\tau  + 6) + 16} \right) - 2(\tau  - 8)} \right) - \tau  + 4} \right) \\ 
+\end{gathered}  \right) 
+   \end{aligned}$$
+
+
+Stefs function:
+$$\frac{{2\left( { - 4{\rho _0}^{\frac{\tau }{2} + 1} + {\rho _0}^{\tau  + 1} + \frac{{{\rho _0}^2\tau }}{2} + 3{\rho _0} - \frac{\tau }{2}} \right)}}{{{{({\rho _0} - 1)}^2}\left( {{\rho _0}^2 - 1} \right){\tau ^2}}}$$
+
+$$- \frac{{4{\sigma ^2}\left( { - 4{\rho _0}^{\frac{\tau }{2} + 1} + {\rho _0}^{\tau  + 1} + \frac{{{\rho _0}^2\tau }}{2} + 3{\rho _0} - \frac{\tau }{2}} \right)}}{{{{({\rho _0} - 1)}^3}\left( {{\rho _0}^2 - 1} \right){\tau ^2}}} - \frac{{4{\rho _0}{\sigma ^2}\left( { - 4{\rho _0}^{\frac{\tau }{2} + 1} + {\rho _0}^{\tau  + 1} + \frac{{{\rho _0}^2\tau }}{2} + 3{\rho _0} - \frac{\tau }{2}} \right)}}{{{{({\rho _0} - 1)}^2}{{\left( {{\rho _0}^2 - 1} \right)}^2}{\tau ^2}}} + \frac{{2{\sigma ^2}\left( { - 4\left( {\frac{\tau }{2} + 1} \right){\rho _0}^{\tau /2} + (\tau  + 1){\rho _0}^\tau  + {\rho _0}\tau  + 3} \right)}}{{{{({\rho _0} - 1)}^2}\left( {{\rho _0}^2 - 1} \right){\tau ^2}}}$$

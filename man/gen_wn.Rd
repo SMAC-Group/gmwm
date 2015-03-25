@@ -4,12 +4,12 @@
 \alias{gen_wn}
 \title{Generate a white noise process}
 \usage{
-gen_wn(N, sigma_WN)
+gen_wn(N, sigma2 = 1)
 }
 \arguments{
 \item{N}{An \code{integer} for signal length.}
 
-\item{sigma_WN}{A \code{double} that contains process standard deviation.}
+\item{sigma2}{A \code{double} that contains process variance.}
 }
 \value{
 wn A \code{vec} containing the white noise.

@@ -4,7 +4,7 @@
 \alias{gen_dr}
 \title{Generate a drift}
 \usage{
-gen_dr(N, slope)
+gen_dr(N, slope = 5)
 }
 \arguments{
 \item{N}{An \code{integer} for signal length.}

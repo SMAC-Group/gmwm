@@ -24,7 +24,8 @@ The types of models supported are:
   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 }
-Note: This order is due to the fact that the models are created by inserting into a C++ Map. The map sorts these values...
-This function is NOT available in R.
+}
+\examples{
+count_models_alpha(c("AR1","DR","AR1","WN"))
 }
 

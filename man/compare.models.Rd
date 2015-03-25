@@ -20,16 +20,16 @@ A ggplot2 panel containing two graphs of the wavelet variance.
 Creates GMWM model fits of two models on split graphs within the same panel.
 }
 \examples{
-# AR
-set.seed(1336)
+\dontrun{# AR
+set.seed(8836)
 n = 200
-x = gen_ar1(n, phi=.1, sig2 = 1) + gen_ar1(n,phi=0.95, sig2 = .1)
+x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
 decomp = modwt(x)
 wv = wvar(decomp, robust = FALSE)
 out = wvcov(decomp, wv, compute.v="diag")
 GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-compare.models(GMWM1, GMWM2, split = FALSE)
+compare.models(GMWM1, GMWM2, split = FALSE)}
 }
 \author{
 JJB

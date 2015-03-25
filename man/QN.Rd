@@ -4,7 +4,7 @@
 \alias{QN}
 \title{Create an Quantisation Noise (QN) Process}
 \usage{
-QN(q2)
+QN(q2 = NULL)
 }
 \arguments{
 \item{q2}{A \code{double} value for the \eqn{Q^2}{Q^2} of a QN process.}
@@ -14,14 +14,13 @@ An S3 object with called ts.model with the following structure:
 \itemize{
  \item{desc}{"QN"}
  \item{theta}{\eqn{Q^2}{Q^2}}
+ \item{plength}{Number of Parameters}
+ \item{obj}{Depth of Parameters e.g. list(1)}
+ \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{
 Sets up the necessary backend for the QN process.
-}
-\details{
-A standard deviation is required since the model generation statements utilize
-randomization functions expecting a standard deviation instead of a variance.
 }
 \examples{
 QN()
