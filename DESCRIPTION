@@ -9,10 +9,11 @@ Description: GMWM implements the theoretical framework for Generalized Method
     of Wavelet Moments (GMWM). The package contains functions that allow a user
     to
 License: MIT + file LICENSE
-Depends:
+Depends: 
     ggplot2
-Imports:
+Imports: 
     Rcpp (>= 0.11.3),
     scales,
     grid
 LinkingTo: Rcpp, RcppArmadillo
+Suggests: testthat
