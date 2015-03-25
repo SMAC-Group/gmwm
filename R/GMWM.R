@@ -47,12 +47,6 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   
   np = model$plength
   
-  print(np)
-  
-  print(wvcov$scales)
-  
-  print(length(wvcov$scales))
-  
   if(model.type != "imu" && model.type != "ssm"){
     stop("Model Type must be either IMU or SSM!")
   }
@@ -81,14 +75,8 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
     wvcov$ci_high = wvcov$ci_high[ind]
   }
   
-  if(model$adv){
-    print("Calling GMWM Adv")
-    out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales)
-  }else{
-    print("Calling GMWM Guided")
-    out = .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', signal, desc, obj, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales, B)
-  }
-  
+  out = .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', signal, desc, obj, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales, B)
+
   if(wvcov$robust){
     wvcov$scales = temp.scales
   }
@@ -110,7 +98,107 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   invisible(out)
 }
 
-
+#' @title GMWM for IMU, ARMA, SSM, and Robust
+#' @description GMM object
+#' @param model A \code{ts.model} object containing one of the allowed models. Not used if \code{type="arma"}
+#' @param wvcov A \code{wvcov} object
+#' @param signal A \code{vec} that is the time series being studied
+#' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU, ARMA, or SSM
+#' @param B An \code{integer} to sample the space for IMU and SSM models to ensure AR1 identitability.
+#' @return A \code{gmwm} object that contains:
+#' \itemize{
+#'  \item{}
+#'  \item{}
+#'  \item{}
+#' }
+#' @examples
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
+#' decomp = modwt(x)
+#' wv = wvar(decomp, robust = FALSE)
+#' out = wvcov(decomp, wv, compute.v="diag")
+#' save1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' save2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#'  
+#' # ARMA case
+#' set.seed(1336)
+#' x = arima.sim(n = 200, 
+#'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
+#'               sd = sqrt(0.1796))
+#' decomp = modwt(x)
+#' wv = wvar(decomp, robust = TRUE)
+#' out = wvcov(decomp, wv, compute.v="diag")
+#' save = gmwm(ARMA(2,2),wvcov=out, signal=x, model.type="arma")
+gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
+  
+  if(!is(model, "ts.model")){
+    stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN, ARMA). ")
+  }
+  
+  if(!model$adv){
+    stop("The model submitted did NOT contain user-specified values for each term. Please recreate the model with specific coefficients.")
+  }
+  
+  theta = model$theta
+  
+  desc = model$obj.desc
+  
+  obj = model$obj
+  
+  np = model$plength
+  
+  if(model.type != "imu" && model.type != "ssm"){
+    stop("Model Type must be either IMU or SSM!")
+  }
+  
+  if(length(desc) == 0 ){
+    stop("desc must contain a list of components (e.g. AR1, DR, RW, QN, WN).")
+  }
+  
+  if(np > length(wvcov$scales)){
+    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
+  }
+  
+  if(wvcov$robust){
+    np = np+1
+    if(np > length(wvcov$scales)){
+      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
+    }
+    ind = 1:np
+    
+    temp.scales = wvcov$scales
+    
+    wvcov$scales = wvcov$scales[ind]
+    wvcov$wv.empir = wvcov$wv.empir[ind]
+    wvcov$V = wvcov$V[ind,ind]
+    wvcov$ci_low = wvcov$ci_low[ind]
+    wvcov$ci_high = wvcov$ci_high[ind]
+  }
+  
+  out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales)
+  
+  if(wvcov$robust){
+    wvcov$scales = temp.scales
+  }
+  
+  theo = theoretical_wv(out, desc, obj, wvcov$scales)
+  
+  colnames(out) = model$desc
+  
+  
+  out = structure(list(estimate = as.vector(out),
+                       wv.empir = wvcov$wv.empir, 
+                       ci_low = wvcov$ci_low, 
+                       ci_high = wvcov$ci_high, 
+                       scales = wvcov$scales, 
+                       theo = theo, 
+                       robust = wvcov$robust,
+                       eff = wvcov$eff,
+                       type = model.type), class = "gmwm")
+  invisible(out)
+}
 
 #' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
