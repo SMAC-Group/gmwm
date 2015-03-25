@@ -33,225 +33,54 @@ using namespace Rcpp;
 
 // // [[Rcpp::plugins(openmp)]]
 
-// computes theoretical wv
-inline arma::vec theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type,
-                                const arma::vec& wv_empir,
-                                const arma::vec& tau, int N){
-  
-  unsigned int num_desc = desc.size();
-  arma::vec wv_theo = arma::zeros<arma::vec>(tau.n_elem);
-    
-  unsigned int i_theta = 0;
-  for(unsigned int i = 0; i < num_desc; i++){
-    
-    // Add ARMA
-  
-    double theta_transformed = exp(theta(i_theta));
-
-    // AR 1
-    if(desc[i] == "AR1"){
-      if(model_type == "imu"){
-        theta_transformed = arma::as_scalar(logit_inv(theta.row(i_theta)));
-      }
-      else{ // ssm
-        theta_transformed = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
-      }
-      ++i_theta;
-      double sig2 = exp(theta(i_theta));
-      
-      // Compute theoretical WV
-      wv_theo += ar1_to_wv(theta_transformed, sig2, tau);
-    }
-    // RW
-    else if(desc[i] == "RW"){
-      wv_theo += rw_to_wv(theta_transformed, tau);
-    }
-    // DR
-    else if(desc[i] == "DR"){
-      wv_theo += dr_to_wv(theta_transformed, tau);
-    }
-    // WN
-    else{
-      wv_theo += wn_to_wv(theta_transformed, tau);
-    }
-    ++i_theta;
-  }
-
-  return wv_theo;
-}
-
-// hiding this function for the moment
-double objFunStarting(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type,
-                      const arma::vec& wv_empir, const arma::vec& tau, int N){
-                   
-  arma::vec wv_theo = theoretical_wv(theta, desc, model_type, wv_empir, tau, N);
-  arma::vec standardized = 1-wv_theo/wv_empir;
-	// Compute quandratic form
-	return arma::as_scalar(trans(standardized)*(standardized));
-}
-
-double objFun(const arma::vec& theta, const arma::mat& omega,
-                 const std::vector<std::string>& desc, std::string model_type,
-                 const arma::vec& wv_empir, const arma::vec& tau, int N){
-                   
-  arma::vec wv_theo = theoretical_wv(theta, desc, model_type, wv_empir, tau, N);
-
-  // Compute quandratic form
-	arma::vec dif = wv_theo - wv_empir;
-	return arma::as_scalar(trans(dif)*omega*dif);
-}
-
-/// [[Rcpp::export]]
-arma::vec Rcpp_OptimStart(const arma::vec&  theta, const std::vector<std::string>& desc, std::string model_type,
-                          const arma::vec& tau, const arma::vec& wv_empir, int N){
-   Rcpp::Environment stats("package:stats"); 
-   Rcpp::Function optim = stats["optim"];    
-
-   Rcpp::List Opt=optim(_["par"] = theta,
-                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting),
-                        _["desc"] = desc,
-                        _["model_type"] = model_type,
-                        _["wv_empir"] = wv_empir,
-                        _["tau"] = tau,
-                        _["N"] = N);
-   
-   arma::vec out = as<arma::vec>(Opt[0]);
-   
-   return out;
-}
-
-/// [[Rcpp::export]]
-arma::vec Rcpp_Optim(const arma::vec&  theta, const std::vector<std::string>& desc, std::string model_type,
-                     const arma::mat& omega, const arma::vec& tau, const arma::vec& wv_empir, int N){
-   Rcpp::Environment stats("package:stats"); 
-   Rcpp::Function optim = stats["optim"];    
-
-   Rcpp::List Opt=optim(_["par"] = theta,
-                        _["fn"]  = Rcpp::InternalFunction(&objFun),
-                        _["omega"] = omega,
-                        _["desc"] = desc,
-                        _["model_type"] = model_type,
-                        _["wv_empir"] = wv_empir,
-                        _["tau"] = tau,
-                        _["N"] = N);
-   
-   arma::vec out = as<arma::vec>(Opt[0]);
-   
-   return out;
-}
-
-
-//////////// ARMA SECTION
-
-
-// hiding this function for the moment
-double objFunStarting_ARMA(const arma::vec& theta, int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
-  arma::vec ar;
-  arma::vec ma;
-
-  if(p == 0){
-    ar = arma::zeros<arma::vec>(0);
-  }else{
-    ar = theta.rows(0,p-1);
-  }
-  
-  if(q == 0){
-    ma = arma::zeros<arma::vec>(0); 
-  }else{
-    ma = theta.rows(p,p+q-1);
-  }
-  
-  double sigma2 = theta(theta.n_elem-1);
-  arma::vec wv_theo = arma_to_wv(ar, ma, tau, sigma2);
-
-  arma::vec standardized = 1-wv_theo/wv_empir;
-  // Compute quandratic form
-  return arma::as_scalar(trans(standardized)*(standardized));
-}
-
-arma::vec Rcpp_OptimStart_ARMA(const arma::vec& theta, int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
-   Rcpp::Environment stats("package:stats"); 
-   Rcpp::Function optim = stats["optim"];    
-
-   Rcpp::List Opt=optim(_["par"] = theta,
-                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting_ARMA),
-                        _["p"] = p,
-                        _["q"] = q,
-                        _["tau"] = tau,
-                        _["wv_empir"] = wv_empir);
-   
-   arma::vec out = as<arma::vec>(Opt[0]);
-   
-   return out;
-}
-
-double objFun_ARMA(const arma::vec& theta, const arma::mat& omega,  int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
-                   
-  arma::vec ar;
-  arma::vec ma;
-  
-  if(p == 0){
-    ar = arma::zeros<arma::vec>(0);
-  }else{
-    ar = pseudo_logit_inv(theta.rows(0,p-1));
-  }
-  
-  if(q == 0){
-    ma = arma::zeros<arma::vec>(0); 
-  }else{
-    ma = pseudo_logit_inv(theta.rows(p,p+q-1));
-  }
-  
-  arma::vec wv_theo = arma_to_wv(ar, ma, tau, exp(theta(theta.n_elem-1)) );
-  // Compute quandratic form
-  arma::vec dif = wv_theo - wv_empir;
-  return arma::as_scalar(trans(dif)*omega*dif);
-}
-
-/// [[Rcpp::export]]
-arma::vec Rcpp_Optim_ARMA(const arma::vec& theta, const arma::mat& omega, int p, int q, const arma::vec& tau, const arma::vec& wv_empir){
-   Rcpp::Environment stats("package:stats"); 
-   Rcpp::Function optim = stats["optim"];    
-
-   Rcpp::List Opt=optim(_["par"] = theta,
-                        _["fn"]  = Rcpp::InternalFunction(&objFun_ARMA),
-                        _["omega"] = omega,
-                        _["p"] = p,
-                        _["q"] = q,
-                        _["tau"] = tau,
-                        _["wv_empir"] = wv_empir);
-   
-   arma::vec out = as<arma::vec>(Opt[0]);
-   
-   return out;
-}
-
-
-///// END ARMA
-
-
-/// [[Rcpp::export]]
-arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type){
+// [[Rcpp::export]]
+arma::vec transform_values(const arma::vec& theta,
+                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
     arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
     
     for(unsigned int i = 0; i < num_desc; i++){
-  	  // AR 1
+      // AR 1
   	  if(desc[i] == "AR1" ){
+        
+        // Apply model specific parameter transformation
         if(model_type == "imu"){
   	      starting(i_theta) = arma::as_scalar(logit(theta.row(i_theta)));
-        }else{ // ssm
+        }else{ // O.W. SSM case
           starting(i_theta) = arma::as_scalar(pseudo_logit(theta.row(i_theta)));
         }
+        
+        // Increase index for phi term
   	    ++i_theta;
+        
+        // Handle the SIGMA2 term
   	    starting(i_theta) = log(theta(i_theta));
-  	    ++i_theta;
+        
   	  }
+      else if( desc[i] == "ARMA" ) {
+        
+        arma::vec arma_params = objdesc(i);
+        
+        unsigned int p = arma_params(0); // AR(P)
+        unsigned int q = arma_params(1); // MA(Q)
+        
+        unsigned int param_space = i_theta + p + q;
+        
+        // Change pseudo_logit to logit based on model type??
+        starting.rows(i_theta, param_space - 1) = pseudo_logit(theta.rows(i_theta, param_space - 1));
+        
+        // Increment index
+        i_theta += param_space;
+        
+        // Take care of SIGMA2 term
+        starting(param_space) = log(theta(param_space));
+
+      }
   	  else{
         starting(i_theta) = log(theta(i_theta));
-  	    ++i_theta;
   	  }
+      ++i_theta;
   }  
     
   return starting;
@@ -259,14 +88,17 @@ arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::str
 
 
 // [[Rcpp::export]]
-arma::rowvec set_result_values(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type){
-    arma::rowvec result  = arma::zeros<arma::rowvec>(theta.n_elem);
+arma::colvec untransform_values(const arma::vec& theta, 
+                                const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
+    arma::colvec result  = arma::zeros<arma::colvec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
     
     for(unsigned int i = 0; i < num_desc; i++){
+      
+      std::string element_type = desc[i];
       // AR 1
-  	  if(desc[i] == "AR1"){
+  	  if(element_type == "AR1"){
         if(model_type == "imu"){
           result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
         }else{ // ssm
@@ -274,38 +106,108 @@ arma::rowvec set_result_values(const arma::vec& theta, const std::vector<std::st
         }
   	    ++i_theta;
   	    result(i_theta) = exp(theta(i_theta));
-  	    ++i_theta;
   	  }
+      else if(element_type == "ARMA" ) {
+        
+        arma::vec arma_params = objdesc(i);
+        
+        unsigned int p = arma_params(0); // AR(P)
+        unsigned int q = arma_params(1); // MA(Q)
+        
+        unsigned int param_space = i_theta + p + q;
+        
+        // Change pseudo_logit_inv to logit_inv based on model type??
+        result.rows(i_theta, param_space - 1) = pseudo_logit_inv(theta.rows(i_theta, param_space - 1));
+        
+        // Increment index to account for P+Q values
+        i_theta += param_space;
+        
+        // Take care of SIGMA2 term
+        result(param_space) = exp(theta(param_space));
+
+      }
   	  else {
         result(i_theta) = exp(theta(i_theta));
-  	    ++i_theta;
   	  }
+      
+      ++i_theta;
   }  
     
   return result;
 }
 
 
-/// [[Rcpp::export]]
-arma::vec set_starting_values_arma(arma::vec theta, int p, int q){
-  theta.rows(0,p+q-1) = pseudo_logit(theta.rows(0,p+q-1));
-  theta(theta.n_elem -1) = log(theta(theta.n_elem -1));
+// hiding this function for the moment
+double objFunStarting(const arma::vec& theta, 
+                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+                      const arma::vec& wv_empir, const arma::vec& tau){
   
-  return theta;
+  arma::vec untransformed_theta = untransform_values(theta, desc, objdesc, model_type);
+  arma::vec wv_theo = theoretical_wv(untransformed_theta, desc, objdesc, tau);
+  arma::vec standardized = 1-wv_theo/wv_empir;
+	// Compute quandratic form
+	return arma::as_scalar(trans(standardized)*(standardized));
 }
 
+double objFun(const arma::vec& theta,
+              const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+              const arma::mat& omega,const arma::vec& wv_empir, const arma::vec& tau){
+  
+  arma::vec untransformed_theta = untransform_values(theta, desc, objdesc, model_type);
+
+  arma::vec wv_theo = theoretical_wv(untransformed_theta, desc, objdesc, tau);
+
+  // Compute quandratic form
+	arma::vec dif = wv_theo - wv_empir;
+	return arma::as_scalar(trans(dif)*omega*dif);
+}
 
 /// [[Rcpp::export]]
-arma::vec set_result_values_arma(arma::vec theta, int p, int q){    
-  theta.rows(0,p+q-1) = pseudo_logit_inv(theta.rows(0,p+q-1));
-  theta(theta.n_elem -1) = exp(theta(theta.n_elem -1));
-  
-  return theta;
+arma::vec Rcpp_OptimStart(const arma::vec&  theta,
+                          const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+                          const arma::vec& wv_empir, const arma::vec& tau){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting),
+                        _["desc"] = desc,
+                        _["objdesc"] = objdesc,
+                        _["model_type"] = model_type,
+                        _["wv_empir"] = wv_empir,
+                        _["tau"] = tau);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
 }
+
+/// [[Rcpp::export]]
+arma::vec Rcpp_Optim(const arma::vec&  theta, 
+                     const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+                     const arma::mat& omega, const arma::vec& wv_empir, const arma::vec& tau){
+   Rcpp::Environment stats("package:stats"); 
+   Rcpp::Function optim = stats["optim"];    
+
+   Rcpp::List Opt=optim(_["par"] = theta,
+                        _["fn"]  = Rcpp::InternalFunction(&objFun),
+                        _["desc"] = desc,
+                        _["objdesc"] = objdesc,
+                        _["model_type"] = model_type,
+                        _["omega"] = omega,
+                        _["wv_empir"] = wv_empir,
+                        _["tau"] = tau);
+   
+   arma::vec out = as<arma::vec>(Opt[0]);
+   
+   return out;
+}
+
 
 
 // [[Rcpp::export]]
-arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::string>& desc, 
+arma::vec gmwm_bootstrapper(const arma::vec&  theta,
+                            const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
                             unsigned int tau, unsigned int N, bool robust, double eff,
                             unsigned int B = 100){
   unsigned int nb_level = floor(log2(N));
@@ -325,79 +227,74 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta, const std::vector<std::stri
 	return cov(res);
 }
 
-inline arma::vec ar1_draw(unsigned int num_ars, double sigma_tot, std::string model_type){
+// [[Rcpp::export]]
+arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std::string model_type){
+  arma::vec temp(2);
   
-  unsigned int num_params = 2*num_ars;
-  arma::vec temp(num_params);
   
-  for(unsigned int i = 0; i < num_ars; i++){
+  if(draw_id == 0){
+    if(model_type == "imu"){
+      // Draw from triangle distributions for phi
+      double U = R::runif(0.0, 1.0/3.0);
+      
+      // Draw for phi
+      temp(0) = 1.0/5.0*(1.0-sqrt(1.0-3.0*U));
+      temp(1) = R::runif(0.95*sigma_tot*(1-square(temp(0))), sigma_tot);
+    }
+    else{ // ssm
+      // Draw for phi
+      temp(0) = R::runif(-0.9999999999999, 0.9999999999999);
+      // Draw for sigma
+      temp(1) = R::runif(0.0000000000001, sigma_tot);
+    }
+  }
+  else{
     
-    // Draw from triangle distributions for phi
-    double U = R::runif(0.0, 1.0/3.0);
-    
-    if(i == 0){
-      if(model_type == "imu"){
-        // Draw for phi
-        temp(2*i) = 1.0/5.0*(1.0-sqrt(1.0-3.0*U));
-        temp(2*i+1) = R::runif(0.95*sigma_tot*(1-square(temp(2*i))), sigma_tot);
-      }
-      else{ // ssm
-        // Draw for phi
-        temp(2*i) = R::runif(-0.9999999999999, 0.9999999999999);
-        // Draw for sigma
-        temp(2*i+1) = R::runif(0.0000000000001, sigma_tot);
-      }
+    if(draw_id!=1){
+      // Draw for phi on i >= 3
+      temp(0) = R::runif(last_phi,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
     }
     else{
-      
-      if(i!=1){
-          // Draw for phi on i >= 3
-          temp(2*i) = R::runif(temp(2*(i-1)),0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
-      }
-      else{
-          // Draw for phi on i==1
-          temp(2*i) = R::runif(0.995,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
-      }
-      
-      // Draw for process variance
-      temp(2*i+1) = R::runif(0.0, 0.01*sigma_tot*(1-square(temp(2*i+1))) );
-    } // end if
+      // Draw for phi on i==1
+      temp(0) = R::runif(0.995,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
+    }
     
-  } // end for
+    // Draw for process variance
+    temp(1) = R::runif(0.0, 0.01*sigma_tot*(1-square(temp(0))) ); // VERIFY THIS SHOULD BE PHI VALUE!!
+    
+  } // end if
   
   return temp;
 }
 
-inline arma::vec unif_sigma_sample(unsigned int num, double start, double end){
-  arma::vec temp(num);
-  
-  for(unsigned int i = 0; i<num; i++){
-    temp(i) = R::runif(start,end);
-  }
-  
-  return temp;
+// [[Rcpp::export]]
+unsigned int count_AR1s(std::vector<std::string> s) {
+  unsigned int count = 0;
+
+  for (unsigned int i = 0; i < s.size(); i++)
+    if (s[i] == "AR1") count++;
+
+  return count;
 }
 
-
-// @title Randomly guess a starting parameter
-// @description Sets starting parameters for each of the given parameters. 
-// @usage guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B)
-// @param signal A \code{vec} that contains the data
-// @param w A \code{map<string,int>} that lists supported models and the amount in the model.
-// @param model_type A \code{string} that indicates whether it is an SSM or IMU.
-// @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
-// @param wv_empir A \code{vec} that contains the empirical wavelet variance.
-// @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
-// @param N A \code{integer} that indicates the signal length
-// @param B A \code{integer} that indicates how many random draws that should be performed.
-// @return A \code{vec} containing smart parameter starting guesses to be iterated over.
-// @name guess_initial
-// @docType methods
-// @rdname guess_initial-methods
-arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const std::vector<std::string>& desc, std::string model_type,
-                        unsigned int num_param, const arma::vec& wv_empir, const arma::vec& tau, 
-                        unsigned int N, unsigned int B=1000){
-  
+//' @title Randomly guess a starting parameter
+//' @description Sets starting parameters for each of the given parameters. 
+//' @usage guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B)
+//' @param signal A \code{vec} that contains the data
+//' @param w A \code{map<string,int>} that lists supported models and the amount in the model.
+//' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
+//' @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+//' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+//' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+//' @param B A \code{integer} that indicates how many random draws that should be performed.
+//' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+//' @examples
+//' #TBA
+arma::vec guess_initial(arma::vec signal,
+                        const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
+                        std::string model_type, unsigned int num_param,
+                        const arma::vec& wv_empir, const arma::vec& tau, unsigned int B=1000){
+                          
   // Obtain the sum of variances for sigma^2_total.
   double sigma_tot = arma::sum(wv_empir);
     
@@ -406,45 +303,57 @@ arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const 
     
   double min_obj_value = std::numeric_limits<double>::max();
   
+  unsigned int num_desc = desc.size();
+  Rcpp::Rcout << "Sigma Total is: " << sigma_tot << std::endl;
+  Rcpp::Rcout << "Number of parameters: " << num_param << std::endl;
+  Rcpp::Rcout << "Number of desc: " << num_desc << std::endl;
+  
   // Generate parameters for the model
   for(unsigned int b = 0; b < B; b++){
     
     unsigned int i_theta = 0;
-    
-    for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
-      int out = p->second;
-      if(out > 0){
-        std::string type = p->first;
-        if(type == "AR1"){
-          temp_theta.rows(i_theta, i_theta + 2*out - 1) = ar1_draw(out, sigma_tot, model_type);
-          i_theta += 2*out;
+    unsigned int AR1_counter = 0; // identifiability hack. =(
+    double prev_phi = 0; // ar1_draw needs external memory
+        
+    for(unsigned int i = 0; i < num_desc; i++){
+      std::string element_type = desc[i];
+      
+      if(element_type == "AR1"){
+        Rcpp::Rcout << "Placing values at:" << i_theta << ", " << i_theta+1 << std::endl;
+        Rcpp::Rcout << "AR1_Counter is at:" << AR1_counter << std::endl;
+        Rcpp::Rcout << "Previous theta is at: " << prev_phi << std::endl;
+        Rcpp::Rcout << "Draw values:" << ar1_draw(AR1_counter, prev_phi, sigma_tot, model_type) << std::endl;
+        temp_theta.rows(i_theta, i_theta + 1) = ar1_draw(AR1_counter, prev_phi, sigma_tot, model_type);
+        Rcpp::Rcout << "Values placed are: " << temp_theta.rows(i_theta, i_theta + 1) << std::endl;
+        prev_phi = temp_theta(i_theta);
+        i_theta++; // needed to account for two parameters (e.g. phi + sigma2). Second shift at end.
+        AR1_counter++;
+      }
+      else if(element_type == "DR"){   
+        double dr_ed = mean(diff_cpp(signal));
+        if(dr_ed > 0){
+          dr_ed = R::runif(0,2*dr_ed);
+        }else{
+          dr_ed = R::runif(2*dr_ed,0);
         }
-        else if(type == "DR"){   
-          double dr_ed = mean(diff_cpp(signal));
-          if(dr_ed > 0){
-            dr_ed = R::runif(0,2*dr_ed);
-          }else{
-            dr_ed = R::runif(2*dr_ed,0);
-          }
-          temp_theta.rows(i_theta, i_theta + out - 1).fill( dr_ed  );
-          i_theta += out;
-        }
-        else if(type == "QN"){
-          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, .0000001, sigma_tot);
-          i_theta += out;
-        }
-        else if(type == "RW"){
-          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot/(signal.n_elem*1000.0), 2.0*sigma_tot/signal.n_elem);
-          i_theta += out;
-        }
-        else{ // WN
-          temp_theta.rows(i_theta, i_theta + out - 1) = unif_sigma_sample(out, sigma_tot/2.0, sigma_tot);
-          i_theta += out;
-        }
-      } // end if
+        temp_theta(i_theta) = dr_ed;
+      }
+      else if(element_type == "QN"){
+        temp_theta(i_theta) = R::runif(.0000001, sigma_tot);
+      }
+      else if(element_type == "RW"){
+        temp_theta(i_theta) = R::runif(sigma_tot/(signal.n_elem*1000.0), 2.0*sigma_tot/signal.n_elem);
+      }
+      else{ // WN
+        temp_theta(i_theta) = R::runif(sigma_tot/2.0, sigma_tot);
+      }
+      i_theta ++;
     } // end for
-
-    double obj = objFunStarting(temp_theta, desc, model_type, wv_empir, tau, N);
+  
+    Rcpp::Rcout << "Temp Theta looks like:" << temp_theta << std::endl;
+    double obj = objFunStarting(temp_theta, desc, objdesc, model_type, wv_empir, tau);
+    
+    Rcpp::Rcout << "Obj is: " << obj << std::endl;
     
     if(min_obj_value > obj){
       min_obj_value = obj;
@@ -454,80 +363,6 @@ arma::vec guess_initial(arma::vec signal, std::map< std::string ,int>& w, const 
   
   return starting_theta;
 }
-
-// Counts 
-inline std::map<std::string, int> counted_map(const std::vector<std::string>& desc){
-  std::map<std::string, int> w;
-  w["AR1"]=0;
-  w["DR"]=0;
-  w["RW"]=0;
-  w["QN"]=0;
-  w["WN"]=0;
-
-  for (unsigned int i = 0; i < desc.size(); i++) {
-        ++w[desc[i]];
-  }
-  
-  return w;
-} 
-
-// 
-inline unsigned int count_params(std::map<std::string, int>& w) {
-  unsigned int num_params = 0;     
-  for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
-    std::string type = p->first;
-    int num_models = p->second;
-    if(type != "AR1" && num_models != 0){
-      ++num_params;
-    }
-    else{
-      if(num_models > 0){
-        num_params += (2*num_models);
-      }
-    }
-  }
-  return num_params;
-}
-
-//' @title Count Number of Models (Alphanumeric)
-//' @description Return a model count
-//' @usage count_models_alpha(desc)
-//' @param desc A \code{vector<string>} that contains the model type
-//' @return A \code{vec} with the model counts.
-//' @details 
-//' The types of models supported are:
-//' \itemize{
-//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-//' }
-//' @examples
-//' count_models_alpha(c("AR1","DR","AR1","WN"))
-// [[Rcpp::export]]
-arma::vec count_models_alpha(const std::vector<std::string>& desc) {
-  
-    std::map<std::string, int> w = counted_map(desc);
-
-    arma::vec num_models = arma::zeros<arma::vec>(w.size());
-    
-    for (std::map<std::string, int>::iterator p = w.begin(); p != w.end(); ++p) {
-              int out = p->second;
-              num_models(std::distance(w.begin(), p)) = out;
-    }
-    return num_models;
-}
-
-// [[Rcpp::export]]
-unsigned int num_model_params(const std::vector<std::string>& desc) {
-  // Count the number of models we are working with
-  std::map<std::string, int> w = counted_map(desc);
-  
-  // Return the total number of parameters we need to setup.
-  return count_params(w);
-}
-
 
 //' @title User Specified Initial Values for GMWM Estimator
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
@@ -559,19 +394,28 @@ unsigned int num_model_params(const std::vector<std::string>& desc) {
 //' @examples
 //' # Coming soon
 // [[Rcpp::export]]
-arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type,
-                   const arma::mat& V, const arma::vec& wv_empir,
-                   const arma::vec& tau, unsigned int N){
+arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
+                          const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, 
+                          const arma::mat& V, const arma::vec& wv_empir,
+                          const arma::vec& tau){
                                  
   // Number of parameters
   //unsigned int num_param = theta.n_elem;
-      
-  // Starting values
-  arma::vec starting_theta = set_starting_values(theta, desc, model_type);
   
+  Rcpp::Rcout << "Starting transform" << std::endl;
+  
+  // Starting values
+  arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
+  
+  Rcpp::Rcout << "Transform is okay!" << std::endl;
+  
+  Rcpp::Rcout << "Starting optimstart" << std::endl;
+  
+  Rcpp::Rcout << "Values are: " << starting_theta << std::endl;
   // Optimize Starting values via Jannick's Method
-  starting_theta = Rcpp_OptimStart(starting_theta, desc, model_type, tau, wv_empir, N);
-
+  starting_theta = Rcpp_OptimStart(starting_theta, desc, objdesc, model_type, wv_empir, tau);
+  Rcpp::Rcout << "OptimStart is okay!" << std::endl;
+  
   // ------------------------------------
   // Compute standard GMWM
   // ------------------------------------
@@ -579,16 +423,28 @@ arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std:
   // Omega matrix
   arma::mat omega = arma::inv(diagmat(V));
   
+    Rcpp::Rcout << "Finding GMWM!" << std::endl;
   // Find GMWM estimator
-  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, model_type, omega, tau, wv_empir, N);
-  
-  return set_result_values(estim_GMWM, desc, model_type);                          
+  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
+      Rcpp::Rcout << "Found GMWM!" << std::endl;
+
+  return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
 }
 
+// [[Rcpp::export]]
+unsigned int sum_field_vec(const arma::field<arma::vec>& x){
+  unsigned int nelems = x.n_elem;
+  unsigned int total_elems = 0;
+  
+  for(unsigned int i = 0; i < nelems; i++){
+    total_elems += sum(x(i));
+  }
+  
+  return total_elems;
+}
 
-//' @title GMWM for IMU and SSM
+//' @title GMWM for IMU, SSM, and ARMA
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @usage gmwm_imu_ssm_cpp(desc, signal, model_type, V, wv_empir, tau, N, B = 1000)
 //' @param x A \code{vector} with dimensions N x 1. 
 //' @param model_type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
 //' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
@@ -620,61 +476,21 @@ arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std:
 //' @examples
 //' # Coming soon
 // [[Rcpp::export]]
-arma::rowvec gmwm_imu_ssm_cpp(const std::vector<std::string>& desc, const arma::vec& signal, std::string model_type,
-               const arma::mat& V, const arma::vec& wv_empir,
-               const arma::vec& tau, unsigned int N, unsigned int B = 1000){
+arma::rowvec gmwm_cpp(const arma::vec& signal,
+                      const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, 
+                      const arma::mat& V, const arma::vec& wv_empir, const arma::vec& tau, 
+                      unsigned int B = 1000){
   
-  // Count the number of models we are working with
-  std::map<std::string, int> w = counted_map(desc);
   
-  // Return the total number of parameters we need to setup.
-  unsigned int num_param = count_params(w);
+  unsigned int num_param = sum_field_vec(objdesc);
   
   // Give it a guess
-  arma::vec guess_me = guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B);
+  arma::vec guess_me = guess_initial(signal,
+                                     desc, objdesc, model_type, 
+                                     num_param, tau, wv_empir, B);
 
   // And return value...
-  return adv_gmwm_imu_ssm_cpp(guess_me, desc, model_type, V, wv_empir, tau, N);                        
-}
-
-//' @title GMWM ARMA
-//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model based on ARMA.
-//' @usage gmwm_arma_cpp(theta, V, p, q, tau, wv_empir)
-//' @param x A \code{vector} with dimensions N x 1. 
-//' @param type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
-//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
-//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
-//' @return gmwm A \code{list} that contains:
-//' \itemize{
-//'  \item{par}{The estimated model parameters}
-//'  \item{CI}{The 95\% confidence intervals for the estimated model parameters.}
-//' }
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). 
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
-//' @author JJB
-//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-//' @keywords internal
-//' @examples
-//' # Coming soon
-// [[Rcpp::export]]
-arma::rowvec gmwm_arma_cpp(const arma::vec& theta, const arma::mat& V, unsigned int p, unsigned int q,
-                const arma::vec& tau, const arma::vec& wv_empir){
-    
-  arma::vec starting_theta = set_starting_values_arma(theta, p, q);
-
-  // Omega matrix
-  arma::mat omega = arma::inv(diagmat(V));
-  
-  arma::vec values = Rcpp_Optim_ARMA(theta, omega, p, q, tau, wv_empir);
-  
-  // Find GMWM estimator
-    // Initialize it
-  arma::rowvec GMWM = arma::trans(set_result_values_arma(values, p, q));
-      
-  return GMWM;                          
+  return adv_gmwm_cpp(guess_me, desc, objdesc, model_type, V, wv_empir, tau);                        
 }
 
 
