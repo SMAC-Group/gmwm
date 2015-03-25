@@ -20,7 +20,7 @@ A \code{vec} containing the wavelet variance of the AR(1) process.
 This function compute the WV (haar) of an AR(1) process
 }
 \examples{
-x.sim = gen_ar1( N = 10000, phi = 0.9, sig2 = 4 )
+x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
 ntau = floor(log(length(x.sim),2))
 tau = 2^(1:ntau)
 wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)

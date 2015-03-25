@@ -11,8 +11,8 @@ GMWM is a Time Series Package
 \tabular{ll}{
 Package: \tab GMWM\cr
 Type: \tab Package\cr
-Version: \tab 0.6.7\cr
-Date: \tab 2015-02-23\cr
+Version: \tab 0.7.0\cr
+Date: \tab 2015-02-28\cr
 License: \tab MIT + file LICENSE\cr
 }
 Some details should be added
@@ -21,10 +21,11 @@ Some details should be added
 # Fill in at a later time
 }
 \author{
+James Balamuta \email{balamut2@illinois.edu},
 Stephane Guerrier \email{stephane@illinois.edu},
-James Balamuta \email{balamut2@illinois.edu}
+Roberto Molinari
 
-James Balamuta \email{balamut2@illinois.edu}
+Stephane Guerrier \email{stephane@illinois.edu}
 }
 \seealso{
 \code{avar}

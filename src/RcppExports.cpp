@@ -6,6 +6,808 @@
 
 using namespace Rcpp;
 
+// e_drift
+arma::vec e_drift(double omega, int n_ts);
+RcppExport SEXP GMWM_e_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
+        Rcpp::traits::input_parameter< int >::type n_ts(n_tsSEXP );
+        arma::vec __result = e_drift(omega, n_ts);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// m2_drift
+arma::vec m2_drift(double omega, int n_ts);
+RcppExport SEXP GMWM_m2_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
+        Rcpp::traits::input_parameter< int >::type n_ts(n_tsSEXP );
+        arma::vec __result = m2_drift(omega, n_ts);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// var_drift
+arma::vec var_drift(double omega, int n_ts);
+RcppExport SEXP GMWM_var_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
+        Rcpp::traits::input_parameter< int >::type n_ts(n_tsSEXP );
+        arma::vec __result = var_drift(omega, n_ts);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// avar_to_cpp
+arma::mat avar_to_cpp(arma::vec x);
+RcppExport SEXP GMWM_avar_to_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        arma::mat __result = avar_to_cpp(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// avar_mo_cpp
+arma::mat avar_mo_cpp(arma::vec x);
+RcppExport SEXP GMWM_avar_mo_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        arma::mat __result = avar_mo_cpp(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_AR1
+arma::mat deriv_AR1(double phi, double sig2, arma::vec tau);
+RcppExport SEXP GMWM_deriv_AR1(SEXP phiSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type phi(phiSEXP );
+        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_AR1(phi, sig2, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_2nd_AR1
+arma::mat deriv_2nd_AR1(double phi, double sig2, arma::vec tau);
+RcppExport SEXP GMWM_deriv_2nd_AR1(SEXP phiSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type phi(phiSEXP );
+        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_2nd_AR1(phi, sig2, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_DR
+arma::mat deriv_DR(double omega, arma::vec tau);
+RcppExport SEXP GMWM_deriv_DR(SEXP omegaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_DR(omega, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_2nd_DR
+arma::mat deriv_2nd_DR(arma::vec tau);
+RcppExport SEXP GMWM_deriv_2nd_DR(SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_2nd_DR(tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_QN
+arma::mat deriv_QN(arma::vec tau);
+RcppExport SEXP GMWM_deriv_QN(SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_QN(tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_RW
+arma::mat deriv_RW(arma::vec tau);
+RcppExport SEXP GMWM_deriv_RW(SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_RW(tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// deriv_WN
+arma::mat deriv_WN(arma::vec tau);
+RcppExport SEXP GMWM_deriv_WN(SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::mat __result = deriv_WN(tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rev_col_subset
+arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end);
+RcppExport SEXP GMWM_rev_col_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type start(startSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type end(endSEXP );
+        arma::mat __result = rev_col_subset(x, start, end);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rev_row_subset
+arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end);
+RcppExport SEXP GMWM_rev_row_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type start(startSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type end(endSEXP );
+        arma::mat __result = rev_row_subset(x, start, end);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// reverse_vec
+arma::vec reverse_vec(arma::vec x);
+RcppExport SEXP GMWM_reverse_vec(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        arma::vec __result = reverse_vec(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// field_to_matrix
+arma::mat field_to_matrix(arma::field<arma::vec> x);
+RcppExport SEXP GMWM_field_to_matrix(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type x(xSEXP );
+        arma::mat __result = field_to_matrix(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// transform_values
+arma::vec transform_values(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type);
+RcppExport SEXP GMWM_transform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP );
+        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
+        arma::vec __result = transform_values(theta, desc, objdesc, model_type);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// untransform_values
+arma::colvec untransform_values(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type);
+RcppExport SEXP GMWM_untransform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP );
+        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
+        arma::colvec __result = untransform_values(theta, desc, objdesc, model_type);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gmwm_bootstrapper
+arma::vec gmwm_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, unsigned int tau, unsigned int N, bool robust, double eff, unsigned int B = 100);
+RcppExport SEXP GMWM_gmwm_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
+        Rcpp::traits::input_parameter< arma::field<arma::vec>& >::type objdesc(objdescSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type tau(tauSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP );
+        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
+        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP );
+        arma::vec __result = gmwm_bootstrapper(theta, desc, objdesc, tau, N, robust, eff, B);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// ar1_draw
+arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std::string model_type);
+RcppExport SEXP GMWM_ar1_draw(SEXP draw_idSEXP, SEXP last_phiSEXP, SEXP sigma_totSEXP, SEXP model_typeSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< unsigned int >::type draw_id(draw_idSEXP );
+        Rcpp::traits::input_parameter< double >::type last_phi(last_phiSEXP );
+        Rcpp::traits::input_parameter< double >::type sigma_tot(sigma_totSEXP );
+        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
+        arma::vec __result = ar1_draw(draw_id, last_phi, sigma_tot, model_type);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// count_AR1s
+unsigned int count_AR1s(std::vector<std::string> s);
+RcppExport SEXP GMWM_count_AR1s(SEXP sSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< std::vector<std::string> >::type s(sSEXP );
+        unsigned int __result = count_AR1s(s);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// adv_gmwm_cpp
+arma::rowvec adv_gmwm_cpp(const arma::vec& theta, const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, const arma::mat& V, const arma::vec& wv_empir, const arma::vec& tau);
+RcppExport SEXP GMWM_adv_gmwm_cpp(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP VSEXP, SEXP wv_empirSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
+        Rcpp::traits::input_parameter< arma::field<arma::vec>& >::type objdesc(objdescSEXP );
+        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        arma::rowvec __result = adv_gmwm_cpp(theta, desc, objdesc, model_type, V, wv_empir, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// sum_field_vec
+unsigned int sum_field_vec(const arma::field<arma::vec>& x);
+RcppExport SEXP GMWM_sum_field_vec(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type x(xSEXP );
+        unsigned int __result = sum_field_vec(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gmwm_cpp
+arma::rowvec gmwm_cpp(const arma::vec& signal, const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, const arma::mat& V, const arma::vec& wv_empir, const arma::vec& tau, unsigned int B = 1000);
+RcppExport SEXP GMWM_gmwm_cpp(SEXP signalSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP VSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type signal(signalSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
+        Rcpp::traits::input_parameter< arma::field<arma::vec>& >::type objdesc(objdescSEXP );
+        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP );
+        arma::rowvec __result = gmwm_cpp(signal, desc, objdesc, model_type, V, wv_empir, tau, B);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// compute_cov_cpp
+arma::field<arma::mat> compute_cov_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, std::string compute_v = "diag", bool robust = true, double eff = 0.6);
+RcppExport SEXP GMWM_compute_cov_cpp(SEXP signal_modwtSEXP, SEXP nb_levelSEXP, SEXP compute_vSEXP, SEXP robustSEXP, SEXP effSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type signal_modwt(signal_modwtSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type nb_level(nb_levelSEXP );
+        Rcpp::traits::input_parameter< std::string >::type compute_v(compute_vSEXP );
+        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
+        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
+        arma::field<arma::mat> __result = compute_cov_cpp(signal_modwt, nb_level, compute_v, robust, eff);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// dwt_cpp
+arma::field<arma::vec> dwt_cpp(arma::vec x, std::string filter_name = "haar", unsigned int nlevels = 4, std::string boundary = "periodic");
+RcppExport SEXP GMWM_dwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        Rcpp::traits::input_parameter< std::string >::type filter_name(filter_nameSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type nlevels(nlevelsSEXP );
+        Rcpp::traits::input_parameter< std::string >::type boundary(boundarySEXP );
+        arma::field<arma::vec> __result = dwt_cpp(x, filter_name, nlevels, boundary);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// modwt_cpp
+arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name = "haar", unsigned int nlevels = 4, std::string boundary = "periodic");
+RcppExport SEXP GMWM_modwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        Rcpp::traits::input_parameter< std::string >::type filter_name(filter_nameSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type nlevels(nlevelsSEXP );
+        Rcpp::traits::input_parameter< std::string >::type boundary(boundarySEXP );
+        arma::field<arma::vec> __result = modwt_cpp(x, filter_name, nlevels, boundary);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// brick_wall
+arma::field<arma::vec> brick_wall(arma::field<arma::vec> x, arma::field<arma::vec> wave_filter, std::string method = "modwt");
+RcppExport SEXP GMWM_brick_wall(SEXP xSEXP, SEXP wave_filterSEXP, SEXP methodSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type x(xSEXP );
+        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type wave_filter(wave_filterSEXP );
+        Rcpp::traits::input_parameter< std::string >::type method(methodSEXP );
+        arma::field<arma::vec> __result = brick_wall(x, wave_filter, method);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gen_wn
+arma::vec gen_wn(const unsigned int N, const double sigma2 = 1);
+RcppExport SEXP GMWM_gen_wn(SEXP NSEXP, SEXP sigma2SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
+        Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP );
+        arma::vec __result = gen_wn(N, sigma2);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gen_dr
+arma::vec gen_dr(const unsigned int N, const double slope = 5);
+RcppExport SEXP GMWM_gen_dr(SEXP NSEXP, SEXP slopeSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
+        Rcpp::traits::input_parameter< const double >::type slope(slopeSEXP );
+        arma::vec __result = gen_dr(N, slope);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gen_qn
+arma::vec gen_qn(const unsigned int N, double q2 = .1);
+RcppExport SEXP GMWM_gen_qn(SEXP NSEXP, SEXP q2SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
+        Rcpp::traits::input_parameter< double >::type q2(q2SEXP );
+        arma::vec __result = gen_qn(N, q2);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gen_ar1
+arma::vec gen_ar1(const unsigned int N, const double phi = .3, const double sigma2 = 1);
+RcppExport SEXP GMWM_gen_ar1(SEXP NSEXP, SEXP phiSEXP, SEXP sigma2SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
+        Rcpp::traits::input_parameter< const double >::type phi(phiSEXP );
+        Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP );
+        arma::vec __result = gen_ar1(N, phi, sigma2);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// gen_rw
+arma::vec gen_rw(const unsigned int N, const double sigma2 = 1);
+RcppExport SEXP GMWM_gen_rw(SEXP NSEXP, SEXP sigma2SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
+        Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP );
+        arma::vec __result = gen_rw(N, sigma2);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// arma_to_wv
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma);
+RcppExport SEXP GMWM_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP tauSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP );
+        arma::vec __result = arma_to_wv(ar, ma, tau, sigma);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// qn_to_wv
+arma::vec qn_to_wv(double q2, const arma::vec& tau);
+RcppExport SEXP GMWM_qn_to_wv(SEXP q2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type q2(q2SEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        arma::vec __result = qn_to_wv(q2, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// wn_to_wv
+arma::vec wn_to_wv(double sig2, arma::vec tau);
+RcppExport SEXP GMWM_wn_to_wv(SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
+        arma::vec __result = wn_to_wv(sig2, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rw_to_wv
+arma::vec rw_to_wv(double sig2, const arma::vec& tau);
+RcppExport SEXP GMWM_rw_to_wv(SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        arma::vec __result = rw_to_wv(sig2, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// dr_to_wv
+arma::vec dr_to_wv(double omega, const arma::vec& tau);
+RcppExport SEXP GMWM_dr_to_wv(SEXP omegaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        arma::vec __result = dr_to_wv(omega, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// ar1_to_wv
+arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau);
+RcppExport SEXP GMWM_ar1_to_wv(SEXP phiSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type phi(phiSEXP );
+        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        arma::vec __result = ar1_to_wv(phi, sig2, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// theoretical_wv
+arma::vec theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& tau);
+RcppExport SEXP GMWM_theoretical_wv(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
+        arma::vec __result = theoretical_wv(theta, desc, objdesc, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// diff_cpp
+arma::vec diff_cpp(arma::vec x, unsigned int lag, unsigned int differences);
+RcppExport SEXP GMWM_diff_cpp(SEXP xSEXP, SEXP lagSEXP, SEXP differencesSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type lag(lagSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type differences(differencesSEXP );
+        arma::vec __result = diff_cpp(x, lag, differences);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// ARMAtoMA_cpp
+arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max);
+RcppExport SEXP GMWM_ARMAtoMA_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP );
+        Rcpp::traits::input_parameter< int >::type lag_max(lag_maxSEXP );
+        arma::vec __result = ARMAtoMA_cpp(ar, ma, lag_max);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// cfilter
+arma::vec cfilter(arma::vec x, arma::vec filter, int sides, bool circular);
+RcppExport SEXP GMWM_cfilter(SEXP xSEXP, SEXP filterSEXP, SEXP sidesSEXP, SEXP circularSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type filter(filterSEXP );
+        Rcpp::traits::input_parameter< int >::type sides(sidesSEXP );
+        Rcpp::traits::input_parameter< bool >::type circular(circularSEXP );
+        arma::vec __result = cfilter(x, filter, sides, circular);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rfilter
+arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init);
+RcppExport SEXP GMWM_rfilter(SEXP xSEXP, SEXP filterSEXP, SEXP initSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type filter(filterSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type init(initSEXP );
+        arma::vec __result = rfilter(x, filter, init);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// ARMAacf_cpp
+arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max);
+RcppExport SEXP GMWM_ARMAacf_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP );
+        Rcpp::traits::input_parameter< unsigned int >::type lag_max(lag_maxSEXP );
+        arma::vec __result = ARMAacf_cpp(ar, ma, lag_max);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// Mod_squared_cpp
+arma::vec Mod_squared_cpp(arma::cx_vec x);
+RcppExport SEXP GMWM_Mod_squared_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::cx_vec >::type x(xSEXP );
+        arma::vec __result = Mod_squared_cpp(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// Mod_cpp
+arma::vec Mod_cpp(arma::cx_vec x);
+RcppExport SEXP GMWM_Mod_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::cx_vec >::type x(xSEXP );
+        arma::vec __result = Mod_cpp(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// dft_acf
+arma::vec dft_acf(arma::vec x);
+RcppExport SEXP GMWM_dft_acf(SEXP xSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
+        arma::vec __result = dft_acf(x);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // pseudo_logit_inv
 arma::vec pseudo_logit_inv(const arma::vec& x);
 RcppExport SEXP GMWM_pseudo_logit_inv(SEXP xSEXP) {
@@ -66,376 +868,107 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// rev_col_subset
-arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end);
-RcppExport SEXP GMWM_rev_col_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
+// ci_eta3
+arma::mat ci_eta3(arma::vec y, arma::vec dims, double p);
+RcppExport SEXP GMWM_ci_eta3(SEXP ySEXP, SEXP dimsSEXP, SEXP pSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type start(startSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type end(endSEXP );
-        arma::mat __result = rev_col_subset(x, start, end);
+        Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type dims(dimsSEXP );
+        Rcpp::traits::input_parameter< double >::type p(pSEXP );
+        arma::mat __result = ci_eta3(y, dims, p);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// diff_cpp
-arma::vec diff_cpp(const arma::vec& x, unsigned int lag = 1);
-RcppExport SEXP GMWM_diff_cpp(SEXP xSEXP, SEXP lagSEXP) {
+// ci_eta3_robust
+arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff);
+RcppExport SEXP GMWM_ci_eta3_robust(SEXP ySEXP, SEXP dimsSEXP, SEXP pSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type lag(lagSEXP );
-        arma::vec __result = diff_cpp(x, lag);
+        Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP );
+        Rcpp::traits::input_parameter< arma::vec >::type dims(dimsSEXP );
+        Rcpp::traits::input_parameter< double >::type p(pSEXP );
+        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
+        arma::mat __result = ci_eta3_robust(y, dims, p, eff);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// rev_row_subset
-arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end);
-RcppExport SEXP GMWM_rev_row_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
+// ci_wave_variance
+arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y, std::string type = "eta3", double p = 0.025, bool robust = false, double eff = 0.6);
+RcppExport SEXP GMWM_ci_wave_variance(SEXP signal_modwt_bwSEXP, SEXP ySEXP, SEXP typeSEXP, SEXP pSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type start(startSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type end(endSEXP );
-        arma::mat __result = rev_row_subset(x, start, end);
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type signal_modwt_bw(signal_modwt_bwSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP );
+        Rcpp::traits::input_parameter< std::string >::type type(typeSEXP );
+        Rcpp::traits::input_parameter< double >::type p(pSEXP );
+        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
+        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
+        arma::mat __result = ci_wave_variance(signal_modwt_bw, y, type, p, robust, eff);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// reverse_vec
-arma::vec reverse_vec(arma::vec x);
-RcppExport SEXP GMWM_reverse_vec(SEXP xSEXP) {
+// wave_variance
+arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robust = false, double eff = 0.6);
+RcppExport SEXP GMWM_wave_variance(SEXP signal_modwt_bwSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        arma::vec __result = reverse_vec(x);
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type signal_modwt_bw(signal_modwt_bwSEXP );
+        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
+        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
+        arma::vec __result = wave_variance(signal_modwt_bw, robust, eff);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// ARMAtoMA_cpp
-arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max);
-RcppExport SEXP GMWM_ARMAtoMA_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
+// wvar_cpp
+arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt, bool robust = false, double eff = 0.6, double p = 0.025, std::string ci_type = "eta3", std::string strWavelet = "haar");
+RcppExport SEXP GMWM_wvar_cpp(SEXP signal_modwtSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP pSEXP, SEXP ci_typeSEXP, SEXP strWaveletSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP );
-        Rcpp::traits::input_parameter< int >::type lag_max(lag_maxSEXP );
-        arma::vec __result = ARMAtoMA_cpp(ar, ma, lag_max);
+        Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type signal_modwt(signal_modwtSEXP );
+        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
+        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
+        Rcpp::traits::input_parameter< double >::type p(pSEXP );
+        Rcpp::traits::input_parameter< std::string >::type ci_type(ci_typeSEXP );
+        Rcpp::traits::input_parameter< std::string >::type strWavelet(strWaveletSEXP );
+        arma::mat __result = wvar_cpp(signal_modwt, robust, eff, p, ci_type, strWavelet);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// cfilter
-arma::vec cfilter(arma::vec x, arma::vec filter, int sides = 2, bool circular = false);
-RcppExport SEXP GMWM_cfilter(SEXP xSEXP, SEXP filterSEXP, SEXP sidesSEXP, SEXP circularSEXP) {
+// scales_cpp
+arma::vec scales_cpp(unsigned int nb_level);
+RcppExport SEXP GMWM_scales_cpp(SEXP nb_levelSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type filter(filterSEXP );
-        Rcpp::traits::input_parameter< int >::type sides(sidesSEXP );
-        Rcpp::traits::input_parameter< bool >::type circular(circularSEXP );
-        arma::vec __result = cfilter(x, filter, sides, circular);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// rfilter
-arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init);
-RcppExport SEXP GMWM_rfilter(SEXP xSEXP, SEXP filterSEXP, SEXP initSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type filter(filterSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type init(initSEXP );
-        arma::vec __result = rfilter(x, filter, init);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// ARMAacf_cpp
-arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max);
-RcppExport SEXP GMWM_ARMAacf_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type lag_max(lag_maxSEXP );
-        arma::vec __result = ARMAacf_cpp(ar, ma, lag_max);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// arma_to_wv
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma);
-RcppExport SEXP GMWM_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP tauSEXP, SEXP sigmaSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP );
-        arma::vec __result = arma_to_wv(ar, ma, tau, sigma);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// avar_to_cpp
-arma::mat avar_to_cpp(arma::vec x);
-RcppExport SEXP GMWM_avar_to_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        arma::mat __result = avar_to_cpp(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// avar_mo_cpp
-arma::mat avar_mo_cpp(arma::vec x);
-RcppExport SEXP GMWM_avar_mo_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        arma::mat __result = avar_mo_cpp(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gen_wn
-arma::vec gen_wn(const unsigned int N, const double sigma_WN);
-RcppExport SEXP GMWM_gen_wn(SEXP NSEXP, SEXP sigma_WNSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< const double >::type sigma_WN(sigma_WNSEXP );
-        arma::vec __result = gen_wn(N, sigma_WN);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gen_dr
-arma::vec gen_dr(const unsigned int N, const double slope);
-RcppExport SEXP GMWM_gen_dr(SEXP NSEXP, SEXP slopeSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< const double >::type slope(slopeSEXP );
-        arma::vec __result = gen_dr(N, slope);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gen_ar1
-arma::vec gen_ar1(const unsigned int N, const double phi, const double sig2);
-RcppExport SEXP GMWM_gen_ar1(SEXP NSEXP, SEXP phiSEXP, SEXP sig2SEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< const double >::type phi(phiSEXP );
-        Rcpp::traits::input_parameter< const double >::type sig2(sig2SEXP );
-        arma::vec __result = gen_ar1(N, phi, sig2);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gen_rw
-arma::vec gen_rw(const unsigned int N, const double sigma_rw = 1);
-RcppExport SEXP GMWM_gen_rw(SEXP NSEXP, SEXP sigma_rwSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< const double >::type sigma_rw(sigma_rwSEXP );
-        arma::vec __result = gen_rw(N, sigma_rw);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// qn_to_wv
-arma::vec qn_to_wv(double q2, const arma::vec& Tau);
-RcppExport SEXP GMWM_qn_to_wv(SEXP q2SEXP, SEXP TauSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type q2(q2SEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type Tau(TauSEXP );
-        arma::vec __result = qn_to_wv(q2, Tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// wn_to_wv
-arma::vec wn_to_wv(double sig2, arma::vec Tau);
-RcppExport SEXP GMWM_wn_to_wv(SEXP sig2SEXP, SEXP TauSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type Tau(TauSEXP );
-        arma::vec __result = wn_to_wv(sig2, Tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// rw_to_wv
-arma::vec rw_to_wv(double sig2, const arma::vec& Tau);
-RcppExport SEXP GMWM_rw_to_wv(SEXP sig2SEXP, SEXP TauSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type Tau(TauSEXP );
-        arma::vec __result = rw_to_wv(sig2, Tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// dr_to_wv
-arma::vec dr_to_wv(double omega, const arma::vec& Tau);
-RcppExport SEXP GMWM_dr_to_wv(SEXP omegaSEXP, SEXP TauSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type Tau(TauSEXP );
-        arma::vec __result = dr_to_wv(omega, Tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// ar1_to_wv
-arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau);
-RcppExport SEXP GMWM_ar1_to_wv(SEXP phiSEXP, SEXP sig2SEXP, SEXP TauSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type phi(phiSEXP );
-        Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type Tau(TauSEXP );
-        arma::vec __result = ar1_to_wv(phi, sig2, Tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// e_drift
-arma::vec e_drift(double omega, int n_ts);
-RcppExport SEXP GMWM_e_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
-        Rcpp::traits::input_parameter< int >::type n_ts(n_tsSEXP );
-        arma::vec __result = e_drift(omega, n_ts);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// m2_drift
-arma::vec m2_drift(double omega, int n_ts);
-RcppExport SEXP GMWM_m2_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
-        Rcpp::traits::input_parameter< int >::type n_ts(n_tsSEXP );
-        arma::vec __result = m2_drift(omega, n_ts);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// var_drift
-arma::vec var_drift(double omega, int n_ts);
-RcppExport SEXP GMWM_var_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type omega(omegaSEXP );
-        Rcpp::traits::input_parameter< int >::type n_ts(n_tsSEXP );
-        arma::vec __result = var_drift(omega, n_ts);
+        Rcpp::traits::input_parameter< unsigned int >::type nb_level(nb_levelSEXP );
+        arma::vec __result = scales_cpp(nb_level);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -473,452 +1006,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // select_filter
-arma::field<arma::vec> select_filter(String filter_name = "haar");
+arma::field<arma::vec> select_filter(std::string filter_name = "haar");
 RcppExport SEXP GMWM_select_filter(SEXP filter_nameSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< String >::type filter_name(filter_nameSEXP );
+        Rcpp::traits::input_parameter< std::string >::type filter_name(filter_nameSEXP );
         arma::field<arma::vec> __result = select_filter(filter_name);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// dwt_cpp
-arma::field<arma::vec> dwt_cpp(arma::vec x, String filter_name = "haar", unsigned int nlevels = 4, String boundary = "periodic");
-RcppExport SEXP GMWM_dwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        Rcpp::traits::input_parameter< String >::type filter_name(filter_nameSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type nlevels(nlevelsSEXP );
-        Rcpp::traits::input_parameter< String >::type boundary(boundarySEXP );
-        arma::field<arma::vec> __result = dwt_cpp(x, filter_name, nlevels, boundary);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// modwt_cpp
-arma::field<arma::vec> modwt_cpp(arma::vec x, String filter_name = "haar", unsigned int nlevels = 4, String boundary = "periodic");
-RcppExport SEXP GMWM_modwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        Rcpp::traits::input_parameter< String >::type filter_name(filter_nameSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type nlevels(nlevelsSEXP );
-        Rcpp::traits::input_parameter< String >::type boundary(boundarySEXP );
-        arma::field<arma::vec> __result = modwt_cpp(x, filter_name, nlevels, boundary);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// Mod_squared_cpp
-arma::vec Mod_squared_cpp(arma::cx_vec x);
-RcppExport SEXP GMWM_Mod_squared_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::cx_vec >::type x(xSEXP );
-        arma::vec __result = Mod_squared_cpp(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// Mod_cpp
-arma::vec Mod_cpp(arma::cx_vec x);
-RcppExport SEXP GMWM_Mod_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::cx_vec >::type x(xSEXP );
-        arma::vec __result = Mod_cpp(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// dft_acf
-arma::vec dft_acf(arma::vec x);
-RcppExport SEXP GMWM_dft_acf(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        arma::vec __result = dft_acf(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// brick_wall
-arma::field<arma::vec> brick_wall(arma::field<arma::vec> x, arma::field<arma::vec> wave_filter, String method = "modwt");
-RcppExport SEXP GMWM_brick_wall(SEXP xSEXP, SEXP wave_filterSEXP, SEXP methodSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type x(xSEXP );
-        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type wave_filter(wave_filterSEXP );
-        Rcpp::traits::input_parameter< String >::type method(methodSEXP );
-        arma::field<arma::vec> __result = brick_wall(x, wave_filter, method);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// ci_eta3
-arma::mat ci_eta3(arma::vec y, arma::vec dims, double p);
-RcppExport SEXP GMWM_ci_eta3(SEXP ySEXP, SEXP dimsSEXP, SEXP pSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type dims(dimsSEXP );
-        Rcpp::traits::input_parameter< double >::type p(pSEXP );
-        arma::mat __result = ci_eta3(y, dims, p);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// ci_eta3_robust
-arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff);
-RcppExport SEXP GMWM_ci_eta3_robust(SEXP ySEXP, SEXP dimsSEXP, SEXP pSEXP, SEXP effSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type dims(dimsSEXP );
-        Rcpp::traits::input_parameter< double >::type p(pSEXP );
-        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
-        arma::mat __result = ci_eta3_robust(y, dims, p, eff);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// wave_variance
-arma::mat wave_variance(arma::field<arma::vec> x, String type = "eta3", double p = 0.025);
-RcppExport SEXP GMWM_wave_variance(SEXP xSEXP, SEXP typeSEXP, SEXP pSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type x(xSEXP );
-        Rcpp::traits::input_parameter< String >::type type(typeSEXP );
-        Rcpp::traits::input_parameter< double >::type p(pSEXP );
-        arma::mat __result = wave_variance(x, type, p);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// field_to_matrix
-arma::mat field_to_matrix(arma::field<arma::vec> x, unsigned int row);
-RcppExport SEXP GMWM_field_to_matrix(SEXP xSEXP, SEXP rowSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type x(xSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type row(rowSEXP );
-        arma::mat __result = field_to_matrix(x, row);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// wvar_cpp
-arma::mat wvar_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, bool robust = false, double eff = 0.6, double p = 0.025, std::string ci_type = "eta3", std::string strWavelet = "haar");
-RcppExport SEXP GMWM_wvar_cpp(SEXP signal_modwtSEXP, SEXP nb_levelSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP pSEXP, SEXP ci_typeSEXP, SEXP strWaveletSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type signal_modwt(signal_modwtSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type nb_level(nb_levelSEXP );
-        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
-        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
-        Rcpp::traits::input_parameter< double >::type p(pSEXP );
-        Rcpp::traits::input_parameter< std::string >::type ci_type(ci_typeSEXP );
-        Rcpp::traits::input_parameter< std::string >::type strWavelet(strWaveletSEXP );
-        arma::mat __result = wvar_cpp(signal_modwt, nb_level, robust, eff, p, ci_type, strWavelet);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// scales_cpp
-arma::vec scales_cpp(unsigned int nb_level);
-RcppExport SEXP GMWM_scales_cpp(SEXP nb_levelSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< unsigned int >::type nb_level(nb_levelSEXP );
-        arma::vec __result = scales_cpp(nb_level);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// compute_cov_cpp
-arma::field<arma::mat> compute_cov_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, std::string compute_v = "diag", bool robust = true, double eff = 0.6);
-RcppExport SEXP GMWM_compute_cov_cpp(SEXP signal_modwtSEXP, SEXP nb_levelSEXP, SEXP compute_vSEXP, SEXP robustSEXP, SEXP effSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::field<arma::vec> >::type signal_modwt(signal_modwtSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type nb_level(nb_levelSEXP );
-        Rcpp::traits::input_parameter< std::string >::type compute_v(compute_vSEXP );
-        Rcpp::traits::input_parameter< bool >::type robust(robustSEXP );
-        Rcpp::traits::input_parameter< double >::type eff(effSEXP );
-        arma::field<arma::mat> __result = compute_cov_cpp(signal_modwt, nb_level, compute_v, robust, eff);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// theo_wv
-arma::vec theo_wv(const arma::vec& theta, const std::vector<std::string>& desc, const arma::vec& wv_empir, const arma::vec& tau, int N);
-RcppExport SEXP GMWM_theo_wv(SEXP thetaSEXP, SEXP descSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP NSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< int >::type N(NSEXP );
-        arma::vec __result = theo_wv(theta, desc, wv_empir, tau, N);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gen_model
-arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc);
-RcppExport SEXP GMWM_gen_model(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        arma::vec __result = gen_model(N, theta, desc);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// set_starting_values
-arma::vec set_starting_values(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type);
-RcppExport SEXP GMWM_set_starting_values(SEXP thetaSEXP, SEXP descSEXP, SEXP model_typeSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
-        arma::vec __result = set_starting_values(theta, desc, model_type);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// set_result_values
-arma::rowvec set_result_values(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type);
-RcppExport SEXP GMWM_set_result_values(SEXP thetaSEXP, SEXP descSEXP, SEXP model_typeSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
-        arma::rowvec __result = set_result_values(theta, desc, model_type);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// set_starting_values_arma
-arma::vec set_starting_values_arma(arma::vec theta, int p, int q);
-RcppExport SEXP GMWM_set_starting_values_arma(SEXP thetaSEXP, SEXP pSEXP, SEXP qSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< int >::type p(pSEXP );
-        Rcpp::traits::input_parameter< int >::type q(qSEXP );
-        arma::vec __result = set_starting_values_arma(theta, p, q);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// set_result_values_arma
-arma::vec set_result_values_arma(arma::vec theta, int p, int q);
-RcppExport SEXP GMWM_set_result_values_arma(SEXP thetaSEXP, SEXP pSEXP, SEXP qSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< int >::type p(pSEXP );
-        Rcpp::traits::input_parameter< int >::type q(qSEXP );
-        arma::vec __result = set_result_values_arma(theta, p, q);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gmwm_bootstrapper
-arma::vec gmwm_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, unsigned int tau, unsigned int N, unsigned int B = 100, bool var_or_mu = false);
-RcppExport SEXP GMWM_gmwm_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP tauSEXP, SEXP NSEXP, SEXP BSEXP, SEXP var_or_muSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP );
-        Rcpp::traits::input_parameter< bool >::type var_or_mu(var_or_muSEXP );
-        arma::vec __result = gmwm_bootstrapper(theta, desc, tau, N, B, var_or_mu);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// count_models_alpha
-arma::vec count_models_alpha(const std::vector<std::string>& desc);
-RcppExport SEXP GMWM_count_models_alpha(SEXP descSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        arma::vec __result = count_models_alpha(desc);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// num_model_params
-unsigned int num_model_params(const std::vector<std::string>& desc);
-RcppExport SEXP GMWM_num_model_params(SEXP descSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        unsigned int __result = num_model_params(desc);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// adv_gmwm_imu_ssm_cpp
-arma::rowvec adv_gmwm_imu_ssm_cpp(const arma::vec& theta, const std::vector<std::string>& desc, std::string model_type, const arma::mat& V, const arma::vec& wv_empir, const arma::vec& tau, unsigned int N);
-RcppExport SEXP GMWM_adv_gmwm_imu_ssm_cpp(SEXP thetaSEXP, SEXP descSEXP, SEXP model_typeSEXP, SEXP VSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP NSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
-        Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP );
-        arma::rowvec __result = adv_gmwm_imu_ssm_cpp(theta, desc, model_type, V, wv_empir, tau, N);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gmwm_imu_ssm_cpp
-arma::rowvec gmwm_imu_ssm_cpp(const std::vector<std::string>& desc, const arma::vec& signal, std::string model_type, const arma::mat& V, const arma::vec& wv_empir, const arma::vec& tau, unsigned int N, unsigned int B = 1000);
-RcppExport SEXP GMWM_gmwm_imu_ssm_cpp(SEXP descSEXP, SEXP signalSEXP, SEXP model_typeSEXP, SEXP VSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP NSEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type signal(signalSEXP );
-        Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP );
-        Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP );
-        arma::rowvec __result = gmwm_imu_ssm_cpp(desc, signal, model_type, V, wv_empir, tau, N, B);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// gmwm_arma_cpp
-arma::rowvec gmwm_arma_cpp(const arma::vec& theta, const arma::mat& V, unsigned int p, unsigned int q, const arma::vec& tau, const arma::vec& wv_empir);
-RcppExport SEXP GMWM_gmwm_arma_cpp(SEXP thetaSEXP, SEXP VSEXP, SEXP pSEXP, SEXP qSEXP, SEXP tauSEXP, SEXP wv_empirSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP );
-        Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type p(pSEXP );
-        Rcpp::traits::input_parameter< unsigned int >::type q(qSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP );
-        arma::rowvec __result = gmwm_arma_cpp(theta, V, p, q, tau, wv_empir);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

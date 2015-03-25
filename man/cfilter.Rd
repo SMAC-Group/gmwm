@@ -28,11 +28,11 @@ It is about 5-7 times faster than R's base function. The benchmark was done on i
 \examples{
 x = 1:100
 #
-cfilter(x, rep(1, 3))
+cfilter(x, rep(1, 3), sides = 2, circular = FALSE)
 # Using R's function
 filter(x, rep(1, 3))
 #
-cfilter(x, rep(1, 3), sides = 1)
+cfilter(x, rep(1, 3), sides = 1, circular = FALSE)
 # Using R's function
 filter(x, rep(1, 3), sides = 1)
 #

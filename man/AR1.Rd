@@ -9,21 +9,20 @@ AR1(phi = 0.91, sigma = 1)
 \arguments{
 \item{phi}{A \code{double} value for the \eqn{\phi}{phi} of an AR1 process.}
 
-\item{sigma}{A \code{double} value for the \eqn{\sigma}{sigma} process.}
+\item{sigma2}{A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.}
 }
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
  \item{desc}{"AR1"}
- \item{theta}{\eqn{phi}{\phi}, \eqn{sigma}{\sigma}}
+ \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma}{sigma}}
+ \item{plength}{Number of Parameters}
+ \item{obj}{Depth of Parameters e.g. list(1,1)}
+ \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{
 Setups the necessary backend for the AR1 process.
-}
-\details{
-A standard deviation is required since the model generation statements utilize
-randomization functions expecting a standard deviation instead of a variance.
 }
 \examples{
 AR1()

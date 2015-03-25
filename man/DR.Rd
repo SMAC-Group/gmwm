@@ -4,7 +4,7 @@
 \alias{DR}
 \title{Create an Drift (DR) Process}
 \usage{
-DR(slope = 5)
+DR(slope = NULL)
 }
 \arguments{
 \item{slope}{A \code{double} value for the slope of a DR process.}
@@ -14,6 +14,9 @@ An S3 object with called ts.model with the following structure:
 \itemize{
  \item{desc}{"DR"}
  \item{theta}{slope}
+ \item{plength}{Number of Parameters}
+ \item{obj}{Depth of Parameters e.g. list(1)}
+ \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{

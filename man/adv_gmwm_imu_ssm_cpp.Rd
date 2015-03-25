@@ -4,7 +4,7 @@
 \alias{adv_gmwm_imu_ssm_cpp}
 \title{User Specified Initial Values for GMWM Estimator}
 \usage{
-adv_gmwm_imu_cpp(theta, desc, V, wv_empir, tau, N)
+adv_gmwm_imu_ssm_cpp(theta, desc, model_type, V, wv_empir, tau, N)
 }
 \arguments{
 \item{theta}{A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters}

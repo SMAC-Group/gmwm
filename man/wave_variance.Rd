@@ -2,33 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{wave_variance}
 \alias{wave_variance}
-\title{Generate a Confidence intervval for a Univariate Time Series}
+\title{Generate a Wave Variance for a Univariate Time Series}
 \usage{
-wave_variance(x, type = "eta3", p = 0.025)
+wave_variance(signal_modwt_bw, robust = FALSE, eff = 0.6)
 }
 \arguments{
-\item{x}{A \code{field<vec>} that contains the brick walled modwt or dwt decomposition}
+\item{signal_modwt_bw}{A \code{field<vec>} that contains the brick walled modwt or dwt decomposition}
 
-\item{type}{A \code{String} indicating the confidence interval being calculated.}
+\item{robust}{A \code{boolean} to determine the type of wave estimation.}
 
-\item{p}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
+\item{eff}{A \code{double} that indicates the efficiency.}
 }
 \value{
-A \code{matrix} with the structure:
-\itemize{
- \item{Column 1}{Wavelet Variance}
- \item{Column 2}{Chi-squared Lower Bounds}
- \item{Column 3}{Chi-squared Upper Bounds}
-}
+A \code{vec} that contains the wave variance.
 }
 \description{
-Computes an estimate of the multiscale variance and a chi-squared confidence interval
-}
-\details{
-This function can be expanded to allow for other confidence interval calculations.
+Computes an estimate of the wave variance
 }
 \examples{
-x=rnorm(100)
-wave_variance(brick_wall(modwt_cpp(x), haar_filter()))
+set.seed(1337)
+x = rnorm(100)
+signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
+wave_variance(signal_modwt_bw)
+
+wave_variance(signal_modwt_bw, robust = TRUE, eff = 0.6)
 }
 
