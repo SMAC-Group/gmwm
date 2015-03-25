@@ -258,7 +258,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   }
   out = structure(list(desc = rep(y$desc,x),
                        theta = rep(y$theta,x),
-                       plength = rep(y$plength,x),
+                       plength = y$plength*x,
                        obj.desc = rep(y$obj.desc,x),
                        obj = rep(y$obj,x),
                        adv = y$adv), class = "ts.model")
@@ -290,7 +290,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   }
   out = structure(list(desc = c(x$desc, y$desc),
                        theta = c(x$theta,y$theta),
-                       plength = c(x$plength, y$plength),
+                       plength = x$plength + y$plength,
                        obj.desc = c(x$obj.desc, y$obj.desc),
                        obj = c(x$obj, y$obj),
                        adv = adv), class = "ts.model")
@@ -312,16 +312,15 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' DR()+WN()+RW()+AR1()+ARMA(1,2)
 print.ts.model = function(x, ...){
 
-  desctable = cbind(x$desc, x$theta);
-  colnames(desctable) = c("Terms", "Value")
+  desctable = data.frame("Terms" = x$desc, "Starting Values" = x$theta);
   cat("\nAdvanced Enabled:", x$adv, "\n")
   if(!x$adv){
     cat("The program will attempt to guess starting values for...\n")
-    print(desctable[,1])
+    print(desctable[,1], row.names = FALSE)
     cat("This model will only work using the gmwm() function.\n",
         "To have the option of using adv.gmwm(), please supply values for each parameter.\n")
   }else{
-    print(desctable)
+    print(desctable, row.names = FALSE)
     cat("This model is able to be supplied to both gmwm() or adv.gmwm()\n")
   }
 }
