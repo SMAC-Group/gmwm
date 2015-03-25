@@ -304,9 +304,6 @@ arma::vec guess_initial(arma::vec signal,
   double min_obj_value = std::numeric_limits<double>::max();
   
   unsigned int num_desc = desc.size();
-  Rcpp::Rcout << "Sigma Total is: " << sigma_tot << std::endl;
-  Rcpp::Rcout << "Number of parameters: " << num_param << std::endl;
-  Rcpp::Rcout << "Number of desc: " << num_desc << std::endl;
   
   // Generate parameters for the model
   for(unsigned int b = 0; b < B; b++){
@@ -319,15 +316,13 @@ arma::vec guess_initial(arma::vec signal,
       std::string element_type = desc[i];
       
       if(element_type == "AR1"){
-        Rcpp::Rcout << "Placing values at:" << i_theta << ", " << i_theta+1 << std::endl;
-        Rcpp::Rcout << "AR1_Counter is at:" << AR1_counter << std::endl;
-        Rcpp::Rcout << "Previous theta is at: " << prev_phi << std::endl;
-        Rcpp::Rcout << "Draw values:" << ar1_draw(AR1_counter, prev_phi, sigma_tot, model_type) << std::endl;
         temp_theta.rows(i_theta, i_theta + 1) = ar1_draw(AR1_counter, prev_phi, sigma_tot, model_type);
-        Rcpp::Rcout << "Values placed are: " << temp_theta.rows(i_theta, i_theta + 1) << std::endl;
         prev_phi = temp_theta(i_theta);
         i_theta++; // needed to account for two parameters (e.g. phi + sigma2). Second shift at end.
         AR1_counter++;
+      }
+      else if(element_type == "ARMA"){
+        //  This needs to be implemented.
       }
       else if(element_type == "DR"){   
         double dr_ed = mean(diff_cpp(signal));
@@ -350,11 +345,8 @@ arma::vec guess_initial(arma::vec signal,
       i_theta ++;
     } // end for
   
-    Rcpp::Rcout << "Temp Theta looks like:" << temp_theta << std::endl;
     double obj = objFunStarting(temp_theta, desc, objdesc, model_type, wv_empir, tau);
-    
-    Rcpp::Rcout << "Obj is: " << obj << std::endl;
-    
+        
     if(min_obj_value > obj){
       min_obj_value = obj;
       starting_theta = temp_theta;
@@ -401,20 +393,12 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
                                  
   // Number of parameters
   //unsigned int num_param = theta.n_elem;
-  
-  Rcpp::Rcout << "Starting transform" << std::endl;
-  
+    
   // Starting values
   arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
   
-  Rcpp::Rcout << "Transform is okay!" << std::endl;
-  
-  Rcpp::Rcout << "Starting optimstart" << std::endl;
-  
-  Rcpp::Rcout << "Values are: " << starting_theta << std::endl;
   // Optimize Starting values via Jannick's Method
   starting_theta = Rcpp_OptimStart(starting_theta, desc, objdesc, model_type, wv_empir, tau);
-  Rcpp::Rcout << "OptimStart is okay!" << std::endl;
   
   // ------------------------------------
   // Compute standard GMWM
@@ -423,10 +407,8 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
   // Omega matrix
   arma::mat omega = arma::inv(diagmat(V));
   
-    Rcpp::Rcout << "Finding GMWM!" << std::endl;
   // Find GMWM estimator
   arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
-      Rcpp::Rcout << "Found GMWM!" << std::endl;
 
   return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
 }
