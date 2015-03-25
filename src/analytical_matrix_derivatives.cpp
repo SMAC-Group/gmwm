@@ -1,12 +1,8 @@
 #include <RcppArmadillo.h>
 #include "analytical_matrix_derivatives.h"
+#include "inline_functions.h"
 using namespace Rcpp;
 
-// Numerical Derivatives
-
-inline double square(double x){
-  return x*x;
-}
 
 //' Analytic D matrix for AR(1) process
 //' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
@@ -142,7 +138,7 @@ arma::mat deriv_2nd_DR(arma::vec tau){
 arma::mat deriv_QN(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
-     D.col(0) = (2.0*arma::square(tau)+1.0)/(24.0*tau);
+     D.col(0) = 3.0/(2.0*arma::square(tau));
      return D;
 }
 
@@ -160,7 +156,7 @@ arma::mat deriv_QN(arma::vec tau){
 arma::mat deriv_RW(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
-     D.col(0) = (2.0*arma::square(tau)+1.0)/(24.0*tau);
+     D.col(0) = (2.0*arma::square(tau)+1.0)/(12.0*tau);
      return D;
 }
 
