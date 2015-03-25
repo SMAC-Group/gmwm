@@ -29,8 +29,8 @@
 #' out = wvcov(decomp, wv, compute.v="diag")
 wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
   
-  if(!is(signal.modwt,"modwt")){
-    stop("Need to supply a modwt object as the first parameter.")
+  if(!is(signal.modwt,"gmwm_modwt")){
+    stop("Need to supply a gmwm_modwt object as the first parameter.")
   }
   
   if(!is(signal.wvar,"wvar")){
