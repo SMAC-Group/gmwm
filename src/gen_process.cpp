@@ -96,14 +96,14 @@ arma::vec gen_qn(const unsigned int N, double q2 = .1)
 arma::vec gen_ar1(const unsigned int N, const double phi = .3, const double sigma2 = 1)
 {
 
-	arma::vec wn = gen_wn(N, sigma2);
-	arma::vec gm = arma::zeros<arma::vec>(N);
-	for(unsigned int i=1; i < N; i++ )
+	arma::vec wn = gen_wn(N+1, sigma2);
+	arma::vec gm = arma::zeros<arma::vec>(N+1);
+	for(unsigned int i=1; i <= N; i++ )
 	{		
-		gm(i-1) = phi*gm(i-1) + wn(i-1);
+		gm(i) = phi*gm(i-1) + wn(i);
 	}
 
-	return gm;
+	return gm.rows(1,N);
 }
 
 //' @title Generate a random walk without drift
