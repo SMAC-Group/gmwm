@@ -129,7 +129,7 @@ autoplot.wvar = function(object, ...){
                   labels = trans_format("log10", math_format(10^.x))) + 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1, colour = "#003C7D") +
+    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1, fill = "#003C7D") +
     ggtitle(paste0("Haar Wavelet Variance Representation for ", name, " Calculation"))
   
   CI
