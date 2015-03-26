@@ -290,6 +290,7 @@ unsigned int count_AR1s(std::vector<std::string> s) {
 //' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
 //' @examples
 //' #TBA
+// [[Rcpp::export]]
 arma::vec guess_initial(arma::vec signal,
                         const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
                         std::string model_type, unsigned int num_param,
