@@ -1,0 +1,15 @@
+GMWM.so
+additional_moments.o
+allan_variance.o
+analytical_matrix_derivatives.o
+armadillo_manipulations.o
+build_file.o
+covariance_matrix.o
+dwt.o
+gen_process.o
+process_to_wv.o
+robust_components.o
+rtoarmadillo.o
+transform_data.o
+wave_variance.o
+wv_filters.o
