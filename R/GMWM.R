@@ -45,6 +45,10 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   
   np = model$plength
   
+  if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
+    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
+  }
+  
   if(model.type != "imu" && model.type != "ssm"){
     stop("Model Type must be either IMU or SSM!")
   }
@@ -146,6 +150,10 @@ adv.gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   obj = model$obj
   
   np = model$plength
+  
+  if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
+    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
+  }
   
   if(model.type != "imu" && model.type != "ssm"){
     stop("Model Type must be either IMU or SSM!")
