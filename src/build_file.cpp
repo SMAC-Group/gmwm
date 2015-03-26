@@ -277,6 +277,25 @@ unsigned int count_AR1s(std::vector<std::string> s) {
   return count;
 }
 
+// [[Rcpp::export]]
+std::map<std::string, int> count_models(const std::vector<std::string>& desc){  	
+  std::map<std::string, int> w;	
+  
+  // We want to see the only the following objects with these initial values
+  w["AR1"]=0;
+  w["ARMA"]=0;
+  w["DR"]=0;		
+  w["RW"]=0;		
+  w["QN"]=0;		
+  w["WN"]=0;		
+  
+  for (unsigned int i = 0; i < desc.size(); i++) {		
+    ++w[desc[i]];		
+  }		
+  
+  return w;		
+} 
+
 //' @title Randomly guess a starting parameter
 //' @description Sets starting parameters for each of the given parameters. 
 //' @usage guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B)
@@ -304,14 +323,27 @@ arma::vec guess_initial(arma::vec signal,
     
   double min_obj_value = std::numeric_limits<double>::max();
   
+  std::map<std::string, int> models = count_models(desc);
+  
   unsigned int num_desc = desc.size();
+  
+  unsigned int AR1_counter; // identifiability hack. =(
+  double prev_phi; // ar1_draw needs external memory  
   
   // Generate parameters for the model
   for(unsigned int b = 0; b < B; b++){
     
     unsigned int i_theta = 0;
-    unsigned int AR1_counter = 0; // identifiability hack. =(
-    double prev_phi = 0; // ar1_draw needs external memory
+
+    if(models["WN"] >= 1 && model_type=="imu"){
+      AR1_counter = 2;
+      prev_phi = .9;
+    }
+    else{ // Multiple WN in model
+      AR1_counter = 0;
+      prev_phi = 0;
+    }
+    
         
     for(unsigned int i = 0; i < num_desc; i++){
       std::string element_type = desc[i];
