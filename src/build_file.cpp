@@ -344,9 +344,11 @@ arma::vec guess_initial(arma::vec signal,
       }
       i_theta ++;
     } // end for
-  
-    double obj = objFunStarting(temp_theta, desc, objdesc, model_type, wv_empir, tau);
+    
+    arma::vec tvalues = transform_values(temp_theta, desc, objdesc, model_type);
         
+    double obj = objFunStarting(tvalues, desc, objdesc, model_type, wv_empir, tau);
+    
     if(min_obj_value > obj){
       min_obj_value = obj;
       starting_theta = temp_theta;
