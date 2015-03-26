@@ -21,8 +21,8 @@
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' save1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' save2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' save.guided.ar1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' save.guided.2ar1 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
 #'  
 #' # ARMA case
 #' set.seed(1336)
@@ -32,15 +32,13 @@
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' save = gmwm(ARMA(2,2),wvcov=out, signal=x, model.type="arma")
+#' save.guided.arma = gmwm(ARMA(2,2),wvcov=out, signal=x, model.type="ssm")
 gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   
   if(!is(model, "ts.model")){
     stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN, ARMA). ")
   }
-  
-  theta = model$theta
-  
+    
   desc = model$obj.desc
   
   obj = model$obj
@@ -119,8 +117,8 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = FALSE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' save1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' save2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' save.adv.gmwm.ar1 = adv.gmwm(AR1(phi=.1,sigma2=1), wvcov=out, signal=x, model.type="imu")
+#' save.adv.gmwm.2ar1 = adv.gmwm(AR1(phi=.1,sigma2=1)+AR1(phi=0.95,sigma2=.1), wvcov=out, signal=x, model.type="imu")
 #'  
 #' # ARMA case
 #' set.seed(1336)
@@ -130,8 +128,8 @@ gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
 #' decomp = modwt(x)
 #' wv = wvar(decomp, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
-#' save = gmwm(ARMA(2,2),wvcov=out, signal=x, model.type="arma")
-gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
+#' save = adv.gmwm(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2 = 0.1796), wvcov=out, signal=x, model.type="ssm")
+adv.gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
   
   if(!is(model, "ts.model")){
     stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN, ARMA). ")
