@@ -4,7 +4,7 @@
 \alias{AR1}
 \title{Create an Autoregressive 1 [AR(1)] Process}
 \usage{
-AR1(phi = 0.91, sigma = 1)
+AR1(phi = NULL, sigma2 = NULL)
 }
 \arguments{
 \item{phi}{A \code{double} value for the \eqn{\phi}{phi} of an AR1 process.}
@@ -17,6 +17,7 @@ An S3 object with called ts.model with the following structure:
  \item{desc}{"AR1"}
  \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}
+ \item{obj.desc}{y desc replicated x times}
  \item{obj}{Depth of Parameters e.g. list(1,1)}
  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
