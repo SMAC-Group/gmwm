@@ -4,12 +4,12 @@
 \alias{qn_to_wv}
 \title{Quantisation Noise to WV}
 \usage{
-qn_to_wv(q2, Tau)
+qn_to_wv(q2, tau)
 }
 \arguments{
 \item{q2}{A \code{double} corresponding to variance of drift}
 
-\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the QN.

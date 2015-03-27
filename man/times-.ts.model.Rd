@@ -17,6 +17,7 @@ An S3 object with called ts.model with the following structure:
  \item{desc}{y desc replicated x times}
  \item{theta}{y theta replicated x times}
  \item{plength}{Number of Parameters}
+ \item{obj.desc}{y desc replicated x times}
  \item{obj}{Depth of Parameters e.g. list(c(1,1),c(1,1))}
  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }

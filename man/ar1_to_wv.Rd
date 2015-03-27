@@ -4,14 +4,14 @@
 \alias{ar1_to_wv}
 \title{AR1 process to WV}
 \usage{
-ar1_to_wv(phi, sig2, Tau)
+ar1_to_wv(phi, sig2, tau)
 }
 \arguments{
 \item{phi}{A \code{double} that is the phi term of the AR(1) process}
 
 \item{sig2}{A \code{double} corresponding to variance of AR(1) process}
 
-\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the AR(1) process.

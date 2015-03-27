@@ -4,12 +4,12 @@
 \alias{wn_to_wv}
 \title{White Noise to WV}
 \usage{
-wn_to_wv(sig2, Tau)
+wn_to_wv(sig2, tau)
 }
 \arguments{
 \item{sig2}{A \code{double} corresponding to variance of WN}
 
-\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the white noise.
