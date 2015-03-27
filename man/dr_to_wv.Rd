@@ -4,12 +4,12 @@
 \alias{dr_to_wv}
 \title{Drift to WV}
 \usage{
-dr_to_wv(omega, Tau)
+dr_to_wv(omega, tau)
 }
 \arguments{
 \item{omega}{A \code{double} corresponding to variance of drift}
 
-\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the drift.

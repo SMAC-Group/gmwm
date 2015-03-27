@@ -4,12 +4,12 @@
 \alias{rw_to_wv}
 \title{Random Walk to WV}
 \usage{
-rw_to_wv(sig2, Tau)
+rw_to_wv(sig2, tau)
 }
 \arguments{
 \item{sig2}{A \code{double} corresponding to variance of RW}
 
-\item{Tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the random walk.

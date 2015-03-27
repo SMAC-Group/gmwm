@@ -23,7 +23,7 @@ wvar_cpp(signal_modwt, robust = FALSE, eff = 0.6, p = 0.025,
 \value{
 A \code{mat} with the structure:
 \itemize{
-  \item{"variance"}{Wavelet Variance},
+  \item{"variance"}{Wavelet Variance}
   \item{"low"}{Lower CI}
   \item{"high"}{Upper CI}
 }
