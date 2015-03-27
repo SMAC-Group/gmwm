@@ -8,7 +8,7 @@ gmwm(model, data, model.type = "imu", fast = TRUE, augmented = FALSE,
   p = 0.025, robust = FALSE, eff = 0.6, B = 1000)
 }
 \arguments{
-\item{model}{A \code{ts.model} object containing one of the allowed models. Not used if \code{type="arma"}}
+\item{model}{A \code{ts.model} object containing one of the allowed models.}
 
 \item{data}{A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 })}
 
@@ -42,6 +42,7 @@ This function is under work. Some of the features are active. Others... Not so m
 What is NOT active:
 1. Fast Computation of V
 2. Augmented GMWM (additional moments)
+3. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
 }
 \examples{
 # AR
@@ -74,7 +75,7 @@ data = arima.sim(n = 200,
               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
               sd = sqrt(0.1796))
 guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
-adv.arma = gmwm(ARMA(ar=(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
+adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
                 data, model.type="ssm")
 }
 
