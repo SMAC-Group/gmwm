@@ -14,7 +14,6 @@ is.whole = function(x){ is.numeric(x) && floor(x)==x }
 
 #' @title Create an Autoregressive 1 [AR(1)] Process
 #' @description Setups the necessary backend for the AR1 process.
-#' @usage AR1(phi = 0.91, sigma = 1)
 #' @param phi A \code{double} value for the \eqn{\phi}{phi} of an AR1 process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
