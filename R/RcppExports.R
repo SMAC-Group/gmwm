@@ -266,20 +266,13 @@ field_to_matrix <- function(x) {
     .Call('GMWM_field_to_matrix', PACKAGE = 'GMWM', x)
 }
 
-#' @title Randomly guess a starting parameter
-#' @description Sets starting parameters for each of the given parameters. 
-#' @usage guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B)
-#' @param signal A \code{vec} that contains the data
-#' @param w A \code{map<string,int>} that lists supported models and the amount in the model.
-#' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
-#' @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
-#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
-#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
-#' @param B A \code{integer} that indicates how many random draws that should be performed.
-#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
-#' @examples
-#' #TBA
-NULL
+sum_field_vec <- function(x) {
+    .Call('GMWM_sum_field_vec', PACKAGE = 'GMWM', x)
+}
+
+mean_diff <- function(x) {
+    .Call('GMWM_mean_diff', PACKAGE = 'GMWM', x)
+}
 
 transform_values <- function(theta, desc, objdesc, model_type) {
     .Call('GMWM_transform_values', PACKAGE = 'GMWM', theta, desc, objdesc, model_type)
@@ -301,6 +294,28 @@ count_AR1s <- function(s) {
     .Call('GMWM_count_AR1s', PACKAGE = 'GMWM', s)
 }
 
+count_models <- function(desc) {
+    .Call('GMWM_count_models', PACKAGE = 'GMWM', desc)
+}
+
+#' @title Randomly guess a starting parameter
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param desc A \code{vector<string>} that contains the model's components.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
+#' @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
+#' @param N A \code{integer} that contains the number of observations in the data.
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+#' @param B A \code{integer} that indicates how many random draws that should be performed.
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @examples
+#' #TBA
+guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B = 1000L) {
+    .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+}
+
 #' @title User Specified Initial Values for GMWM Estimator
 #' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
 #' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
@@ -316,6 +331,7 @@ count_AR1s <- function(s) {
 #' options are:
 #' \itemize{
 #'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+#'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
 #'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
 #'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
 #'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
@@ -332,46 +348,6 @@ count_AR1s <- function(s) {
 #' # Coming soon
 adv_gmwm_cpp <- function(theta, desc, objdesc, model_type, V, wv_empir, tau) {
     .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, V, wv_empir, tau)
-}
-
-sum_field_vec <- function(x) {
-    .Call('GMWM_sum_field_vec', PACKAGE = 'GMWM', x)
-}
-
-#' @title GMWM for IMU, SSM, and ARMA
-#' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-#' @param x A \code{vector} with dimensions N x 1. 
-#' @param model_type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
-#' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
-#' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
-#' @return gmwm A \code{list} that contains:
-#' \itemize{
-#'  \item{par}{The estimated model parameters}
-#'  \item{CI}{The 95\% confidence intervals for the estimated model parameters.}
-#' }
-#' @details
-#' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-#' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
-#' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-#' options are:
-#' \itemize{
-#'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-#'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-#'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-#'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-#'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-#' }
-#' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
-#' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-#' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-#' 
-#' @author JJB
-#' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-#' @keywords internal
-#' @examples
-#' # Coming soon
-gmwm_cpp <- function(signal, desc, objdesc, model_type, V, wv_empir, tau, B = 1000L) {
-    .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', signal, desc, objdesc, model_type, V, wv_empir, tau, B)
 }
 
 #' @title Computes the (MODWT) wavelet covariance matrix
@@ -541,7 +517,7 @@ arma_to_wv <- function(ar, ma, tau, sigma) {
 #' @title Quantisation Noise to WV
 #' @description This function compute the WV (haar) of a Quantisation Noise (QN) process
 #' @param q2 A \code{double} corresponding to variance of drift
-#' @param Tau A \code{vec} containing the scales e.g. 2^tau
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the QN.
 #' @examples
 #' x.sim = 1:1000
@@ -556,7 +532,7 @@ qn_to_wv <- function(q2, tau) {
 #' @title White Noise to WV
 #' @description This function compute the WV (haar) of a White Noise process
 #' @param sig2 A \code{double} corresponding to variance of WN
-#' @param Tau A \code{vec} containing the scales e.g. 2^tau
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the white noise.
 #' @examples
 #' x.sim = cumsum(rnorm(100000))
@@ -571,7 +547,7 @@ wn_to_wv <- function(sig2, tau) {
 #' @title Random Walk to WV
 #' @description This function compute the WV (haar) of a Random Walk process
 #' @param sig2 A \code{double} corresponding to variance of RW
-#' @param Tau A \code{vec} containing the scales e.g. 2^tau
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the random walk.
 #' @examples
 #' x.sim = cumsum(rnorm(100000))
@@ -586,7 +562,7 @@ rw_to_wv <- function(sig2, tau) {
 #' @title Drift to WV
 #' @description This function compute the WV (haar) of a Drift process
 #' @param omega A \code{double} corresponding to variance of drift
-#' @param Tau A \code{vec} containing the scales e.g. 2^tau
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the drift.
 #' @examples
 #' x.sim = 1:1000
@@ -618,9 +594,8 @@ ar1_to_wv <- function(phi, sig2, tau) {
 #' @description This function computes the summation of all Processes to WV (haar) in a given model
 #' @param theta A \code{vec} containing the list of estimated parameters.
 #' @param desc A \code{vector<string>} containing a list of descriptors.
-#' @param nparams A \code{vec} containing the number of parameters per process described in desc.
+#' @param objdesc A \code{field<vec>} containing a list of object descriptors.
 #' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
-#' @param N An \code{integer} containing the number of elements in the time series.
 #' @return A \code{vec} containing the wavelet variance of the AR(1) process.
 #' @examples
 #' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
