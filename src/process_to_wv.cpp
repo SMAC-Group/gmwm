@@ -208,7 +208,7 @@ arma::vec theoretical_wv(const arma::vec& theta,
       i_theta += q;
 
       
-      wv_theo += arma_to_wv(ar, ma, tau, exp(theta(i_theta)) );
+      wv_theo += arma_to_wv(ar, ma, tau, theta(i_theta));
     }
     // DR
     else if(element_type == "DR"){
