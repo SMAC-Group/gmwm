@@ -34,6 +34,23 @@ using namespace Rcpp;
 // // [[Rcpp::plugins(openmp)]]
 
 // [[Rcpp::export]]
+unsigned int sum_field_vec(const arma::field<arma::vec>& x){
+  unsigned int nelems = x.n_elem;
+  unsigned int total_elems = 0;
+  
+  for(unsigned int i = 0; i < nelems; i++){
+    total_elems += sum(x(i));
+  }
+  
+  return total_elems;
+}
+
+// [[Rcpp::export]]
+double mean_diff(const arma::vec& x){
+  return arma::mean(diff_cpp(x, 1, 1));
+}
+
+// [[Rcpp::export]]
 arma::vec transform_values(const arma::vec& theta,
                            const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
     arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
@@ -298,11 +315,12 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
 
 //' @title Randomly guess a starting parameter
 //' @description Sets starting parameters for each of the given parameters. 
-//' @usage guess_initial(signal, w, desc, model_type, num_param, wv_empir, tau, N, B)
-//' @param signal A \code{vec} that contains the data
-//' @param w A \code{map<string,int>} that lists supported models and the amount in the model.
+//' @param desc A \code{vector<string>} that contains the model's components.
+//' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
 //' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
 //' @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+//' @param expect_diff A \code{double} that contains the mean of the first difference of the data
+//' @param N A \code{integer} that contains the number of observations in the data.
 //' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
 //' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
 //' @param B A \code{integer} that indicates how many random draws that should be performed.
@@ -310,9 +328,8 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
 //' @examples
 //' #TBA
 // [[Rcpp::export]]
-arma::vec guess_initial(arma::vec signal,
-                        const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
-                        std::string model_type, unsigned int num_param,
+arma::vec guess_initial(const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
+                        std::string model_type, unsigned int num_param, double expect_diff, unsigned int N,
                         const arma::vec& wv_empir, const arma::vec& tau, unsigned int B=1000){
                           
   // Obtain the sum of variances for sigma^2_total.
@@ -358,19 +375,18 @@ arma::vec guess_initial(arma::vec signal,
         //  This needs to be implemented.
       }
       else if(element_type == "DR"){   
-        double dr_ed = mean(diff_cpp(signal));
-        if(dr_ed > 0){
-          dr_ed = R::runif(0,2*dr_ed);
+        if(expect_diff > 0){
+          expect_diff = R::runif(0,2*expect_diff);
         }else{
-          dr_ed = R::runif(2*dr_ed,0);
+          expect_diff = R::runif(2*expect_diff,0);
         }
-        temp_theta(i_theta) = dr_ed;
+        temp_theta(i_theta) = expect_diff;
       }
       else if(element_type == "QN"){
         temp_theta(i_theta) = R::runif(.0000001, sigma_tot);
       }
       else if(element_type == "RW"){
-        temp_theta(i_theta) = R::runif(sigma_tot/(signal.n_elem*1000.0), 2.0*sigma_tot/signal.n_elem);
+        temp_theta(i_theta) = R::runif(sigma_tot/double(N*1000.0), 2.0*sigma_tot/double(N));
       }
       else{ // WN
         temp_theta(i_theta) = R::runif(sigma_tot/2.0, sigma_tot);
@@ -406,6 +422,7 @@ arma::vec guess_initial(arma::vec signal,
 //' options are:
 //' \itemize{
 //'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
 //'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
 //'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
 //'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
@@ -446,68 +463,6 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
   arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
 
   return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
-}
-
-// [[Rcpp::export]]
-unsigned int sum_field_vec(const arma::field<arma::vec>& x){
-  unsigned int nelems = x.n_elem;
-  unsigned int total_elems = 0;
-  
-  for(unsigned int i = 0; i < nelems; i++){
-    total_elems += sum(x(i));
-  }
-  
-  return total_elems;
-}
-
-//' @title GMWM for IMU, SSM, and ARMA
-//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @param x A \code{vector} with dimensions N x 1. 
-//' @param model_type A \code{character string} indicating if the function should estimate an ARMA model ("ARMA"), a model for IMU sensor calibration ("IMU") or a state-space model ("SSM")
-//' @param params A \code{vector} being numeric (if type = "ARMA") or character string (if type = "IMU" or type = "SSM")
-//' @param robust A \code{bool} indicating if the function should provide a robust estimation of the model parameters (by default = FALSE).
-//' @return gmwm A \code{list} that contains:
-//' \itemize{
-//'  \item{par}{The estimated model parameters}
-//'  \item{CI}{The 95\% confidence intervals for the estimated model parameters.}
-//' }
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
-//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-//' options are:
-//' \itemize{
-//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-//' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
-//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
-//' @author JJB
-//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-//' @keywords internal
-//' @examples
-//' # Coming soon
-// [[Rcpp::export]]
-arma::rowvec gmwm_cpp(const arma::vec& signal,
-                      const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, 
-                      const arma::mat& V, const arma::vec& wv_empir, const arma::vec& tau, 
-                      unsigned int B = 1000){
-  
-  
-  unsigned int num_param = sum_field_vec(objdesc);
-  
-  // Give it a guess
-  arma::vec guess_me = guess_initial(signal,
-                                     desc, objdesc, model_type, 
-                                     num_param, tau, wv_empir, B);
-
-  // And return value...
-  return adv_gmwm_cpp(guess_me, desc, objdesc, model_type, V, wv_empir, tau);                        
 }
 
 
