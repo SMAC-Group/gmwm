@@ -54,7 +54,7 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
 //' @title Quantisation Noise to WV
 //' @description This function compute the WV (haar) of a Quantisation Noise (QN) process
 //' @param q2 A \code{double} corresponding to variance of drift
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the QN.
 //' @examples
 //' x.sim = 1:1000
@@ -70,7 +70,7 @@ arma::vec qn_to_wv(double q2, const arma::vec& tau){
 //' @title White Noise to WV
 //' @description This function compute the WV (haar) of a White Noise process
 //' @param sig2 A \code{double} corresponding to variance of WN
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the white noise.
 //' @examples
 //' x.sim = cumsum(rnorm(100000))
@@ -87,7 +87,7 @@ arma::vec wn_to_wv(double sig2, arma::vec tau){
 //' @title Random Walk to WV
 //' @description This function compute the WV (haar) of a Random Walk process
 //' @param sig2 A \code{double} corresponding to variance of RW
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the random walk.
 //' @examples
 //' x.sim = cumsum(rnorm(100000))
@@ -104,7 +104,7 @@ arma::vec rw_to_wv(double sig2, const arma::vec& tau){
 //' @title Drift to WV
 //' @description This function compute the WV (haar) of a Drift process
 //' @param omega A \code{double} corresponding to variance of drift
-//' @param Tau A \code{vec} containing the scales e.g. 2^tau
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the drift.
 //' @examples
 //' x.sim = 1:1000
@@ -145,9 +145,8 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau){
 //' @description This function computes the summation of all Processes to WV (haar) in a given model
 //' @param theta A \code{vec} containing the list of estimated parameters.
 //' @param desc A \code{vector<string>} containing a list of descriptors.
-//' @param nparams A \code{vec} containing the number of parameters per process described in desc.
+//' @param objdesc A \code{field<vec>} containing a list of object descriptors.
 //' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
-//' @param N An \code{integer} containing the number of elements in the time series.
 //' @return A \code{vec} containing the wavelet variance of the AR(1) process.
 //' @examples
 //' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
