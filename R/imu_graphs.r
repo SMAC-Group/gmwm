@@ -1,28 +1,14 @@
 
-#' @title plot Wavelet Variances in separate and combined way
-#' @usage plot_imu (object, type, transparence, point.size, color.line, color.point, color.CI, line.type, ...)
-#' @param
-#'
-plot.imu = function(object, type = 'separate', transparence = 0.1, point.size = 0, color.line = "black", color.point = "#003C7D", color.CI = "#003C7D", line.type = "solid", ... ){
-  
-  if (type == 'separate'){
-    autoplot.imu6(object, transparence, point.size, color.line, color.point, color.CI, line.type )
-  }
-  
-  if (type == 'combined'){
-    autoplot.imu2(object, transparence, point.size, color.line, color.point, color.CI, line.type )
-  }
-}
-
-
-
-
-
-#' @title prepare the data for plotting
-#' @usage imu2WV(imu)
-#'
-#'
-imu2WV = function(object,...){
+#' @title Obtain the Wavelet Variance for imu data
+#' @description Generates the Wavelet Variance for each column in the data set. 
+#' @param object A \code{data.frame} or \code{matrix} that contains 6 columns. 
+#' @return A \code{data.frame} that contains the formatted data.
+#' @examples
+#' \dontrun{
+#' data(imu)
+#' df = imu2WV(imu)
+#' }
+imu2WV = function(object){
   wv1 = wvar(modwt(object[,1]))
   wv2 = wvar(modwt(object[,2]))
   wv3 = wvar(modwt(object[,3]))
@@ -42,12 +28,61 @@ imu2WV = function(object,...){
 }
 
 
+#' @title Plot the Wavelet Variances in separate and combined way
+#' @description Creates a graph of the wavelet variance object. The graphs can be either split (features a CI) or combined (all gyroscopes together and all accelerometer).
+#' @method plot imu
+#' @param x An \code{imu} object
+#' @param separate A \code{boolean} that indicates whether the graphs should be split or combined. 
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param point.size An \code{integer} that indicates the size of the points.
+#' @param color.line A \code{string} that indicates the color of the line drawn.
+#' @param color.point A \code{string} that is a hexadecimal color value.
+#' @param color.CI A \code{string} that is a hexadecimal color value.
+#' @param line.type A \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param ... Additional options
+#' @return A panel containing the graph of an IMU sensor.
+#' @examples
+#' \dontrun{
+#' data(imu)
+#' df = imu2WV(imu)
+#' plot(df)
+#' plot(df, separate=FALSE)
+#' }
+#'
+plot.imu = function(x, separate = TRUE, transparence = 0.1, point.size = 0, color.line = "black", color.point = "#003C7D", color.CI = "#003C7D", line.type = "solid", ... ){
+  
+  if (separate){
+    class(x) = "imu6"
+  }
+  else{
+    class(x) = "imu2"
+  }
+  
+  autoplot(x, transparence, point.size, color.line, color.point, color.CI, line.type )  
+}
 
-#' @title plot in separate type: 6 graphs
-#'
-#'
-#'
+#' @title Plot in separate type: 6 graphs
+#' @description Plot each WV variance in a separate graph
+#' @method autoplot imu6
+#' @param object An \code{imu} object
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param point.size An \code{integer} that indicates the size of the points.
+#' @param color.line A \code{string} that indicates the color of the line drawn.
+#' @param color.point A \code{string} that is a hexadecimal color value.
+#' @param color.CI A \code{string} that is a hexadecimal color value.
+#' @param line.type A \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param ... Additional options
+#' @return A panel containing the split graphs of an IMU sensor.
+#' @examples
+#' \dontrun{
+#' data(imu)
+#' df = imu2WV(imu)
+#' plot(df)
+#' }
 autoplot.imu6 = function(object, transparence = 0.1, point.size = 0, color.line = "black", color.point = "#003C7D", color.CI = "#003C7D", line.type = "solid", ...){
+  
+  WV=scales=.x=low=high=NULL
+  
   obj = data.frame(WV = object$WV,
                    scales = object$scales,
                    low = object$low,
@@ -68,19 +103,31 @@ autoplot.imu6 = function(object, transparence = 0.1, point.size = 0, color.line 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x)))
   
-  quartz(title = "GMWM plot", width = 10, height = 8)
   multiplot(CI)
   
 }
 
-
-
-#' @title plot in combined way: 2 graphs
-#'
-#'
-#'
-#'
+#' @title Plot in combined type: 2 graphs
+#' @description Plot each WV variance in a separate graph
+#' @method autoplot imu2
+#' @param object An \code{imu} object
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param point.size An \code{integer} that indicates the size of the points.
+#' @param color.line A \code{string} that indicates the color of the line drawn.
+#' @param color.point A \code{string} that is a hexadecimal color value.
+#' @param color.CI A \code{string} that is a hexadecimal color value.
+#' @param line.type A \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param ... Additional options
+#' @return A panel containing the split graphs of an IMU sensor.
+#' @examples
+#' \dontrun{
+#' data(imu)
+#' df = imu2WV(imu)
+#' plot(df, separate=FALSE)
+#' }
 autoplot.imu2 = function(object, transparence = 0.1, point.size = 0, color.line = "black", color.point = "#003C7D", color.CI = "#003C7D", line.type = "solid", ...){
+  
+  WV=scales=.x=NULL
   
   gyro = data.frame(WV = object$WV[1:57],
                     scales = object$scales[1:57],
