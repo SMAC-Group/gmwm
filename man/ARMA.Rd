@@ -19,6 +19,7 @@ An S3 object with called ts.model with the following structure:
  \item{desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
  \item{theta}{\eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}
+ \item{obj.desc}{y desc replicated x times}
  \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }

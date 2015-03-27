@@ -15,6 +15,7 @@ An S3 object with called ts.model with the following structure:
  \item{desc}{"WN"}
  \item{theta}{\eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}
+ \item{obj.desc}{y desc replicated x times}
  \item{obj}{Depth of Parameters e.g. list(1)}
  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
 }
