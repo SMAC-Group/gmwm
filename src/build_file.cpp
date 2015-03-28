@@ -196,7 +196,7 @@ double getObjFun(const arma::vec& theta,
   
     arma::vec transformed_theta = transform_values(theta, desc, objdesc, model_type);
 
-    return objFun(transformed_theta, desc, objdesc, model_type, omega, wv_empir, tau);
+    return objFun(transformed_theta, desc, objdesc, model_type, arma::inv(omega), wv_empir, tau);
 }
 
 /// [[Rcpp::export]]
