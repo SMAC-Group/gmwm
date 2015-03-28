@@ -140,11 +140,12 @@ gmwm = function(model, data, model.type="imu", fast=TRUE, augmented=FALSE, p = 0
   
   if(!model$adv){
     theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, B)
+    out = .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
   }else{
     theta = model$theta
+    out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
   }
   
-  out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
 
   if(robust){
     scales = temp.scales
@@ -229,11 +230,12 @@ update.gmwm = function(object, model, ...){
   
   if(!model$adv){
     theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, B)
+    out = .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
   }else{
     theta = model$theta
+    out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
   }
   
-  out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
   
   if(robust){
     scales = temp.scales
