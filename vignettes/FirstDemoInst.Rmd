@@ -1,0 +1,68 @@
+---
+title: "Demo"
+output: pdf_document
+---
+```{r setup, echo=FALSE}
+  library("knitr")
+  read_chunk("FirstDemo.R")
+```
+
+This document illustrates the use of the GMWM package. The current version is still preliminary and has not been tested extensively. First, the GMWM packages needs to be installed from the source file attached to this email (i.e. in R install.packages(path_to_file, repos = NULL, type="source")). Second, load the packages as follow:
+
+```{r library_include}
+```
+
+Note that this will automatically install the package ggplot2. We can now start using the GMWM package and we will simulate a latent model composed of a White Noise (WN) and a AutoRegressive model of order 1 (or AR(1), which are reparametrisation of Gauss-Markov processes) as follow:
+
+```{r gen_process}
+```
+
+We now compute the Wavaelet Variance (WV) of the simulated process using the following commands:
+
+```{r modwt}
+```
+
+We can plot the esatimated WV in the classical log-log plot as:
+
+```{r plotWV}
+```
+
+We now define the model to be estimated (i.e. AR(1) + WN) as
+
+```{r modelTS}
+```
+
+and compute the weight matrix (i.e. $\Omega$ in the classical GMWM formulation) as
+
+```{r Omega}
+```
+
+Finnally, we estimate the parameters as
+
+```{r GMWM}
+```
+
+The difference between the true and estimated parameter is given below:
+
+```{r results}
+```
+
+and to access the adequacy of the model vizualy we can use the following
+
+```{r GMWMplot}
+```
+
+Next, we consider a real signal issued from a MEMS IMU. To load the data and display the first observations
+
+```{r imuData}
+```
+
+plot 
+
+```{r imuPlot}
+```
+
+Consider Gyro axis X, estimate 3 AR(1) model
+
+```{r imuModel}
+```
