@@ -179,6 +179,26 @@ double objFun(const arma::vec& theta,
 	return arma::as_scalar(trans(dif)*omega*dif);
 }
 
+// [[Rcpp::export]]
+double getObjFunStarting(const arma::vec& theta, 
+                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+                      const arma::vec& wv_empir, const arma::vec& tau){
+  
+  arma::vec transformed_theta = transform_values(theta, desc, objdesc, model_type);
+
+  return objFunStarting(transformed_theta, desc, objdesc, model_type, wv_empir, tau);
+}
+
+// [[Rcpp::export]]
+double getObjFun(const arma::vec& theta,
+              const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+              const arma::mat& omega,const arma::vec& wv_empir, const arma::vec& tau){
+  
+    arma::vec transformed_theta = transform_values(theta, desc, objdesc, model_type);
+
+    return objFun(transformed_theta, desc, objdesc, model_type, omega, wv_empir, tau);
+}
+
 /// [[Rcpp::export]]
 arma::vec Rcpp_OptimStart(const arma::vec&  theta,
                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
@@ -407,6 +427,65 @@ arma::vec guess_initial(const std::vector<std::string>& desc, arma::field<arma::
   return starting_theta;
 }
 
+
+//' @title User Specified Initial Values for GMWM Estimator
+//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
+//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param V A \code{matrix} that represents the covariance matrix.
+//' @param wv_empir A \code{vector} that contains the empirical wavelet variance
+//' @param N A \code{integer} that indicates the length of the signal being studied.
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
+//' @examples
+//' # Coming soon
+// [[Rcpp::export]]
+arma::rowvec gmwm_cpp(const arma::vec& theta,
+                          const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, 
+                          const arma::mat& V, const arma::vec& wv_empir,
+                          const arma::vec& tau){
+                                 
+  // Number of parameters
+  //unsigned int num_param = theta.n_elem;
+    
+  // Starting values
+  arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
+  
+  // Optimize Starting values via Jannick's Method
+  starting_theta = Rcpp_OptimStart(starting_theta, desc, objdesc, model_type, wv_empir, tau);
+  
+  // ------------------------------------
+  // Compute standard GMWM
+  // ------------------------------------
+      
+  // Omega matrix
+  arma::mat omega = arma::inv(diagmat(V));
+  
+  // Find GMWM estimator
+  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
+
+  return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
+}
+
 //' @title User Specified Initial Values for GMWM Estimator
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
@@ -448,10 +527,7 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
     
   // Starting values
   arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
-  
-  // Optimize Starting values via Jannick's Method
-  starting_theta = Rcpp_OptimStart(starting_theta, desc, objdesc, model_type, wv_empir, tau);
-  
+    
   // ------------------------------------
   // Compute standard GMWM
   // ------------------------------------
