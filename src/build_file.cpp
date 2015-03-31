@@ -428,7 +428,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, arma::field<arma::
 }
 
 
-//' @title User Specified Initial Values for GMWM Estimator
+//' @title Guided Initial Values for GMWM Estimator with Starting Technique
 //' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.
