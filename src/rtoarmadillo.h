@@ -19,6 +19,6 @@ arma::vec Mod_squared_cpp(arma::cx_vec x);
 
 arma::vec Mod_cpp(arma::cx_vec x);
 
-arma::vec dft_acf(arma::vec x);
+arma::vec dft_acf(const arma::vec& x);
 
 #endif
