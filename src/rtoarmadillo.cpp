@@ -376,19 +376,17 @@ arma::vec Mod_cpp(arma::cx_vec x){
 //' x=rnorm(100)
 //' dft_acf(x)
 // [[Rcpp::export]]
-arma::vec dft_acf(arma::vec x){
-    int n = x.n_elem;
-    x.resize(2*n); // Resize fills value as zero.
+arma::vec dft_acf(const arma::vec& x){
+    unsigned int n = x.n_elem;
+    arma::cx_vec ff = arma::fft(x,2*n);
     
-    arma::cx_vec ff = arma::fft(x);
+    arma::cx_vec iff = arma::conv_to< arma::cx_vec >::from( arma::square(arma::real(ff)) + arma::square(arma::imag(ff)) ); //expensive
     
-    arma::cx_vec iff = arma::conv_to< arma::cx_vec >::from( arma::square(arma::real(x)) + arma::square(arma::imag(x)) ); //expensive
+    iff = arma::ifft(iff);
+  
+    iff = iff.rows(0,n-1) / n;
     
-    arma::vec out = arma::real( arma::ifft(iff) ) / n; // Divide out the n to normalize ifft
-    
-    //out.resize(n);    
-    
-    return out.rows(0,n-1);
+    return arma::real(iff);
 }
 
 
