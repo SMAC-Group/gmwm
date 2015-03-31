@@ -347,7 +347,7 @@ arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max)
 //' @examples
 //' Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_squared_cpp(arma::cx_vec x){
+arma::vec Mod_squared_cpp(const arma::cx_vec& x){
    return arma::square(arma::real(x)) + arma::square(arma::imag(x));
 }
 
@@ -360,7 +360,7 @@ arma::vec Mod_squared_cpp(arma::cx_vec x){
 //' @examples
 //' Mod_cpp(c(1+.5i, 2+1i, 5+9i))
 // [[Rcpp::export]]
-arma::vec Mod_cpp(arma::cx_vec x){
+arma::vec Mod_cpp(const arma::cx_vec& x){
    return arma::sqrt(arma::square(arma::real(x)) + arma::square(arma::imag(x)));
 }
 
