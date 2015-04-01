@@ -327,7 +327,7 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
 //' @examples
 //' #TBA
 // [[Rcpp::export]]
-arma::vec guess_initial(const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
+arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
                         std::string model_type, unsigned int num_param, double expect_diff, unsigned int N,
                         const arma::vec& wv_empir, const arma::vec& tau, unsigned int B=1000){
                           
@@ -523,7 +523,6 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.
 //' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
-
 //' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
 //' @details
 //' Expand in detail...  
@@ -592,10 +591,17 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       std::string model_type, bool starting = true,
                                       double p = 0.025, 
                                       std::string compute_v = "fast", unsigned int K = 1, unsigned int H = 100,
+                                      unsigned int G = 1000, 
                                       bool robust=false, double eff = 0.6){
   unsigned int N = data.n_elem;
   unsigned int nlevels = floor(log2(N));
-      
+  
+  unsigned int np = theta.n_elem;
+  
+  double expect_diff = mean_diff(data);
+  
+  arma::vec guessed_theta = theta;
+  
   arma::field<arma::vec> modwt_decomp = modwt_cpp(data, "haar", nlevels, "periodic");
   
   arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, p, "eta3", "haar");
@@ -620,6 +626,14 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   arma::vec scales = scales_cpp(nlevels);
   
+  if(starting){
+
+    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
+    
+    guessed_theta = theta;
+  }
+
+  
   theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
                       wv_empir, V, scales, starting);
   //
@@ -634,13 +648,15 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
 
   arma::vec theo = theoretical_wv(theta, desc, objdesc, scales);
 
-  arma::field<arma::mat> out(6);
+  arma::field<arma::mat> out(8);
   out(0) = theta;
   out(1) = wv_empir;
   out(2) = ci_lo;
   out(3) = ci_hi;
   out(4) = V;
   out(5) = theo;
+  out(6) = guessed_theta;
+  out(7) = expect_diff;
 
   return out;
 }
