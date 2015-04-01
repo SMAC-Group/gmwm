@@ -12,6 +12,7 @@ n = 100000
 xt = gen_ar1(n, phi=.99, sigma2 = 0.01) +  gen_wn(n, sigma2=1)
 
 ## @knitr wv
+w = modwt(xt)
 wv = wvar(w)
 plot(wv)
 
@@ -46,8 +47,11 @@ plot(wv.imu, separate=FALSE)
 TS.mod.imu = 3*AR1()
 
 # Compute GMWM estimator
-model.imu = gmwm(TS.mod.imu, signal = imu[,1])
+model.imu = gmwm(TS.mod.imu, data = imu[,1])
 
 ## @knitr imuModel summary
 summary(model.imu)
 plot(model.imu)
+
+## @knitr newdata
+# Add more...
