@@ -126,7 +126,7 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
 
 
 /// [[Rcpp::export]]
-arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc){
+arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
     arma::vec x  = arma::zeros<arma::vec>(N);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
@@ -143,6 +143,9 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    // Compute theoretical WV
   	    x += gen_ar1(N, theta_value, sig2);
   	  }
+      else if(desc[i] == "ARMA"){
+        // Add! via arima.sim
+      }
       // DR
   	  else if(desc[i] == "DR"){
   	    x += gen_dr(N, theta_value);
