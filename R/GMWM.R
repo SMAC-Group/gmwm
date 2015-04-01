@@ -157,8 +157,11 @@ gmwm = function(model, data, model.type="imu", fast=TRUE, augmented=FALSE, p = 0
   
   colnames(out) = model$desc
   
+  estimate = as.vector(out)
+  names(estimate) = model$desc
+  names(theta) = model$desc
     
-  out = structure(list(estimate = as.vector(out),
+  out = structure(list(estimate = estimate,
                        init.guess = theta,
                        wv.empir = wv.empir, 
                        ci_low = wv.ci.low, 
@@ -173,6 +176,13 @@ gmwm = function(model, data, model.type="imu", fast=TRUE, augmented=FALSE, p = 0
                        expect.diff = expect.diff,
                        N = N), class = "gmwm")
   invisible(out)
+}
+
+summary.gmwm = function(object, ...){
+  cat("We are delighted to present these reasonable estimates from the GMWM object =) \n")
+  out = as.matrix(object$estimate)
+  colnames(out) = "Estimates"
+  print(out)
 }
 
 
