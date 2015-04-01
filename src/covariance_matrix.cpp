@@ -57,3 +57,19 @@ arma::field<arma::mat> compute_cov_cpp(arma::field<arma::vec> signal_modwt, unsi
   
   return V;
 }
+
+//' @title Computes the (MODWT) wavelet covariance matrix using Chi-square confidence interval bounds
+//' @description Calculates the (MODWT) wavelet covariance matrix using Chi-square confidence interval bounds
+//' @param ci_hi A \code{vec} that contains the upper confidence interval points.
+//' @param ci_lo A \code{vec} that contains the lower confidence interval points.
+//' @return A diagonal matrix.
+//' @examples
+//' \dontrun{
+//' x=runif(100)
+//' y=x+3
+//' fast_cov_cpp(y,x)
+//' }
+// [[Rcpp::export]]
+arma::mat fast_cov_cpp(const arma::vec& ci_hi, const arma::vec& ci_lo){
+  return arma::diagmat(arma::square(ci_hi-ci_lo));
+}
