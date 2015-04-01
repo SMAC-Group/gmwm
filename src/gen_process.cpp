@@ -124,8 +124,22 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
   return cumsum(grw);
 }
 
-
-/// [[Rcpp::export]]
+//' @title Generate Time Series based on Model (Internal)
+//' @description Create a time series based on a supplied time series model.
+//' @param N An \code{interger} containing the amount of observations for the time series.
+//' @param theta A \code{vec} containing the parameters to use to generate the model
+//' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..)
+//' @param objdesc A \code{field<vec>} contains the different model objects e.g. AR1 = c(1,1)
+//' @return A \code{vec} that contains combined time series.
+//' @details
+//' This function is under work. Some of the features are active. Others... Not so much. 
+//' What is NOT active:
+//' 1. Simulating an ARMA time series
+//' @examples
+//' # AR
+//' set.seed(1336)
+//' gen_model(1000, c(.9,1), "AR1", list(c(1,1)))
+// [[Rcpp::export]]
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
     arma::vec x  = arma::zeros<arma::vec>(N);
     unsigned int i_theta = 0;

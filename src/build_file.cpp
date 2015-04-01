@@ -251,7 +251,7 @@ arma::vec gmwm_bootstrapper(const arma::vec&  theta,
   	
 	arma::mat res(B, tau+1);
 	for(unsigned int i=0; i<B; i++){
-		arma::vec x = gen_model(N, theta, desc);
+		arma::vec x = gen_model(N, theta, desc, objdesc);
 
     // MODWT transform
     arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
@@ -338,7 +338,7 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
 //' @param desc A \code{vector<string>} that contains the model's components.
 //' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
 //' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
-//' @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+//' @param num_param An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
 //' @param expect_diff A \code{double} that contains the mean of the first difference of the data
 //' @param N A \code{integer} that contains the number of observations in the data.
 //' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
