@@ -9,26 +9,17 @@ set.seed(1)
 n = 100000
 
 # Simulate AR(1) + WN
-xt = gen_ar1(n, phi=.99, sigma2 = 0.01) + gen_wn(n, sigma2=1)
+xt = gen_ar1(n, phi=.99, sigma2 = 0.01) +  gen_wn(n, sigma2=1)
 
-## @knitr modwt
-# Compute MODWT
-w = modwt(xt)
-
-# Compute WV
+## @knitr wv
 wv = wvar(w)
-
-## @knitr plotWV
 plot(wv)
 
 ## @knitr modelTS
-TS.mod = AR1()+WN()
-
-## @knitr Omega
-Omega = wvcov(w, wv)
+TS.mod = AR1() + WN()
 
 ## @knitr GMWM
-model = gmwm(TS.mod, wvcov = Omega, signal = xt)
+model = gmwm(TS.mod, data = xt)
 
 ## @knitr results
 results = matrix(c(round(model$estimate,4), c(0.99,0.01,1)), 3, 2)
@@ -43,21 +34,20 @@ plot(model)
 data(imu)
 head(imu)
 
-## @knitr imuPlot
+## @knitr imuPlot separate
 wv.imu = imu2WV(imu)
 plot(wv.imu)
 
+## @knitr imuPlot combined
+plot(wv.imu, separate=FALSE)
+
 ## @knitr imuModel
 # Define model
-TS.mod = 3*AR1()
-
-# Compute MODWT
-xt = imu[,1]
-w = modwt(xt)
-
-# Compute WV
-wv = wvar(w)
-Omega = wvcov(w, wv)
+TS.mod.imu = 3*AR1()
 
 # Compute GMWM estimator
-gmwm(TS.mod, wvcov = Omega, signal = xt)
+model.imu = gmwm(TS.mod.imu, signal = imu[,1])
+
+## @knitr imuModel summary
+summary(model.imu)
+plot(model.imu)
