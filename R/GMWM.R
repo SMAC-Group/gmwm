@@ -159,6 +159,7 @@ gmwm = function(model, data, model.type="imu", fast=TRUE, augmented=FALSE, p = 0
   
     
   out = structure(list(estimate = as.vector(out),
+                       init.guess = theta,
                        wv.empir = wv.empir, 
                        ci_low = wv.ci.low, 
                        ci_high = wv.ci.high, 
@@ -248,6 +249,7 @@ update.gmwm = function(object, model, ...){
   colnames(out) = model$desc
   
   out = structure(list(estimate = as.vector(out),
+                       init.guess = theta,
                        wv.empir = wv.empir, 
                        ci_low = wv.ci.low, 
                        ci_high = wv.ci.high, 
@@ -485,10 +487,7 @@ adv.gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
 #' set.seed(1336)
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' mod = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
 plot.gmwm = function(x, ...){
   autoplot(x)
@@ -506,10 +505,7 @@ plot.gmwm = function(x, ...){
 #' set.seed(1336)
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' mod = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' mod = gmwm(AR1(), data=x, model.type="imu")
 #' autoplot(mod)
 autoplot.gmwm = function(object, ...){
   
