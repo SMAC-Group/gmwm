@@ -28,6 +28,9 @@
 // DWT
 #include "dwt.h"
 
+// Covariance matrix
+#include "covariance_matrix.h"
+
 using namespace arma;
 using namespace Rcpp;
 
@@ -240,30 +243,6 @@ arma::vec Rcpp_Optim(const arma::vec&  theta,
    return out;
 }
 
-
-
-// [[Rcpp::export]]
-arma::vec gmwm_bootstrapper(const arma::vec&  theta,
-                            const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc,
-                            unsigned int tau, unsigned int N, bool robust, double eff,
-                            unsigned int B = 100){
-  unsigned int nb_level = floor(log2(N));
-  	
-	arma::mat res(B, tau+1);
-	for(unsigned int i=0; i<B; i++){
-		arma::vec x = gen_model(N, theta, desc, objdesc);
-
-    // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter(), "modwt");
-  
-		arma::vec wv_x = wave_variance(signal_modwt_bw, robust, eff);
-    
-	  res.row(i) = arma::trans(wv_x);
-	}
-	return cov(res);
-}
-
 // [[Rcpp::export]]
 arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std::string model_type){
   arma::vec temp(2);
@@ -460,7 +439,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, arma::field<arma::
 //' # Coming soon
 // [[Rcpp::export]]
 arma::rowvec gmwm_cpp(const arma::vec& theta,
-                          const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, 
+                          const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
                           const arma::mat& V, const arma::vec& wv_empir,
                           const arma::vec& tau){
                                  
@@ -518,13 +497,10 @@ arma::rowvec gmwm_cpp(const arma::vec& theta,
 //' # Coming soon
 // [[Rcpp::export]]
 arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
-                          const std::vector<std::string>& desc, arma::field<arma::vec>& objdesc, std::string model_type, 
+                          const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
                           const arma::mat& V, const arma::vec& wv_empir,
                           const arma::vec& tau){
-                                 
-  // Number of parameters
-  //unsigned int num_param = theta.n_elem;
-    
+
   // Starting values
   arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
     
@@ -541,6 +517,133 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
   return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
 }
 
+
+//' @title Bootstrap for Matrix V
+//' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+//' @details
+//' Expand in detail...  
+//' @author JJB
+//' @keywords internal
+//' @examples
+//' # Coming soon
+// [[Rcpp::export]]
+arma::mat gmwm_bootstrapper(const arma::vec&  theta,
+                            const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
+                            unsigned int N, bool robust, double eff,
+                            unsigned int H = 100){
+  unsigned int nb_level = floor(log2(N));
+    
+  arma::mat res(H, nb_level);
+	for(unsigned int i=0; i<H; i++){
+		arma::vec x = gen_model(N, theta, desc, objdesc);
+
+    // MODWT transform
+    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
+    arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter(), "modwt");
+  
+		arma::vec wv_x = wave_variance(signal_modwt_bw, robust, eff);
+    
+	  res.row(i) = arma::trans(wv_x);
+	}
+	return arma::diagmat(arma::cov(res));
+}
+
+// [[Rcpp::export]]
+arma::vec gmwm_engine(const arma::vec& theta,
+                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                      std::string model_type,  bool robust,
+                      arma::vec wv_empir,
+                      arma::mat V,
+                      arma::vec scales,
+                      bool starting = true){
+  unsigned int np = theta.n_elem;  
+  if(robust){
+    // Params np
+    np = np + 1;
+    
+    scales = scales.rows(0,np-1);
+    wv_empir = wv_empir.rows(0,np-1);
+    // .submat( first_row, first_col, last_row, last_col )
+    V = V.submat(0, 0, np-1, np-1 );
+    
+    np = np - 1;
+  }
+  
+  // Apply Yannik's starting circle algorithm if we "guessed" the initial points or a user overrides it
+  arma::rowvec estimate;
+  if(starting){
+    estimate = gmwm_cpp(theta, desc, objdesc, model_type, V, wv_empir, scales);
+  }else{
+    estimate = adv_gmwm_cpp(theta, desc, objdesc, model_type, V, wv_empir, scales);
+  }
+
+  return trans(estimate);  
+} 
+
+// [[Rcpp::export]]
+arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, 
+                                      arma::vec theta,
+                                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                                      std::string model_type, bool starting = true,
+                                      double p = 0.025, 
+                                      std::string compute_v = "fast", unsigned int K = 1, unsigned int H = 100,
+                                      bool robust=false, double eff = 0.6){
+  unsigned int N = data.n_elem;
+  unsigned int nlevels = floor(log2(N));
+      
+  arma::field<arma::vec> modwt_decomp = modwt_cpp(data, "haar", nlevels, "periodic");
+  
+  arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, p, "eta3", "haar");
+  
+  arma::vec wv_empir = wvar.col(0);
+  arma::vec ci_lo = wvar.col(1);
+  arma::vec ci_hi = wvar.col(2);
+  
+  arma::mat V;
+  
+  // compute_cov_cpp is the hard core function. It can only be improved by using parallelization.
+  if(compute_v == "diag" || compute_v == "full"){
+    arma::field<arma::mat> Vout = compute_cov_cpp(modwt_decomp, nlevels, compute_v, robust, eff);
+    if(robust){
+      V = Vout(1);
+    }else{
+      V = Vout(0);
+    }
+  }else{
+     V = fast_cov_cpp(wvar.col(2), wvar.col(1));
+  }
+  
+  arma::vec scales = scales_cpp(nlevels);
+  
+  theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+                      wv_empir, V, scales, starting);
+  //
+
+  if(compute_v == "bootstrap"){
+    for(unsigned int k = 0; k < K; k++){
+        V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
+        theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+                      wv_empir, V, scales, starting);
+    }
+  }
+
+  arma::vec theo = theoretical_wv(theta, desc, objdesc, scales);
+
+  arma::field<arma::mat> out(6);
+  out(0) = theta;
+  out(1) = wv_empir;
+  out(2) = ci_lo;
+  out(3) = ci_hi;
+  out(4) = V;
+  out(5) = theo;
+
+  return out;
+}
 
 /*
 

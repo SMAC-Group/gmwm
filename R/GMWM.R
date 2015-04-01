@@ -21,6 +21,27 @@
 #' 1. Fast Computation of V
 #' 2. Augmented GMWM (additional moments)
 #' 3. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
+#' 
+#' The V matrix is calculated by:
+#' \eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.
+#' 
+#' The function is implemented in the following manner:
+#' 1. Calculate MODWT of data with levels = floor(log2(data))
+#' 2. Apply the brick.wall of the MODWT (e.g. remove boundary values)
+#' 3. Compute the empirical wavelet variance (WV Empirical).
+#' 4. Obtain the V matrix by squaring the difference of the WV Empirical's Chi-squared confidence interval (hi - lo)^2
+#' 5. Optimize the values to obtain \eqn{\hat{\theta}}{theta^hat}
+#' 6. If FAST = TRUE, return these results. Else, continue.
+#' 
+#'Loop  k = 1 to K
+#' Loop h = 1 to H
+#' 7. Simulate xt under \eqn{F_{\hat{\theta}}}{F_theta^hat}
+#' 8. Compute WV Empirical
+#' END
+#' 9. Calculate the covariance matrix
+#' 10. Optimize the values to obtain \eqn{\hat{\theta}}{theta^hat}
+#'END
+#' 11. Return optimized values.
 #' @examples
 #' # AR
 #' set.seed(1336)
@@ -54,7 +75,7 @@
 #' guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="imu", fast=TRUE, augmented=FALSE, p = 0.025, robust=FALSE, eff=0.6, B=1000){
+gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE, p = 0.025, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -103,76 +124,41 @@ gmwm = function(model, data, model.type="imu", fast=TRUE, augmented=FALSE, p = 0
     }
   }
   
-  # Decompose the Series
-  modwt.decomp = .Call('GMWM_modwt_cpp', PACKAGE = 'GMWM', data, filter_name = "haar", nlevels, boundary="periodic")
-  
-  # Obtain the wave variance and chi-square confidence interval
-  wv.all = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', modwt.decomp, robust, eff, p, "eta3", "haar")
-  
-  wv.empir = wv.all[,1]
-  wv.ci.low = wv.all[,2]
-  wv.ci.high = wv.all[,3]
-  
-  # Create the V Matrix (this is very time consuming...)
-  Vout = .Call('GMWM_compute_cov_cpp', PACKAGE = 'GMWM', modwt.decomp, nlevels, "diag", robust, eff)
-  
-  # Assign the appropriate V (it computes both robust and non-robust)
-  if(!robust){
-    V = Vout[[1]]
-  }else{
-    V = Vout[[2]]
-    
-    ind = 1:np
-    
-    temp.scales = scales
-    temp.V = V
-    temp.wv.empir = wv.empir
-    
-    scales = scales[ind]
-    wv.empir = wv.empir[ind]
-    V = V[ind,ind]
-    
-    np = np - 1
-  }
-  
+
   # Needed if model contains a drift. 
   expect.diff = .Call('GMWM_mean_diff', PACKAGE = 'GMWM', data)
   
   if(!model$adv){
-    theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, B)
-    out = .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
+    theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, G)
   }else{
     theta = model$theta
-    out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
   }
-  
 
-  if(robust){
-    scales = temp.scales
-    V = temp.V
-    wv.empir = temp.wv.empir
-  }
+  out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = !model$adv,
+                                                         p = p, compute_v = compute.v, K = K, H = H,
+                                                         robust=robust, eff = eff)
   
-  theo = theoretical_wv(out, desc, obj, scales)
+  #colnames(out) = model$desc
   
-  colnames(out) = model$desc
-  
-  estimate = as.vector(out)
-  names(estimate) = model$desc
+  estimate = out[[1]]
+  rownames(estimate) = model$desc
   names(theta) = model$desc
-    
+  
+  
   out = structure(list(estimate = estimate,
                        init.guess = theta,
-                       wv.empir = wv.empir, 
-                       ci_low = wv.ci.low, 
-                       ci_high = wv.ci.high, 
+                       wv.empir = out[[2]], 
+                       ci_low = out[[3]], 
+                       ci_high = out[[4]],
+                       V = out[[5]],
+                       theo = out[[6]],
                        scales = scales, 
-                       theo = theo, 
-                       V = V,
                        robust = robust,
                        eff = eff,
                        model.type = model.type,
-                       B = B,
+                       G = G,
+                       H = H,
+                       K = K,
                        expect.diff = expect.diff,
                        N = N), class = "gmwm")
   invisible(out)
@@ -215,7 +201,7 @@ update.gmwm = function(object, model, ...){
   robust = object$robust
   eff = object$eff
   model.type = object$model.type
-  B = object$B
+  G = object$G
   expect.diff = object$expect.diff
   N = object$N
   
@@ -228,20 +214,11 @@ update.gmwm = function(object, model, ...){
     if(np > length(scales)){
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need one additional scale since robust requires the amount of parameters + 1 to estimate.")
     }
-    ind = 1:np
-    
-    temp.scales = scales
-    temp.V = V
-    temp.wv.empir = wv.empir
-    
-    scales = scales[ind]
-    wv.empir = wv.empir[ind]
-    V = V[ind,ind]
   }
   
   if(!model$adv){
     theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, B)
-    out = .Call('GMWM_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
+    out = gmwm_engine(theta, desc, objdesc, model_type, robust, wv_empir, V, scales, starting)
   }else{
     theta = model$theta
     out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
