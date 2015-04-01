@@ -126,27 +126,22 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
   
 
   # Needed if model contains a drift. 
-  expect.diff = .Call('GMWM_mean_diff', PACKAGE = 'GMWM', data)
   
-  if(!model$adv){
-    theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, G)
-  }else{
-    theta = model$theta
-  }
+  theta = model$theta
 
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = !model$adv,
-                                                         p = p, compute_v = compute.v, K = K, H = H,
+                                                         p = p, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff)
   
   #colnames(out) = model$desc
   
   estimate = out[[1]]
   rownames(estimate) = model$desc
-  names(theta) = model$desc
-  
+  init.guess = out[[7]]
+  rownames(init.guess) = model$desc
   
   out = structure(list(estimate = estimate,
-                       init.guess = theta,
+                       init.guess = init.guess,
                        wv.empir = out[[2]], 
                        ci_low = out[[3]], 
                        ci_high = out[[4]],
@@ -159,7 +154,7 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
                        G = G,
                        H = H,
                        K = K,
-                       expect.diff = expect.diff,
+                       expect.diff = out[[8]],
                        N = N), class = "gmwm")
   invisible(out)
 }
