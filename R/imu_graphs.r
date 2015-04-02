@@ -20,7 +20,7 @@ imu2WV = function(object){
                       scales = rep(wv1$scales,6),
                       low = c(wv1$ci_low, wv2$ci_low, wv3$ci_low, wv4$ci_low, wv5$ci_low, wv6$ci_low),
                       high = c(wv1$ci_high, wv2$ci_high, wv3$ci_high, wv4$ci_high, wv5$ci_high, wv6$ci_high),
-                      axis = rep(c("X", "Y", "Z", "X", "Y", "Z"), each = length(wv1$variance)),
+                      Axis = rep(c("X", "Y", "Z", "X", "Y", "Z"), each = length(wv1$variance)),
                       sensor = rep(c("Gyroscope","Accelerometer"), each = 3*length(wv1$variance)))
   
   class(imu.df) = "imu"
@@ -87,7 +87,7 @@ autoplot.imu6 = function(object, transparence = 0.1, point.size = 0, color.line 
                    scales = object$scales,
                    low = object$low,
                    high = object$high,
-                   axis = object$axis,
+                   Axis = object$Axis,
                    sensor = object$sensor)
   
   p = ggplot(obj, aes(y = WV, x = scales)) +
@@ -97,7 +97,7 @@ autoplot.imu6 = function(object, transparence = 0.1, point.size = 0, color.line 
                            rev(high[1:19 + 2*19]),rev(high[1:19 + 3*19]),rev(high[1:19 + 4*19]),
                            rev(high[1:19 + 5*19])), x = c(scales,rev(scales))), alpha = transparence , fill = color.CI)
   
-  CI = p + facet_grid(sensor ~ axis) +
+  CI = p + facet_grid(sensor ~ Axis) +
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -133,17 +133,17 @@ autoplot.imu2 = function(object, transparence = 0.1, point.size = 0, color.line 
                     scales = object$scales[1:57],
                     low = object$low[1:57],
                     high = object$high[1:57],
-                    axis = object$axis[1:57],
+                    Axis = object$Axis[1:57],
                     sensor = object$sensor[1:57])
   
   accele = data.frame(WV = object$WV[58:114],
                       scales = object$scales[58:114],
                       low = object$low[58:114],
                       high = object$high[58:114],
-                      axis = object$axis[58:114],
+                      Axis = object$Axis[58:114],
                       sensor = object$sensor[58:114])
   
-  p = ggplot(gyro, aes(y = WV, x = scales))+geom_line( aes(colour = axis))+
+  p = ggplot(gyro, aes(y = WV, x = scales))+geom_line( aes(colour = Axis))+
     geom_point(colour = color.point, linetype = line.type, size = point.size)
   #geom_polygon(aes(y = c(low[1: length(low)/2],  rev(high[1:19 + 3*19]),rev(high[1:19 + 4*19]),rev(high[1:19 + 5*19])),
   
@@ -153,7 +153,7 @@ autoplot.imu2 = function(object, transparence = 0.1, point.size = 0, color.line 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x)))
   
-  p = ggplot(accele, aes(y = WV, x = scales))+geom_line( aes(colour = axis))+
+  p = ggplot(accele, aes(y = WV, x = scales))+geom_line( aes(colour = Axis))+
     geom_point(colour = color.point, linetype = line.type, size = point.size)
   
   
