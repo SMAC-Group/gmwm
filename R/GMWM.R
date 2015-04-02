@@ -160,7 +160,7 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
 }
 
 summary.gmwm = function(object, ...){
-  cat("We are delighted to present these reasonable estimates from the GMWM object =) \n")
+  cat("Parameter estimates: \n")
   out = as.matrix(object$estimate)
   colnames(out) = "Estimates"
   print(out)
