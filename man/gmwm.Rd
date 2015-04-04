@@ -15,6 +15,8 @@ gmwm(model, data, model.type = "imu", compute.v = "fast",
 
 \item{model.type}{A \code{string} containing the type of GMWM needed e.g. IMU or SSM}
 
+\item{compute.v}{A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"}
+
 \item{augmented}{A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).}
 
 \item{p}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
@@ -23,9 +25,11 @@ gmwm(model, data, model.type = "imu", compute.v = "fast",
 
 \item{eff}{A \code{double} between 0 and 1 that indicates the efficiency.}
 
-\item{fast}{A \code{boolean} indicating the type of covariance matrix solver. TRUE means bootstrap and FALSE means use a fast fourier transform (fft)}
+\item{G}{An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.}
 
-\item{B}{An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.}
+\item{K}{An \code{integer} that controls how many times the bootstrapping procedure will be initiated.}
+
+\item{H}{An \code{integer} that indicates how many different samples the bootstrap will be collect.}
 }
 \value{
 A \code{gmwm} object that contains:
@@ -41,9 +45,9 @@ GMM object
 \details{
 This function is under work. Some of the features are active. Others... Not so much.
 What is NOT active:
-1. Fast Computation of V
-2. Augmented GMWM (additional moments)
-3. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
+1. Augmented GMWM (additional moments)
+2. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
+3. ARMA Bootstrapping.
 
 The V matrix is calculated by:
 \eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.
@@ -70,7 +74,7 @@ END
 # AR
 set.seed(1336)
 n = 200
-data = gen_ar1(n, phi=.99, sigma2 = 0.01) + gen_wn(n, sigma2=1)
+data = gen.ts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
 
 # Models can contain specific parameters e.g.
 adv.model = gmwm(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 0.01),
@@ -96,7 +100,7 @@ set.seed(1336)
 data = arima.sim(n = 200,
               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
               sd = sqrt(0.1796))
-guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
+#guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
                 data, model.type="ssm")
 }

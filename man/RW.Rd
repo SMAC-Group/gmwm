@@ -12,12 +12,12 @@ RW(sigma2 = NULL)
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
- \item{desc}{"RW"}
+ \item{process.desc}{Used in summary: "RW"}
  \item{theta}{\eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}
- \item{obj.desc}{y desc replicated x times}
- \item{obj}{Depth of Parameters e.g. list(1)}
- \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+ \item{desc}{y desc replicated x times}
+ \item{obj.desc}{Depth of Parameters e.g. list(1)}
+ \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{

@@ -21,12 +21,9 @@ Creates a single graph that contains two GMWM models plotted against each other.
 \dontrun{# AR
 set.seed(1335)
 n = 200
-x = gen_ar1(n, phi = .1, sigma2 = 1) + gen_ar1(n, phi=0.95, sigma2 = .1)
-decomp = modwt(x)
-wv = wvar(decomp, robust = FALSE)
-out = wvcov(decomp, wv, compute.v="diag")
-GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+GMWM1 = gmwm(AR1(), data = x)
+GMWM2 = gmwm(2*AR1(), data = x)
 compare.models(GMWM1, GMWM2, split = FALSE)}
 }
 \author{

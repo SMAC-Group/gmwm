@@ -18,33 +18,33 @@ is.whole = function(x){ is.numeric(x) && floor(x)==x }
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{"AR1"}
+#'  \item{process.desc}{Used in summary: "AR1","SIGMA2"}
 #'  \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
-#'  \item{obj.desc}{y desc replicated x times}
-#'  \item{obj}{Depth of Parameters e.g. list(1,1)}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{desc}{"AR1"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @examples
 #' AR1()
 #' AR1(phi=.32, sigma=1.3)
 AR1 = function(phi = NULL, sigma2 = NULL) {
-  adv = TRUE;
+  starting = FALSE;
   if(is.null(phi) || is.null(sigma2)){
     phi = 0;
     sigma2 = 1;
-    adv = FALSE;
+    starting = TRUE;
   }
   if(length(phi) != 1 & length(sigma2) != 1){
     stop("Bad AR1 model submitted. Must be double values for two parameters.")
   }
-  out = structure(list(desc = c("AR1","SIGMA2"),
+  out = structure(list(process.desc = c("AR1","SIGMA2"),
                        theta = c(phi,sigma2),
                        plength = 2,
-                       obj.desc = "AR1",
-                       obj = list(c(1,1)),
-                       adv = adv), class = "ts.model")
+                       desc = "AR1",
+                       obj.desc = list(c(1,1)),
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -53,32 +53,32 @@ AR1 = function(phi = NULL, sigma2 = NULL) {
 #' @param q2 A \code{double} value for the \eqn{Q^2}{Q^2} of a QN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{"QN"}
+#'  \item{process.desc}{Used in summary: "QN"}
 #'  \item{theta}{\eqn{Q^2}{Q^2}}
 #'  \item{plength}{Number of Parameters}
-#'  \item{obj.desc}{y desc replicated x times}
-#'  \item{obj}{Depth of Parameters e.g. list(1)}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{desc}{y desc replicated x times}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @examples
 #' QN()
 #' QN(q2=3.4)
 QN = function(q2 = NULL) {
-  adv=TRUE
+  starting = FALSE
   if(is.null(q2)){
     q2 = 2
-    adv = FALSE
+    starting = TRUE
   }
   if(length(q2) != 1){
     stop("Bad QN model submitted. Must be a double that indicates the Q2 value.")
   }
-  out = structure(list(desc = "QN",
+  out = structure(list(process.desc = "QN",
                        theta = q2,
                        plength = 1,
-                       obj.desc = "QN",
-                       obj = list(1),
-                       adv = adv), class = "ts.model")
+                       desc = "QN",
+                       obj.desc = list(1),
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -87,32 +87,32 @@ QN = function(q2 = NULL) {
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{"WN"}
+#'  \item{process.desc}{Used in summary: "WN"}
 #'  \item{theta}{\eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
-#'  \item{obj.desc}{y desc replicated x times}
-#'  \item{obj}{Depth of Parameters e.g. list(1)}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{desc}{y desc replicated x times}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @examples
 #' WN()
 #' WN(sigma=3.4)
 WN = function(sigma2 = NULL) {
-  adv=TRUE
+  starting = FALSE
   if(is.null(sigma2)){
     sigma2 = 3
-    adv = FALSE
+    starting = TRUE
   }
   if(length(sigma2) != 1){
     stop("Bad WN model submitted. Must be a double that indicates the standard deviation.")
   }
-  out = structure(list(desc = "WN",
+  out = structure(list(process.desc = "WN",
                        theta = sigma2,
                        plength = 1,
-                       obj.desc = "WN",
-                       obj = list(1),
-                       adv = adv), class = "ts.model")
+                       desc = "WN",
+                       obj.desc = list(1),
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -121,32 +121,32 @@ WN = function(sigma2 = NULL) {
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{"RW"}
+#'  \item{process.desc}{Used in summary: "RW"}
 #'  \item{theta}{\eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
-#'  \item{obj.desc}{y desc replicated x times}
-#'  \item{obj}{Depth of Parameters e.g. list(1)}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{desc}{y desc replicated x times}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @examples
 #' RW()
 #' RW(sigma=3.4)
 RW = function(sigma2 = NULL) {
-  adv=TRUE
+  starting = FALSE
   if(is.null(sigma2)){
     sigma2 = 4
-    adv = FALSE
+    starting = TRUE
   }
   if(length(sigma2) != 1){
     stop("Bad RW model submitted. Must be a double that indicates the standard deviation.")
   }
-  out = structure(list(desc = "RW",
+  out = structure(list(process.desc = "RW",
                        theta = sigma2,
                        plength = 1,
-                       obj.desc = "RW",
-                       obj = list(1),
-                       adv = adv), class = "ts.model")
+                       desc = "RW",
+                       obj.desc = list(1),
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -155,32 +155,32 @@ RW = function(sigma2 = NULL) {
 #' @param slope A \code{double} value for the slope of a DR process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{"DR"}
+#'  \item{process.desc}{Used in summary: "DR"}
 #'  \item{theta}{slope}
 #'  \item{plength}{Number of Parameters}
 #'  \item{obj.desc}{y desc replicated x times}
 #'  \item{obj}{Depth of Parameters e.g. list(1)}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @examples
 #' DR()
 #' DR(slope=3.4)
 DR = function(slope = NULL) {
-  adv=TRUE
+  starting = FALSE
   if(is.null(slope)){
     slope = 5
-    adv = FALSE
+    starting = TRUE
   }
   if(length(slope) != 1){
     stop("Bad Drift model submitted. Must be a double that indicates a slope.")
   }
-  out = structure(list(desc = "DR",
+  out = structure(list(process.desc = "DR",
                        theta = slope,
                        plength = 1,
-                       obj.desc = "DR",
-                       obj = list(1),
-                       adv = adv), class = "ts.model")
+                       desc = "DR",
+                       obj.desc = list(1),
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -191,12 +191,12 @@ DR = function(slope = NULL) {
 #' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
+#'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
 #'  \item{theta}{\eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
 #'  \item{obj.desc}{y desc replicated x times}
 #'  \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @details
 #' A standard deviation is required since the model generation statements utilize 
@@ -211,20 +211,20 @@ DR = function(slope = NULL) {
 #' # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
 #' ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
 ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
-  adv = TRUE
+  starting = FALSE
   if(length(ar) == 1 & length(ma) == 1){
     if(is.whole(ar) & is.whole(ma)){
       ar = rep(-1, ar)
       ma = rep(-2, ma)
-      adv = FALSE
+      starting = TRUE
     }
   }
-  out = structure(list(desc = c(rep("AR", length(ar)), rep("MA",length(ma)), "SIGMA2"),
+  out = structure(list(process.desc = c(rep("AR", length(ar)), rep("MA",length(ma)), "SIGMA2"),
                        theta = c(ar, ma, sigma2),
                        plength = length(ar)+length(ma) + 1,
-                       obj.desc = "ARMA",
-                       obj = list(c(length(ar),length(ma),1)),
-                       adv = adv), class = "ts.model")
+                       desc = "ARMA",
+                       obj.desc = list(c(length(ar),length(ma),1)),
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -235,12 +235,12 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' @param y A \code{ts.model} object
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{y desc replicated x times}
+#'  \item{process.desc}{y desc replicated x times}
 #'  \item{theta}{y theta replicated x times}
 #'  \item{plength}{Number of Parameters}
-#'  \item{obj.desc}{y desc replicated x times}
-#'  \item{obj}{Depth of Parameters e.g. list(c(1,1),c(1,1))}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{desc}{y desc replicated x times}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(c(1,1),c(1,1))}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @export
@@ -255,12 +255,12 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
     x = y
     y = temp
   }
-  out = structure(list(desc = rep(y$desc,x),
+  out = structure(list(process.desc = rep(y$process.desc,x),
                        theta = rep(y$theta,x),
                        plength = y$plength*x,
+                       desc = rep(y$obj.desc,x),
                        obj.desc = rep(y$obj.desc,x),
-                       obj = rep(y$obj,x),
-                       adv = y$adv), class = "ts.model")
+                       starting = y$starting), class = "ts.model")
   invisible(out)
 }
 
@@ -271,11 +271,12 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' @param y A \code{ts.model} object
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
-#'  \item{desc}{combined x, y desc}
+#'  \item{process.desc}{combined x, y desc}
 #'  \item{theta}{combined x, y theta}
 #'  \item{plength}{Number of Parameters}
-#'  \item{obj}{Depth of Parameters e.g. list(1, c(1,1), c(length(ar),length(ma),1) )}
-#'  \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+#'  \item{desc}{Add process to queue e.g. c("AR1","WN")}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1, c(1,1), c(length(ar),length(ma),1) )}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
 #' @export
@@ -283,16 +284,16 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' DR()+WN()
 #' AR1(phi=.3,sigma=.2)
 "+.ts.model" = function(x, y) {
-  adv = FALSE
-  if(y$adv & x$adv){
-    adv = TRUE
+  starting = FALSE
+  if(y$starting & x$starting){
+    starting = TRUE
   }
-  out = structure(list(desc = c(x$desc, y$desc),
+  out = structure(list(process.desc = c(x$process.desc, y$process.desc),
                        theta = c(x$theta,y$theta),
                        plength = x$plength + y$plength,
+                       desc = c(x$desc, y$desc),
                        obj.desc = c(x$obj.desc, y$obj.desc),
-                       obj = c(x$obj, y$obj),
-                       adv = adv), class = "ts.model")
+                       starting = starting), class = "ts.model")
   invisible(out)
 }
 
@@ -308,18 +309,21 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' }
 #' @author JJB
 #' @examples
-#' DR()+WN()+RW()+AR1()+ARMA(1,2)
+#' QN() + DR() + WN() + RW() + AR1() + ARMA(1,2)
+#' AR1(phi=.9,sigma2=.1) + WN(sigma2=1) + 
+#' RW(sigma2=.3) + DR(sigma2=.5) + QN(q2=.9) + ARMA(ar=c(.3,.1),ma=c(.3,.2), sigma2= .99)
+#' 
+#' AR1(.9,.1) + WN(1) + RW(.3) + DR(.5) + QN(.9) + ARMA(c(.3,.1),c(.3,.2), .99)
 print.ts.model = function(x, ...){
 
-  desctable = data.frame("Terms" = x$desc, "Starting Values" = x$theta);
-  cat("\nAdvanced Enabled:", x$adv, "\n")
-  if(!x$adv){
+  desctable = data.frame("Terms" = x$process.desc, "Initial Values" = x$theta, stringsAsFactors = FALSE);
+  cat("\nGuess Starting Values:", x$starting, "\n")
+  if(x$starting){
     cat("The program will attempt to guess starting values for...\n")
     print(desctable[,1], row.names = FALSE)
-    cat("This model will only work using the gmwm() function.\n",
-        "To have the option of using adv.gmwm(), please supply values for each parameter.\n")
+    cat("To have the option of using your own starting values, please supply values for each parameter.\n")
   }else{
     print(desctable, row.names = FALSE)
-    cat("This model is able to be supplied to both gmwm() or adv.gmwm()\n")
+    cat("The model will be initiated using the initial values you supplied.\n")
   }
 }

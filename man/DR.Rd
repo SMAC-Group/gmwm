@@ -12,12 +12,12 @@ DR(slope = NULL)
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
- \item{desc}{"DR"}
+ \item{process.desc}{Used in summary: "DR"}
  \item{theta}{slope}
  \item{plength}{Number of Parameters}
  \item{obj.desc}{y desc replicated x times}
  \item{obj}{Depth of Parameters e.g. list(1)}
- \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+ \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{
