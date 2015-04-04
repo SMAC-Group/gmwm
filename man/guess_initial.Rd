@@ -14,6 +14,8 @@ guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir,
 
 \item{model_type}{A \code{string} that indicates whether it is an SSM or IMU.}
 
+\item{num_param}{An \code{unsigned int} number of parameters in the model (e.g. # of thetas).}
+
 \item{expect_diff}{A \code{double} that contains the mean of the first difference of the data}
 
 \item{N}{A \code{integer} that contains the number of observations in the data.}
@@ -23,8 +25,6 @@ guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir,
 \item{tau}{A \code{vec} that contains the scales. (e.g. 2^(1:J))}
 
 \item{B}{A \code{integer} that indicates how many random draws that should be performed.}
-
-\item{num_params}{An \code{unsigned int} number of parameters in the model (e.g. # of thetas).}
 }
 \value{
 A \code{vec} containing smart parameter starting guesses to be iterated over.

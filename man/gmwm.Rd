@@ -4,8 +4,9 @@
 \alias{gmwm}
 \title{GMWM for IMU, ARMA, SSM, and Robust}
 \usage{
-gmwm(model, data, model.type = "imu", fast = TRUE, augmented = FALSE,
-  p = 0.025, robust = FALSE, eff = 0.6, B = 1000)
+gmwm(model, data, model.type = "imu", compute.v = "fast",
+  augmented = FALSE, p = 0.025, robust = FALSE, eff = 0.6, G = 1000,
+  K = 1, H = 100)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}
@@ -14,8 +15,6 @@ gmwm(model, data, model.type = "imu", fast = TRUE, augmented = FALSE,
 
 \item{model.type}{A \code{string} containing the type of GMWM needed e.g. IMU or SSM}
 
-\item{fast}{A \code{boolean} indicating the type of covariance matrix solver. TRUE means bootstrap and FALSE means use a fast fourier transform (fft)}
-
 \item{augmented}{A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).}
 
 \item{p}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
@@ -23,6 +22,8 @@ gmwm(model, data, model.type = "imu", fast = TRUE, augmented = FALSE,
 \item{robust}{A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).}
 
 \item{eff}{A \code{double} between 0 and 1 that indicates the efficiency.}
+
+\item{fast}{A \code{boolean} indicating the type of covariance matrix solver. TRUE means bootstrap and FALSE means use a fast fourier transform (fft)}
 
 \item{B}{An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.}
 }
@@ -43,6 +44,27 @@ What is NOT active:
 1. Fast Computation of V
 2. Augmented GMWM (additional moments)
 3. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
+
+The V matrix is calculated by:
+\eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.
+
+The function is implemented in the following manner:
+1. Calculate MODWT of data with levels = floor(log2(data))
+2. Apply the brick.wall of the MODWT (e.g. remove boundary values)
+3. Compute the empirical wavelet variance (WV Empirical).
+4. Obtain the V matrix by squaring the difference of the WV Empirical's Chi-squared confidence interval (hi - lo)^2
+5. Optimize the values to obtain \eqn{\hat{\theta}}{theta^hat}
+6. If FAST = TRUE, return these results. Else, continue.
+
+Loop  k = 1 to K
+Loop h = 1 to H
+7. Simulate xt under \eqn{F_{\hat{\theta}}}{F_theta^hat}
+8. Compute WV Empirical
+END
+9. Calculate the covariance matrix
+10. Optimize the values to obtain \eqn{\hat{\theta}}{theta^hat}
+END
+11. Return optimized values.
 }
 \examples{
 # AR

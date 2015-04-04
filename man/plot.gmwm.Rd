@@ -22,10 +22,7 @@ Creates a graph containing the empirical and theoretical wavelet variances const
 set.seed(1336)
 n = 200
 x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-decomp = modwt(x)
-wv = wvar(decomp, robust = FALSE)
-out = wvcov(decomp, wv, compute.v="diag")
-mod = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+mod = gmwm(AR1(), data=x, model.type="imu")
 plot(mod)
 }
 \author{
