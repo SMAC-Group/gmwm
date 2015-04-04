@@ -147,7 +147,7 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau){
 //' @param desc A \code{vector<string>} containing a list of descriptors.
 //' @param objdesc A \code{field<vec>} containing a list of object descriptors.
 //' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
-//' @return A \code{vec} containing the wavelet variance of the AR(1) process.
+//' @return A \code{vec} containing the wavelet variance of the model.
 //' @examples
 //' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
 //' ntau = floor(log(length(x.sim),2))
@@ -231,6 +231,115 @@ arma::vec theoretical_wv(const arma::vec& theta,
   }
 
   return wv_theo;
+}
+
+
+//' @title Each Models Process Decomposed to WV
+//' @description This function computes each process to WV (haar) in a given model.
+//' @param theta A \code{vec} containing the list of estimated parameters.
+//' @param desc A \code{vector<string>} containing a list of descriptors.
+//' @param objdesc A \code{field<vec>} containing a list of object descriptors.
+//' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+//' @return A \code{mat} containing the wavelet variance of each process in the model
+//' @examples
+//' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::mat decomp_theoretical_wv(const arma::vec& theta, 
+                                const std::vector<std::string>& desc,
+                                const arma::field<arma::vec>& objdesc, const arma::vec& tau){
+  
+  unsigned int num_desc = desc.size();
+  arma::mat wv_theo = arma::zeros<arma::mat>(tau.n_elem, num_desc);
+    
+  unsigned int i_theta = 0;
+  for(unsigned int i = 0; i < num_desc; i++){
+    
+    // Add ARMA
+  
+    double theta_value = theta(i_theta);
+    
+    std::string element_type = desc[i];
+    
+    // AR 1
+    if(element_type == "AR1"){
+
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      wv_theo.col(i) = ar1_to_wv(theta_value, sig2, tau);
+    }
+    else if(element_type == "ARMA"){
+      
+      arma::vec model_params = objdesc(i);
+      
+      unsigned int p = model_params(0);
+      unsigned int q = model_params(1);
+      
+      arma::vec ar;
+      arma::vec ma;
+      
+
+      if(p == 0){
+        ar = arma::zeros<arma::vec>(0);
+      }else{
+        ar = theta.rows(i_theta,i_theta+p-1);
+      }
+      
+      i_theta += p;
+      
+      if(q == 0){
+        ma = arma::zeros<arma::vec>(0); 
+      }else{
+        ma = theta.rows(i_theta,i_theta+q-1);
+      }
+      
+      i_theta += q;
+
+      
+      wv_theo.col(i) = arma_to_wv(ar, ma, tau, theta(i_theta));
+    }
+    // DR
+    else if(element_type == "DR"){
+      wv_theo.col(i) = dr_to_wv(theta_value, tau);
+    }
+    // QN
+    else if(element_type == "QN"){
+      wv_theo.col(i) = qn_to_wv(theta_value, tau);
+    }
+    // RW
+    else if(element_type == "RW"){
+      wv_theo.col(i) = rw_to_wv(theta_value, tau);
+    }
+    // WN
+    else{
+      wv_theo.col(i) = wn_to_wv(theta_value, tau);
+    }
+    
+    ++i_theta;
+  }
+
+  return wv_theo;
+}
+
+//' @title Decomposed WV to Single WV
+//' @description This function computes the combined processes to WV (haar) in a given model.
+//' @param decomp A \code{mat} with scales as rows and processes as columns
+//' @return A \code{vec} containing the wavelet variance of the process for the overall model
+//' @examples
+//' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
+//' ntau = floor(log(length(x.sim),2))
+//' tau = 2^(1:ntau)
+//' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
+//' plot(tau, wv.theo, col = "red")
+// [[Rcpp::export]]
+arma::vec decomp_to_theo_wv(const arma::mat& decomp){
+
+  return arma::sum(decomp, 1);
 }
 
 /* ------------------------------ End Process to WV Functions --------------------------------- */

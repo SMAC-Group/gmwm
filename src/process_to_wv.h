@@ -16,4 +16,11 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& Tau);
 arma::vec theoretical_wv(const arma::vec& theta, 
                          const std::vector<std::string>& desc,
                          const arma::field<arma::vec>& objdesc, const arma::vec& tau);
+                         
+arma::mat decomp_theoretical_wv(const arma::vec& theta, 
+                                const std::vector<std::string>& desc,
+                                const arma::field<arma::vec>& objdesc, const arma::vec& tau);
+
+arma::vec decomp_to_theo_wv(const arma::mat& decomp);
+
 #endif

@@ -3,12 +3,14 @@
 #' @param model A \code{ts.model} object containing one of the allowed models.
 #' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 })
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU or SSM
-#' @param fast A \code{boolean} indicating the type of covariance matrix solver. TRUE means bootstrap and FALSE means use a fast fourier transform (fft)
+#' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
 #' @param augmented A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).
 #' @param p A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
 #' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
-#' @param B An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.
+#' @param G An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.
+#' @param K An \code{integer} that controls how many times the bootstrapping procedure will be initiated.
+#' @param H An \code{integer} that indicates how many different samples the bootstrap will be collect.
 #' @return A \code{gmwm} object that contains:
 #' \itemize{
 #'  \item{}
@@ -18,9 +20,9 @@
 #' @details
 #' This function is under work. Some of the features are active. Others... Not so much. 
 #' What is NOT active:
-#' 1. Fast Computation of V
-#' 2. Augmented GMWM (additional moments)
-#' 3. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
+#' 1. Augmented GMWM (additional moments)
+#' 2. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
+#' 3. ARMA Bootstrapping.
 #' 
 #' The V matrix is calculated by:
 #' \eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.
@@ -72,7 +74,7 @@
 #' data = arima.sim(n = 200, 
 #'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
 #'               sd = sqrt(0.1796))
-#' guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
+#' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
 gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE, p = 0.025, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
@@ -137,36 +139,60 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
   
   estimate = out[[1]]
   rownames(estimate) = model$desc
-  init.guess = out[[7]]
+  init.guess = out[[2]]
   rownames(init.guess) = model$desc
   
   out = structure(list(estimate = estimate,
                        init.guess = init.guess,
-                       wv.empir = out[[2]], 
-                       ci_low = out[[3]], 
-                       ci_high = out[[4]],
-                       V = out[[5]],
-                       theo = out[[6]],
+                       wv.empir = out[[3]], 
+                       ci_low = out[[4]], 
+                       ci_high = out[[5]],
+                       compute.v = compute.v,
+                       augmented = augmented,
+                       V = out[[6]],
+                       orgV = out[[7]],                       
                        scales = scales, 
                        robust = robust,
                        eff = eff,
                        model.type = model.type,
+                       expect.diff = out[[8]],
+                       N = N,
                        G = G,
                        H = H,
                        K = K,
-                       expect.diff = out[[8]],
-                       N = N), class = "gmwm")
+                       theo = out[[9]],
+                       decomp.theo = out[[10]],
+                       model = model), class = "gmwm")
   invisible(out)
 }
 
-summary.gmwm = function(object, ...){
-  cat("Parameter estimates: \n")
-  out = as.matrix(object$estimate)
-  colnames(out) = "Estimates"
-  print(out)
-}
-
-
+#' @title Update GMWM object for IMU, ARMA, SSM, and Robust
+#' @description GMM object
+#' @param object A \code{gmwm} object.
+#' @param model A \code{ts.model} object containing one of the allowed models.
+#' @return A \code{gmwm} object that contains:
+#' \itemize{
+#'  \item{}
+#'  \item{}
+#'  \item{}
+#' }
+#' @details
+#' This function is under work. Some of the features are active. Others... Not so much. 
+#' @examples
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' exact.model = AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1)
+#' data = gen.ts(exact.model)
+#' 
+#' # Create an initial model that is not accurate
+#' bad.model = gmwm(AR1(), data = data)
+#' 
+#' # Models can contain specific parameters e.g.
+#' updated.model = update(bad.model, exact.model)
+#' 
+#' # Or...
+#' updated.model.guided = update(bad.model, AR1()+AR1())
 update.gmwm = function(object, model, ...){
   # Do we have a valid model?
   if(!is(model, "ts.model")){
@@ -187,274 +213,62 @@ update.gmwm = function(object, model, ...){
   if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
   }
-
-  wv.empir = object$wv.empir  
-  wv.ci.low = object$ci_low
-  wv.ci.high = object$ci_high
-  V = object$V
-  scales = object$scales
-  robust = object$robust
-  eff = object$eff
-  model.type = object$model.type
-  G = object$G
-  expect.diff = object$expect.diff
-  N = object$N
   
-  if(np > length(scales)){
+  if(np > length(object$scales)){
     stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
   }
   
-  if(robust){
+  if(object$robust){
     np = np+1
-    if(np > length(scales)){
+    if(np > length(object$scales)){
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need one additional scale since robust requires the amount of parameters + 1 to estimate.")
     }
   }
   
-  if(!model$adv){
-    theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, N, wv.empir, scales, B)
-    out = gmwm_engine(theta, desc, objdesc, model_type, robust, wv_empir, V, scales, starting)
-  }else{
-    theta = model$theta
-    out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, V, wv.empir, scales)
-  }
+  out = .Call('GMWM_gmwm_update_cpp', PACKAGE = 'GMWM',
+                  model$theta,
+                  desc, obj, 
+                  object$model.type, object$N, object$expect.diff, 
+                  object$orgV, object$scales, object$wv.empir,
+                  !model$adv, 
+                  object$compute.v, object$K, object$H,
+                  object$G, 
+                  object$robust, object$eff)
+
+  estimate = out[[1]]
+  rownames(estimate) = model$desc
+  init.guess = out[[2]]
+  rownames(init.guess) = model$desc
   
+  object$estimate = estimate
+  object$init.guess = init.guess
   
-  if(robust){
-    scales = temp.scales
-    V = temp.V
-    wv.empir = temp.wv.empir
-  }
-  
-  theo = theoretical_wv(out, desc, obj, scales)
-  
-  colnames(out) = model$desc
-  
-  out = structure(list(estimate = as.vector(out),
-                       init.guess = theta,
-                       wv.empir = wv.empir, 
-                       ci_low = wv.ci.low, 
-                       ci_high = wv.ci.high, 
-                       scales = scales, 
-                       theo = theo, 
-                       V = V,
-                       robust = robust,
-                       eff = eff,
-                       model.type = model.type,
-                       B=B), class = "gmwm")
-  invisible(out)
+  object$V = out[[3]]
+  object$theo = out[[4]]
+  object$decomp.theo = out[[5]]
+
+  invisible(object)
 }
 
-
-#' @title GMWM for IMU, ARMA, SSM, and Robust
-#' @description GMM object
-#' @param model A \code{ts.model} object containing one of the allowed models. Not used if \code{type="arma"}
-#' @param wvcov A \code{wvcov} object
-#' @param signal A \code{vec} that is the time series being studied
-#' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU, ARMA, or SSM
-#' @param B An \code{integer} to sample the space for IMU and SSM models to ensure AR1 identitability.
-#' @return A \code{gmwm} object that contains:
-#' \itemize{
-#'  \item{}
-#'  \item{}
-#'  \item{}
-#' }
+#' @title Summary of GMWM object
+#' @description Displays summary information about GMWM object
+#' @method summary gmwm
+#' @param x A \code{GMWM} object
+#' @param ... other arguments passed to specific methods
+#' @return Text output via print
+#' @author JJB
 #' @examples
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' save.guided.ar1 = guided.gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' save.guided.2ar1 = guided.gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#'  
-#' # ARMA case
-#' set.seed(1336)
-#' x = arima.sim(n = 200, 
-#'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-#'               sd = sqrt(0.1796))
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' save.guided.arma = guided.gmwm(ARMA(2,2),wvcov=out, signal=x, model.type="ssm")
-guided.gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
-  
-  if(!is(model, "ts.model")){
-    stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN, ARMA). ")
-  }
-  
-  desc = model$obj.desc
-  
-  obj = model$obj
-  
-  np = model$plength
-  
-  if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
-    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
-  }
-  
-  if(model.type != "imu" && model.type != "ssm"){
-    stop("Model Type must be either IMU or SSM!")
-  }
-  
-  if(length(desc) == 0 ){
-    stop("desc must contain a list of components (e.g. AR1, DR, RW, QN, WN).")
-  }
-  
-  if(np > length(wvcov$scales)){
-    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
-  }
-  
-  if(wvcov$robust){
-    np = np+1
-    if(np > length(wvcov$scales)){
-      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
-    }
-    ind = 1:np
-    
-    temp.scales = wvcov$scales
-    
-    wvcov$scales = wvcov$scales[ind]
-    wvcov$wv.empir = wvcov$wv.empir[ind]
-    wvcov$V = wvcov$V[ind,ind]
-    wvcov$ci_low = wvcov$ci_low[ind]
-    wvcov$ci_high = wvcov$ci_high[ind]
-  }
-  
-  
-  expect.diff = .Call('GMWM_mean_diff', PACKAGE = 'GMWM', data)
-  
-  theta = .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, obj, model.type, np, expect.diff, length(signal), wv.empir, scales, B)
-  
-  out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales)
-  
-  if(wvcov$robust){
-    wvcov$scales = temp.scales
-  }
-  
-  theo = theoretical_wv(out, desc, obj, wvcov$scales)
-  
-  colnames(out) = model$desc
-  
-  
-  out = structure(list(estimate = as.vector(out),
-                       wv.empir = wvcov$wv.empir, 
-                       ci_low = wvcov$ci_low, 
-                       ci_high = wvcov$ci_high, 
-                       scales = wvcov$scales, 
-                       theo = theo, 
-                       robust = wvcov$robust,
-                       eff = wvcov$eff,
-                       type = model.type), class = "gmwm")
-  invisible(out)
-}
-
-#' @title GMWM for IMU, ARMA, SSM, and Robust
-#' @description GMM object
-#' @param model A \code{ts.model} object containing one of the allowed models. Not used if \code{type="arma"}
-#' @param wvcov A \code{wvcov} object
-#' @param signal A \code{vec} that is the time series being studied
-#' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU, ARMA, or SSM
-#' @param B An \code{integer} to sample the space for IMU and SSM models to ensure AR1 identitability.
-#' @return A \code{gmwm} object that contains:
-#' \itemize{
-#'  \item{}
-#'  \item{}
-#'  \item{}
-#' }
-#' @examples
-#' # AR
-#' set.seed(1336)
-#' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' save.adv.gmwm.ar1 = adv.gmwm(AR1(phi=.1,sigma2=1), wvcov=out, signal=x, model.type="imu")
-#' save.adv.gmwm.2ar1 = adv.gmwm(AR1(phi=.1,sigma2=1)+AR1(phi=0.95,sigma2=.1), wvcov=out, signal=x, model.type="imu")
-#'  
-#' # ARMA case
-#' set.seed(1336)
-#' x = arima.sim(n = 200, 
-#'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-#'               sd = sqrt(0.1796))
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' save = adv.gmwm(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2 = 0.1796), wvcov=out, signal=x, model.type="ssm")
-adv.gmwm = function(model, wvcov, signal, model.type="imu", B = 1000){
-  
-  if(!is(model, "ts.model")){
-    stop("model must be created from a ts.model object using a supported component (e.g. AR1, DR, RW, QN, WN, ARMA). ")
-  }
-  
-  if(!model$adv){
-    stop("The model submitted did NOT contain user-specified values for each term. Please recreate the model with specific coefficients.")
-  }
-  
-  theta = model$theta
-  
-  desc = model$obj.desc
-  
-  obj = model$obj
-  
-  np = model$plength
-  
-  if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
-    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
-  }
-  
-  if(model.type != "imu" && model.type != "ssm"){
-    stop("Model Type must be either IMU or SSM!")
-  }
-  
-  if(length(desc) == 0 ){
-    stop("desc must contain a list of components (e.g. AR1, DR, RW, QN, WN).")
-  }
-  
-  if(np > length(wvcov$scales)){
-    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
-  }
-  
-  if(wvcov$robust){
-    np = np+1
-    if(np > length(wvcov$scales)){
-      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
-    }
-    ind = 1:np
-    
-    temp.scales = wvcov$scales
-    
-    wvcov$scales = wvcov$scales[ind]
-    wvcov$wv.empir = wvcov$wv.empir[ind]
-    wvcov$V = wvcov$V[ind,ind]
-    wvcov$ci_low = wvcov$ci_low[ind]
-    wvcov$ci_high = wvcov$ci_high[ind]
-  }
-  
-  out = .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, obj, model.type, wvcov$V, wvcov$wv.empir, wvcov$scales)
-  
-  if(wvcov$robust){
-    wvcov$scales = temp.scales
-  }
-  
-  theo = theoretical_wv(out, desc, obj, wvcov$scales)
-  
-  colnames(out) = model$desc
-  
-  
-  out = structure(list(estimate = as.vector(out),
-                       wv.empir = wvcov$wv.empir, 
-                       ci_low = wvcov$ci_low, 
-                       ci_high = wvcov$ci_high, 
-                       scales = wvcov$scales, 
-                       theo = theo, 
-                       robust = wvcov$robust,
-                       eff = wvcov$eff,
-                       type = model.type), class = "gmwm")
-  invisible(out)
+#' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+#' summary(mod)
+summary.gmwm = function(object, ...){
+  cat("Parameter estimates: \n")
+  out = as.matrix(object$estimate)
+  colnames(out) = "Estimates"
+  print(out)
 }
 
 #' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
