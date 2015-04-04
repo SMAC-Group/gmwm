@@ -14,11 +14,12 @@
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
- \item{desc}{combined x, y desc}
+ \item{process.desc}{combined x, y desc}
  \item{theta}{combined x, y theta}
  \item{plength}{Number of Parameters}
- \item{obj}{Depth of Parameters e.g. list(1, c(1,1), c(length(ar),length(ma),1) )}
- \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+ \item{desc}{Add process to queue e.g. c("AR1","WN")}
+ \item{obj.desc}{Depth of Parameters e.g. list(1, c(1,1), c(length(ar),length(ma),1) )}
+ \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{

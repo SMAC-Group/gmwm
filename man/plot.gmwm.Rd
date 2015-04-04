@@ -21,8 +21,8 @@ Creates a graph containing the empirical and theoretical wavelet variances const
 # AR
 set.seed(1336)
 n = 200
-x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-mod = gmwm(AR1(), data=x, model.type="imu")
+x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+mod = gmwm(2*AR1(), data = x)
 plot(mod)
 }
 \author{

@@ -20,16 +20,16 @@ gen.ts = function(model, N = 1000){
   }
   
   # Information Required by GMWM:
-  desc = model$obj.desc
+  desc = model$desc
   
-  obj = model$obj
+  obj = model$obj.desc
       
   # Identifiability issues
   if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
   }
 
-  if(model$adv){
+  if(!model$starting){
     theta = model$theta
     out = .Call('GMWM_gen_model', PACKAGE = 'GMWM', N, theta, desc, obj)
   }else{

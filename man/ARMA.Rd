@@ -16,12 +16,12 @@ ARMA(ar = 1, ma = 1, sigma2 = 1)
 \value{
 An S3 object with called ts.model with the following structure:
 \itemize{
- \item{desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
+ \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
  \item{theta}{\eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}
  \item{obj.desc}{y desc replicated x times}
  \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
- \item{adv}{Advanced Input TRUE or FALSE (e.g. specified value)}
+ \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 }
 }
 \description{

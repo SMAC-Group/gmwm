@@ -12,7 +12,7 @@
 \item{x}{A \code{GMWM} object}
 }
 \value{
-Text output via messages
+Text output via print
 }
 \description{
 Displays summary information about GMWM object

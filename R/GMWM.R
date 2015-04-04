@@ -48,7 +48,7 @@
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' data = gen_ar1(n, phi=.99, sigma2 = 0.01) + gen_wn(n, sigma2=1)
+#' data = gen.ts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
 #' 
 #' # Models can contain specific parameters e.g.
 #' adv.model = gmwm(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 0.01),
@@ -90,9 +90,9 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
   }
   
   # Information Required by GMWM:
-  desc = model$obj.desc
+  desc = model$desc
   
-  obj = model$obj
+  obj = model$obj.desc
   
   np = model$plength
   
@@ -131,22 +131,22 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
   
   theta = model$theta
 
-  out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = !model$adv,
+  out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = p, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff)
   
   #colnames(out) = model$desc
   
   estimate = out[[1]]
-  rownames(estimate) = model$desc
+  rownames(estimate) = model$process.desc
   init.guess = out[[2]]
-  rownames(init.guess) = model$desc
+  rownames(init.guess) = model$process.desc
   
   out = structure(list(estimate = estimate,
                        init.guess = init.guess,
                        wv.empir = out[[3]], 
-                       ci_low = out[[4]], 
-                       ci_high = out[[5]],
+                       ci.low = out[[4]], 
+                       ci.high = out[[5]],
                        compute.v = compute.v,
                        augmented = augmented,
                        V = out[[6]],
@@ -162,7 +162,8 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
                        K = K,
                        theo = out[[9]],
                        decomp.theo = out[[10]],
-                       model = model), class = "gmwm")
+                       model = model,
+                       starting = model$starting), class = "gmwm")
   invisible(out)
 }
 
@@ -200,9 +201,9 @@ update.gmwm = function(object, model, ...){
   }
   
   # Information Required by GMWM:
-  desc = model$obj.desc
+  desc = model$desc
   
-  obj = model$obj
+  obj = model$obj.desc
   
   np = model$plength
   
@@ -230,15 +231,15 @@ update.gmwm = function(object, model, ...){
                   desc, obj, 
                   object$model.type, object$N, object$expect.diff, 
                   object$orgV, object$scales, object$wv.empir,
-                  !model$adv, 
+                  model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 
                   object$robust, object$eff)
 
   estimate = out[[1]]
-  rownames(estimate) = model$desc
+  rownames(estimate) = model$process.desc
   init.guess = out[[2]]
-  rownames(init.guess) = model$desc
+  rownames(init.guess) = model$process.desc
   
   object$estimate = estimate
   object$init.guess = init.guess
@@ -246,6 +247,8 @@ update.gmwm = function(object, model, ...){
   object$V = out[[3]]
   object$theo = out[[4]]
   object$decomp.theo = out[[5]]
+  
+  object$starting = model$starting
 
   invisible(object)
 }
@@ -282,8 +285,8 @@ summary.gmwm = function(object, ...){
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="imu")
+#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' mod = gmwm(2*AR1(), data = x)
 #' plot(mod)
 plot.gmwm = function(x, ...){
   autoplot(x)
@@ -300,8 +303,8 @@ plot.gmwm = function(x, ...){
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="imu")
+#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' mod = gmwm(2*AR1(), data = x)
 #' autoplot(mod)
 autoplot.gmwm = function(object, ...){
   
@@ -310,8 +313,8 @@ autoplot.gmwm = function(object, ...){
   cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#56B4E9")
   
   WV = data.frame(emp = object$wv.empir,
-                  low = object$ci_low,
-                  high = object$ci_high,
+                  low = object$ci.low,
+                  high = object$ci.high,
                   scale = object$scales,
                   theo = object$theo)
   CI = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
@@ -347,12 +350,9 @@ autoplot.gmwm = function(object, ...){
 #' \dontrun{# AR
 #' set.seed(1335)
 #' n = 200
-#' x = gen_ar1(n, phi = .1, sigma2 = 1) + gen_ar1(n, phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' GMWM1 = gmwm(AR1(), data = x)
+#' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
 autoplot.comp = function(object, ...){
   
@@ -361,8 +361,8 @@ autoplot.comp = function(object, ...){
   cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#EF8A1C","LINE4"="#6E8BBF")
   
   WV = data.frame(emp = object$wv.empir,
-                  low = object$ci_low,
-                  high = object$ci_high,
+                  low = object$ci.low,
+                  high = object$ci.high,
                   scale = object$scales,
                   theo = object$theo1,
                   model2 = object$theo2)
@@ -402,12 +402,9 @@ autoplot.comp = function(object, ...){
 #' \dontrun{# AR
 #' set.seed(1355)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' GMWM1 = gmwm(AR1(), data = x)
+#' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = TRUE)}
 autoplot.compSplit = function(object, ...){
   
@@ -416,8 +413,8 @@ autoplot.compSplit = function(object, ...){
   cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#56B4E9")
   
   WV = data.frame(emp = object$wv.empir,
-                  low = object$ci_low,
-                  high = object$ci_high,
+                  low = object$ci.low,
+                  high = object$ci.high,
                   scale = object$scales,
                   theo = object$theo1,
                   model2 = object$theo2)
@@ -475,16 +472,13 @@ autoplot.compSplit = function(object, ...){
 #' \dontrun{# AR
 #' set.seed(8836)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' decomp = modwt(x)
-#' wv = wvar(decomp, robust = FALSE)
-#' out = wvcov(decomp, wv, compute.v="diag")
-#' GMWM1 = gmwm(AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
-#' GMWM2 = gmwm(2*AR1(), wvcov=out, signal=x, model.type="imu", B = 10000)
+#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' GMWM1 = gmwm(AR1(), data = x)
+#' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
 compare.models = function(GMWM1, GMWM2, split = FALSE){
-  x = data.frame(wv.empir = GMWM1$wv.empir, ci_low = GMWM1$ci_low, 
-                 ci_high = GMWM1$ci_high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
+  x = data.frame(wv.empir = GMWM1$wv.empir, ci_low = GMWM1$ci.low, 
+                 ci_high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
   if (split == TRUE){
     class(x) = "compSplit"
   }else{
