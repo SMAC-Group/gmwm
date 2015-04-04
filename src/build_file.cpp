@@ -585,6 +585,56 @@ arma::vec gmwm_engine(const arma::vec& theta,
 } 
 
 // [[Rcpp::export]]
+arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
+                                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                                      std::string model_type, unsigned int N, double expect_diff, 
+                                      arma::mat orgV, arma::vec scales, arma::vec wv_empir,
+                                      bool starting = true, 
+                                      std::string compute_v = "fast", unsigned int K = 1, unsigned int H = 100,
+                                      unsigned int G = 1000, 
+                                      bool robust=false, double eff = 0.6){
+  
+  unsigned int np = theta.n_elem;
+    
+  arma::vec guessed_theta = theta;
+  
+  arma::mat V = orgV;
+    
+  if(starting){
+
+    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
+    
+    guessed_theta = theta;
+  }
+
+  
+  theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+                      wv_empir, V, scales, starting);
+  //
+
+  if(compute_v == "bootstrap"){
+    for(unsigned int k = 0; k < K; k++){
+        V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
+        theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+                      wv_empir, V, scales, starting);
+    }
+  }
+
+  arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
+  arma::vec theo = decomp_to_theo_wv(decomp_theo);
+
+  arma::field<arma::mat> out(5);
+  out(0) = theta;
+  out(1) = guessed_theta;
+  out(2) = V;
+  out(3) = theo;
+  out(4) = decomp_theo;
+  
+  return out;
+                                        
+}
+
+// [[Rcpp::export]]
 arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, 
                                       arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
@@ -624,6 +674,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
      V = fast_cov_cpp(wvar.col(2), wvar.col(1));
   }
   
+  arma::mat orgV = V;
+  
   arma::vec scales = scales_cpp(nlevels);
   
   if(starting){
@@ -646,18 +698,20 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     }
   }
 
-  arma::vec theo = theoretical_wv(theta, desc, objdesc, scales);
+  arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
+  arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
-  arma::field<arma::mat> out(8);
+  arma::field<arma::mat> out(10);
   out(0) = theta;
-  out(1) = wv_empir;
-  out(2) = ci_lo;
-  out(3) = ci_hi;
-  out(4) = V;
-  out(5) = theo;
-  out(6) = guessed_theta;
+  out(1) = guessed_theta;
+  out(2) = wv_empir;
+  out(3) = ci_lo;
+  out(4) = ci_hi;
+  out(5) = V;
+  out(6) = orgV;
   out(7) = expect_diff;
-
+  out(8) = theo;
+  out(9) = decomp_theo;
   return out;
 }
 
