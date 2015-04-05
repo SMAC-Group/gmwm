@@ -258,7 +258,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   out = structure(list(process.desc = rep(y$process.desc,x),
                        theta = rep(y$theta,x),
                        plength = y$plength*x,
-                       desc = rep(y$obj.desc,x),
+                       desc = rep(y$desc,x),
                        obj.desc = rep(y$obj.desc,x),
                        starting = y$starting), class = "ts.model")
   invisible(out)
