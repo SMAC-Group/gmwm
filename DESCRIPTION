@@ -1,7 +1,7 @@
 Package: GMWM
 Type: Package
 Title: Generalized Method of Wavelet Moments 
-Version: 0.9.0
+Version: 0.9.1
 Date: 2015-04-01
 Author: James Balamuta, Stephane Guerrier, Roberto Molinari
 Maintainer: Stephane Guerrier <stephane@illinois.edu>

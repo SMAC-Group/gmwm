@@ -157,7 +157,7 @@ arma::colvec untransform_values(const arma::vec& theta,
 }
 
 
-// hiding this function for the moment
+// Used Yannick's flattening technique on guessed starting values...
 double objFunStarting(const arma::vec& theta, 
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
                       const arma::vec& wv_empir, const arma::vec& tau){
@@ -169,6 +169,7 @@ double objFunStarting(const arma::vec& theta,
 	return arma::as_scalar(trans(standardized)*(standardized));
 }
 
+// Main objective function used by the program
 double objFun(const arma::vec& theta,
               const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
               const arma::mat& omega,const arma::vec& wv_empir, const arma::vec& tau){
@@ -211,6 +212,7 @@ arma::vec Rcpp_OptimStart(const arma::vec&  theta,
 
    Rcpp::List Opt=optim(_["par"] = theta,
                         _["fn"]  = Rcpp::InternalFunction(&objFunStarting),
+                        _["method"] = "CG",
                         _["desc"] = desc,
                         _["objdesc"] = objdesc,
                         _["model_type"] = model_type,
@@ -231,6 +233,7 @@ arma::vec Rcpp_Optim(const arma::vec&  theta,
 
    Rcpp::List Opt=optim(_["par"] = theta,
                         _["fn"]  = Rcpp::InternalFunction(&objFun),
+                        _["method"] = "CG",
                         _["desc"] = desc,
                         _["objdesc"] = objdesc,
                         _["model_type"] = model_type,
@@ -560,7 +563,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
                       arma::mat V,
                       arma::vec scales,
                       bool starting = true){
-  unsigned int np = theta.n_elem;  
+  /*unsigned int np = theta.n_elem;  
   if(robust){
     // Params np
     np = np + 1;
@@ -571,7 +574,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
     V = V.submat(0, 0, np-1, np-1 );
     
     np = np - 1;
-  }
+  }*/
   
   // Apply Yannik's starting circle algorithm if we "guessed" the initial points or a user overrides it
   arma::rowvec estimate;
