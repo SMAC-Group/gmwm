@@ -35,7 +35,11 @@
 // Objective Functions
 #include "objective_functions.h"
 
+// Guess starting values
 #include "guess_values.h"
+
+// Inference goodies
+#include "inference.h"
 
 using namespace arma;
 using namespace Rcpp;
@@ -168,7 +172,7 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
 arma::mat gmwm_bootstrapper(const arma::vec&  theta,
                             const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
                             unsigned int N, bool robust, double eff,
-                            unsigned int H){
+                            unsigned int H, bool diagonal_matrix){
   unsigned int nb_level = floor(log2(N));
     
   arma::mat res(H, nb_level);
@@ -183,29 +187,22 @@ arma::mat gmwm_bootstrapper(const arma::vec&  theta,
     
 	  res.row(i) = arma::trans(wv_x);
 	}
-	return arma::diagmat(arma::cov(res));
+  
+  if(diagonal_matrix){
+    return arma::diagmat(arma::cov(res));
+  }
+  
+	return arma::cov(res);
 }
 
 // [[Rcpp::export]]
 arma::vec gmwm_engine(const arma::vec& theta,
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
-                      std::string model_type,  bool robust,
+                      std::string model_type, 
                       arma::vec wv_empir,
                       arma::mat V,
                       arma::vec scales,
                       bool starting){
-  /*unsigned int np = theta.n_elem;  
-  if(robust){
-    // Params np
-    np = np + 1;
-    
-    scales = scales.rows(0,np-1);
-    wv_empir = wv_empir.rows(0,np-1);
-    // .submat( first_row, first_col, last_row, last_col )
-    V = V.submat(0, 0, np-1, np-1 );
-    
-    np = np - 1;
-  }*/
   
   // Apply Yannik's starting circle algorithm if we "guessed" the initial points or a user overrides it
   arma::rowvec estimate;
@@ -242,14 +239,14 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   }
 
   
-  theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+  theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, V, scales, starting);
   //
 
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
-        theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+        theta = gmwm_engine(theta, desc, objdesc, model_type,
                       wv_empir, V, scales, starting);
     }
   }
@@ -273,14 +270,16 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
                                       std::string model_type, bool starting,
-                                      double p, 
+                                      double alpha, 
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
-                                      bool robust, double eff){
+                                      bool robust, double eff, bool inference){
   unsigned int N = data.n_elem;
   unsigned int nlevels = floor(log2(N));
   
   unsigned int np = theta.n_elem;
+  
+  bool diagonal_matrix = true;
   
   double expect_diff = mean_diff(data);
   
@@ -288,7 +287,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   arma::field<arma::vec> modwt_decomp = modwt_cpp(data, "haar", nlevels, "periodic");
   
-  arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, p, "eta3", "haar");
+  arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, alpha, "eta3", "haar");
   
   arma::vec wv_empir = wvar.col(0);
   arma::vec ci_lo = wvar.col(1);
@@ -320,22 +319,35 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   }
 
   
-  theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+  theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, V, scales, starting);
   //
 
+  if(inference){
+    diagonal_matrix = false;
+  }
+
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
-        V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
-        theta = gmwm_engine(theta, desc, objdesc, model_type, robust,
+        V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
+        theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, V, scales, starting);
     }
+  }
+  
+  arma::vec gof_test;
+  arma::mat ci_inf; 
+  if(inference){
+    arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
+                                                   V, orgV, wv_empir, alpha);
+    ci_inf = cat(0);
+    gof_test = cat(1);
   }
 
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
-  arma::field<arma::mat> out(10);
+  arma::field<arma::mat> out(12);
   out(0) = theta;
   out(1) = guessed_theta;
   out(2) = wv_empir;
@@ -346,6 +358,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   out(7) = expect_diff;
   out(8) = theo;
   out(9) = decomp_theo;
+  out(10) = ci_inf;
+  out(11) = gof_test;
   return out;
 }
 

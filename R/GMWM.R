@@ -77,7 +77,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE, p = 0.025, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
+gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FALSE, augmented=FALSE, p = 0.025, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -119,12 +119,12 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
     stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
   }
   
-#   if(robust){
-#     np = np+1
-#     if(np > length(scales)){
-#       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
-#     }
-#   }
+  if(robust){
+    np = np+1
+    if(np > length(scales)){
+      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
+    }
+  }
   
 
   # Needed if model contains a drift. 
@@ -133,7 +133,7 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
 
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = p, compute_v = compute.v, K = K, H = H, G = G,
-                                                         robust=robust, eff = eff)
+                                                         robust=robust, eff = eff, inference = inference)
   
   #colnames(out) = model$desc
   
@@ -163,7 +163,10 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", augmented=FALSE
                        theo = out[[9]],
                        decomp.theo = out[[10]],
                        model = model,
-                       starting = model$starting), class = "gmwm")
+                       starting = model$starting,
+                       inference = inference,
+                       ci.theta = out[[11]],
+                       gof.test = out[[12]]), class = "gmwm")
   invisible(out)
 }
 
@@ -477,8 +480,8 @@ autoplot.compSplit = function(object, ...){
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
 compare.models = function(GMWM1, GMWM2, split = FALSE){
-  x = data.frame(wv.empir = GMWM1$wv.empir, ci.low = GMWM1$ci.low, 
-                 ci.high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
+  x = data.frame(wv.empir = GMWM1$wv.empir, ci_low = GMWM1$ci.low, 
+                 ci_high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
   if (split == TRUE){
     class(x) = "compSplit"
   }else{

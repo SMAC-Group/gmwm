@@ -1,6 +1,14 @@
-/*#include <RcppArmadillo.h>
+#include <RcppArmadillo.h>
 
+// Need for the derivative (probably move this out when model selection occurs)
 #include "analytical_matrix_derivatives.h"
+
+// Need for getObjFun
+#include "objective_functions.h"
+
+// Need for gmwm_engine in chisq test
+#include "gmwm_logic.h"
+
 
 //#include "inference.h"
 using namespace Rcpp;
@@ -25,7 +33,7 @@ arma::mat calculate_psi_matrix(const arma::mat& D, const arma::mat& v_hat, const
 //' @param p
 //' @return A \code{mat} that has the first column 
 // [[Rcpp::export]]
-arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha = 0.05){
+arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha){
   unsigned int nparams = theta.n_elem;
   arma::mat ci(nparams, 3);
   double z = R::qnorm(1-alpha, 0, 1, true, false);
@@ -46,25 +54,57 @@ arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha = 0.05){
 //' @param p
 //' @return A \code{mat} that has the first column 
 // [[Rcpp::export]]
-arma::vec gof_test(arma::mat psi, arma::vec wv_empir, arma::vec wv_theo, unsigned int nparams, unsigned int N){
+arma::vec gof_test(const arma::vec& theta, 
+                   const std::vector<std::string>& desc,
+                   const arma::field<arma::vec>& objdesc,
+                   std::string model_type,
+                   const arma::vec& tau,
+                   const arma::mat v_hat, arma::vec wv_empir){
   
+  arma::rowvec estimates = gmwm_engine(theta,
+                                       desc, objdesc, 
+                                        model_type, 
+                                        wv_empir,
+                                        v_hat,
+                                        tau,
+                                        false);
   
+  double test_stat = getObjFun(arma::trans(estimates), desc, objdesc, model_type,
+                                v_hat, wv_empir, tau);
+  
+  unsigned int df = tau.n_elem - theta.n_elem;
+  
+  double p_value = R::pchisq(test_stat, df, true, false);
+
+  arma::vec out(3);
+  out(0) = test_stat;
+  out(1) = p_value;
+  out(3) = df;
+
   return out;
 }
 
-
-
 // [[Rcpp::export]]
-arma::field<arma::mat> inference_summary(arma::vec theta, arma::mat v_hat, arma::mat omega, arma::vec wv_empir, double alpha = 0.05){
+arma::field<arma::mat> inference_summary(const arma::vec& theta, 
+                                        const std::vector<std::string>& desc,
+                                        const arma::field<arma::vec>& objdesc,
+                                        std::string model_type,
+                                        const arma::vec& tau,
+                                        arma::mat v_hat, arma::mat omega, arma::vec wv_empir, double alpha){
   
   
+  arma::mat D = derivative_first_matrix(theta, desc, objdesc, tau);
   
-  // calculate delta
-  arma::vec store = gof_test(psi, wv_empir, wv_theo, theta.n_elem, N);
+  arma::mat psi = calculate_psi_matrix(D, v_hat, omega);
   arma::mat ci = theta_ci(theta, psi, alpha);
+  
+  
+  arma::vec gof = gof_test(theta, desc, objdesc, model_type, tau, v_hat, wv_empir);
 
   arma::field<arma::mat> out(2);
-
   
+  out(0) = ci;
+  out(1) = gof;
+
   return out;
-} */
+} 
