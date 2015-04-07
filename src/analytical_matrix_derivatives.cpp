@@ -33,15 +33,14 @@ arma::mat deriv_ar1(double phi, double sig2, arma::vec tau){
      }
 
      // partial derivative with respect to phi
-     D.col(0) = (8.0*sig2)/(pow(phi - 1.0, 4.0)*pow(phi + 1.0, 2.0)*tausq) // common term (8v^2)/[(p-1)^4(p+1)^2*tau^2]
-                % ( -2.0 * (phi * ( phi * (tau - 6.0) - 4.0) - tau - 2.0) % phi_tau_1ov2
-                      + (phi * ( phi * (tau - 3.0) - 2.0) - tau - 1.0) % phi_tau
-                      - phi * (phi * (phi * tau + tau + 9) - tau + 6)
-                      + tau - 3.0
+     D.col(0) = (2.0*sig2)/(pow(phi - 1.0, 4.0)*pow(phi + 1.0, 2.0)*tausq) // common term (8v^2)/[(p-1)^4(p+1)^2*tau^2]
+                % (-3.0 + tau - 2.0 * phi_tau_1ov2 % ( - 2.0 - tau + phi*(-4 +(-6 + tau)*phi))
+                      + phi_tau % (-1.0 - tau + phi* (-2.0 + (-3.0 + tau)*phi))  
+                      - phi * (6.0 - tau + phi * (9.0 + tau + tau * phi))
                   );
                   
      // partial derivative with respect to sig2
-     D.col(1) = 4.0*(phi*(-8.0*phi_tau_1ov2+2.0*phi_tau+phi*tau+6.0)-tau)/(pow(phi-1.0,3.0)*(phi + 1.0)*tausq);
+     D.col(1) = (phi*(-8.0*phi_tau_1ov2+2.0*phi_tau+phi*tau+6.0)-tau)/(pow(phi-1.0,3.0)*(phi + 1.0)*tausq);
      
      return D;
 }
@@ -75,7 +74,7 @@ arma::mat deriv_2nd_ar1(double phi, double sig2, arma::vec tau){
      }
 
      // partial derivative with respect to phi
-     D.col(0) = (8.0*sig2)/(pow(phi - 1.0, 5.0)*phi*pow(phi + 1.0, 3.0)*tausq) // common term (8v^2)/[(p-1)^5*p*(p+1)^3*tau^2]
+     D.col(0) = (2.0*sig2)/(pow(phi - 1.0, 5.0)*phi*pow(phi + 1.0, 3.0)*tausq) // common term (8v^2)/[(p-1)^5*p*(p+1)^3*tau^2]
                 % ( -1 * (phi * ( phi * (phi * (tau - 8.0) % (phi * (tau - 6.0) - 8.0) - 2.0 * (tau - 6.0) % tau +64.0 ) + 8.0*(tau+2.0) ) + tau % (tau + 2.0) ) % phi_tau_1ov2
                       + (phi * (phi * (phi * (tau - 4.0) % (phi * (tau - 3.0) - 4.0) - 2.0 * (tau - 3.0) % tau + 16.0 ) + 4 * (tau + 1) ) + tau % (tau + 1.0) ) % phi_tau
                       + 3.0 * phi * ( phi * (phi * (square(phi)*tau + 2.0 * phi * (tau + 6.0) + 16.0 ) - 2.0 * (tau - 8.0) ) - tau + 4 )
@@ -156,7 +155,7 @@ arma::mat deriv_qn(arma::vec tau){
 arma::mat deriv_rw(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
-     D.col(0) = (2.0*arma::square(tau)+1.0)/(12.0*tau);
+     D.col(0) = (arma::square(tau)+2.0)/(12.0*tau);
      return D;
 }
 
