@@ -88,3 +88,16 @@ arma::mat field_to_matrix(arma::field<arma::vec> x){
   }
   return A; 
 }
+
+
+// [[Rcpp::export]]
+unsigned int sum_field_vec(const arma::field<arma::vec>& x){
+  unsigned int nelems = x.n_elem;
+  unsigned int total_elems = 0;
+  
+  for(unsigned int i = 0; i < nelems; i++){
+    total_elems += sum(x(i));
+  }
+  
+  return total_elems;
+}

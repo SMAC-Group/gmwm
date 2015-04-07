@@ -15,4 +15,14 @@ arma::mat deriv_RW(arma::vec tau);
 
 arma::mat deriv_WN(arma::vec tau);
 
+arma::mat derivative_first_matrix(const arma::vec& theta, 
+                                  const std::vector<std::string>& desc,
+                                  const arma::field<arma::vec>& objdesc,
+                                  const arma::vec& tau);
+
+arma::mat derivative_second_matrix(const arma::vec& theta, 
+                                  const std::vector<std::string>& desc,
+                                  const arma::field<arma::vec>& objdesc,
+                                  const arma::vec& tau);
+
 #endif
