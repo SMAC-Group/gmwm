@@ -377,11 +377,6 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
         //  This needs to be implemented.
       }
       else if(element_type == "DR"){   
-        if(expect_diff > 0){
-          expect_diff = R::runif(0,2*expect_diff);
-        }else{
-          expect_diff = R::runif(2*expect_diff,0);
-        }
         temp_theta(i_theta) = expect_diff;
       }
       else if(element_type == "QN"){
