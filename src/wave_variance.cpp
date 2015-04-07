@@ -16,7 +16,7 @@ using namespace Rcpp;
 //' @description Computes the eta3 CI
 //' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
 //' @param dims A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+//' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Wavelet Variance}
@@ -31,7 +31,7 @@ using namespace Rcpp;
 //' y = wave_variance(signal_modwt_bw)
 //' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
 // [[Rcpp::export]]
-arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
+arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
     
     unsigned int num_elem = dims.n_elem;
 
@@ -39,8 +39,8 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
 
     for(unsigned int i = 0; i<num_elem;i++){
       double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
-      out(i,1) = eta3 * y(i)/R::qchisq(1-p, eta3, 1, 0); // Lower CI
-      out(i,2) = eta3 * y(i)/R::qchisq(p, eta3, 1, 0); // Upper CI
+      out(i,1) = eta3 * y(i)/R::qchisq(1-alpha_ov_2, eta3, 1, 0); // Lower CI
+      out(i,2) = eta3 * y(i)/R::qchisq(alpha_ov_2, eta3, 1, 0); // Upper CI
     }
 
     out.col(0) = y;
@@ -52,7 +52,7 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
 //' @description Computes the eta3 robust CI
 //' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
 //' @param dims A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
+//' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
 //' @param eff A \code{double} that indicates the efficiency.
 //' @return A \code{matrix} with the structure:
 //' \itemize{
@@ -66,9 +66,9 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double p) {
 //' decomp = modwt_cpp(x, "haar", 4, boundary="periodic")
 //' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 //' y = wave_variance(signal_modwt_bw, robust = TRUE,  eff = 0.6)
-//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025, robust = TRUE, eff = 0.6)
+//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
-arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
+arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double eff) {
     
     unsigned int num_elem = dims.n_elem;
 
@@ -76,8 +76,8 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
     eff = sqrt(eff);
     for(unsigned int i = 0; i<num_elem;i++){
       double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
-      out(i,1) = eff * eta3 * y(i)/(R::qchisq(1-p, eta3, 1, 0)); // Lower CI
-      out(i,2) = eta3 * y(i)/(eff*R::qchisq(p, eta3, 1, 0)); // Upper CI
+      out(i,1) = eff * eta3 * y(i)/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
+      out(i,2) = eta3 * y(i)/(eff*R::qchisq(alpha_ov_2, eta3, 1, 0)); // Upper CI
     }
 
     out.col(0) = y;
@@ -90,7 +90,7 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
 //' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
 //' @param y A \code{vec} that contains the wave variance.
 //' @param type A \code{String} indicating the confidence interval being calculated.
-//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
+//' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
 //' @param robust A \code{boolean} to determine the type of wave estimation.
 //' @param eff A \code{double} that indicates the efficiency.
 //' @return A \code{matrix} with the structure:
@@ -111,7 +111,7 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double p, double eff) {
 //' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
 // [[Rcpp::export]]
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y,
-                            std::string type = "eta3", double p = 0.025, bool robust = false, double eff = 0.6){
+                            std::string type = "eta3", double alpha_ov_2 = 0.025, bool robust = false, double eff = 0.6){
     
   unsigned int nb_level = y.n_elem;
   arma::vec dims(nb_level);
@@ -125,10 +125,10 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
   
   if(type == "eta3"){
       if(robust){
-        out = ci_eta3_robust(y, dims, p, eff);
+        out = ci_eta3_robust(y, dims, alpha_ov_2, eff);
       }
       else{
-        out = ci_eta3(y, dims,p);  
+        out = ci_eta3(y, dims, alpha_ov_2);  
       }
   }
   else{
@@ -181,7 +181,7 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 //' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
 //' @param robust A \code{boolean} that triggers the use of the robust estimate.
 //' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
-//' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+//' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 //' @param ci_type A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"
 //' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
 //' @return A \code{mat} with the structure:
@@ -198,9 +198,9 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 //' wvar_cpp(decomp$data, robust = FALSE)
 // [[Rcpp::export]]
 arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt,
-                   bool robust=false, double eff=0.6, double p = 0.025, 
+                   bool robust=false, double eff=0.6, double alpha = 0.05, 
                    std::string ci_type="eta3", std::string strWavelet="haar") {
-  
+  double alpha_ov_2 = alpha/2.0;
   // MODWT transform
   arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, select_filter(strWavelet), "modwt");
   
@@ -208,7 +208,7 @@ arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt,
   arma::vec y = wave_variance(signal_modwt_bw, robust, eff);
   
   // Confidence Interval
-  return ci_wave_variance(signal_modwt_bw, y, ci_type, p, robust, eff);
+  return ci_wave_variance(signal_modwt_bw, y, ci_type, alpha_ov_2, robust, eff);
 }
 
 //' @title Computes the MODWT scales
