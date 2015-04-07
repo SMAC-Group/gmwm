@@ -60,3 +60,107 @@ arma::vec logit(const arma::vec& x){
 double logit(double x){
   return log(x/(1 - x));
 }
+
+
+// [[Rcpp::export]]
+arma::vec transform_values(const arma::vec& theta,
+                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
+    arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+    for(unsigned int i = 0; i < num_desc; i++){
+      // AR 1
+      if(desc[i] == "AR1" ){
+        
+        // Apply model specific parameter transformation
+        if(model_type == "imu"){
+  	      starting(i_theta) = arma::as_scalar(logit(theta.row(i_theta)));
+        }else{ // O.W. SSM case
+          starting(i_theta) = arma::as_scalar(pseudo_logit(theta.row(i_theta)));
+        }
+        
+        // Increase index for phi term
+  	    ++i_theta;
+        
+        // Handle the SIGMA2 term
+  	    starting(i_theta) = log(theta(i_theta));
+        
+  	  }
+      else if( desc[i] == "ARMA" ) {
+        
+        arma::vec arma_params = objdesc(i);
+        
+        unsigned int p = arma_params(0); // AR(P)
+        unsigned int q = arma_params(1); // MA(Q)
+        
+        unsigned int param_space = i_theta + p + q;
+        
+        // Change pseudo_logit to logit based on model type??
+        starting.rows(i_theta, param_space - 1) = pseudo_logit(theta.rows(i_theta, param_space - 1));
+        
+        // Increment index
+        i_theta += param_space;
+        
+        // Take care of SIGMA2 term
+        starting(param_space) = log(theta(param_space));
+
+      }
+  	  else{
+        starting(i_theta) = log(theta(i_theta));
+  	  }
+      ++i_theta;
+  }  
+    
+  return starting;
+}
+
+
+// [[Rcpp::export]]
+arma::colvec untransform_values(const arma::vec& theta, 
+                                const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
+    arma::colvec result  = arma::zeros<arma::colvec>(theta.n_elem);
+    unsigned int i_theta = 0;
+    unsigned int num_desc = desc.size();
+    
+    for(unsigned int i = 0; i < num_desc; i++){
+      
+      std::string element_type = desc[i];
+      // AR 1
+  	  if(element_type == "AR1"){
+        if(model_type == "imu"){
+          result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
+        }else{ // ssm
+          result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
+        }
+  	    ++i_theta;
+  	    result(i_theta) = exp(theta(i_theta));
+  	  }
+      else if(element_type == "ARMA" ) {
+        
+        arma::vec arma_params = objdesc(i);
+        
+        unsigned int p = arma_params(0); // AR(P)
+        unsigned int q = arma_params(1); // MA(Q)
+        
+        unsigned int param_space = i_theta + p + q;
+        
+        // Change pseudo_logit_inv to logit_inv based on model type??
+        result.rows(i_theta, param_space - 1) = pseudo_logit_inv(theta.rows(i_theta, param_space - 1));
+        
+        // Increment index to account for P+Q values
+        i_theta += param_space;
+        
+        // Take care of SIGMA2 term
+        result(param_space) = exp(theta(param_space));
+
+      }
+  	  else {
+        result(i_theta) = exp(theta(i_theta));
+  	  }
+      
+      ++i_theta;
+  }  
+    
+  return result;
+}

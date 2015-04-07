@@ -21,4 +21,6 @@ arma::vec Mod_cpp(const arma::cx_vec& x);
 
 arma::vec dft_acf(const arma::vec& x);
 
+double mean_diff(const arma::vec& x);
+
 #endif

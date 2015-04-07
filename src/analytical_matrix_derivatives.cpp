@@ -15,9 +15,9 @@ using namespace Rcpp;
 //' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
 //' @author JJB
 //' @examples
-//' deriv_AR1(.3, 1, 2^(1:5))
+//' deriv_ar1(.3, 1, 2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_AR1(double phi, double sig2, arma::vec tau){
+arma::mat deriv_ar1(double phi, double sig2, arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau,2);
      
@@ -57,9 +57,9 @@ arma::mat deriv_AR1(double phi, double sig2, arma::vec tau){
 //' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
 //' @author JJB
 //' @examples
-//' deriv_2nd_AR1(.3, 1, 2^(1:5))
+//' deriv_2nd_ar1(.3, 1, 2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_2nd_AR1(double phi, double sig2, arma::vec tau){
+arma::mat deriv_2nd_ar1(double phi, double sig2, arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau,2);
      
@@ -97,9 +97,9 @@ arma::mat deriv_2nd_AR1(double phi, double sig2, arma::vec tau){
 //' Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
 //' @author JJB
 //' @examples
-//' deriv_DR(5.3, 2^(1:5))
+//' deriv_dr(5.3, 2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_DR(double omega, arma::vec tau){
+arma::mat deriv_dr(double omega, arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau ,1);
      D.col(0) = omega*arma::square(tau);
@@ -115,9 +115,9 @@ arma::mat deriv_DR(double omega, arma::vec tau){
 //' Taking second derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{{{\partial ^2}}}{{\partial \omega _0^2}}{\nu ^2}\left( \tau  \right) = {\tau ^2}}{tau^2}
 //' @author JJB
 //' @examples
-//' deriv_2nd_DR(2^(1:5))
+//' deriv_2nd_dr(2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_2nd_DR(arma::vec tau){
+arma::mat deriv_2nd_dr(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
      D.col(0) = arma::square(tau);
@@ -133,9 +133,9 @@ arma::mat deriv_2nd_DR(arma::vec tau){
 //' The second derivative derivative with respect to \eqn{Q _0^2}{Q[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
 //' @author JJB
 //' @examples
-//' deriv_QN(2^(1:5))
+//' deriv_qn(2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_QN(arma::vec tau){
+arma::mat deriv_qn(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
      D.col(0) = 3.0/(2.0*arma::square(tau));
@@ -151,9 +151,9 @@ arma::mat deriv_QN(arma::vec tau){
 //' The second derivative derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial \sigma_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
 //' @author JJB
 //' @examples
-//' deriv_RW(2^(1:5))
+//' deriv_rw(2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_RW(arma::vec tau){
+arma::mat deriv_rw(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
      D.col(0) = (2.0*arma::square(tau)+1.0)/(12.0*tau);
@@ -168,11 +168,135 @@ arma::mat deriv_RW(arma::vec tau){
 //' Taking the derivative with respect to \eqn{\sigma _0^2}{sigma_0^2} yields: \eqn{\frac{\partial }{{\partial \sigma _0^2}}{\nu ^2}\left( \tau  \right) = \frac{1}{\tau }}{1/tau}
 //' @author JJB
 //' @examples
-//' deriv_WN(2^(1:5))
+//' deriv_wn(2^(1:5))
 // [[Rcpp::export]]
-arma::mat deriv_WN(arma::vec tau){
+arma::mat deriv_wn(arma::vec tau){
      unsigned int ntau = tau.n_elem;
      arma::mat D(ntau, 1);
      D.col(0) = 1.0/tau;
      return D;
+}
+
+//' Analytic D matrix of Processes
+//' @description This function computes each process to WV (haar) in a given model.
+//' @param theta A \code{vec} containing the list of estimated parameters.
+//' @param desc A \code{vector<string>} containing a list of descriptors.
+//' @param objdesc A \code{field<vec>} containing a list of object descriptors.
+//' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+//' @return A \code{matrix} with the process derivatives going down the column
+//' @details
+//' Function returns the matrix effectively known as "D"
+//' @author JJB
+//' @examples
+//' deriv_qwn(2^(1:5))
+// [[Rcpp::export]]
+arma::mat derivative_first_matrix(const arma::vec& theta, 
+                                  const std::vector<std::string>& desc,
+                                  const arma::field<arma::vec>& objdesc,
+                                  const arma::vec& tau){
+                                  
+  unsigned int num_desc = desc.size();
+  arma::mat D = arma::zeros<arma::mat>(tau.n_elem, theta.n_elem);
+    
+  unsigned int i_theta = 0;
+  for(unsigned int i = 0; i < num_desc; i++){
+    
+    // Add ARMA
+  
+    double theta_value = theta(i_theta);
+    
+    std::string element_type = desc[i];
+    
+    // AR 1
+    if(element_type == "AR1"){
+
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      D.cols(i_theta-1,i_theta) = deriv_ar1(theta_value, sig2, tau);
+    }
+    else if(element_type == "ARMA"){
+      // implement later      
+
+    }
+    // DR
+    else if(element_type == "DR"){
+      D.col(i_theta) = deriv_dr(theta_value, tau);
+    }
+    // QN
+    else if(element_type == "QN"){
+      D.col(i_theta) = deriv_qn(tau);
+    }
+    // RW
+    else if(element_type == "RW"){
+      D.col(i_theta) = deriv_rw(tau);
+    }
+    // WN
+    else{
+      D.col(i_theta) = deriv_wn(tau);
+    }
+    
+    ++i_theta;
+  }
+
+  return D;
+}
+
+
+//' Analytic D matrix of Processes
+//' @description This function computes each process to WV (haar) in a given model.
+//' @param theta A \code{vec} containing the list of estimated parameters.
+//' @param desc A \code{vector<string>} containing a list of descriptors.
+//' @param objdesc A \code{field<vec>} containing a list of object descriptors.
+//' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+//' @return A \code{matrix} with the process derivatives going down the column
+//' @details
+//' Function returns the matrix effectively known as "D"
+//' @author JJB
+//' @examples
+//' #TBA
+// [[Rcpp::export]]
+arma::mat derivative_second_matrix(const arma::vec& theta, 
+                                  const std::vector<std::string>& desc,
+                                  const arma::field<arma::vec>& objdesc,
+                                  const arma::vec& tau){
+                                  
+  unsigned int num_desc = desc.size();
+  arma::mat D = arma::zeros<arma::mat>(tau.n_elem, theta.n_elem);
+    
+  unsigned int i_theta = 0;
+  for(unsigned int i = 0; i < num_desc; i++){
+    
+    // Add ARMA
+  
+    double theta_value = theta(i_theta);
+    
+    std::string element_type = desc[i];
+    
+    // AR 1
+    if(element_type == "AR1"){
+
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      D.cols(i_theta-1,i_theta) = deriv_2nd_ar1(theta_value, sig2, tau);
+    }
+    else if(element_type == "ARMA"){
+      // implement later      
+
+    }
+    // DR
+    else if(element_type == "DR"){
+      D.col(i_theta) = deriv_2nd_dr(tau);
+    }
+    else{
+      // Already zero! (YAYAYA!)
+    }
+    
+    ++i_theta;
+  }
+
+  return D;
 }

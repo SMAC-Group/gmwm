@@ -4,7 +4,7 @@
 #' @param x A \code{modwt} object that contains the modwt decomposition.
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
-#' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 #' @return A \code{list} with the structure:
 #' \itemize{
 #'   \item{"variance"}{Wavelet Variance},
@@ -12,7 +12,7 @@
 #'   \item{"ci_high"}{Upper CI}
 #'   \item{"robust"}{Robust active}
 #'   \item{"eff"}{Efficiency level for Robust}
-#'   \item{"p"}{p value used for CI}
+#'   \item{"alpha"}{p value used for CI}
 #' }
 #' @author JJB
 #' @examples
@@ -22,20 +22,20 @@
 #' wvar(modwt(x))
 #' # Robust
 #' wvar(modwt(x), robust = TRUE, eff=0.3)
-#' # Different p/2 value (e.g. alpha = 0.1)
-#' wvar(modwt(x), p = 0.05)
-wvar = function(x, p = 0.025, robust = FALSE, eff = 0.6) {
+#' # 90% confidence interval
+#' wvar(modwt(x), alpha = 0.10)
+wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
   if(!is(x,"gmwm_modwt")){
     stop("Need to supply the modwt class.")
   }
-  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', x$data, robust, eff, p, "eta3", "haar")
+  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', x$data, robust, eff, alpha, "eta3", "haar")
   scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', x$nlevels)
   out = structure(list(variance = out[,1],
                          ci_low = out[,2], 
                         ci_high = out[,3], 
                          robust = robust, 
                             eff = eff,
-                              p = p,
+                          alpha = alpha,
                          scales = scales), class = "wvar")
   invisible(out)
 }

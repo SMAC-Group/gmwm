@@ -390,4 +390,11 @@ arma::vec dft_acf(const arma::vec& x){
 }
 
 
+// [[Rcpp::export]]
+double mean_diff(const arma::vec& x){
+  return arma::mean(diff_cpp(x, 1, 1));
+}
+
+
+
 /* ------------------ End R to Armadillo Functions ----------------------- */
