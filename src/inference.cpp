@@ -60,33 +60,37 @@ arma::vec gof_test(const arma::vec& theta,
                    const arma::field<arma::vec>& objdesc,
                    std::string model_type,
                    const arma::vec& tau,
-                   const arma::mat v_hat, const arma::vec& wv_empir){
+                   const arma::mat& v_hat, const arma::vec& wv_empir){
   
   Rcpp::Rcout << "In" << std::endl;
-  arma::vec estimates = gmwm_engine(theta,
-                                    desc, 
-                                    objdesc, 
-                                    model_type, 
-                                    wv_empir,
-                                    v_hat,
-                                    tau,
-                                    false);
+  
+  Rcpp::Rcout << "Theta:" << theta << std::endl;
+    
+  Rcpp::Rcout << "objdesc" << objdesc << std::endl;
+  
+  Rcpp::Rcout << "model_type" << model_type << std::endl;
+  
+  Rcpp::Rcout << "tau" << tau << std::endl;
+  
+  Rcpp::Rcout << "v_hat" << v_hat << std::endl;
+  
+  Rcpp::Rcout << "wv_empir" << wv_empir << std::endl;
+  
+  
 
-  Rcpp::Rcout << "Estimates" << std::endl;
-
-  double test_stat = getObjFun(estimates, desc, objdesc, model_type,
-                                v_hat, wv_empir, tau);
+  double test_stat = getObjFun(theta, desc, objdesc, model_type,
+                                arma::inv(v_hat), wv_empir, tau);
   
-  Rcpp::Rcout << "Test stat" << std::endl;
+  //Rcpp::Rcout << "Test stat" << std::endl;
   
-  unsigned int df = tau.n_elem - theta.n_elem;
+  //unsigned int df = tau.n_elem - theta.n_elem;
   
-  double p_value = R::pchisq(test_stat, df, true, false);
+  //double p_value = R::pchisq(test_stat, df, true, false);
 
   arma::vec out(3);
   out(0) = test_stat;
-  out(1) = p_value;
-  out(3) = df;
+  //out(1) = p_value;
+  //out(3) = df;
 
   return out;
 }

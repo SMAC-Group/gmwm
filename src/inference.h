@@ -12,7 +12,7 @@ arma::vec gof_test(const arma::vec& theta,
                    const arma::field<arma::vec>& objdesc,
                    std::string model_type,
                    const arma::vec& tau,
-                   const arma::mat v_hat, 
+                   const arma::mat& v_hat, 
                    const arma::vec& wv_empir);
   
 
