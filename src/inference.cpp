@@ -20,8 +20,9 @@ using namespace Rcpp;
 //' @param omega
 //' @return A \code{mat} that has the first column 
 // [[Rcpp::export]]
-arma::mat calculate_psi_matrix(const arma::mat& D, const arma::mat& v_hat, const arma::mat& omega){  
-  arma::mat B = arma::inv(arma::trans(D)*omega*D)*D*omega;
+arma::mat calculate_psi_matrix(const arma::mat& D, const arma::mat& v_hat, const arma::mat& omega){ 
+  arma::mat D_trans = arma::trans(D);
+  arma::mat B = arma::inv(D_trans*omega*D)*D_trans*omega;
   
   return B*v_hat*arma::trans(B);
 }
@@ -59,18 +60,24 @@ arma::vec gof_test(const arma::vec& theta,
                    const arma::field<arma::vec>& objdesc,
                    std::string model_type,
                    const arma::vec& tau,
-                   const arma::mat v_hat, arma::vec wv_empir){
+                   const arma::mat v_hat, const arma::vec& wv_empir){
   
-  arma::rowvec estimates = gmwm_engine(theta,
-                                       desc, objdesc, 
-                                        model_type, 
-                                        wv_empir,
-                                        v_hat,
-                                        tau,
-                                        false);
-  
-  double test_stat = getObjFun(arma::trans(estimates), desc, objdesc, model_type,
+  Rcpp::Rcout << "In" << std::endl;
+  arma::vec estimates = gmwm_engine(theta,
+                                    desc, 
+                                    objdesc, 
+                                    model_type, 
+                                    wv_empir,
+                                    v_hat,
+                                    tau,
+                                    false);
+
+  Rcpp::Rcout << "Estimates" << std::endl;
+
+  double test_stat = getObjFun(estimates, desc, objdesc, model_type,
                                 v_hat, wv_empir, tau);
+  
+  Rcpp::Rcout << "Test stat" << std::endl;
   
   unsigned int df = tau.n_elem - theta.n_elem;
   
@@ -98,13 +105,14 @@ arma::field<arma::mat> inference_summary(const arma::vec& theta,
   arma::mat psi = calculate_psi_matrix(D, v_hat, omega);
   arma::mat ci = theta_ci(theta, psi, alpha);
   
-  
-  arma::vec gof = gof_test(theta, desc, objdesc, model_type, tau, v_hat, wv_empir);
+  Rcpp::Rcout << "Passed CI" << std::endl;
+
+  //arma::vec gof = gof_test(theta, desc, objdesc, model_type, tau, v_hat, wv_empir);
 
   arma::field<arma::mat> out(2);
   
   out(0) = ci;
-  out(1) = gof;
+  //out(1) = gof;
 
   return out;
 } 

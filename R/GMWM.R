@@ -288,11 +288,54 @@ summary.gmwm = function(object, ...){
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
-#' mod = gmwm(2*AR1(), data = x)
+#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
+#' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
-plot.gmwm = function(x, ...){
-  autoplot(x)
+plot.gmwm = function(x, individual = FALSE, ...){
+  if (individual == TRUE){
+    class(x) = "gmwm2"
+    autoplot(x)
+  }else{
+    autoplot(x)
+  }
+}
+
+#' @title Graph Solution of the Generalized Method of Wavelet Moments
+#' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
+#' @method autoplot gmwm2
+#' @param object A \code{GMWM2} object.
+#' @param ... other arguments passed to specific methods
+#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM for each latent process.
+#' @author JJB
+autoplot.gmwm2 = function(object, ...){
+  .x=low=high=trans_breaks=trans_format=math_format=NULL
+  
+  # Find number of latent processes
+  L = length(object$model$desc) + 1
+  
+  # Get names of latent processes
+  nom = letters[1:L]
+  
+  # Construct data.frame
+  df = data.frame(scales = rep(object$scales,L), WV = c(as.vector(object$decomp.theo),apply(object$decomp.theo,1,sum)), process = rep(nom, each = length(object$scales)))
+  WV = data.frame(var = object$wv.empir, low = object$ci.low, high = object$ci.high, scale = object$scales)
+    
+  CI = ggplot(WV, aes(x = scale, y = low), colour = "#003C7D") + geom_line(linetype = "dotted", colour = "#003C7D") +
+    geom_line(aes(y = high),linetype = "dotted", colour = "#003C7D") +
+    geom_line(aes(y = var)) + geom_point(aes(y = var), size = 3) +
+    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+    scale_y_log10( breaks = trans_breaks("log10", function(x) 10^x),
+                   labels = trans_format("log10", math_format(10^.x))) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1, fill = "#003C7D") +
+    geom_line(aes(x = df$scales, y = df$WV, color = rep(nom, each = length(object$scales))))  +
+    theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"),
+          legend.justification=c(0,0), legend.position=c(0,0)) +
+    scale_colour_discrete(name  =" ", labels=c(object$model$desc,paste(object$model$desc, collapse = ' + '))) +
+    coord_cartesian(ylim = c(min(object$ci.low), (1.05)*max(object$ci.high)))
+  
+  CI
 }
 
 #' @title Graph Solution of the Generalized Method of Wavelet Moments
