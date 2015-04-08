@@ -62,7 +62,7 @@ arma::vec gof_test(const arma::vec& theta,
                    const arma::vec& tau,
                    const arma::mat& v_hat, const arma::vec& wv_empir){
   
-  Rcpp::Rcout << "In" << std::endl;
+  /*Rcpp::Rcout << "In" << std::endl;
   
   Rcpp::Rcout << "Theta:" << theta << std::endl;
     
@@ -78,7 +78,7 @@ arma::vec gof_test(const arma::vec& theta,
   
   
 
-  double test_stat = getObjFun(theta, desc, objdesc, model_type,
+  //double test_stat = getObjFun(theta, desc, objdesc, model_type,
                                 arma::inv(v_hat), wv_empir, tau);
   
   //Rcpp::Rcout << "Test stat" << std::endl;
@@ -86,9 +86,9 @@ arma::vec gof_test(const arma::vec& theta,
   //unsigned int df = tau.n_elem - theta.n_elem;
   
   //double p_value = R::pchisq(test_stat, df, true, false);
-
+*/
   arma::vec out(3);
-  out(0) = test_stat;
+  //out(0) = test_stat;
   //out(1) = p_value;
   //out(3) = df;
 
