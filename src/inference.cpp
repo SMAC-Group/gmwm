@@ -100,8 +100,6 @@ arma::field<arma::mat> inference_summary(const arma::vec& theta,
   arma::mat psi = calculate_psi_matrix(D, v_hat, omega);
   arma::mat ci = theta_ci(theta, psi, alpha);
   
-  Rcpp::Rcout << "Passed CI" << std::endl;
-
   arma::vec gof = gof_test(theta, desc, objdesc, model_type, tau, v_hat, wv_empir);
 
   arma::field<arma::mat> out(2);
