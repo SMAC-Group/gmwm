@@ -326,7 +326,6 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   if(inference){
     diagonal_matrix = false;
     compute_v = "bootstrap";
-    Rcpp::Rcout << "Running inference" << std::endl;
   }
 
   if(compute_v == "bootstrap"){
