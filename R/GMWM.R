@@ -77,7 +77,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FALSE, augmented=FALSE, p = 0.025, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
+gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FALSE, augmented=FALSE, p = 0.05, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
