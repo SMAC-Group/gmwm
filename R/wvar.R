@@ -1,7 +1,7 @@
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
 #' @usage wvar(x, p = 0.025, robust = FALSE, eff = 0.6)
-#' @param x A \code{modwt} object that contains the modwt decomposition.
+#' @param x A \code{vector} with dimensions N x 1. 
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
 #' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
@@ -19,17 +19,17 @@
 #' set.seed(999)
 #' x=rnorm(100)
 #' # Default
-#' wvar(modwt(x))
+#' wvar(x)
 #' # Robust
-#' wvar(modwt(x), robust = TRUE, eff=0.3)
+#' wvar(x, robust = TRUE, eff=0.3)
 #' # 90% confidence interval
-#' wvar(modwt(x), alpha = 0.10)
+#' wvar(x, alpha = 0.10)
 wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
-  if(!is(x,"gmwm_modwt")){
-    stop("Need to supply the modwt class.")
-  }
-  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', x$data, robust, eff, alpha, "eta3", "haar")
-  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', x$nlevels)
+  nlevels =  floor(log2(length(x)))
+  decomp = .Call('GMWM_modwt_cpp', PACKAGE = 'GMWM', x, filter_name = "haar", nlevels, boundary="periodic")
+  
+  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', decomp, robust, eff, alpha, "eta3", "haar")
+  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
   out = structure(list(variance = out[,1],
                          ci_low = out[,2], 
                         ci_high = out[,3], 
