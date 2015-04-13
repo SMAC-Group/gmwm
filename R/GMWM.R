@@ -562,8 +562,8 @@ autoplot.compSplit = function(object, ...){
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
 compare.models = function(GMWM1, GMWM2, split = FALSE){
-  x = data.frame(wv.empir = GMWM1$wv.empir, ci_low = GMWM1$ci.low, 
-                 ci_high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
+  x = data.frame(wv.empir = GMWM1$wv.empir, ci.low = GMWM1$ci.low, 
+                 ci.high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
   if (split == TRUE){
     class(x) = "compSplit"
   }else{
