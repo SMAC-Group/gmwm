@@ -64,7 +64,7 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
 //' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec qn_to_wv(double q2, const arma::vec& tau){
-  return 3*q2/(2*arma::square(tau));
+  return 6.0*q2/arma::square(tau);
 }
 
 //' @title White Noise to WV
@@ -97,7 +97,7 @@ arma::vec wn_to_wv(double sig2, arma::vec tau){
 //' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec rw_to_wv(double sig2, const arma::vec& tau){
-  return sig2*((2*arma::square(tau) + 4)/(24*tau));
+  return sig2*((2.0*arma::square(tau) + 4.0)/(24.0*tau));
 }
 
 
@@ -114,7 +114,7 @@ arma::vec rw_to_wv(double sig2, const arma::vec& tau){
 //' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec dr_to_wv(double omega,const arma::vec& tau){
-	return square(omega)*arma::square(tau)/16;
+	return square(omega)*arma::square(tau)/16.0;
 }
 
 //' @title AR1 process to WV
@@ -138,7 +138,7 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau){
     temp_term(i) = 4*pow(phi,(tau(i)/2 + 1));
     temp_term_redux(i) = pow(phi,(tau(i)+1));
   }
-	return ((tau/2 - 3*phi - tau/2*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(tau/2)*pow(1-phi,2)*(1-pow(phi,2)))*sig2)/2;
+	return ((tau/2.0 - 3.0*phi - tau/2.0*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(tau/2.0)*pow(1-phi,2)*(1-pow(phi,2)))*sig2)/2.0;
 }
 
 //' @title Model Process to WV
