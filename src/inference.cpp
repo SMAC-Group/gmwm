@@ -1,8 +1,5 @@
 #include <RcppArmadillo.h>
 
-// Need for the derivative (probably move this out when model selection occurs)
-#include "analytical_matrix_derivatives.h"
-
 // Need for getObjFun
 #include "objective_functions.h"
 
@@ -92,10 +89,10 @@ arma::field<arma::mat> inference_summary(const arma::vec& theta,
                                         const arma::field<arma::vec>& objdesc,
                                         std::string model_type,
                                         const arma::vec& tau,
+                                        arma::mat D, 
                                         arma::mat v_hat, arma::mat omega, arma::vec wv_empir, double alpha){
   
   
-  arma::mat D = derivative_first_matrix(theta, desc, objdesc, tau);
   
   arma::mat psi = calculate_psi_matrix(D, v_hat, omega);
   arma::mat ci = theta_ci(theta, psi, alpha);

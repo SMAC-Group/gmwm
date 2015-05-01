@@ -166,7 +166,10 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FAL
                        starting = model$starting,
                        inference = inference,
                        ci.theta = out[[11]],
-                       gof.test = out[[12]]), class = "gmwm")
+                       gof.test = out[[12]],
+                       obj.fun = out[[13]],
+                       model.score = out[[14]],
+                       omega = out[[15]]), class = "gmwm")
   invisible(out)
 }
 

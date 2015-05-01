@@ -22,7 +22,7 @@ double objFunStarting(const arma::vec& theta,
 // Main objective function used by the program
 double objFun(const arma::vec& theta,
               const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
-              const arma::mat& omega,const arma::vec& wv_empir, const arma::vec& tau){
+              const arma::mat& omega, const arma::vec& wv_empir, const arma::vec& tau){
   
   arma::vec untransformed_theta = untransform_values(theta, desc, objdesc, model_type);
 
@@ -46,11 +46,11 @@ double getObjFunStarting(const arma::vec& theta,
 // [[Rcpp::export]]
 double getObjFun(const arma::vec& theta,
               const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
-              const arma::mat& V,const arma::vec& wv_empir, const arma::vec& tau){
+              const arma::mat& omega, const arma::vec& wv_empir, const arma::vec& tau){
   
     arma::vec transformed_theta = transform_values(theta, desc, objdesc, model_type);
 
-    return objFun(transformed_theta, desc, objdesc, model_type, arma::inv(V), wv_empir, tau);
+    return objFun(transformed_theta, desc, objdesc, model_type, omega, wv_empir, tau);
 }
 
 /// [[Rcpp::export]]
