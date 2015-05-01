@@ -41,6 +41,12 @@
 // Inference goodies
 #include "inference.h"
 
+// Model Selection criterion
+#include "analytical_matrix_derivatives.h"
+
+// Model Selection criterion
+#include "model_selection.h"
+
 using namespace arma;
 using namespace Rcpp;
 
@@ -76,9 +82,9 @@ using namespace Rcpp;
 //' @examples
 //' # Coming soon
 // [[Rcpp::export]]
-arma::rowvec gmwm_cpp(const arma::vec& theta,
+arma::vec gmwm_cpp(const arma::vec& theta,
                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
-                          const arma::mat& V, const arma::vec& wv_empir,
+                          const arma::mat& omega, const arma::vec& wv_empir,
                           const arma::vec& tau){
                                  
   // Number of parameters
@@ -93,14 +99,11 @@ arma::rowvec gmwm_cpp(const arma::vec& theta,
   // ------------------------------------
   // Compute standard GMWM
   // ------------------------------------
-      
-  // Omega matrix
-  arma::mat omega = arma::inv(diagmat(V));
   
   // Find GMWM estimator
   arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
 
-  return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
+  return untransform_values(estim_GMWM, desc, objdesc, model_type);                          
 }
 
 //' @title User Specified Initial Values for GMWM Estimator
@@ -134,9 +137,9 @@ arma::rowvec gmwm_cpp(const arma::vec& theta,
 //' @examples
 //' # Coming soon
 // [[Rcpp::export]]
-arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
+arma::vec adv_gmwm_cpp(const arma::vec& theta,
                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
-                          const arma::mat& V, const arma::vec& wv_empir,
+                          const arma::mat& omega, const arma::vec& wv_empir,
                           const arma::vec& tau){
 
   // Starting values
@@ -145,14 +148,11 @@ arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
   // ------------------------------------
   // Compute standard GMWM
   // ------------------------------------
-      
-  // Omega matrix
-  arma::mat omega = arma::inv(diagmat(V));
   
   // Find GMWM estimator
   arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
 
-  return trans(untransform_values(estim_GMWM, desc, objdesc, model_type));                          
+  return untransform_values(estim_GMWM, desc, objdesc, model_type);                          
 }
 
 
@@ -200,19 +200,19 @@ arma::vec gmwm_engine(const arma::vec& theta,
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
                       std::string model_type, 
                       arma::vec wv_empir,
-                      arma::mat V,
+                      arma::mat omega,
                       arma::vec scales,
                       bool starting){
   
   // Apply Yannik's starting circle algorithm if we "guessed" the initial points or a user overrides it
-  arma::rowvec estimate;
+  arma::vec estimate;
   if(starting){
-    estimate = gmwm_cpp(theta, desc, objdesc, model_type, V, wv_empir, scales);
+    estimate = gmwm_cpp(theta, desc, objdesc, model_type, omega, wv_empir, scales);
   }else{
-    estimate = adv_gmwm_cpp(theta, desc, objdesc, model_type, V, wv_empir, scales);
+    estimate = adv_gmwm_cpp(theta, desc, objdesc, model_type, omega, wv_empir, scales);
   }
 
-  return trans(estimate);  
+  return estimate;  
 } 
 
 // [[Rcpp::export]]
@@ -230,6 +230,8 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   arma::vec guessed_theta = theta;
   
   arma::mat V = orgV;
+  
+  arma::mat omega = arma::inv(diagmat(V));
     
   if(starting){
 
@@ -240,7 +242,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 
   
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
-                      wv_empir, V, scales, starting);
+                      wv_empir, omega, scales, starting);
   //
 
   if(compute_v == "bootstrap"){
@@ -306,7 +308,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   }else{
      V = fast_cov_cpp(wvar.col(2), wvar.col(1));
   }
-  
+
+  arma::mat omega = arma::inv(diagmat(V));
   arma::mat orgV = V;
   
   arma::vec scales = scales_cpp(nlevels);
@@ -320,9 +323,12 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
 
   
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
-                      wv_empir, V, scales, starting);
-  //
+                      wv_empir, omega, scales, starting);
 
+
+  arma::vec obj_value(1);
+  obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
+  
   if(inference){
     diagonal_matrix = false;
     compute_v = "bootstrap";
@@ -331,24 +337,36 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
-        theta = gmwm_engine(theta, desc, objdesc, model_type, 
-                      wv_empir, V, scales, starting);
+        //theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, V, scales, starting);
     }
   }
   
-  arma::vec gof_test;
-  arma::mat ci_inf; 
-  if(inference){
-    arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
-                                                   V, orgV, wv_empir, alpha);
-    ci_inf = cat(0);
-    gof_test = cat(1);
-  }
-
+  
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
-  arma::field<arma::mat> out(12);
+  arma::vec gof_test;
+  arma::mat ci_inf; 
+  arma::vec score;
+
+  if(inference){
+    
+    arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
+    arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
+    
+    arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
+                                                   D, V, orgV, wv_empir, alpha);
+
+    arma::vec diff = theo - wv_empir;
+    score = model_score(D, At_j, omega, V,  diff, N);
+    
+    
+    ci_inf = cat(0);
+    gof_test = cat(1);
+    
+  }
+  
+  arma::field<arma::mat> out(15);
   out(0) = theta;
   out(1) = guessed_theta;
   out(2) = wv_empir;
@@ -361,6 +379,9 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   out(9) = decomp_theo;
   out(10) = ci_inf;
   out(11) = gof_test;
+  out(12) = obj_value;
+  out(13) = score;
+  out(14) = omega;
   return out;
 }
 

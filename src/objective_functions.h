@@ -16,8 +16,8 @@ double getObjFunStarting(const arma::vec& theta,
                       const arma::vec& wv_empir, const arma::vec& tau);
                       
 double getObjFun(const arma::vec& theta,
-              const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
-              const arma::mat& omega,const arma::vec& wv_empir, const arma::vec& tau);
+                    const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
+                    const arma::mat& omega,const arma::vec& wv_empir, const arma::vec& tau);
 
 arma::vec Rcpp_OptimStart(const arma::vec&  theta,
                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,

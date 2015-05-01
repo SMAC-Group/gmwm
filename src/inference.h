@@ -21,6 +21,7 @@ arma::field<arma::mat> inference_summary(const arma::vec& theta,
                                         const arma::field<arma::vec>& objdesc,
                                         std::string model_type,
                                         const arma::vec& tau,
+                                        arma::mat D, 
                                         arma::mat v_hat, arma::mat omega, arma::vec wv_empir, double alpha = 0.05);
 
 #endif

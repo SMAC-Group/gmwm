@@ -1,14 +1,14 @@
 #ifndef GMWM_FUNCTIONS
 #define GMWM_FUNCTIONS
 
-arma::rowvec gmwm_cpp(const arma::vec& theta,
+arma::vec gmwm_cpp(const arma::vec& theta,
                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
-                          const arma::mat& V, const arma::vec& wv_empir,
+                          const arma::mat& omega, const arma::vec& wv_empir,
                           const arma::vec& tau);
                           
-arma::rowvec adv_gmwm_cpp(const arma::vec& theta,
+arma::vec adv_gmwm_cpp(const arma::vec& theta,
                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
-                          const arma::mat& V, const arma::vec& wv_empir,
+                          const arma::mat& omega, const arma::vec& wv_empir,
                           const arma::vec& tau);
                           
 arma::mat gmwm_bootstrapper(const arma::vec&  theta,
@@ -21,7 +21,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
                       std::string model_type,
                       arma::vec wv_empir,
-                      arma::mat V,
+                      arma::mat omega,
                       arma::vec scales,
                       bool starting = true);
 
