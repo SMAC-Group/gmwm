@@ -10,10 +10,13 @@
 // Inline function for square
 #include "inline_functions.h"
 
+// Include sampler
+#include "sampler.h"
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std::string model_type){
+arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, std::string model_type){
   arma::vec temp(2);
   
   
@@ -24,13 +27,13 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std:
       
       // Draw for phi
       temp(0) = 1.0/5.0*(1.0-sqrt(1.0-3.0*U));
-      temp(1) = R::runif(0.95*sigma_tot*(1-square(temp(0))), sigma_tot);
+      temp(1) = R::runif(0.95*sigma2_total*(1-square(temp(0))), sigma2_total);
     }
     else{ // ssm
       // Draw for phi
       temp(0) = R::runif(-0.9999999999999, 0.9999999999999);
       // Draw for sigma
-      temp(1) = R::runif(0.0000000000001, sigma_tot);
+      temp(1) = R::runif(0.0000000000001, sigma2_total);
     }
   }
   else{
@@ -45,12 +48,69 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std:
     }
     
     // Draw for process variance
-    temp(1) = R::runif(0.0, 0.01*sigma_tot*(1-square(temp(0))) ); // VERIFY THIS SHOULD BE PHI VALUE!!
+    temp(1) = R::runif(0.0, 0.01*sigma2_total*(1-square(temp(0))) ); // VERIFY THIS SHOULD BE PHI VALUE!!
     
   } // end if
   
   return temp;
 }
+
+// [[Rcpp::export]]
+arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
+  unsigned int i;
+  
+  double sigma2;
+  
+  arma::vec ar(p);
+  arma::vec ma(q);
+  // AR + MA + SIGMA2
+  arma::vec arma(p+q+1);
+  
+  
+  // Need Invertibility check loop?
+  
+  // Draw start and end
+  double start = -1.0, end = 1.0;
+
+  for(i = 0; i < p; i++){
+    // Draw point and move starting bounds up
+    start = R::runif(start,end);
+    ar(i) = start; // Assign picked point
+  }
+  
+  // Reset start and end
+  start = -1.0, end = 1.0;
+  
+  for(i = 0; i < q; i++){
+    start = R::runif(start,end);
+    ma(i) = start;
+  }
+  
+  // Obtain sigma2
+  sigma2 = sigma2_total / (1 + arma::sum(arma::square(ma)));
+  
+  arma::vec empty = arma::zeros<arma::vec>(0);
+  
+  // Randomize
+  ar = rsample(ar, ar.n_elem, false, empty);
+  ma = rsample(ma, ma.n_elem, false, empty);
+  
+  
+  // Export
+  if(p != 0){
+    arma.rows(0, p - 1) = ar;
+  }
+  
+  if(q != 0){
+    arma.rows(p, p + q - 1) = ma;
+  }
+  
+  // Do not need the -1.
+  arma(p+q) = sigma2;
+  
+  return arma;
+}
+
 
 // [[Rcpp::export]]
 unsigned int count_AR1s(std::vector<std::string> s) {
@@ -101,7 +161,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
                         const arma::vec& wv_empir, const arma::vec& tau, unsigned int B){
                           
   // Obtain the sum of variances for sigma^2_total.
-  double sigma_tot = arma::sum(wv_empir);
+  double sigma2_total = arma::sum(wv_empir);
     
   arma::vec starting_theta = arma::zeros<arma::vec>(num_param);
   arma::vec temp_theta = arma::zeros<arma::vec>(num_param);
@@ -115,7 +175,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
   unsigned int AR1_counter; // identifiability hack. =(
   double prev_phi; // ar1_draw needs external memory  
   
-  // Generate parameters for the model
+  // Generate B guesses of model parameters
   for(unsigned int b = 0; b < B; b++){
     
     unsigned int i_theta = 0;
@@ -129,31 +189,43 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       prev_phi = 0;
     }
     
-        
+    // Generate parameters for the model
     for(unsigned int i = 0; i < num_desc; i++){
       std::string element_type = desc[i];
       
       if(element_type == "AR1"){
-        temp_theta.rows(i_theta, i_theta + 1) = ar1_draw(AR1_counter, prev_phi, sigma_tot, model_type);
+        temp_theta.rows(i_theta, i_theta + 1) = ar1_draw(AR1_counter, prev_phi, sigma2_total, model_type);
         prev_phi = temp_theta(i_theta);
         i_theta++; // needed to account for two parameters (e.g. phi + sigma2). Second shift at end.
         AR1_counter++;
       }
       else if(element_type == "ARMA"){
-        //  This needs to be implemented.
+        
+        // Unpackage ARMA model parameter
+        arma::vec model_params = objdesc(i);
+        
+        // Get position numbers (AR,MA,SIGMA2)
+        unsigned int p = model_params(0);
+        unsigned int q = model_params(1);
+        
+        // Draw samples (need extra 1 for sigma2 return)
+        temp_theta.rows(i_theta, i_theta + p + q) = arma_draws(p, q, sigma2_total);
+        
+        i_theta += p + q; // additional +1 added at end for sigma2
       }
       else if(element_type == "DR"){   
         temp_theta(i_theta) = expect_diff;
       }
       else if(element_type == "QN"){
-        temp_theta(i_theta) = R::runif(.0000001, sigma_tot);
+        temp_theta(i_theta) = R::runif(.0000001, sigma2_total);
       }
       else if(element_type == "RW"){
-        temp_theta(i_theta) = R::runif(sigma_tot/double(N*1000.0), 2.0*sigma_tot/double(N));
+        temp_theta(i_theta) = R::runif(sigma2_total/double(N*1000.0), 2.0*sigma2_total/double(N));
       }
       else{ // WN
-        temp_theta(i_theta) = R::runif(sigma_tot/2.0, sigma_tot);
+        temp_theta(i_theta) = R::runif(sigma2_total/2.0, sigma2_total);
       }
+      
       i_theta ++;
     } // end for
     
