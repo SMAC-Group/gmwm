@@ -9,11 +9,10 @@ set.seed(1)
 n = 100000
 
 # Simulate AR(1) + WN
-xt = gen_ar1(n, phi=.99, sigma2 = 0.01) +  gen_wn(n, sigma2=1)
+xt = gen.ts(AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1),n)
 
 ## @knitr wv
-w = modwt(xt)
-wv = wvar(w)
+wv = wvar(xt)
 plot(wv)
 
 ## @knitr modelTS
