@@ -13,6 +13,9 @@
 // Include sampler
 #include "sampler.h"
 
+// Include polyroot for invertibility
+#include "polyroot.h"
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -70,7 +73,7 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   // Need Invertibility check loop?
   
   // Draw start and end
-  double start = -1.0, end = 1.0;
+  double start = -.999999999999, end = .999999999999;
 
   for(i = 0; i < p; i++){
     // Draw point and move starting bounds up
@@ -79,7 +82,7 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   }
   
   // Reset start and end
-  start = -1.0, end = 1.0;
+  start = -.999999999999, end = .999999999999;
   
   for(i = 0; i < q; i++){
     start = R::runif(start,end);
