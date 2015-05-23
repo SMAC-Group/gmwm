@@ -30,10 +30,9 @@ static void polyroot_cpp(const std::vector<double> &opr, const std::vector<doubl
                          std::vector<double> &zeror, std::vector<double> &zeroi, bool &fail);
 
 
-static double myfmod(double x1, double x2)
+static double myfmod_cpp(double x1, double x2)
 {
-  double q = x1 / x2;
-  return x1 - floor(q) * x2;
+  return x1 - floor(x1 / x2) * x2;
 }
 
 
@@ -55,7 +54,7 @@ double R_pow_cpp(double x, double y) /* = x ^ y */
     return((y < 0.0)? 0.0 : std::numeric_limits<double>::infinity() );
     else {			/* (-Inf) ^ y */
     if(std::isfinite(y) && y == floor(y)) /* (-Inf) ^ n */
-    return((y < 0.0) ? 0.0 : (myfmod(y,2.) ? x  : -x));
+    return((y < 0.0) ? 0.0 : (myfmod_cpp(y,2.) ? x  : -x));
     }
   }
   if(!std::isfinite(y)) {
@@ -109,9 +108,9 @@ std::vector< std::complex<double> > do_polyroot_cpp(std::vector< std::complex<do
   n = degree + 1; // omit trailing zeroes
   if(degree >= 1) {
     rr = std::vector<double>(n);
-    ri = std::vector<double>(n);
-    zr = std::vector<double>(n);
-    zi = std::vector<double>(n);
+    ri = rr;
+    zr = rr;
+    zi = rr;
     
     for(i = 0 ; i < n ; i++) {
       if(!std::isfinite(z[i].real()) || !std::isfinite(z[i].imag())){
@@ -190,17 +189,16 @@ static void polyroot_cpp(const std::vector<double> &opr, const std::vector<doubl
   if (nn == 1) return;
   
   // Use a single allocation as these as small 
-  unsigned int allocate_nn = 10*nn;
-  pr =  std::vector<double>(allocate_nn); 
-  pi =  std::vector<double>(allocate_nn); 
-  hr =  std::vector<double>(allocate_nn); 
-  hi =  std::vector<double>(allocate_nn);
-  qpr = std::vector<double>(allocate_nn); 
-  qpi = std::vector<double>(allocate_nn); 
-  qhr = std::vector<double>(allocate_nn); 
-  qhi = std::vector<double>(allocate_nn);
-  shr = std::vector<double>(allocate_nn); 
-  shi = std::vector<double>(allocate_nn); 
+  pr = std::vector<double>(10*nn); 
+  pi = pr; 
+  hr = pr; 
+  hi = pr;
+  qpr = pr; 
+  qpi = pr; 
+  qhr = pr; 
+  qhi = pr;
+  shr = pr; 
+  shi = pr; 
   
   // make a copy of the coefficients and shr[] = | p[] | 
   for (i = 0; i < nn; i++) {
