@@ -48,7 +48,7 @@
 using namespace Rcpp;
 
 
-static double myfmod_cpp(double x1, double x2)
+double myfmod_cpp(double x1, double x2)
 {
   return x1 - floor(x1 / x2) * x2;
 }
@@ -168,7 +168,7 @@ static const double are = /* eta = */DBL_EPSILON;
 static const double mre = 2.0 * M_SQRT2 * /* eta, i.e. */DBL_EPSILON;
 static const double infin = DBL_MAX;
 
-static void polyroot_cpp(const std::vector<double> &opr, const std::vector<double> &opi, int &degree,
+void polyroot_cpp(const std::vector<double> &opr, const std::vector<double> &opi, int &degree,
                          std::vector<double> &zeror, std::vector<double> &zeroi, bool &fail)
 {
   static const double smalno = DBL_MIN;
@@ -305,7 +305,7 @@ static void polyroot_cpp(const std::vector<double> &opr, const std::vector<doubl
 /*  Computes the derivative polynomial as the initial
 *  polynomial and computes l1 no-shift h polynomials.	*/
 
-static void noshft_cpp(int l1)
+void noshft_cpp(int l1)
 {
   int i, j, jj, n = nn - 1, nm1 = n - 1;
   
@@ -360,7 +360,7 @@ static void noshft_cpp(int l1)
  *
  * Uses global (sr,si), nn, pr[], pi[], .. (all args of polyev_cpp() !)
  */
-static bool fxshft_cpp(const int l2, double &zr, double &zi)
+bool fxshft_cpp(const int l2, double &zr, double &zi)
 {
 
   
@@ -449,7 +449,7 @@ static bool fxshft_cpp(const int l2, double &zr, double &zi)
 
 /* carries out the third stage iteration.
 */
-static bool vrshft_cpp(const int l3, double &zr, double &zi)
+bool vrshft_cpp(const int l3, double &zr, double &zi)
 {
   /*  l3	    - limit of steps in stage 3.
   *  zr,zi   - on entry contains the initial iterate;
@@ -541,7 +541,7 @@ static bool vrshft_cpp(const int l3, double &zr, double &zi)
   return true;
 }
 
-static void calct_cpp(bool &bol)
+void calct_cpp(bool &bol)
 {
   /* computes	 t = -p(s)/h(s).
   * bol   - logical, set true if h(s) is essentially zero.	*/
@@ -563,7 +563,7 @@ static void calct_cpp(bool &bol)
   }
 }
 
-static void nexth_cpp(bool bol)
+void nexth_cpp(bool bol)
 {
   /* calculates the next shifted h polynomial.
   * bol :	if true  h(s) is essentially zero
@@ -595,8 +595,8 @@ static void nexth_cpp(bool bol)
 
 /*--------------------- Independent Complex Polynomial Utilities ----------*/
 
-static
-  void polyev_cpp(int n,
+
+void polyev_cpp(int n,
               double s_r, double s_i,
               std::vector<double> &p_r, std::vector<double> &p_i,
               std::vector<double> &q_r, std::vector<double> &q_i,
@@ -619,7 +619,7 @@ static
     }
   }
 
-static 
+
   double errev_cpp(const int n, 
                const std::vector<double> &qr, std::vector<double> &qi,
                const double ms, const double mp, const double a_re, const double m_re)  {
@@ -641,7 +641,7 @@ static
     return e * (a_re + m_re) - mp * m_re;
   }
 
-static double cpoly_cauchy_cpp(const int n, std::vector<double> &pot, std::vector<double> &q)
+double cpoly_cauchy_cpp(const int n, std::vector<double> &pot, std::vector<double> &q)
   {
     /* Computes a lower bound on the moduli of the zeros of a polynomial
     * pot[1:nn] is the modulus of the coefficients.
@@ -694,7 +694,7 @@ static double cpoly_cauchy_cpp(const int n, std::vector<double> &pot, std::vecto
     return x;
   }
 
-static double cpoly_scale_cpp(const int n, std::vector<double> &pot,
+double cpoly_scale_cpp(const int n, std::vector<double> &pot,
                           const double eps, const double BIG,
                           const double small, const double base)
   {
@@ -740,7 +740,7 @@ static double cpoly_scale_cpp(const int n, std::vector<double> &pot,
   }
 
 
-static void cdivid_cpp(const double ar, const double ai, 
+void cdivid_cpp(const double ar, const double ai, 
                    const double br, const double bi, 
                    double &cr, double &ci) {
       /* complex division c = a/b, i.e., (cr +i*ci) = (ar +i*ai) / (br +i*bi),
