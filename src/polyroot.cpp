@@ -103,6 +103,57 @@ double R_pow_di_cpp(double x, int n)
 }
 
 //' @title Root Finding C++
+//' @description Used to interface with Armadillo
+// [[Rcpp::export]]
+arma::cx_vec do_polyroot_arma(arma::cx_vec z)
+{
+  
+  std::vector<double> zr, zi, rr, ri;
+  arma::cx_vec r;
+  
+  bool fail;
+  int degree, i, n;
+  
+  // Find out the size of n
+  n = z.size();
+  
+  // Obtain degree
+  degree = 0;
+  for(i = 0; i < n; i++) {
+    if(real(z(i)) != 0.0 || imag(z(i)) != 0.0) degree = i;
+  }
+  
+  n = degree + 1; // omit trailing zeroes
+  if(degree >= 1) {
+    rr = std::vector<double>(n);
+    ri = rr;
+    zr = rr;
+    zi = rr;
+    
+    for(i = 0 ; i < n ; i++) {
+      if(!std::isfinite(z[i].real()) || !std::isfinite(z[i].imag())){
+        throw std::invalid_argument( "Invalid polynomial coefficient" );
+      }
+      zr[degree-i] = z[i].real();
+      zi[degree-i] = z[i].imag();
+    }
+    polyroot_cpp(zr, zi, degree, rr, ri, fail);
+    if(fail){ throw std::runtime_error("Root finding code failed!"); }
+    
+    r = arma::cx_vec(degree); 
+    for(i = 0 ; i < degree ; i++) {
+      real(r(i)) = rr[i];
+      imag(r(i)) = ri[i];
+    }
+  }
+  else {
+    r = arma::zeros<arma::cx_vec>(0);
+  }
+  return r;
+}
+
+
+//' @title Root Finding C++
 //' @description Vroom Vroom
 // [[Rcpp::export]]
 std::vector< std::complex<double> > do_polyroot_cpp(std::vector< std::complex<double> > z)
