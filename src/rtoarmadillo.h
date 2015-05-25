@@ -15,10 +15,6 @@ arma::mat expand_grid_red(int nx);
 
 arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max);
 
-arma::vec Mod_squared_cpp(const arma::cx_vec& x);
-
-arma::vec Mod_cpp(const arma::cx_vec& x);
-
 arma::vec dft_acf(const arma::vec& x);
 
 double mean_diff(const arma::vec& x);

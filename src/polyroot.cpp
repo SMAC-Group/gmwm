@@ -105,7 +105,7 @@ double R_pow_di_cpp(double x, int n)
 //' @title Root Finding C++
 //' @description Used to interface with Armadillo
 // [[Rcpp::export]]
-arma::cx_vec do_polyroot_arma(arma::cx_vec z)
+arma::cx_vec do_polyroot_arma(const arma::cx_vec& z)
 {
   
   std::vector<double> zr, zi, rr, ri;
@@ -156,7 +156,7 @@ arma::cx_vec do_polyroot_arma(arma::cx_vec z)
 //' @title Root Finding C++
 //' @description Vroom Vroom
 // [[Rcpp::export]]
-std::vector< std::complex<double> > do_polyroot_cpp(std::vector< std::complex<double> > z)
+std::vector< std::complex<double> > do_polyroot_cpp(const std::vector< std::complex<double> >& z)
 {
   
   std::vector<double> zr, zi, rr, ri;

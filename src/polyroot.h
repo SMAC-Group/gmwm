@@ -1,6 +1,13 @@
 #ifndef POLYROOT_H
 #define POLYROOT_H
 
+double myfmod_cpp(double x1, double x2);
+
+double R_pow_cpp(double x, double y);
+
+double R_pow_di_cpp(double x, int n);
+
+
 // Function definitions
 void calct_cpp(bool &bol);
 bool fxshft_cpp(const int l2, double &zr, double &zi);
@@ -27,9 +34,8 @@ void cdivid_cpp(const double ar, const double ai,
 void polyroot_cpp(const std::vector<double> &opr, const std::vector<double> &opi, int &degree,
                          std::vector<double> &zeror, std::vector<double> &zeroi, bool &fail);
 
-double myfmod_cpp(double x1, double x2);
+arma::cx_vec do_polyroot_arma(const arma::cx_vec& z);
 
-double R_pow_cpp(double x, double y);
+std::vector< std::complex<double> > do_polyroot_cpp(const std::vector< std::complex<double> >& z);
 
-double R_pow_di_cpp(double x, int n);
 #endif

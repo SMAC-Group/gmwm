@@ -10,11 +10,14 @@
 // Inline function for square
 #include "inline_functions.h"
 
-// Include sampler
+// Include sampler for randomization of draws
 #include "sampler.h"
 
 // Include polyroot for invertibility
 #include "polyroot.h"
+
+// Complex tools
+#include "complex_tools.h"
 
 using namespace Rcpp;
 
@@ -64,51 +67,78 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   
   double sigma2;
   
-  arma::vec ar(p);
-  arma::vec ma(q);
   // AR + MA + SIGMA2
   arma::vec arma(p+q+1);
-  
-  
-  // Need Invertibility check loop?
+
+  // Used for randomization (Needed prob = 0)
+  arma::vec empty = arma::zeros<arma::vec>(0);
   
   // Draw start and end
-  double start = -.999999999999, end = .999999999999;
+  double start, end;
+  
+  // Begin drawing AR terms if they exist
+  if(p != 0){
+    arma::vec one = arma::ones<arma::vec>(1);
+    arma::vec ar(p);
+    
+    // Generate AR values
+    do{
+      start = -.99999999, end = .999999999;
+      for(i = 0; i < p; i++){
+        // Draw point and move starting bounds up
+        start = R::runif(start,end);
+        
+        // Assign picked point
+        ar(i) = start; 
+      }
+      
+    // Invertibility check we probably need to figure out a better guessing strategy...
+    } while ( 
+              // Minimum Mod value
+              min(
+                  // sqrt(x^2 + y^2)
+                  Mod_cpp(
+                          // Return roots
+                          do_polyroot_arma(
+                              // Convert from vec to cx_vec 
+                              arma::conv_to<arma::cx_vec>::from(
+                                    // Join 1 to -AR vector.
+                                    arma::join_cols(one, -ar)
+                                    )
+                              )
+                          )
+                  )  <= 1 // Inside the unit circle
+            );
 
-  for(i = 0; i < p; i++){
-    // Draw point and move starting bounds up
-    start = R::runif(start,end);
-    ar(i) = start; // Assign picked point
+    // Randomize draws
+    ar = rsample(ar, ar.n_elem, false, empty);
+    
+    // Export AR terms to ARMA
+    arma.rows(0, p - 1) = ar;
   }
   
+  arma::vec ma = arma::zeros<arma::vec>(q);
+  
   // Reset start and end
-  start = -.999999999999, end = .999999999999;
+  start = -.99999999, end = .999999999;
   
   for(i = 0; i < q; i++){
     start = R::runif(start,end);
     ma(i) = start;
   }
   
+  if(q != 0){
+    // Randomize
+    ma = rsample(ma, ma.n_elem, false, empty);
+  }
+  
+  // Export the MA terms to ARMA
+  arma.rows(p, p + q - 1) = ma;
+
   // Obtain sigma2
   sigma2 = sigma2_total / (1 + arma::sum(arma::square(ma)));
   
-  arma::vec empty = arma::zeros<arma::vec>(0);
-  
-  // Randomize
-  ar = rsample(ar, ar.n_elem, false, empty);
-  ma = rsample(ma, ma.n_elem, false, empty);
-  
-  
-  // Export
-  if(p != 0){
-    arma.rows(0, p - 1) = ar;
-  }
-  
-  if(q != 0){
-    arma.rows(p, p + q - 1) = ma;
-  }
-  
-  // Do not need the -1.
+  // Store the value Do not need the -1.
   arma(p+q) = sigma2;
   
   return arma;
