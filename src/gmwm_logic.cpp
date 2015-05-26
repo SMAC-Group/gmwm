@@ -50,112 +50,6 @@
 using namespace arma;
 using namespace Rcpp;
 
-
-//' @title Guided Initial Values for GMWM Estimator with Starting Technique
-//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
-//' @param desc A \code{vector<string>} indicating the models that should be considered.
-//' @param V A \code{matrix} that represents the covariance matrix.
-//' @param wv_empir A \code{vector} that contains the empirical wavelet variance
-//' @param N A \code{integer} that indicates the length of the signal being studied.
-//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
-//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-//' options are:
-//' \itemize{
-//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
-//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-//' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
-//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
-//' @author JJB
-//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-//' @keywords internal
-//' @examples
-//' # Coming soon
-// [[Rcpp::export]]
-arma::vec gmwm_cpp(const arma::vec& theta,
-                          const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
-                          const arma::mat& omega, const arma::vec& wv_empir,
-                          const arma::vec& tau){
-                                 
-  // Number of parameters
-  //unsigned int num_param = theta.n_elem;
-    
-  // Starting values
-  arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
-  
-  // Optimize Starting values via Jannick's Method
-  starting_theta = Rcpp_OptimStart(starting_theta, desc, objdesc, model_type, wv_empir, tau);
-  
-  // ------------------------------------
-  // Compute standard GMWM
-  // ------------------------------------
-  
-  // Find GMWM estimator
-  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
-
-  return untransform_values(estim_GMWM, desc, objdesc, model_type);                          
-}
-
-//' @title User Specified Initial Values for GMWM Estimator
-//' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
-//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
-//' @param desc A \code{vector<string>} indicating the models that should be considered.
-//' @param V A \code{matrix} that represents the covariance matrix.
-//' @param wv_empir A \code{vector} that contains the empirical wavelet variance
-//' @param N A \code{integer} that indicates the length of the signal being studied.
-//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
-//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-//' options are:
-//' \itemize{
-//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
-//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-//' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
-//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
-//' @author JJB
-//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
-//' @keywords internal
-//' @examples
-//' # Coming soon
-// [[Rcpp::export]]
-arma::vec adv_gmwm_cpp(const arma::vec& theta,
-                          const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, 
-                          const arma::mat& omega, const arma::vec& wv_empir,
-                          const arma::vec& tau){
-
-  // Starting values
-  arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
-    
-  // ------------------------------------
-  // Compute standard GMWM
-  // ------------------------------------
-  
-  // Find GMWM estimator
-  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, tau);
-
-  return untransform_values(estim_GMWM, desc, objdesc, model_type);                          
-}
-
-
 //' @title Bootstrap for Matrix V
 //' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
@@ -195,6 +89,37 @@ arma::mat gmwm_bootstrapper(const arma::vec&  theta,
 	return arma::cov(res);
 }
 
+//' @title Engine for obtaining the GMWM Estimator
+//' @description This function uses the Generalized Method of Wavelet Moments (GMWM) to estimate the parameters of a time series model.
+//' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+//' @param model_type A \code{string} that represents the model transformation
+//' @param wv_empir A \code{vec} that contains the empirical wavelet variance
+//' @param omega A \code{mat} that represents the covariance matrix.
+//' @param scales A \code{vec} that contains the scales or taus (2^(1:J))
+//' @param starting A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+//' @details
+//' If type = "imu" or "ssm", then parameter vector should indicate the characters of the models that compose the latent or state-space model.
+//' The model options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If model_type = "imu" or type = "ssm" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
+//' @examples
+//' # Coming soon
 // [[Rcpp::export]]
 arma::vec gmwm_engine(const arma::vec& theta,
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
@@ -204,17 +129,60 @@ arma::vec gmwm_engine(const arma::vec& theta,
                       arma::vec scales,
                       bool starting){
   
-  // Apply Yannik's starting circle algorithm if we "guessed" the initial points or a user overrides it
-  arma::vec estimate;
+  
+  // Transform the Starting values
+  arma::vec starting_theta = transform_values(theta, desc, objdesc, model_type);
+                   
+  // Apply Yannik's starting circle algorithm if our algorithm "guessed" the initial points
   if(starting){
-    estimate = gmwm_cpp(theta, desc, objdesc, model_type, omega, wv_empir, scales);
-  }else{
-    estimate = adv_gmwm_cpp(theta, desc, objdesc, model_type, omega, wv_empir, scales);
+    starting_theta = Rcpp_OptimStart(starting_theta, desc, objdesc, model_type, wv_empir, scales);
   }
 
-  return estimate;  
+  // ------------------------------------
+  // Compute standard GMWM
+  // ------------------------------------
+  
+  
+  // Find GMWM estimator
+  arma::vec estim_GMWM = Rcpp_Optim(starting_theta, desc, objdesc, model_type, omega, wv_empir, scales);
+  
+  return untransform_values(estim_GMWM, desc, objdesc, model_type);       
+
 } 
 
+//' @title Update Wrapper for the GMWM Estimator
+//' @description This function uses information obtained previously (e.g. WV covariance matrix) to re-estimate a different model parameterization
+//' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+//' @param model_type A \code{string} that represents the model transformation
+//' @param wv_empir A \code{vec} that contains the empirical wavelet variance
+//' @param omega A \code{mat} that represents the covariance matrix.
+//' @param scales A \code{vec} that contains the scales or taus (2^(1:J))
+//' @param starting A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
+//' @examples
+//' # Coming soon
 // [[Rcpp::export]]
 arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
@@ -268,6 +236,45 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                         
 }
 
+//' @title Master Wrapper for the GMWM Estimator
+//' @description This function generates WV, GMWM Estimator, and an initial test estimate.
+//' @param data A \code{vec} containing the data.
+//' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+//' @param model_type A \code{string} that represents the model transformation
+//' @param starting A \code{bool} that indicates whether the supplied values are guessed (T) or are user-based (F).
+//' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100%
+//' @param compute_v A \code{string} that describes what kind of covariance matrix should be computed.
+//' @param K An \code{int} that controls how many times theta is updated.
+//' @param H An \code{int} that controls how many bootstrap replications are done.
+//' @param G An \code{int} that controls how many guesses at different parameters are made.
+//' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+//' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+//' @param inference A \code{bool} that indicates whether inference should be run on the supplied model.
+//' @return A \code{field<mat>} that contains a list of ever-changing estimates...
+//' @details
+//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+//' options are:
+//' \itemize{
+//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+//'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+//' }
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+//' 
+//' @author JJB
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
+//' @examples
+//' # Coming soon
 // [[Rcpp::export]]
 arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, 
                                       arma::vec theta,
