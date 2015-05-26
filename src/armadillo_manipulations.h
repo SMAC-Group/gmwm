@@ -9,6 +9,6 @@ arma::vec reverse_vec(arma::vec x);
 
 arma::mat field_to_matrix(arma::field<arma::vec> x);
 
-unsigned int sum_field_vec(const arma::field<arma::vec>& x);
+double sum_field_vec(const arma::field<arma::vec>& x);
 
 #endif
