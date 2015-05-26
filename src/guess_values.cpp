@@ -13,11 +13,8 @@
 // Include sampler for randomization of draws
 #include "sampler.h"
 
-// Include polyroot for invertibility
-#include "polyroot.h"
-
-// Complex tools
-#include "complex_tools.h"
+// Include invertibility check.
+#include "ts_checks.h"
 
 using namespace Rcpp;
 
@@ -63,8 +60,10 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, s
 
 // [[Rcpp::export]]
 arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
+  // Loop index
   unsigned int i;
   
+  // Estimated Sigma2
   double sigma2;
   
   // AR + MA + SIGMA2
@@ -93,22 +92,12 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
       }
       
     // Invertibility check we probably need to figure out a better guessing strategy...
-    } while ( 
-              // Minimum Mod value
-              min(
-                  // sqrt(x^2 + y^2)
-                  Mod_cpp(
-                          // Return roots
-                          do_polyroot_arma(
-                              // Convert from vec to cx_vec 
-                              arma::conv_to<arma::cx_vec>::from(
-                                    // Join 1 to -AR vector.
+    } while ( invert_check(arma::conv_to<arma::cx_vec>::from(
                                     arma::join_cols(one, -ar)
-                                    )
-                              )
+                                   )
                           )
-                  )  <= 1 // Inside the unit circle
-            );
+                == false // not invertible.
+              );
 
     // Randomize draws
     ar = rsample(ar, ar.n_elem, false, empty);

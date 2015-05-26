@@ -89,11 +89,18 @@ arma::mat field_to_matrix(arma::field<arma::vec> x){
   return A; 
 }
 
-
+//' @title Accumulation of Armadillo field<vec>
+//' @description Sums vectors in a field into a single variable.
+//' @param x A \code{field<vec>}.
+//' @return An \code{mat} containing the field elements within a column.
+//' @author JJB
+//' @examples
+//' x=rnorm(100)
+//' field_to_matrix(modwt_cpp(x))
 // [[Rcpp::export]]
-unsigned int sum_field_vec(const arma::field<arma::vec>& x){
+double sum_field_vec(const arma::field<arma::vec>& x){
   unsigned int nelems = x.n_elem;
-  unsigned int total_elems = 0;
+  double total_elems = 0;
   
   for(unsigned int i = 0; i < nelems; i++){
     total_elems += sum(x(i));

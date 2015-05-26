@@ -5,6 +5,9 @@
 // Need to have access to diff_cpp
 #include "rtoarmadillo.h"
 
+// For invertibility check in ARMA
+#include "ts_checks.h"
+
 using namespace Rcpp;
 /* ------------------------------ Start Process Generation Functions ------------------------------ */
 
@@ -124,6 +127,117 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
   return cumsum(grw);
 }
 
+//' @title Generate ARMA
+//' @description Generate observations for a supplied ARMA model.
+//' @param N An \code{integer} for signal length.
+//' @param ar A \code{vec} that contains the AR coefficients.
+//' @param ma A \code{vec} that contains the MA coefficients.
+//' @param sigma2 A \code{double} that contains process variance.
+//' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+//' @details The innovations are generated from a normal distribution.
+//' @return A \code{vec} that contains the generated observations.
+// [[Rcpp::export]]
+arma::vec gen_arma(const unsigned int N,
+                   const arma::vec& ar, const arma::vec& ma,
+                   const double sigma2 = 1.5, 
+                   unsigned int n_start = 0){
+  
+  // P = AR1 coefs, Q = MA coefs
+  unsigned int p = ar.n_elem, q = ma.n_elem;
+
+  // Need to append 1 to vectors.
+  arma::vec one = arma::ones<arma::vec>(1);
+  
+  // What is the minimum root?
+  double min_root = 1;
+  
+  // SD
+  double sd = sqrt(sigma2);
+  
+  // Innovation save
+  arma::vec innov(N);
+  
+  // Start Innovation
+  arma::vec start_innov;
+  
+  // Store data
+  arma::vec x;
+  
+  // Loop counter
+  unsigned int i;
+  
+  // AR terms present? 
+  if(p != 0){
+    
+    // Obtain the smallest root of the AR coefs.
+    min_root = minroot(arma::conv_to<arma::cx_vec>::from(
+                                      arma::join_cols(one, -ar)
+                                    )
+        
+                      );
+    
+    // Check to see if the smallest root is not invertible (e.g. in unit circle)
+    if(min_root <= 1){
+      throw std::runtime_error("Supplied model's AR component is NOT invertible!");
+    }
+  }
+  
+  
+  // Determine starting values
+  if(n_start == 0){
+    n_start = p + q + ( p > 0 ? ceil(6/log(min_root)) : 0 );
+  }
+  
+  if(n_start < p + q){
+    throw std::runtime_error("burn-in 'n.start' must be as long as 'ar + ma'");
+  }
+  
+  // Generate Innovations
+  for(i = 0; i < N; i++){
+    innov(i) = R::rnorm(0,sd);
+  }
+  
+  // Generate Starting Innovations
+  start_innov = arma::vec(n_start);
+  
+  for(i = 0; i < n_start; i++){
+    start_innov(i) = R::rnorm(0,sd);
+  }
+  
+  // Combine
+  x = join_cols(start_innov, innov);
+  
+  // Handle the MA part of ARMA
+  if(q > 0){
+    // Apply a convolution filter 
+    // data, filter, sides, circular
+    x = cfilter(x, join_cols(one,ma), 1, false);
+    x.rows(0, q-1).fill(0);
+  }
+  
+  // Handle the AR part of ARMA
+  if(p > 0){
+    // Apply recursive filter
+    // data, filter, init value 
+    // see comment in rfilter docs for init values (different than normal R)
+    x = rfilter(x, ar, arma::zeros<arma::vec>(p));
+  }
+  
+  // Remove starting innovations
+  if(n_start > 0){
+    // need -1 for C++ oob error 
+    x = x.rows(n_start, x.n_elem - 1);
+  }
+  
+  return x;
+}
+
+
+
+
+
+
+
 //' @title Generate Time Series based on Model (Internal)
 //' @description Create a time series based on a supplied time series model.
 //' @param N An \code{interger} containing the amount of observations for the time series.
@@ -151,14 +265,53 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
       double theta_value = theta(i_theta);
   	  // AR 1
   	  if(desc[i] == "AR1"){
+  	    
+  	    // First value is phi, increment for sigma2
   	    ++i_theta;
+  	    
+  	    // Get sigma2, this increment is taken care of at the end.
   	    double sig2 = theta(i_theta);
   	    
   	    // Compute theoretical WV
   	    x += gen_ar1(N, theta_value, sig2);
   	  }
       else if(desc[i] == "ARMA"){
-        // Add! via arima.sim
+        // Unpackage ARMA model parameter
+        arma::vec model_params = objdesc(i);
+        
+        // Get position numbers (AR,MA,SIGMA2)
+        unsigned int p = model_params(0);
+        unsigned int q = model_params(1);
+        
+        // Set up temp storage
+        arma::vec ar;
+        arma::vec ma;
+        
+        // Get AR values
+        if(p == 0){
+          ar = arma::zeros<arma::vec>(0);
+        }else{
+          ar = theta.rows(i_theta,i_theta+p-1);
+        }
+        
+        // Account for the number of P values
+        i_theta += p;
+        
+        // Get MA values
+        if(q == 0){
+          ma = arma::zeros<arma::vec>(0); 
+        }else{
+          ma = theta.rows(i_theta,i_theta+q-1);
+        }
+        
+        // Account for Q values
+        i_theta += q;
+        
+        // Extract sigma2
+        double sig2 = theta(i_theta);
+        
+        // Modified arima.sim
+        x += gen_arma(N, ar, ma, sig2, 0);
       }
       // DR
   	  else if(desc[i] == "DR"){
@@ -177,6 +330,7 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    x += gen_wn(N, theta_value);
   	  }
       
+      // Increment theta once to account for popped value
       ++i_theta;
   }  
     
