@@ -21,6 +21,15 @@
 
 using namespace Rcpp;
 
+//' @title Randomly guess starting parameters for AR1
+//' @description Sets starting parameters for each of the given parameters. 
+//' @param draw_id An \code{unsigned int} that contains the draw principles.
+//' @param last_phi A \code{double} containing the last guessed phi value.
+//' @param sigma2_total A \code{double} that contains the sum of all WVs. 
+//' @param model_type A \code{string} that describes the model transformation.
+//' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+//' @examples
+//' #TBA
 // [[Rcpp::export]]
 arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, std::string model_type){
   arma::vec temp(2);
@@ -61,6 +70,14 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, s
   return temp;
 }
 
+//' @title Randomly guess starting parameters for ARMA
+//' @description Sets starting parameters for each of the given parameters. 
+//' @param p An \code{unsigned int} that contains the amount of AR parameters to generate.
+//' @param q An \code{unsigned int} that contains the amount of MA parameters to generate.
+//' @param sigma2_total A \code{double} that contains the sum of all WVs. 
+//' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+//' @examples
+//' #TBA
 // [[Rcpp::export]]
 arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   // Loop index
@@ -147,16 +164,12 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
 }
 
 
-// [[Rcpp::export]]
-unsigned int count_AR1s(std::vector<std::string> s) {
-  unsigned int count = 0;
-
-  for (unsigned int i = 0; i < s.size(); i++)
-    if (s[i] == "AR1") count++;
-
-  return count;
-}
-
+//' @title Count Models
+//' @description Count the amount of models that exist.
+//' @param desc A \code{vector<string>} that contains the model's components.
+//' @return A \code{map<string, int>} containing how frequent the model component appears.
+//' @examples
+//' #TBA
 // [[Rcpp::export]]
 std::map<std::string, int> count_models(const std::vector<std::string>& desc){    
   std::map<std::string, int> w;	

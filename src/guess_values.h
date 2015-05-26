@@ -4,7 +4,7 @@
 
 arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma_tot, std::string model_type);
 
-unsigned int count_AR1s(std::vector<std::string> s);
+arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total);
 
 std::map<std::string, int> count_models(const std::vector<std::string>& desc);	
 
