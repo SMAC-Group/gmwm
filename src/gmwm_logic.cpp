@@ -248,8 +248,9 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
+        omega = arma::inv(diagmat(V));
         theta = gmwm_engine(theta, desc, objdesc, model_type,
-                      wv_empir, V, scales, starting);
+                      wv_empir, omega, scales, starting);
     }
   }
 
@@ -327,7 +328,6 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
 
 
   arma::vec obj_value(1);
-  obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
   
   if(inference){
     diagonal_matrix = false;
@@ -337,10 +337,12 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
-        //theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, V, scales, starting);
+        omega = arma::inv(diagmat(V));
+        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, starting);
     }
   }
   
+  obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
   
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
