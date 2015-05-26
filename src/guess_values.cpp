@@ -16,6 +16,9 @@
 // Include invertibility check.
 #include "ts_checks.h"
 
+// Include ARMAtoMA_cpp
+#include "rtoarmadillo.h"
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -68,17 +71,25 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   
   // AR + MA + SIGMA2
   arma::vec arma(p+q+1);
-
+  
   // Used for randomization (Needed prob = 0)
   arma::vec empty = arma::zeros<arma::vec>(0);
   
+  // List of AR parameters
+  arma::vec ar = arma::zeros<arma::vec>(p);
+  
+  // List of MA parameters
+  arma::vec ma = arma::zeros<arma::vec>(q);
+  
+  // Storage for infinite MA
+  arma::vec infMA(1000);
+  
   // Draw start and end
   double start, end;
-  
+
   // Begin drawing AR terms if they exist
   if(p != 0){
     arma::vec one = arma::ones<arma::vec>(1);
-    arma::vec ar(p);
     
     // Generate AR values
     do{
@@ -106,7 +117,6 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
     arma.rows(0, p - 1) = ar;
   }
   
-  arma::vec ma = arma::zeros<arma::vec>(q);
   
   // Reset start and end
   start = -.99999999, end = .999999999;
@@ -123,9 +133,12 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   
   // Export the MA terms to ARMA
   arma.rows(p, p + q - 1) = ma;
+  
+  // Obtain infinite MA process
+  infMA = ARMAtoMA_cpp(ar,ma,1000);
 
   // Obtain sigma2
-  sigma2 = sigma2_total / (1 + arma::sum(arma::square(ma)));
+  sigma2 = sigma2_total / (1 + arma::sum(arma::square(infMA)));
   
   // Store the value Do not need the -1.
   arma(p+q) = sigma2;
