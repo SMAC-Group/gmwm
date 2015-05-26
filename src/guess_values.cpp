@@ -135,7 +135,7 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   arma.rows(p, p + q - 1) = ma;
   
   // Obtain infinite MA process
-  infMA = ARMAtoMA_cpp(ar,ma,1000);
+  infMA = ARMAtoMA_cpp(ar, ma, 1000);
 
   // Obtain sigma2
   sigma2 = sigma2_total / (1 + arma::sum(arma::square(infMA)));
