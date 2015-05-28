@@ -364,7 +364,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
     
     arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
-                                                   D, V, orgV, wv_empir, alpha);
+                                                   D, V, omega, wv_empir, alpha);
 
     arma::vec diff = theo - wv_empir;
     score = model_score(D, At_j, omega, V,  diff, N);
