@@ -30,6 +30,17 @@ bool invert_check(const arma::cx_vec& x){
   return minroot(x) > 1; // Outside the unit circle
 }
 
+
+int map_acc(int lhs, const std::pair<std::string, int> & rhs)
+{
+  return lhs + rhs.second;
+}
+
+int calc_map_sum(const std::map<std::string, int>& m){
+  return std::accumulate(m.begin(), m.end(), 0, map_acc);  
+}
+
+
 //' @title Count Models
 //' @description Count the amount of models that exist.
 //' @param desc A \code{vector<string>} that contains the model's components.
@@ -54,3 +65,4 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
   
   return w;		
 } 
+
