@@ -29,3 +29,28 @@ double minroot(const arma::cx_vec& x){
 bool invert_check(const arma::cx_vec& x){
   return minroot(x) > 1; // Outside the unit circle
 }
+
+//' @title Count Models
+//' @description Count the amount of models that exist.
+//' @param desc A \code{vector<string>} that contains the model's components.
+//' @return A \code{map<string, int>} containing how frequent the model component appears.
+//' @examples
+//' #TBA
+// [[Rcpp::export]]
+std::map<std::string, int> count_models(const std::vector<std::string>& desc){    
+  std::map<std::string, int> w;	
+  
+  // We want to see the only the following objects with these initial values
+  w["AR1"]=0;
+  w["ARMA"]=0;
+  w["DR"]=0;		
+  w["RW"]=0;		
+  w["QN"]=0;		
+  w["WN"]=0;		
+  
+  for (unsigned int i = 0; i < desc.size(); i++) {		
+    ++w[desc[i]];		
+  }		
+  
+  return w;		
+} 
