@@ -144,8 +144,8 @@ arma::cx_vec do_polyroot_arma(const arma::cx_vec& z)
     
     r = arma::cx_vec(degree); 
     for(i = 0 ; i < degree ; i++) {
-      obs.real() = rr[i];
-      obs.imag() = ri[i];
+      obs.real(rr[i]);
+      obs.imag(ri[i]);
       r(i) = obs;
     }
   }
@@ -196,8 +196,8 @@ std::vector< std::complex<double> > do_polyroot_cpp(const std::vector< std::comp
 
     r = std::vector<std::complex<double> >(degree); 
     for(i = 0 ; i < degree ; i++) {
-      r[i].real() = rr[i];
-      r[i].imag() = ri[i];
+      r[i].real(rr[i]);
+      r[i].imag(ri[i]);
     }
   }
   else {
