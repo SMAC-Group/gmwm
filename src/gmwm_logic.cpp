@@ -47,6 +47,9 @@
 // Model Selection criterion
 #include "model_selection.h"
 
+// Count Models
+#include "ts_checks.h"
+
 using namespace arma;
 using namespace Rcpp;
 
@@ -71,21 +74,27 @@ arma::mat gmwm_bootstrapper(const arma::vec&  theta,
     
   arma::mat res(H, nb_level);
 	for(unsigned int i=0; i<H; i++){
+	  
+	  // Generate x_t ~ F_theta
 		arma::vec x = gen_model(N, theta, desc, objdesc);
 
     // MODWT transform
     arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
     arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter(), "modwt");
   
+    // Obtain WV
 		arma::vec wv_x = wave_variance(signal_modwt_bw, robust, eff);
     
+    // Store WV into matrix
 	  res.row(i) = arma::trans(wv_x);
 	}
   
+  // Do we need a diagnoal covariance matrix? 
   if(diagonal_matrix){
     return arma::diagmat(arma::cov(res));
   }
   
+  // Return the full covariance matrix
 	return arma::cov(res);
 }
 
@@ -193,14 +202,19 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                       unsigned int G, 
                                       bool robust, double eff){
   
+  // Number of parameters
   unsigned int np = theta.n_elem;
     
+  // Guessed Values
   arma::vec guessed_theta = theta;
   
+  // V matrix
   arma::mat V = orgV;
   
+  // Diagonal Omega Matrix
   arma::mat omega = arma::inv(diagmat(V));
-    
+  
+  // Do we need to run a guessing algorithm?
   if(starting){
 
     theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
@@ -208,11 +222,11 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
     guessed_theta = theta;
   }
 
-  
+  // Obtain the GMWM estimator estimates.
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
-  //
-
+  
+  // Bootstrap the V matrix
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
@@ -222,9 +236,11 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
     }
   }
 
+  // Obtain the theoretical WV.
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
+  // Export calculations to R.
   arma::field<arma::mat> out(5);
   out(0) = theta;
   out(1) = guessed_theta;
@@ -284,24 +300,40 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
                                       bool robust, double eff, bool inference){
+  // Variable Declarations
+  
+  // Length of the Time Series
   unsigned int N = data.n_elem;
+  
+  // Number of Scales (J)
   unsigned int nlevels = floor(log2(N));
   
+  // Number of parameters
   unsigned int np = theta.n_elem;
   
+  // Obtain the diagonal matrix when bootstrapping
   bool diagonal_matrix = true;
   
+  // Take the mean of the first difference
   double expect_diff = mean_diff(data);
   
+  // Guessed values of Theta (user supplied or generated)
   arma::vec guessed_theta = theta;
   
+  // MODWT decomp
   arma::field<arma::vec> modwt_decomp = modwt_cpp(data, "haar", nlevels, "periodic");
   
+  // Obtain WV and confidence intervals
   arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, alpha, "eta3", "haar");
   
+  // Extract
   arma::vec wv_empir = wvar.col(0);
   arma::vec ci_lo = wvar.col(1);
   arma::vec ci_hi = wvar.col(2);
+  
+  //-------------------------
+  // Obtain Covariance Matrix
+  //-------------------------
   
   arma::mat V;
   
@@ -317,30 +349,33 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
      V = fast_cov_cpp(wvar.col(2), wvar.col(1));
   }
 
+  // Obtain the Omega matrix
   arma::mat omega = arma::inv(diagmat(V));
+  
+  // Store the original V matrix (in case of bootstrapping) for use in the update function
   arma::mat orgV = V;
   
+  // Calculate the values of the Scales 
   arma::vec scales = scales_cpp(nlevels);
   
+  // Guess starting values for the theta parameters
   if(starting){
-
     theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
-    
     guessed_theta = theta;
   }
 
-  
+  // Obtain the GMWM estimator's estimates.
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
 
 
-  arma::vec obj_value(1);
-  
+  // Set values to compute inference
   if(inference){
     diagonal_matrix = false;
     compute_v = "bootstrap";
   }
 
+  // Enable bootstrapping
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
@@ -349,24 +384,35 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     }
   }
   
+  // Obtain the objective value function
+  arma::vec obj_value(1);
   obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
   
+  // Decomposition of the WV.
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
+  
+  // Inference test result storage
   arma::vec gof_test;
   arma::mat ci_inf; 
   arma::vec score;
 
+  // Generate inference information
   if(inference){
     
+    // Take derivatives
     arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
     arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
     
+    // Obtain a confidence interval for the parameter estimates AND calculate chisq goodness of fit
     arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
                                                    D, V, omega, wv_empir, alpha);
 
+    // Obtain the difference
     arma::vec diff = theo - wv_empir;
+    
+    // Calculate the model score according to model selection criteria paper
     score = model_score(D, At_j, omega, V,  diff, N);
     
     
@@ -375,6 +421,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     
   }
   
+  // Export information back
   arma::field<arma::mat> out(15);
   out(0) = theta;
   out(1) = guessed_theta;
