@@ -22,7 +22,7 @@
 #' @docType package
 #' @useDynLib GMWM
 #' @importFrom Rcpp evalCpp
-#' @import ggplot2 grid scales
+#' @import ggplot2 grid scales reshape2
 #' @exportPattern ^[[:alpha:]]+
 #' @examples
 #' # Fill in at a later time
