@@ -50,6 +50,9 @@
 // Count Models
 #include "ts_checks.h"
 
+// arima
+#include "arima_gmwm.h"
+
 using namespace arma;
 using namespace Rcpp;
 
@@ -260,7 +263,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 //' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
 //' @param model_type A \code{string} that represents the model transformation
 //' @param starting A \code{bool} that indicates whether the supplied values are guessed (T) or are user-based (F).
-//' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100%
+//' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100
 //' @param compute_v A \code{string} that describes what kind of covariance matrix should be computed.
 //' @param K An \code{int} that controls how many times theta is updated.
 //' @param H An \code{int} that controls how many bootstrap replications are done.
@@ -360,10 +363,17 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   // Guess starting values for the theta parameters
   if(starting){
-    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
+    if(desc[0] == "ARMA" && desc.size() == 1){
+      
+      theta = Rcpp_ARIMA(data, objdesc(0)); 
+      starting = false;
+    }else{     
+      theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
+    }
     guessed_theta = theta;
   }
 
+  Rcpp::Rcout << "Guessed" << guessed_theta << std::endl;
   // Obtain the GMWM estimator's estimates.
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
