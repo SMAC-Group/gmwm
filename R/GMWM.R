@@ -216,9 +216,15 @@ update.gmwm = function(object, model, ...){
   # Information used in summary.gmwm:
   summary.desc = model$desc
   
+  models.active = count_models(desc)
   # Identifiability issues
-  if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
+  if(any( models.active[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
+  }
+  
+  # ID error:
+  if( sum(models.active) == 1 & models.active["ARMA"] == 1 & model$starting){
+    warning("ARMA starting guesses using update are NOT based on CSS but an alternative algorithm.")
   }
   
   if(np > length(object$scales)){
