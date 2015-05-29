@@ -131,13 +131,6 @@ autoplot.imu6 = function(object, CI = TRUE, transparence = 0.1, color.line = "bl
   #require packages: scales
   WV=scales=.x=low=high=NULL
   
-  'obj = data.frame(WV = object$WV,
-                   scales = object$scales,
-                   low = object$low,
-                   high = object$high,
-                   Axis = object$Axis,
-                   sensor = object$sensor)'
-  
   #re-construct the data frame
   obj = data.frame(variable = object$variable,
                    value = object$value,
@@ -147,13 +140,6 @@ autoplot.imu6 = function(object, CI = TRUE, transparence = 0.1, color.line = "bl
                    Axis = object$Axis,
                    sensor = object$sensor)
 
-  'p = ggplot(obj, aes(y = variable, x = scales)) +
-    geom_line(colour = color.line) +
-    geom_point(colour = color.point, linetype = line.type, size = point.size) +
-    geom_polygon(aes(y = c(low,rev(high[1:19]),rev(high[1:19 + 19 ]),
-                           rev(high[1:19 + 2*19]),rev(high[1:19 + 3*19]),rev(high[1:19 + 4*19]),
-                           rev(high[1:19 + 5*19])), x = c(scales,rev(scales))), alpha = transparence , fill = color.CI)'
-  
   p = ggplot() +
     geom_line(data = subset(obj, variable == "WV"), mapping = aes(x = scales, y = value), colour = color.line, linetype = line.type) 
     
