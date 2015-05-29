@@ -28,7 +28,7 @@ arma::mat calculate_psi_matrix(const arma::mat& D, const arma::mat& v_hat, const
 //' @description yaya
 //' @param theta
 //' @param psi
-//' @param p
+//' @param alpha
 //' @return A \code{mat} that has the first column 
 // [[Rcpp::export]]
 arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha){
@@ -50,7 +50,12 @@ arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha){
 //' @param theta
 //' @param psi
 //' @param p
-//' @return A \code{mat} that has the first column 
+//' @return A \code{vec} that has
+//' \itemize{
+//' \item Test Statistic
+//' \item P-Value
+//' \item DF
+//' } 
 // [[Rcpp::export]]
 arma::vec gof_test(const arma::vec& theta, 
                    const std::vector<std::string>& desc,
@@ -83,6 +88,23 @@ arma::vec gof_test(const arma::vec& theta,
   return out;
 }
 
+//' @title Compute the Inference Summary 
+//' @description Calls CI and GOF Test computation functions. 
+//' @return A \code{field<mat>} where
+//' \itemize{
+//' \item CI
+//' \itemize{
+//' \item Lower Bound
+//' \item Upper Bound
+//' \item Standard Error
+//' }
+//' \item GOF
+//' \itemize{
+//' \item Test Statistic
+//' \item P-Value
+//' \item DF
+//' }
+//' } 
 // [[Rcpp::export]]
 arma::field<arma::mat> inference_summary(const arma::vec& theta, 
                                         const std::vector<std::string>& desc,

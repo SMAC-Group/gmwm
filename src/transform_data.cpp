@@ -47,7 +47,7 @@ double pseudo_logit(double x){
 
 //' @title Logit Function
 //' @description This function computes the logit link function.
-//' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
+//' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
 //' @return A \code{vec} containing logit terms.
 //' @examples
 //' x.sim = runif(100)
@@ -61,7 +61,9 @@ double logit(double x){
   return log(x/(1 - x));
 }
 
-
+//' @title Transform Values for Optimization
+//' @description Transform parameter guesses prior to estimating with GMWM
+//' @return A \code{vec} containing the transformed guesses.
 // [[Rcpp::export]]
 arma::vec transform_values(const arma::vec& theta,
                            const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
@@ -115,7 +117,9 @@ arma::vec transform_values(const arma::vec& theta,
   return starting;
 }
 
-
+//' @title Revert Transform Values for Display
+//' @description Undo the previous transform of parameter guesses to obtain the GMWM estimates.
+//' @return A \code{vec} containing the undone transformation of parameters.
 // [[Rcpp::export]]
 arma::colvec untransform_values(const arma::vec& theta, 
                                 const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){

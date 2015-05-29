@@ -5,13 +5,13 @@
 using namespace Rcpp;
 
 //' @title D Matrix
-//' @description 
+//' @description D Matrix
 //' @param At_j A \code{mat} that is of dimensions J x P containing the sederivative of A(theta_hat_j)/dTheta_hat_(j,tau)
 //' @param omega A \code{mat} that is of dimension P x P used in obtaining the GMWM estimator.
 //' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
-//' @return 
+//' @return A \code{mat}
 //' @details
-//' hi
+//' TBA
 // [[Rcpp::export]]
 arma::mat D_matrix(const arma::mat& At_j, const arma::mat& omega, const arma::vec& diff){
   unsigned int p = At_j.n_cols;
@@ -31,24 +31,20 @@ arma::mat D_matrix(const arma::mat& At_j, const arma::mat& omega, const arma::ve
   return D;
 }
 
-//' @title Model Score
-//' @description Calculates the modeling score of a GMWM
-//' @param At
-//' @param At_j 
-//' @param omega
-//' @param v_hat
-//' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
-//' @param T An \code{unsigned int} that is awesome!
-//' @return 
+//' @title B Matrix
+//' @description B Matrix
+//' @param A A \code{mat} containing the first derivatives of the process.
+//' @param at_omega A \code{mat} containing A^T * Omega
+//' @return A \code{mat}
 //' @details
-//' hi
+//' TBA
 // [[Rcpp::export]]
-arma::mat B_matrix(arma::mat A, arma::mat a_omega){
+arma::mat B_matrix(arma::mat A, arma::mat at_omega){
   unsigned int p = A.n_cols;
   arma::mat B(p,p);
   
   for(unsigned int i = 0; i < p; i++){
-    B.col(i) = a_omega* A.col(i);
+    B.col(i) = at_omega* A.col(i);
   }
   
   return B;
@@ -62,9 +58,9 @@ arma::mat B_matrix(arma::mat A, arma::mat a_omega){
 //' @param v_hat A \code{mat} that contains the covariance matrix
 //' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
 //' @param T An \code{unsigned int} that is awesome!
-//' @return 
+//' @return A \code{vec}
 //' @details
-//' hi
+//' TBA
 // [[Rcpp::export]]
 arma::vec model_score(arma::mat A, arma::mat At_j, arma::mat omega, arma::mat v_hat, arma::vec diff, unsigned int N){
   

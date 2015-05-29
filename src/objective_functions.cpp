@@ -1,7 +1,11 @@
 #include <RcppArmadillo.h>
 
 #include "objective_functions.h"
+
+// Uses the theoretical_wv function.
 #include "process_to_wv.h"
+
+// Uses the transform / untransform methods
 #include "transform_data.h"
 
 using namespace Rcpp;
