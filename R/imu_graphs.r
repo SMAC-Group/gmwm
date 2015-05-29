@@ -21,14 +21,14 @@ imu2WV = function(object, gyroscope = c(1:3), accelerometer = c(4:6)){
   a = accelerometer
   
   # Assume gyroscope columns
-  wv1 = wvar(modwt(object[,g[1]]))
-  wv2 = wvar(modwt(object[,g[2]]))
-  wv3 = wvar(modwt(object[,g[3]]))
+  wv1 = wvar(object[,g[1]])
+  wv2 = wvar(object[,g[2]])
+  wv3 = wvar(object[,g[3]])
   
   # Assume accelerometer columns
-  wv4 = wvar(modwt(object[,a[1]]))
-  wv5 = wvar(modwt(object[,a[2]]))
-  wv6 = wvar(modwt(object[,a[3]]))
+  wv4 = wvar(object[,a[1]])
+  wv5 = wvar(object[,a[2]])
+  wv6 = wvar(object[,a[3]])
   
   temp = data.frame(WV = c(wv1$variance,wv2$variance,wv3$variance,wv4$variance,wv5$variance,wv6$variance),
                       scales = rep(wv1$scales,6),
