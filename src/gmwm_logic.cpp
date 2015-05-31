@@ -234,8 +234,8 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
         omega = arma::inv(diagmat(V));
-        theta = gmwm_engine(theta, desc, objdesc, model_type,
-                      wv_empir, omega, scales, starting);
+        // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
+        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
     }
   }
 
@@ -373,27 +373,40 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     guessed_theta = theta;
   }
 
-  Rcpp::Rcout << "Guessed" << guessed_theta << std::endl;
   // Obtain the GMWM estimator's estimates.
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
 
-
+  
   // Set values to compute inference
   if(inference){
     diagonal_matrix = false;
     compute_v = "bootstrap";
+    
   }
 
-  // Enable bootstrapping
+    // Enable bootstrapping
   if(compute_v == "bootstrap"){
+    
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
         omega = arma::inv(diagmat(V));
-        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, starting);
+        
+        // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
+        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
     }
   }
+
   
+  if(desc[0] == "ARMA" && desc.size() == 1){
+    
+    arma::vec temp = objdesc(0);
+    unsigned int p = temp(0);
+    if(p != 0 && invert_check(arma::join_cols(arma::ones<arma::vec>(1), -theta.rows(0, p - 1))) == false){
+      cout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
+    }
+  }  
+
   // Obtain the objective value function
   arma::vec obj_value(1);
   obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 

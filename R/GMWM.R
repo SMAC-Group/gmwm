@@ -77,7 +77,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FALSE, augmented=FALSE, p = 0.05, robust=FALSE, eff=0.6, G=1000, K=1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="fast", inference = FALSE, augmented=FALSE, p = 0.05, robust=FALSE, eff=0.6, G=NULL, K = 1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -97,6 +97,20 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FAL
   np = model$plength
   
   N = length(data)
+  
+  starting = model$starting
+  
+  # Input guessing
+  if(is.null(G) & starting){
+    if(N > 10000){
+      G = 1000
+    }else{
+      G = 20000
+    }
+  }else if(!starting){
+    G = 0
+  }
+  
   
   # Information used in summary.gmwm:
   summary.desc = model$desc
@@ -134,7 +148,6 @@ gmwm = function(model, data, model.type="imu", compute.v="fast", inference = FAL
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = p, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff, inference = inference)
-  
   #colnames(out) = model$desc
   
   estimate = out[[1]]
