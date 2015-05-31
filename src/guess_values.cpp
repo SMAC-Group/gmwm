@@ -120,10 +120,7 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
       }
       
     // Invertibility check we probably need to figure out a better guessing strategy...
-    } while ( invert_check(arma::conv_to<arma::cx_vec>::from(
-                                    arma::join_cols(one, -ar)
-                                   )
-                          )
+    } while ( invert_check(arma::join_cols(one, -ar) )
                 == false // not invertible.
               );
 
