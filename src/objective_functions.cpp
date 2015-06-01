@@ -16,9 +16,13 @@ double objFunStarting(const arma::vec& theta,
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
                       const arma::vec& wv_empir, const arma::vec& tau){
   
-  arma::vec untransformed_theta = untransform_values(theta, desc, objdesc, model_type);
-  arma::vec wv_theo = theoretical_wv(untransformed_theta, desc, objdesc, tau);
+  // Untransform and find the theoretical wv.
+  arma::vec wv_theo = theoretical_wv(untransform_values(theta, desc, objdesc, model_type),
+                                     desc, objdesc, tau);
+  
+  // Yannick's Circle Idea
   arma::vec standardized = 1-wv_theo/wv_empir;
+  
   // Compute quandratic form
 	return arma::as_scalar(trans(standardized)*(standardized));
 }
@@ -28,12 +32,14 @@ double objFun(const arma::vec& theta,
               const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
               const arma::mat& omega, const arma::vec& wv_empir, const arma::vec& tau){
   
-  arma::vec untransformed_theta = untransform_values(theta, desc, objdesc, model_type);
-
-  arma::vec wv_theo = theoretical_wv(untransformed_theta, desc, objdesc, tau);
-
-  // Compute quandratic form
+  // Untransform and find the theoretical wv.
+  arma::vec wv_theo = theoretical_wv(untransform_values(theta, desc, objdesc, model_type),
+                                     desc, objdesc, tau);
+  
+  // Compute Difference
 	arma::vec dif = wv_theo - wv_empir;
+	
+	// Compute quandratic form... Scalar!!!!!!
 	return arma::as_scalar(trans(dif)*omega*dif);
 }
 
