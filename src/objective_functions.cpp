@@ -101,7 +101,7 @@ arma::vec Rcpp_Optim(const arma::vec&  theta,
                         _["wv_empir"] = wv_empir,
                         _["tau"] = tau);
    
-   arma::vec out = as<arma::vec>(Opt[0]);
+   arma::vec out = as<arma::vec>(Opt[0]); 
    
    return out;
 }
