@@ -12,8 +12,14 @@ using namespace Rcpp;
 //' pseudo_logit_inv(x.sim)
 // [[Rcpp::export]]
 arma::vec pseudo_logit_inv(const arma::vec& x){
-  return 2/(1 + exp(-x)) - 1;
+  return 2.0/(1 + exp(-x)) - 1.0;
 }
+
+
+double pseudo_logit_inv(double x){
+  return 2.0/(1 + exp(-x)) - 1.0;
+}
+
 
 //' @title Logit Inverse Function
 //' @description This function computes the inverse of a logit transformation of the parameters.
@@ -24,7 +30,11 @@ arma::vec pseudo_logit_inv(const arma::vec& x){
 //' logit_inv(x.sim)
 // [[Rcpp::export]]
 arma::vec logit_inv(const arma::vec& x){
-  return 1/(1 + exp(-x));
+  return 1.0/(1.0 + exp(-x));
+}
+
+double logit_inv(double x){
+  return 1.0/(1.0 + exp(-x));
 }
 
 //' @title Pseudo Logit Function
@@ -36,13 +46,13 @@ arma::vec logit_inv(const arma::vec& x){
 //' pseudo_logit(x.sim)
 // [[Rcpp::export]]
 arma::vec pseudo_logit(const arma::vec& x){
-  arma::vec p = (x+1)/2;
-  return log(p/(1 - p));
+  arma::vec p = (x+1.0)/2.0;
+  return log(p/(1.0 - p));
 }
 
 double pseudo_logit(double x){
-  double p = (x+1)/2;
-  return log(p/(1 - p));
+  double p = (x+1.0)/2.0;
+  return log(p/(1.0 - p));
 }
 
 //' @title Logit Function
@@ -54,11 +64,11 @@ double pseudo_logit(double x){
 //' logit(x.sim)
 // [[Rcpp::export]]
 arma::vec logit(const arma::vec& x){
-  return log(x/(1 - x));
+  return log(x/(1.0 - x));
 }
 
 double logit(double x){
-  return log(x/(1 - x));
+  return log(x/(1.0 - x));
 }
 
 
@@ -72,14 +82,34 @@ double logit(double x){
 //' logit(x.sim)
 // [[Rcpp::export]]
 arma::vec logit2(const arma::vec& x){
-  return log(x/(1 - x));
+  double b = 2.0;
+  double a = 4.0;
+  
+  return log((x+b)/(a - b - x));
 }
 
 double logit2(double x){
-  return log(x/(1 - x));
+  double b = 2.0;
+  double a = 4.0;
+  
+  return log((x+b)/(a - b - x));
 }
 
+//' @title Logit2 Inverse Function
+//' @description This function computes the inverse of a logit transformation of the parameters.
+//' @param x A \code{vec} containing real numbers.
+//' @return A \code{vec} containing logit probabilities.
+//' @examples
+//' x.sim = rnorm(100)
+//' logit_inv(x.sim)
+// [[Rcpp::export]]
+arma::vec logit2_inv(const arma::vec& x){
+  return 4.0/(1 + exp(-x)) - 2.0;
+}
 
+double logit2_inv(double x){
+  return 4.0/(1 + exp(-x)) - 2.0;
+}
 
 //' @title Transform Values for Optimization
 //' @description Transform parameter guesses prior to estimating with GMWM
@@ -90,6 +120,7 @@ arma::vec transform_values(const arma::vec& theta,
   arma::vec starting  = arma::zeros<arma::vec>(theta.n_elem);
   unsigned int i_theta = 0;
   unsigned int num_desc = desc.size();
+  
   
   for(unsigned int i = 0; i < num_desc; i++){
     // AR 1
@@ -114,31 +145,52 @@ arma::vec transform_values(const arma::vec& theta,
       unsigned int p = arma_params(0); // AR(P)
       unsigned int q = arma_params(1); // MA(Q)
       
-      unsigned int param_est = i_theta + p + q;
       
       // Determine transformation to apply
       if(model_type == "imu"){
+        // All parameters but sigma
+        unsigned int param_est = i_theta + p + q;
         
         // Use the pseudo logit function (0 <= x <= 1) => R
         starting.rows(i_theta, param_est - 1) = pseudo_logit(theta.rows(i_theta, param_est - 1));
         
+        // Increment index
+        i_theta = param_est;
       }
       else{ 
         // SSM Case
-        starting.rows(i_theta, param_est - 1) = theta.rows(i_theta, param_est- 1);
-      }
+        // Two different transformations.
+        if(p == 1){
+          starting(i_theta) = pseudo_logit(theta(i_theta));
+        }
+        else if(p > 1){
+          starting.rows(i_theta, i_theta + p - 1) = logit2(theta.rows(i_theta, i_theta + p - 1));
+        }
+        
+        // Increment count by p
+        i_theta += p;
+        
+        // Two different transformations.
+        if(q == 1){
+          starting(i_theta) = pseudo_logit(theta(i_theta));
+        }else if(q > 1){
+          starting.rows(i_theta, i_theta + q - 1) = logit2(theta.rows(i_theta, i_theta + q - 1));
+        }
+        
+        
+        // Increment count by q
+        i_theta += q;
+        
+
+      }// end else
       
-      // Increment index
-      i_theta = param_est;
-      
-      
-    }
+    }// end if
     
     // Take care of SIGMA2 term
     starting(i_theta) = log(theta(i_theta));
     
     ++i_theta;
-  }  
+  } // end for
 
   return starting;
 }
@@ -152,7 +204,7 @@ arma::colvec untransform_values(const arma::vec& theta,
     arma::colvec result  = arma::zeros<arma::colvec>(theta.n_elem);
     unsigned int i_theta = 0;
     unsigned int num_desc = desc.size();
-    
+
     for(unsigned int i = 0; i < num_desc; i++){
       
       std::string element_type = desc[i];
@@ -174,29 +226,50 @@ arma::colvec untransform_values(const arma::vec& theta,
         unsigned int p = arma_params(0); // AR(P)
         unsigned int q = arma_params(1); // MA(Q)
         
-        unsigned int param_est = i_theta + p + q;
-        
+
         // Determine transformation to apply
         if(model_type == "imu"){
+          // All parameters but sigma
+          unsigned int param_est = i_theta + p + q;
           
           // Use the invs pseudo logit function R => (0 <= x <= 1) 
           result.rows(i_theta, param_est - 1) = pseudo_logit_inv(theta.rows(i_theta, param_est - 1));
+          
+          // Increment index
+          i_theta = param_est;
 
         }else{ 
-          // SSM Case
-          result.rows(i_theta, param_est - 1) = theta.rows(i_theta, param_est - 1);
-        }
-        
-        // Increment index
-        i_theta = param_est;
-        
-      }
+            // SSM Case
+            
+            // Two different transformations.
+            if(p == 1){
+              result(i_theta) = pseudo_logit_inv(theta(i_theta));
+            }
+            else if(p > 1){
+              result.rows(i_theta, i_theta + p - 1) = logit2_inv(theta.rows(i_theta, i_theta + p - 1));
+            }
+            
+            // Increment count by p
+            i_theta += p;
+            
+            // Two different transformations.
+            if(q == 1){
+              result(i_theta) = pseudo_logit_inv(theta(i_theta));
+            }else if(q > 1){
+              result.rows(i_theta, i_theta + q - 1) = logit2_inv(theta.rows(i_theta, i_theta + q - 1));
+            }
+            
+            // Increment count by q
+            i_theta += q;
+          }// end else
+          
+    } // end if
 
       // Take care of SIGMA2 term or other term...
       result(i_theta) = exp(theta(i_theta));
       
       ++i_theta;
   }  
-    
+
   return result;
 }
