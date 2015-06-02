@@ -5,7 +5,7 @@
 #' @param object A \code{data.frame} or \code{matrix} that contains 6 columns. 
 #' @param gyroscope A \code{vector} that contains the index of column where gyroscope data (Gyro. X, Gyro. Y and Gyro. Z) is placed
 #' @param accelerometer A \code{vector} that contains the index of column where accelerometer data (Accel. X, Accel. Y and Accel. Z) is placed
-#' @return An object whose class is \code{imu} that contains the formatted data.
+#' @return An object whose class is \code{imu} that contains the formatted data
 #' @examples
 #' \dontrun{
 #' data(imu)
@@ -60,6 +60,7 @@ imu2WV = function(object, gyroscope = c(1:3), accelerometer = c(4:6)){
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param title.x.axis A \code{string} that indicates the label on x axis
 #' @param title.y.axis A \code{string} that indicates the label on y axis
+#' @param facet.title.size An \code{integer} that indicates the size of facet label
 #' @param legend.title A \code{string} that indicates the title of legend (only work when graphs are combined)
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend (only work when graphs are combined)
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend (only work when graphs are combined)
@@ -80,6 +81,7 @@ plot.imu = function(x, separate = TRUE, CI = TRUE, transparence = 0.1, color.lin
                     axis.label.size = 13, axis.tick.size = 11, 
                     title.x.axis = expression(paste("Scale ", tau)),
                     title.y.axis = expression(paste("Wavelet Variance ", nu)),
+                    facet.title.size = 13,
                     legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, 
                     legend.text.size = 13, ... ){
   
@@ -97,7 +99,7 @@ plot.imu = function(x, separate = TRUE, CI = TRUE, transparence = 0.1, color.lin
            title.x.axis = title.x.axis,
            title.y.axis = title.y.axis,
            legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-           legend.text.size = legend.text.size)  
+           legend.text.size = legend.text.size, facet.title.size = facet.title.size)  
 }
 
 #' @title Plot in separate type: 6 graphs
@@ -110,11 +112,12 @@ plot.imu = function(x, separate = TRUE, CI = TRUE, transparence = 0.1, color.lin
 #' @param color.CI A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
 #' @param line.type A \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
 #' @param graph.title A \code{string} that indicates the title of the graph
-#' @param graph.title.size An \code{integer} that indicates the size of title.
+#' @param graph.title.size An \code{integer} that indicates the size of title
 #' @param axis.label.size An \code{integer} that indicates the size of label
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param title.x.axis A \code{string} that indicates the label on x axis
 #' @param title.y.axis A \code{string} that indicates the label on y axis
+#' @param facet.title.size An \code{integer} that indicates the size of facet label
 #' @param ... Additional options
 #' @return A panel containing the split graphs of an IMU sensor.
 #' @examples
@@ -127,7 +130,8 @@ autoplot.imu6 = function(object, CI = TRUE, transparence = 0.1, color.line = "bl
                          color.CI = "#003C7D", line.type = "solid", graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          title.x.axis = expression(paste("Scale ", tau)),
-                         title.y.axis = expression(paste("Wavelet Variance ", nu)), ...){
+                         title.y.axis = expression(paste("Wavelet Variance ", nu)), 
+                         facet.title.size = 13, ...){
   #require packages: scales
   WV=scales=.x=low=high=NULL
   
@@ -164,7 +168,8 @@ autoplot.imu6 = function(object, CI = TRUE, transparence = 0.1, color.line = "bl
       axis.title.y = element_text(size= axis.label.size),
       axis.text.y  = element_text(size= axis.tick.size),
       axis.title.x = element_text(size= axis.label.size),
-      axis.text.x  = element_text(size= axis.tick.size))
+      axis.text.x  = element_text(size= axis.tick.size),
+      strip.text = element_text(size = facet.title.size))
   
   #multiplot(CI)
   p
@@ -183,6 +188,7 @@ autoplot.imu6 = function(object, CI = TRUE, transparence = 0.1, color.line = "bl
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param title.x.axis A \code{string} that indicates the label on x axis
 #' @param title.y.axis A \code{string} that indicates the label on y axis
+#' @param facet.title.size An \code{integer} that indicates the size of facet label
 #' @param legend.title A \code{string} that indicates the title of legend
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend 
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend
@@ -200,6 +206,7 @@ autoplot.imu2 = function(object, CI = T, transparence = 0.1, line.type = "solid"
                          axis.label.size = 13, axis.tick.size = 11, 
                          title.x.axis = expression(paste("Scale ", tau)),
                          title.y.axis = expression(paste("Wavelet Variance ", nu)),
+                         facet.title.size = 13,
                          legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, 
                          legend.text.size = 13, ...){
   
@@ -242,7 +249,8 @@ autoplot.imu2 = function(object, CI = T, transparence = 0.1, line.type = "solid"
       axis.text.x  = element_text(size= axis.tick.size),
       legend.key.size = unit(legend.key.size, "cm"),
       legend.text = element_text(size = legend.text.size),  
-      legend.title = element_text(size = legend.title.size)) + 
+      legend.title = element_text(size = legend.title.size),
+      strip.text = element_text(size = facet.title.size)) + 
     scale_colour_hue(name = legend.title)
   
   p
