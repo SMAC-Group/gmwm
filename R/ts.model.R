@@ -5,7 +5,7 @@
 #' @return An S3 object with called ts.model with the following structure:
 #' \itemize{
 #'  \item{process.desc}{Used in summary: "AR1","SIGMA2"}
-#'  \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma}{sigma}}
+#'  \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma^2}{sigma^2}}
 #'  \item{plength}{Number of Parameters}
 #'  \item{desc}{"AR1"}
 #'  \item{obj.desc}{Depth of Parameters e.g. list(1,1)}
@@ -33,6 +33,96 @@ AR1 = function(phi = NULL, sigma2 = NULL) {
                        starting = starting), class = "ts.model")
   invisible(out)
 }
+
+
+#' @title Create an Autoregressive P [AR(P)] Process
+#' @description Setups the necessary backend for the AR(P) process.
+#' @param phi A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \itemize{
+#'  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
+#'  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"AR"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' AR()
+#' AR(phi=.32, sigma=1.3)
+AR = function(phi = NULL, sigma2 = NULL) {
+  #starting = FALSE;
+  #if(is.null(phi) || is.null(sigma2)){
+  #  phi = 0;
+  #  sigma2 = 1;
+  #  starting = TRUE;
+  #}
+
+  #p = length(phi)
+  
+  #out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
+  #                     theta = c(phi,sigma2),
+  #                     plength = 2,
+  #                     desc = "AR",
+  #                     obj.desc = list(c(p,1)),
+  #                     starting = starting), class = "ts.model")
+  #invisible(out)
+  
+  if(is.null(sigma2)){
+    sigma2 = 1.0
+  }
+  
+  ARMA(ar=phi, ma = c(0), sigma2 = sigma2)
+}
+
+
+#' @title Create an Moving Average Q [MA(Q)] Process
+#' @description Setups the necessary backend for the MA(Q) process.
+#' @param theta A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \itemize{
+#'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
+#'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"AR"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' MA()
+#' MA(phi=.32, sigma=1.3)
+MA = function(theta = NULL, sigma2 = NULL) {
+  
+  # Implement?
+  
+  #starting = FALSE;
+  #if(is.null(theta) || is.null(sigma2)){
+  #  theta = 0;
+  #  sigma2 = 1;
+  #  starting = TRUE;
+  #}
+  
+  #q = length(phi)
+  
+  #out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
+  #                     theta = c(theta,sigma2),
+  #                     plength = 2,
+  #                     desc = "MA",
+  #                     obj.desc = list(c(q,1)),
+  #                     starting = starting), class = "ts.model")
+  #invisible(out)
+  
+  if(is.null(sigma2)){
+    sigma2 = 1.0
+  }
+  
+  ARMA(ar = c(0), ma = theta, sigma2 = sigma2)
+}
+
 
 #' @title Create an Quantisation Noise (QN) Process
 #' @description Sets up the necessary backend for the QN process.
@@ -197,19 +287,43 @@ DR = function(slope = NULL) {
 #' # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
 #' ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
 ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
+  # Assume the user specified data
   starting = FALSE
-  if(length(ar) == 1 & length(ma) == 1){
-    if(is.whole(ar) & is.whole(ma)){
-      ar = rep(-1, ar)
-      ma = rep(-2, ma)
-      starting = TRUE
+  
+  # Get initial parameters
+  p = length(ar)
+  q = length(ma)
+  
+  # If P or Q == 1, this implies we might have a starting guess. 
+  if( p == 1 || q == 1 ){
+    if(p == 1){
+      if(is.whole(ar) & ar != 0){
+        ar = rep(-1, ar)
+        starting = TRUE
+      }else if(ar == 0){
+        ar = numeric(0) # creates a size 0 vector
+      }
+    }
+    
+    if(q == 1){
+      if(is.whole(ma) & ma != 0){
+        ma = rep(-2, ma)
+        starting = TRUE
+      }else if(ma == 0){
+        ma = numeric(0) 
+      }
     }
   }
-  out = structure(list(process.desc = c(rep("AR", length(ar)), rep("MA",length(ma)), "SIGMA2"),
+  
+  # Update the values.
+  p = length(ar)
+  q = length(ma)
+  
+  out = structure(list(process.desc = c(rep("AR", p), rep("MA",q), "SIGMA2"),
                        theta = c(ar, ma, sigma2),
-                       plength = length(ar)+length(ma) + 1,
+                       plength = p + q + 1,
                        desc = "ARMA",
-                       obj.desc = list(c(length(ar),length(ma),1)),
+                       obj.desc = list(c(p,q,1)),
                        starting = starting), class = "ts.model")
   invisible(out)
 }
