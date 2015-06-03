@@ -4,9 +4,9 @@
 \alias{gmwm}
 \title{GMWM for IMU, ARMA, SSM, and Robust}
 \usage{
-gmwm(model, data, model.type = "imu", compute.v = "fast",
-  inference = FALSE, augmented = FALSE, p = 0.05, robust = FALSE,
-  eff = 0.6, G = 1000, K = 1, H = 100)
+gmwm(model, data, model.type = "ssm", compute.v = "auto",
+  inference = "auto", augmented = FALSE, p = 0.05, robust = FALSE,
+  eff = 0.6, G = NULL, K = 1, H = 100)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}

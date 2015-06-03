@@ -9,7 +9,8 @@
   graph.title = "Haar Wavelet Variance Representation",
   graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
-  title.y.axis = expression(paste("Wavelet Variance ", nu)), ...)
+  title.y.axis = expression(paste("Wavelet Variance ", nu)),
+  facet.title.size = 13, ...)
 }
 \arguments{
 \item{object}{An \code{imu} object}
@@ -26,7 +27,7 @@
 
 \item{graph.title}{A \code{string} that indicates the title of the graph}
 
-\item{graph.title.size}{An \code{integer} that indicates the size of title.}
+\item{graph.title.size}{An \code{integer} that indicates the size of title}
 
 \item{axis.label.size}{An \code{integer} that indicates the size of label}
 
@@ -35,6 +36,8 @@
 \item{title.x.axis}{A \code{string} that indicates the label on x axis}
 
 \item{title.y.axis}{A \code{string} that indicates the label on y axis}
+
+\item{facet.title.size}{An \code{integer} that indicates the size of facet label}
 
 \item{...}{Additional options}
 }
