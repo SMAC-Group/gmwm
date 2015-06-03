@@ -14,7 +14,7 @@ imu2WV(object, gyroscope = c(1:3), accelerometer = c(4:6))
 \item{accelerometer}{A \code{vector} that contains the index of column where accelerometer data (Accel. X, Accel. Y and Accel. Z) is placed}
 }
 \value{
-An object whose class is \code{imu} that contains the formatted data.
+An object whose class is \code{imu} that contains the formatted data
 }
 \description{
 Generates the Wavelet Variance for each column in the data set.

@@ -9,8 +9,8 @@
   graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
   title.y.axis = expression(paste("Wavelet Variance ", nu)),
-  legend.title = "Axis", legend.key.size = 1.3, legend.title.size = 13,
-  legend.text.size = 13, ...)
+  facet.title.size = 13, legend.title = "Axis", legend.key.size = 1.3,
+  legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
 \item{object}{An \code{imu} object}
@@ -32,6 +32,8 @@
 \item{title.x.axis}{A \code{string} that indicates the label on x axis}
 
 \item{title.y.axis}{A \code{string} that indicates the label on y axis}
+
+\item{facet.title.size}{An \code{integer} that indicates the size of facet label}
 
 \item{legend.title}{A \code{string} that indicates the title of legend}
 
