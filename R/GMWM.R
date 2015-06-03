@@ -77,7 +77,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="ssm", compute.v="fast", inference = FALSE, augmented=FALSE, p = 0.05, robust=FALSE, eff=0.6, G=NULL, K = 1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "auto", augmented=FALSE, p = 0.05, robust=FALSE, eff=0.6, G=NULL, K = 1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -130,19 +130,41 @@ gmwm = function(model, data, model.type="ssm", compute.v="fast", inference = FAL
   scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
   
   if(np > length(scales)){
-    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
+    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need at least the same number of scales as parameters to estimate.")
   }
   
   if(robust){
     np = np+1
     if(np > length(scales)){
-      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
+      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we  at least need the same number of scales as parameters to estimate.")
     }
   }
   
+  # Auto setting
 
-  # Needed if model contains a drift. 
+  # Compute fast covariance if large sample, otherwise, bootstrap.
+  if(compute.v == "auto"){
+    if(N > 10000){
+      compute.v = "fast"
+    }else{
+      compute.v = "bootstrap"
+    }
+  }
   
+  # Compute inference on small time series.
+  if(inference == "auto"){
+    if(N > 10000){
+      inference = FALSE
+    }else{
+      inference = TRUE
+    } 
+  }
+  
+  if("ARMA" %in% desc){
+    warning("ARMA is not currently supported for inference. No inference results will be displayed.")
+    inference = FALSE
+  }
+
   theta = model$theta
 
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
@@ -241,7 +263,7 @@ update.gmwm = function(object, model, ...){
   }
   
   if(np > length(object$scales)){
-    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need the same number of scales as parameters to estimate.")
+    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need  at least  the same number of scales as parameters to estimate.")
   }
   
   if(object$robust){
@@ -330,9 +352,9 @@ print.summary.gmwm = function(x, ...){
   }
   
   if(x$inference){
-    cat(paste0("\nThe Goodness of Fit test statistic is: ",x$testinfo[1],
+    cat(paste0("\nThe Goodness of Fit test statistic is: ", round(x$testinfo[1],2),
           " on ",x$testinfo[3]," degrees of freedom\n",
-          "The resulting p-value is: ", x$testinfo[2]),"\n\n")
+          "The resulting p-value is: ", round(x$testinfo[2],4)),"\n\n")
   }else{
     cat("\nInference was not run. \nTo obtain theta confidence intervals and Goodness of Fit information, please use gmwm() with inference = TRUE.")
   }
