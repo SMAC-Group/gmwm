@@ -476,7 +476,7 @@ autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, color.line = c("#0
       #geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1, fill = "#003C7D") +
   }
   
-  p = p + geom_line(aes(x = df$scales, y = df$WV, color = df$process)) + 
+  p = p + geom_line(data = df, mapping = aes(x = scales, y = WV, color = process)) + 
     xlab(title.x.axis ) + ylab( title.y.axis) +
     scale_y_log10( breaks = trans_breaks("log10", function(x) 10^x),
                    labels = trans_format("log10", math_format(10^.x))) +
