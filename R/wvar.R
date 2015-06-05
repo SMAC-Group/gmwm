@@ -135,142 +135,374 @@ autoplot.wvar = function(object, ...){
   CI
 }
 
-
-
-
-#' @title Compare Wavelet Variances Together
-#' @description Creates the wavelet variance graphs with classic and robust together
-#' @method autoplot wvarcomp
-#' @param object A \code{data.frame} containing both sets of variances.
-#' @param ... other arguments passed to specific methods
-#' @return A ggplot2 graph containing both the wavelet variances.
-#' @author JJB
-#' @examples
-#' set.seed(999)
-#' x=rnorm(100)
-#' Classic = wvar(modwt(x))
-#' Robust = wvar(modwt(x), robust=TRUE)
-#' compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
-autoplot.wvarcomp = function(object, ...){
+#' @title Detail Implementation to Compare Wavelet Variances
+#' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+#' @method autoplot wvarComp
+#' @param obj A \code{data frame} that contains data in order to plot
+#' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param color.line A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param color.CI A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. Length of vector must equal to 2. 
+#' @param graph.title A \code{string} that indicates the title of the graph
+#' @param graph.title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark
+#' @param title.x.axis A \code{string} that indicates the label on x axis
+#' @param title.y.axis A \code{string} that indicates the label on y axis
+#' @param facet.title.size An \code{integer} that indicates the size of facet label
+#' @param legend.title A \code{string} that indicates the title of legend
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend
+#' @param nrow An \code{integer} that indicates number of rows
+#' @author JJB, Wenchao
+#' @seealso \code{\link{compare.wvar}}
+autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, color.line = NULL, 
+                             color.CI = NULL, line.type = c('solid','dotted'), 
+                             graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
+                             axis.label.size = 13, axis.tick.size = 11, 
+                             title.x.axis = expression(paste("Scale ", tau)),
+                             title.y.axis = expression(paste("Wavelet Variance ", nu)),
+                             facet.title.size = 13,
+                             legend.label = NULL,
+                             legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
+                             legend.text.size = 13, nrow = 1, ...){
+  scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
   
-  scales=low1=high1=WV1=low2=high2=WV2=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
-  
-  WV = data.frame(WV1 = object$WV1, low1 = object$low1, high1 = object$high1, 
-                  WV2 = object$WV2, low2 = object$low2, high2 = object$high2, scales = object$scales)
-  
-  cols = c("LINE1"="#003C7D","LINE2"="#F47F24")
-  cols2 = c("LINE2"="#003C7D","LINE1"="#F47F24")
-  
-  CI = ggplot(WV, aes( x = scales, y = low1)) + 
-    geom_line(aes(colour = "LINE1"), linetype = "dotted") +
-    geom_line(aes(y = high1, colour = "LINE1"),linetype = "dotted") +
-    geom_line(aes(y = WV1, colour = "LINE1")) + geom_point(aes(y = WV1, colour = "LINE1"), size = 3) +
-    geom_line(aes(y = low2, colour = "LINE2"),linetype = "dotted") +
-    geom_line(aes(y = high2, colour = "LINE2"),linetype = "dotted") +
-    geom_line(aes(y = WV2, colour = "LINE2")) + geom_point(aes(y = WV2, colour = "LINE2"), size = 4, shape = 1) +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+  p = ggplot(data = obj, mapping = aes(x = scales, y = WV)) + geom_line(mapping = aes(color = dataset), linetype = line.type[1]) + geom_point(mapping = aes(color = dataset), size = 3) +
+     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) + 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low1,rev(high1)), x = c(scales,rev(scales))), fill = "#F47F24", alpha = 0.1) +
-    geom_polygon(aes(y = c(low2,rev(high2)), x = c(scales,rev(scales))), fill = "#003C7D", alpha = 0.1) +
-    ggtitle("Haar Wavelet Variance Representation") +
-    theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
-          legend.justification=c(0,0), legend.position=c(0,0.72)) + scale_fill_discrete(name=" ",labels=c(" 95% CI Classical WV  ", " 95% CI Robust WV  ")) +
-    scale_colour_manual(name=" ", labels=c("Classical WV Estimator","Robust WV Estimator"), 
-                        values = cols2, guide = guide_legend( fill = c("#F47F24","#003C7D") , colour = c("#F47F24","#003C7D"), override.aes = list(shape = c(16,1))))
+                  labels = trans_format("log10", math_format(10^.x))) 
+  if (!is.null(color.line)){
+    #legend.label should work. Not work here. But it is changed when creating 'obj' (in wrapper function)
+    p = p + scale_color_manual(name = legend.title, values = color.line , labels = legend.label)
+  }
+     
+  if(CI){
+    p = p + 
+      geom_line(mapping = aes(y = low, color = dataset), linetype = line.type[2]) + geom_line(mapping = aes(y = high, color = dataset), linetype = line.type[2]) + 
+      geom_ribbon(mapping = aes(ymin = low, ymax = high, fill = dataset), alpha = transparence) 
+    if(!is.null(color.CI)){
+      p = p + scale_fill_manual(name = legend.title, values = alpha(color.CI, transparence) , labels = legend.label)
+    }
+  }
   
+  if (split){
+    p = p + facet_wrap(~dataset,nrow = nrow) + theme(legend.position="none")
+  }
+  else{
+    if(is.null(color.line)){
+      p = p + scale_colour_hue(name = legend.title)
+    }
+    if(is.null(color.CI)){
+      p = p + scale_fill_discrete(name = legend.title)
+    }
+  }
   
-  CI
+  p = p +  xlab(title.x.axis) + ylab(title.y.axis) + ggtitle(graph.title) +
+    theme(
+      plot.title = element_text(size=graph.title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      legend.key.size = unit(legend.key.size, "cm"),
+      legend.text = element_text(size = legend.text.size),  
+      legend.title = element_text(size = legend.title.size),
+      strip.text = element_text(size = facet.title.size)) 
+    
+  p
 }
 
-#' @title Compare Wavelet Variances on Split
-#' @description Creates the wavelet variance graphs with classic and robust 
-#' on separate graphs with the same panel
-#' @method autoplot wvarcompSplit
-#' @param object A \code{data.frame} containing both sets of variances.
-#' @param ... other arguments passed to specific methods
-#' @return A ggplot2 panel containing two graphs of the wavelet variance.
-#' @author JJB
-#' @examples
-#' set.seed(999)
-#' x=rnorm(100)
-#' Classic = wvar(modwt(x))
-#' Robust = wvar(modwt(x), robust=TRUE)
-#' compare.wvar(Classic = Classic, Robust = Robust, split = TRUE)
-autoplot.wvarcompSplit = function(object, ...){
-  low=high=trans_breaks=trans_format=math_format=.x=NULL
-  
-  minval = min(c(object$low1,object$low2))
-  maxval = max(c(object$high1,object$high2))
-  
-  WV = data.frame(var = object$WV1, low = object$low1, high = object$high1, scale = object$scales)
-  CI1 = ggplot(WV, aes( x = scale, y = low)) + geom_line(linetype = "dotted", colour = "#F47F24") + 
-    geom_line(aes(y = high),linetype = "dotted", colour = "#F47F24") +
-    geom_line(aes(y = var), colour = "#F47F24") + geom_point(aes(y = var), size = 3, colour = "#F47F24") +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
-    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x)), limits = c(minval,maxval)) + 
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), fill = "#F47F24", alpha = 0.1) +
-    ggtitle("Classical WV") 
-  
-  WV = data.frame(var = object$WV2, low = object$low2, high = object$high2, scale = object$scales)
-  CI2 = ggplot(WV, aes( x = scale, y = low), colour = "#003C7D") + geom_line(linetype = "dotted", colour = "#003C7D") + 
-    geom_line(aes(y = high),linetype = "dotted", colour = "#003C7D") +
-    geom_line(aes(y = var)) + geom_point(aes(y = var), size = 3, colour = "#003C7D") +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
-    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x)), limits = c(minval,maxval)) + 
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), fill = "#003C7D", alpha = 0.1) +
-    ggtitle("Robust WV")
-  
-  multiplot(CI1, CI2, cols=2)
-}
 
 #' @title Compare Wavelet Variances
-#' @description Compare the estimates given by the classical and robust methods
-#'  of calculating the wavelet variance.
-#' @usage compare.wvar(Classic, Robust, split = TRUE)
-#' @param Classic A \code{wvar} object that has \code{robust=false}.
-#' @param Robust A \code{wvar} object that has \code{robust=true}.
-#' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE)
-#'  or graphed ontop of each other (FALSE)
-#' @author JJB
+#' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+#' @method compare wvar
+#' @param ... Any number of \code{wvar} objects can be passed in
+#' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param color.line A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param color.CI A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2. 
+#' @param graph.title A \code{string} that indicates the title of the graph
+#' @param graph.title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark
+#' @param title.x.axis A \code{string} that indicates the label on x axis
+#' @param title.y.axis A \code{string} that indicates the label on y axis
+#' @param facet.title.size An \code{integer} that indicates the size of facet label
+#' @param legend.title A \code{string} that indicates the title of legend
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend
+#' @param nrow An \code{integer} that indicates number of rows
+#' @author JJB, Wenchao
+#' @note 
+#' Common error "Error in grid.Call(L_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  : polygon edge not found"
+#' Just run your codes again. Or try \code{dev.off()}, and run codes again
 #' @examples
-#' set.seed(999)
-#' x=rnorm(100)
-#' Classic = wvar(modwt(x))
-#' Robust = wvar(modwt(x), robust=TRUE)
-#' # Graph both the classic and the robust estimator on the same graph
-#' compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
-#' # Graph both the classic and the robust estimator on split graphs next to each other
-#' compare.wvar(Classic = Classic, Robust = Robust, split = TRUE)
-compare.wvar = function(Classic, Robust, split = TRUE){
-  if(Classic$robust == TRUE){
-    if(Robust$robust == TRUE){
-      stop("Double robust estimates detected! You must supply different wavelet variance types to compare. e.g. Classic and Robust")
-    }else{
-      temp = Classic
-      Classic = Robust
-      Robust = temp
-      warning("Object types supplied were reversed (e.g. Robust instead of Classical). We've fixed that for you.")
-    }
-  }else{
-    if(Robust$robust == FALSE){
-      stop("Double classic estimates detected! You must supply different wavelet variance types to compare. e.g. Classic and Robust")
-    }
+#' \dontrun{
+#' #1. Compare two objects
+#' N1 = 1000
+#' N2 = 2000
+#' data.ar = gen.ts(AR1(phi = .32, sigma2=.01), N1)
+#' data.arma = gen.ts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
+#' wvar1 = wvar(data.ar)
+#' wvar2 = wvar(data.arma, robust = T)
+#' compare.wvar(wvar1, wvar2)
+#' compare.wvar(wvar1, wvar2, split=F)
+#' compare.wvar(wvar1, wvar2, CI = F)
+#' compare.wvar(wvar1, wvar2, split=F, CI = F)
+#' #2. Compare multiple objects
+#' N1 = 1000
+#' N2 = 2000
+#' N3 = 4000
+#' N4 = 3500
+#' data1 = gen.ts(AR1(phi = .32, sigma2=.01), N1)
+#' data2 = gen.ts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
+#' data3 = gen.ts(AR1(phi = .32, sigma2=1), N3)
+#' data4 = gen.ts(ARMA(ar=c(.8,.1), ma=c(.5), sigma2=1), N4)
+#' wvar1 = wvar(data1)
+#' #wvar1 = wvar(data1, robust = T)
+#' wvar2 = wvar(data2)
+#' wvar3 = wvar(data3)
+#' wvar4 = wvar(data4)
+#' compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
+#' compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
+#' #3.Obvious errors will be found
+#' compare.wvar()
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('red','green'))
+#' #4. Change default setting
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'))
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), facet.title.size = 9)
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'))
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F)
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
+#' }
+compare.wvar = function(..., split = TRUE, CI = TRUE, transparence = 0.1, color.line = NULL, 
+                        color.CI = NULL, line.type = NULL, 
+                        graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
+                        axis.label.size = 13, axis.tick.size = 11, 
+                        title.x.axis = expression(paste("Scale ", tau)),
+                        title.y.axis = expression(paste("Wavelet Variance ", nu)),
+                        facet.title.size = 13,
+                        legend.label = NULL,
+                        legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
+                        legend.text.size = 13, nrow = 1 ){
+  
+  
+  obj_list = list(...)
+  numObj = length(obj_list)
+  
+  #check parameter
+  isNull = is.null(color.line)
+  fullLength = length(color.line)==numObj   
+  if(isNull==F&&fullLength==F){
+    stop('Parameter color.line does not have the same length as the number of objects')
   }
-  wv = data.frame(WV1 = Classic$variance, low1 = Classic$ci_low, high1 = Classic$ci_high, 
-                  WV2 = Robust$variance, low2 = Robust$ci_low, high2 = Robust$ci_high, scales = Classic$scales)
-  if (split == TRUE){
-    class(wv) = "wvarcompSplit"
-  }else{
-    class(wv) = "wvarcomp"
+  
+  isNull = is.null(color.CI)
+  fullLength = length(color.CI)==numObj
+  if(isNull==F&&fullLength==F){
+    stop('Parameter color.CI does not have the same length as the number of objects')
   }
-  autoplot(wv) 
+  
+  isNull = is.null(legend.label)
+  fullLength =length(legend.label) ==numObj
+  if(isNull==F&&fullLength==F){
+    stop('Parameter legend.label does not have the same length as the number of objects')
+  }
+  
+  
+  if (numObj == 0){
+    stop('At least one object should be given')
+  }
+  else if (numObj == 1){
+    ## just plot
+    plot(...)
+  }
+  else  {
+    
+    #check whether all robust or all classical
+    allRobust = T
+    allClassical = T
+    for(i in 1:numObj){
+      allRobust = allRobust&&obj_list[[i]]$robust
+      allClassical = allClassical&&(!obj_list[[i]]$robust)
+    }
+    
+    #if legend.label is not specified: do something
+    #else: do nothing, just use what user specifies
+    if(is.null(legend.label)){
+      legend.label = c()
+      if(allRobust||allClassical){
+        for (i in 1:numObj){
+          legend.label[i] = paste('Dataset',i)
+        }
+      }
+      else{
+        for (i in 1:numObj){
+          legend.label[i] = paste('Dataset',i, if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
+        }
+      }
+    }
+   
+    obj  = data.frame(WV = NULL,
+                      scales = NULL,
+                      low = NULL,
+                      high = NULL,
+                      dataset = NULL)
+    for (i in 1:numObj){
+      temp = data.frame(WV = obj_list[[i]]$variance,
+                         scales = obj_list[[i]]$scales,
+                         low = obj_list[[i]]$ci_low,
+                         high = obj_list[[i]]$ci_high,
+                         dataset = legend.label[i])
+      obj = rbind(obj, temp)
+    }
+    
+    if (numObj == 2 ){
+      if(is.null(color.line)){
+        color.line = c("#003C7D","#F47F24")
+      }
+      if(is.null(color.CI)){
+        color.CI = c("#003C7D","#F47F24")
+      }
+      if(is.null(line.type)){
+        line.type = c('solid','dotted')
+      }
+      
+      autoplot.wvarComp(obj, split = split, CI = CI, transparence = transparence, color.line =color.line, 
+                        color.CI = color.CI, line.type = line.type, 
+                        graph.title = graph.title, graph.title.size= graph.title.size, 
+                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                        title.x.axis = title.x.axis,
+                        title.y.axis = title.y.axis ,
+                        facet.title.size = facet.title.size,
+                        legend.label = legend.label,
+                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                        legend.text.size = legend.text.size,
+                        nrow = nrow)
+    }
+    else{
+      if(is.null(line.type)){
+        line.type = c('solid','dotted')
+      }
+      autoplot.wvarComp(obj, split = split, CI = CI, transparence = transparence, color.line =color.line, 
+                    color.CI = color.CI, line.type = line.type, 
+                    graph.title = graph.title, graph.title.size= graph.title.size, 
+                    axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                    title.x.axis = title.x.axis,
+                    title.y.axis = title.y.axis ,
+                    facet.title.size = facet.title.size,
+                    legend.label = legend.label,
+                    legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                    legend.text.size = legend.text.size,
+                    nrow = nrow)
+    }
+
+  }
+  
 }
+
+
+# @title Compare Wavelet Variances Together
+# @description Creates the wavelet variance graphs with classic and robust together
+# @method autoplot wvarcomp
+# @param object A \code{data.frame} containing both sets of variances.
+# @param ... other arguments passed to specific methods
+# @return A ggplot2 graph containing both the wavelet variances.
+# @author JJB
+# @examples
+# set.seed(999)
+# x=rnorm(100)
+# Classic = wvar(modwt(x))
+# Robust = wvar(modwt(x), robust=TRUE)
+# compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
+# autoplot.wvarcomp = function(object, ...){
+#   
+#   scales=low1=high1=WV1=low2=high2=WV2=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
+#   
+#   WV = data.frame(WV1 = object$WV1, low1 = object$low1, high1 = object$high1, 
+#                   WV2 = object$WV2, low2 = object$low2, high2 = object$high2, scales = object$scales)
+#   
+#   cols = c("LINE1"="#003C7D","LINE2"="#F47F24")
+#   cols2 = c("LINE2"="#003C7D","LINE1"="#F47F24")
+#   
+#   CI = ggplot(WV, aes( x = scales, y = low1)) + 
+#     geom_line(aes(colour = "LINE1"), linetype = "dotted") +
+#     geom_line(aes(y = high1, colour = "LINE1"),linetype = "dotted") +
+#     geom_line(aes(y = WV1, colour = "LINE1")) + geom_point(aes(y = WV1, colour = "LINE1"), size = 3) +
+#     geom_line(aes(y = low2, colour = "LINE2"),linetype = "dotted") +
+#     geom_line(aes(y = high2, colour = "LINE2"),linetype = "dotted") +
+#     geom_line(aes(y = WV2, colour = "LINE2")) + geom_point(aes(y = WV2, colour = "LINE2"), size = 4, shape = 1) +
+#     xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) + 
+#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) +
+#     geom_polygon(aes(y = c(low1,rev(high1)), x = c(scales,rev(scales))), fill = "#F47F24", alpha = 0.1) +
+#     geom_polygon(aes(y = c(low2,rev(high2)), x = c(scales,rev(scales))), fill = "#003C7D", alpha = 0.1) +
+#     ggtitle("Haar Wavelet Variance Representation") +
+#     theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
+#           legend.justification=c(0,0), legend.position=c(0,0.72)) + scale_fill_discrete(name=" ",labels=c(" 95% CI Classical WV  ", " 95% CI Robust WV  ")) +
+#     scale_colour_manual(name=" ", labels=c("Classical WV Estimator","Robust WV Estimator"), 
+#                         values = cols2, guide = guide_legend( fill = c("#F47F24","#003C7D") , colour = c("#F47F24","#003C7D"), override.aes = list(shape = c(16,1))))
+#   
+#   
+#   CI
+# }
+
+# @title Compare Wavelet Variances on Split
+# @description Creates the wavelet variance graphs with classic and robust 
+# on separate graphs with the same panel
+# @method autoplot wvarcompSplit
+# @param object A \code{data.frame} containing both sets of variances.
+# @param ... other arguments passed to specific methods
+# @return A ggplot2 panel containing two graphs of the wavelet variance.
+# @author JJB
+# @examples
+# set.seed(999)
+# x=rnorm(100)
+# Classic = wvar(modwt(x))
+# Robust = wvar(modwt(x), robust=TRUE)
+# compare.wvar(Classic = Classic, Robust = Robust, split = TRUE)
+# autoplot.wvarcompSplit = function(object, ...){
+#   low=high=trans_breaks=trans_format=math_format=.x=NULL
+#   
+#   minval = min(c(object$low1,object$low2))
+#   maxval = max(c(object$high1,object$high2))
+#   
+#   WV = data.frame(var = object$WV1, low = object$low1, high = object$high1, scale = object$scales)
+#   CI1 = ggplot(WV, aes( x = scale, y = low)) + geom_line(linetype = "dotted", colour = "#F47F24") + 
+#     geom_line(aes(y = high),linetype = "dotted", colour = "#F47F24") +
+#     geom_line(aes(y = var), colour = "#F47F24") + geom_point(aes(y = var), size = 3, colour = "#F47F24") +
+#     xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x)), limits = c(minval,maxval)) + 
+#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) +
+#     geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), fill = "#F47F24", alpha = 0.1) +
+#     ggtitle("Classical WV") 
+#   
+#   WV = data.frame(var = object$WV2, low = object$low2, high = object$high2, scale = object$scales)
+#   CI2 = ggplot(WV, aes( x = scale, y = low), colour = "#003C7D") + geom_line(linetype = "dotted", colour = "#003C7D") + 
+#     geom_line(aes(y = high),linetype = "dotted", colour = "#003C7D") +
+#     geom_line(aes(y = var)) + geom_point(aes(y = var), size = 3, colour = "#003C7D") +
+#     xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x)), limits = c(minval,maxval)) + 
+#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) +
+#     geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), fill = "#003C7D", alpha = 0.1) +
+#     ggtitle("Robust WV")
+#   
+#   multiplot(CI1, CI2, cols=2)
+# }
