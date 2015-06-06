@@ -4,10 +4,44 @@
 \alias{plot.gmwm}
 \title{Wrapper to Graph Solution of the Generalized Method of Wavelet Moments}
 \usage{
-\method{plot}{gmwm}(x, individual = FALSE, ...)
+\method{plot}{gmwm}(x, individual = FALSE, CI = T, transparence = 0.1,
+  color.CI = "#003C7D", graph.title = NA, graph.title.size = 15,
+  axis.label.size = 13, axis.tick.size = 11,
+  title.x.axis = expression(paste("Scale ", tau)),
+  title.y.axis = expression(paste("Wavelet Variance ", nu)),
+  legend.title = "", legend.key.size = 1, legend.title.size = 13,
+  legend.text.size = 13, ...)
 }
 \arguments{
 \item{x}{A \code{GMWM} object}
+
+\item{individual}{A \code{boolean} that indicates whether the graph should be plotted individually or not}
+
+\item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted}
+
+\item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
+
+\item{color.CI}{A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)}
+
+\item{graph.title}{A \code{string} that indicates the title of the graph}
+
+\item{graph.title.size}{An \code{integer} that indicates the size of title.}
+
+\item{axis.label.size}{An \code{integer} that indicates the size of label}
+
+\item{axis.tick.size}{An \code{integer} that indicates the size of tick mark}
+
+\item{title.x.axis}{A \code{string} that indicates the label on x axis}
+
+\item{title.y.axis}{A \code{string} that indicates the label on y axis}
+
+\item{legend.title}{A \code{string} that indicates the title of legend}
+
+\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend}
+
+\item{legend.title.size}{An \code{integer} that indicates the size of title on legend}
+
+\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend}
 
 \item{...}{other arguments passed to specific methods}
 }
@@ -16,6 +50,9 @@ A ggplot2 panel containing the graph of the empirical and theoretical wavelet va
 }
 \description{
 Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
+}
+\note{
+Use \code{?autoplot.gmwm} and \code{?autoplot.gmwm2} to view specific explanation for parameters \code{color.line}, \code{line.type}. They are different when plotting individually or not
 }
 \examples{
 # AR

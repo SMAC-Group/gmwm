@@ -4,31 +4,105 @@
 \alias{compare.wvar}
 \title{Compare Wavelet Variances}
 \usage{
-compare.wvar(Classic, Robust, split = TRUE)
+\method{compare}{wvar}(..., split = TRUE, CI = TRUE, transparence = 0.1,
+  color.line = NULL, color.CI = NULL, line.type = NULL,
+  graph.title = "Haar Wavelet Variance Representation",
+  graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
+  title.x.axis = expression(paste("Scale ", tau)),
+  title.y.axis = expression(paste("Wavelet Variance ", nu)),
+  facet.title.size = 13, legend.label = NULL, legend.title = "",
+  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
+  nrow = 1)
 }
 \arguments{
-\item{Classic}{A \code{wvar} object that has \code{robust=false}.}
+\item{...}{Any number of \code{wvar} objects can be passed in}
 
-\item{Robust}{A \code{wvar} object that has \code{robust=true}.}
+\item{split}{A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)}
 
-\item{split}{A \code{boolean} that indicates whether the graphs should be separate (TRUE)
-or graphed ontop of each other (FALSE)}
+\item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
+
+\item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
+
+\item{color.line}{A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+
+\item{color.CI}{A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+
+\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2.}
+
+\item{graph.title}{A \code{string} that indicates the title of the graph}
+
+\item{graph.title.size}{An \code{integer} that indicates the size of title.}
+
+\item{axis.label.size}{An \code{integer} that indicates the size of label}
+
+\item{axis.tick.size}{An \code{integer} that indicates the size of tick mark}
+
+\item{title.x.axis}{A \code{string} that indicates the label on x axis}
+
+\item{title.y.axis}{A \code{string} that indicates the label on y axis}
+
+\item{facet.title.size}{An \code{integer} that indicates the size of facet label}
+
+\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+
+\item{legend.title}{A \code{string} that indicates the title of legend}
+
+\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend}
+
+\item{legend.title.size}{An \code{integer} that indicates the size of title on legend}
+
+\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend}
+
+\item{nrow}{An \code{integer} that indicates number of rows}
 }
 \description{
-Compare the estimates given by the classical and robust methods
- of calculating the wavelet variance.
+Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+}
+\note{
+Common error "Error in grid.Call(L_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  : polygon edge not found"
+Just run your codes again. Or try \code{dev.off()}, and run codes again
 }
 \examples{
-set.seed(999)
-x=rnorm(100)
-Classic = wvar(modwt(x))
-Robust = wvar(modwt(x), robust=TRUE)
-# Graph both the classic and the robust estimator on the same graph
-compare.wvar(Classic = Classic, Robust = Robust, split = FALSE)
-# Graph both the classic and the robust estimator on split graphs next to each other
-compare.wvar(Classic = Classic, Robust = Robust, split = TRUE)
+\dontrun{
+#1. Compare two objects
+N1 = 1000
+N2 = 2000
+data.ar = gen.ts(AR1(phi = .32, sigma2=.01), N1)
+data.arma = gen.ts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
+wvar1 = wvar(data.ar)
+wvar2 = wvar(data.arma, robust = T)
+compare.wvar(wvar1, wvar2)
+compare.wvar(wvar1, wvar2, split=F)
+compare.wvar(wvar1, wvar2, CI = F)
+compare.wvar(wvar1, wvar2, split=F, CI = F)
+#2. Compare multiple objects
+N1 = 1000
+N2 = 2000
+N3 = 4000
+N4 = 3500
+data1 = gen.ts(AR1(phi = .32, sigma2=.01), N1)
+data2 = gen.ts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
+data3 = gen.ts(AR1(phi = .32, sigma2=1), N3)
+data4 = gen.ts(ARMA(ar=c(.8,.1), ma=c(.5), sigma2=1), N4)
+wvar1 = wvar(data1)
+#wvar1 = wvar(data1, robust = T)
+wvar2 = wvar(data2)
+wvar3 = wvar(data3)
+wvar4 = wvar(data4)
+compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
+compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
+#3.Obvious errors will be found
+compare.wvar()
+compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('red','green'))
+#4. Change default setting
+compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'))
+compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), facet.title.size = 9)
+compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'))
+compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F)
+compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
+}
 }
 \author{
-JJB
+JJB, Wenchao
 }
 
