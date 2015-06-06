@@ -15,7 +15,7 @@ AR1(phi = NULL, sigma2 = NULL)
 An S3 object with called ts.model with the following structure:
 \itemize{
  \item{process.desc}{Used in summary: "AR1","SIGMA2"}
- \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma}{sigma}}
+ \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma^2}{sigma^2}}
  \item{plength}{Number of Parameters}
  \item{desc}{"AR1"}
  \item{obj.desc}{Depth of Parameters e.g. list(1,1)}
