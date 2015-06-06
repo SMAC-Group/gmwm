@@ -87,8 +87,8 @@ AR = function(phi = NULL, sigma2 = NULL) {
 #'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
 #'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
 #'  \item{plength}{Number of Parameters}
-#'  \item{desc}{"AR"}
-#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
+#'  \item{desc}{"MA"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(q,1)}
 #'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
