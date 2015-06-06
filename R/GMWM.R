@@ -204,7 +204,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
                        gof.test = out[[12]],
                        obj.fun = out[[13]],
                        model.score = out[[14]],
-                       omega = out[[15]]), class = "gmwm")
+                       omega = out[[15]],
+                       data = data), class = "gmwm")
   invisible(out)
 }
 
@@ -358,6 +359,42 @@ print.summary.gmwm = function(x, ...){
   }else{
     cat("\nInference was not run. \nTo obtain theta confidence intervals and Goodness of Fit information, please use gmwm() with inference = TRUE.")
   }
+}
+
+
+#' @title Predict future points in the time series using the solution of the Generalized Method of Wavelet Moments
+#' @description Creates a prediction using the estimated values of GMWM through the ARIMA function within R.
+#' @method predict gmwm
+#' @param object GMWM 
+#' @param n.ahead Number of observations to guess.
+#' @param data Set used to create the GMWM.
+predict.gmwm = function(object, n.ahead, ...){
+  
+  ts.mod = object$model
+  
+  if(length(ts.mod$desc) > 1 || ts.mod$desc != "ARMA")
+    stop("The predict function only works with stand-alone ARMA models.")
+  
+  objdesc = ts.mod$obj.desc[[1]]
+  
+  p = objdesc[1]
+  q = objdesc[2]
+  
+  mod = arima(object$data, order = c(p, 0, q),
+              method="ML",
+              fixed = object$estimate[1:(p+q)],
+              transform.pars = F,
+              include.mean = F)
+  
+  pred = predict(mod, n.ahead = n.ahead, newxreg = NULL,
+                 se.fit = TRUE, ...)
+  
+  
+  out = structure(list(pred = pred$pred,
+                       se = pred$se,
+                       resid = mod$residuals)
+                  , class = "predict.gmwm")
+                          
 }
 
 #' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
