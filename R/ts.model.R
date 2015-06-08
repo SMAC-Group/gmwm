@@ -53,28 +53,22 @@ AR1 = function(phi = NULL, sigma2 = NULL) {
 #' AR()
 #' AR(phi=.32, sigma=1.3)
 AR = function(phi = NULL, sigma2 = NULL) {
-  #starting = FALSE;
-  #if(is.null(phi) || is.null(sigma2)){
-  #  phi = 0;
-  #  sigma2 = 1;
-  #  starting = TRUE;
-  #}
-
-  #p = length(phi)
-  
-  #out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
-  #                     theta = c(phi,sigma2),
-  #                     plength = 2,
-  #                     desc = "AR",
-  #                     obj.desc = list(c(p,1)),
-  #                     starting = starting), class = "ts.model")
-  #invisible(out)
-  
-  if(is.null(sigma2)){
-    sigma2 = 1.0
+  starting = FALSE;
+  if(is.null(phi) || is.null(sigma2)){
+   phi = 0;
+   sigma2 = 1;
+   starting = TRUE;
   }
+
+  p = length(phi)
   
-  ARMA(ar=phi, ma = c(0), sigma2 = sigma2)
+  out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
+                      theta = c(phi,sigma2),
+                      plength = 2,
+                      desc = "ARMA", #update to AR when backend supports it!
+                      obj.desc = list(c(p,0,1)), # Remove the 0, when the backend supports it!
+                      starting = starting), class = "ts.model")
+  invisible(out)
 }
 
 
@@ -96,31 +90,22 @@ AR = function(phi = NULL, sigma2 = NULL) {
 #' MA()
 #' MA(phi=.32, sigma=1.3)
 MA = function(theta = NULL, sigma2 = NULL) {
-  
-  # Implement?
-  
-  #starting = FALSE;
-  #if(is.null(theta) || is.null(sigma2)){
-  #  theta = 0;
-  #  sigma2 = 1;
-  #  starting = TRUE;
-  #}
-  
-  #q = length(phi)
-  
-  #out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
-  #                     theta = c(theta,sigma2),
-  #                     plength = 2,
-  #                     desc = "MA",
-  #                     obj.desc = list(c(q,1)),
-  #                     starting = starting), class = "ts.model")
-  #invisible(out)
-  
-  if(is.null(sigma2)){
-    sigma2 = 1.0
+  starting = FALSE;
+  if(is.null(theta) || is.null(sigma2)){
+   theta = 0;
+   sigma2 = 1;
+   starting = TRUE;
   }
   
-  ARMA(ar = c(0), ma = theta, sigma2 = sigma2)
+  q = length(theta)
+  
+  out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
+                      theta = c(theta,sigma2),
+                      plength = 2,
+                      desc = "ARMA", # Move to MA when backend supports it!
+                      obj.desc = list(c(0,q,1)), # Remove the 0 when backend supports it!
+                      starting = starting), class = "ts.model")
+  invisible(out)
 }
 
 
@@ -295,23 +280,11 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   q = length(ma)
   
   # If P or Q == 1, this implies we might have a starting guess. 
-  if( p == 1 || q == 1 ){
-    if(p == 1){
-      if(is.whole(ar) & ar != 0){
-        ar = rep(-1, ar)
-        starting = TRUE
-      }else if(ar == 0){
-        ar = numeric(0) # creates a size 0 vector
-      }
-    }
-    
-    if(q == 1){
-      if(is.whole(ma) & ma != 0){
-        ma = rep(-2, ma)
-        starting = TRUE
-      }else if(ma == 0){
-        ma = numeric(0) 
-      }
+  if( p == 1 & q == 1 ){
+    if(is.whole(ar) & is.whole(ma)){
+      ar = rep(-1, ar)
+      ma = rep(-2, ma)
+      starting = TRUE
     }
   }
   

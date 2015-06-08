@@ -77,7 +77,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "auto", augmented=FALSE, p = 0.05, robust=FALSE, eff=0.6, G=NULL, K = 1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "auto", augmented=FALSE, model.select = model.select, p = 0.05, robust=FALSE, eff=0.6, G=NULL, K = 1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -161,15 +161,15 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
   }
   
   if("ARMA" %in% desc){
-    warning("ARMA is not currently supported for inference. No inference results will be displayed.")
-    inference = FALSE
+    warning("ARMA is not currently supported for model selection. The model selection results will not be displayed.")
+    model.select = FALSE
   }
 
   theta = model$theta
 
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = p, compute_v = compute.v, K = K, H = H, G = G,
-                                                         robust=robust, eff = eff, inference = inference)
+                                                         robust=robust, eff = eff, inference = inference, model.select)
   #colnames(out) = model$desc
   
   estimate = out[[1]]
