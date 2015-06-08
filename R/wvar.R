@@ -226,6 +226,7 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
 #' @param ... Any number of \code{wvar} objects can be passed in
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param auto.robustness.label A \code{boolean} that indicates whether the robustness of \code{wvar} objects should be indicated in the legend label
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
 #' @param color.line A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param color.CI A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
@@ -286,7 +287,7 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F)
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
 #' }
-compare.wvar = function(..., split = TRUE, CI = TRUE, transparence = 0.1, color.line = NULL, 
+compare.wvar = function(..., split = TRUE, CI = TRUE, auto.robustness.label = T, transparence = 0.1, color.line = NULL, 
                         color.CI = NULL, line.type = NULL, 
                         graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
@@ -305,24 +306,27 @@ compare.wvar = function(..., split = TRUE, CI = TRUE, transparence = 0.1, color.
   isNull = is.null(color.line)
   fullLength = length(color.line)==numObj   
   if(isNull==F&&fullLength==F){
-    stop('Parameter color.line does not have the same length as the number of objects')
+    warning('Parameter color.line does not have the same length as the number of objects. Default setting is used.')
+    color.line = NULL
   }
   
   isNull = is.null(color.CI)
   fullLength = length(color.CI)==numObj
   if(isNull==F&&fullLength==F){
-    stop('Parameter color.CI does not have the same length as the number of objects')
+    warning('Parameter color.CI does not have the same length as the number of objects. Default setting is used.')
+    color.CI = NULL
   }
   
   isNull = is.null(legend.label)
   fullLength =length(legend.label) ==numObj
   if(isNull==F&&fullLength==F){
-    stop('Parameter legend.label does not have the same length as the number of objects')
+    warning('Parameter legend.label does not have the same length as the number of objects. Default setting is used.')
+    legend.label = NULL
   }
   
   
   if (numObj == 0){
-    stop('At least one object should be given')
+    stop('At least one wvar object should be given')
   }
   else if (numObj == 1){
     ## just plot
@@ -353,20 +357,53 @@ compare.wvar = function(..., split = TRUE, CI = TRUE, transparence = 0.1, color.
         }
       }
     }
-   
-    obj  = data.frame(WV = NULL,
-                      scales = NULL,
-                      low = NULL,
-                      high = NULL,
-                      dataset = NULL)
-    for (i in 1:numObj){
-      temp = data.frame(WV = obj_list[[i]]$variance,
-                         scales = obj_list[[i]]$scales,
-                         low = obj_list[[i]]$ci_low,
-                         high = obj_list[[i]]$ci_high,
-                         dataset = legend.label[i])
-      obj = rbind(obj, temp)
+    
+    if(auto.robustness.label && (allClassical || allRobust)){
+      for (i in 1:numObj){
+        legend.label[i] = paste(legend.label[i], if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
+      }
     }
+   
+#     obj  = data.frame(WV = NULL,
+#                       scales = NULL,
+#                       low = NULL,
+#                       high = NULL,
+#                       dataset = NULL)
+#     #Growing objects should be avoided    
+#     for (i in 1:numObj){
+#       temp = data.frame(WV = obj_list[[i]]$variance,
+#                          scales = obj_list[[i]]$scales,
+#                          low = obj_list[[i]]$ci_low,
+#                          high = obj_list[[i]]$ci_high,
+#                          dataset = legend.label[i])
+#       obj = rbind(obj, temp)
+#     }
+    total.len = 0
+    each.len = numeric(numObj)
+    for (i in 1:numObj){
+      each.len[i] = length(obj_list[[i]]$variance)
+      total.len = total.len + each.len[i]
+    }
+    #Initialize empty data frame with right number of rows
+    obj = data.frame(WV = numeric(total.len),
+                       scales = numeric(total.len),
+                       low = numeric(total.len),
+                       high = numeric(total.len),
+                       dataset = 'XYZ', stringsAsFactors=FALSE)
+    
+    #put data into data frame
+    t = 1
+    for (i in 1:numObj){
+      d = each.len[i]
+      obj[t:(t+d-1),] = data.frame(WV = obj_list[[i]]$variance,
+                               scales = obj_list[[i]]$scales,
+                               low = obj_list[[i]]$ci_low,
+                               high = obj_list[[i]]$ci_high,
+                               dataset = legend.label[i], stringsAsFactors=FALSE)
+      t = t +d
+      
+    }
+    
     
     if (numObj == 2 ){
       if(is.null(color.line)){
