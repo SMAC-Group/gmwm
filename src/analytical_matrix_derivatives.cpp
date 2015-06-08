@@ -1,7 +1,97 @@
 #include <RcppArmadillo.h>
 #include "analytical_matrix_derivatives.h"
 #include "inline_functions.h"
+#include "process_to_wv.h"
+
 using namespace Rcpp;
+
+
+// [[Rcpp::export]]
+arma::vec seq_cpp(unsigned int n){
+  arma::vec seq = arma::ones<arma::vec>(n);
+  return cumsum(seq) - 1;
+}
+
+// [[Rcpp::export]]
+arma::vec arma_adapter(const arma::vec& theta,
+                       unsigned int p,
+                       unsigned int q,
+                       const arma::vec& tau){
+  
+  arma::vec ar(p), ma(q);
+  
+  double sigma2;
+  
+  if(p != 0){
+    ar = theta.rows(0, p - 1);
+  }else{
+    ar = arma::zeros<arma::vec>(p);
+  }
+  
+  if(q != 0 ){
+    ma = theta.rows(p, p+q-1);
+  }else{
+    ma = arma::zeros<arma::vec>(q);
+  }
+  
+  sigma2 = theta(p+q);
+  
+  return arma_to_wv(ar, ma, tau, sigma2);
+}
+
+
+// Make life better (TM)
+// [[Rcpp::export]]
+arma::mat jacobian_arma(const arma::vec& theta,
+                        unsigned int p,
+                        unsigned int q,
+                        const arma::vec& tau){
+  
+  
+  unsigned int n = theta.n_elem;
+  
+  unsigned int out_length = tau.n_elem;
+  
+  // Args
+  double eps = .0001, d = .0001, zero_tol = sqrt(DBL_EPSILON/.0000007), // 7e-7
+    r = 4, v = 2;
+  
+  
+  arma::vec h = abs(d * theta) + eps * (abs(theta) < zero_tol);
+
+  arma::mat out(out_length, n);
+  
+  // There has to be a better way to initialize a field of matrices...
+  arma::field<arma::mat> st(n);
+  arma::mat submat(out_length, r);
+
+  for(unsigned int i = 0; i < n; i++){
+    st(i) = submat;
+  }
+  
+  for (unsigned int k = 0; k < r; k++) {
+    for (unsigned int i = 0; i < n; i++) {
+      
+      // We need to replace this badly with something more generic.
+      st(i).col(k) = (arma_adapter(theta + h % (i == seq_cpp(n)), p,q, tau) 
+                        - arma_adapter(theta - h % (i == seq_cpp(n)), p,q, tau)) / (2 * h(i));
+      
+    }
+    h = h/v;
+  }
+  
+  for (unsigned int i = 0; i < n; i++){
+    for (unsigned int m = 1; m <= r - 1; m++){
+      arma::mat act = st(i);
+
+      st(i) = ( act.cols(1, r - m) * pow(4,m) - act.cols(0,(r - m - 1)) )/(pow(4,m) - 1);
+    }
+    
+    out.col(i) = st(i);
+  }
+  
+  return out;
+}
 
 
 //' Analytic D matrix for AR(1) process
@@ -216,8 +306,16 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
       D.cols(i_theta-1,i_theta) = deriv_ar1(theta_value, sig2, tau);
     }
     else if(element_type == "ARMA"){
-      // implement later      
-
+      arma::vec o = objdesc(i);
+      
+      unsigned int p = o(0);
+      unsigned int q = o(1);
+      
+      D.cols(i_theta, i_theta + p + q) = jacobian_arma(
+          theta.rows(i_theta, i_theta + p + q),
+          p, q, tau);
+      
+      i_theta += p + q;
     }
     // DR
     else if(element_type == "DR"){

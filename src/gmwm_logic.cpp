@@ -302,7 +302,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       double alpha, 
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
-                                      bool robust, double eff, bool inference){
+                                      bool robust, double eff, bool inference, bool modelselect){
   // Variable Declarations
   
   // Length of the Time Series
@@ -367,6 +367,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
       
       theta = Rcpp_ARIMA(data, objdesc(0)); 
       starting = false;
+      
+      Rcpp::Rcout << "Guessed Theta:" << theta << std::endl;
     }else{     
       theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
     }
@@ -378,6 +380,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                       wv_empir, omega, scales, starting);
 
   
+  Rcout << "inference is?" << inference << std::endl;
   // Set values to compute inference
   if(inference){
     diagonal_matrix = false;
@@ -387,6 +390,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
 
     // Enable bootstrapping
   if(compute_v == "bootstrap"){
+    Rcout << "Active?" << inference << std::endl;
     
     for(unsigned int k = 0; k < K; k++){
         V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
@@ -422,26 +426,29 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   arma::vec score;
 
   // Generate inference information
-  if(inference){
+  if(inference & !modelselect){
     
     // Take derivatives
     arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
-    arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
     
     // Obtain a confidence interval for the parameter estimates AND calculate chisq goodness of fit
     arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
                                                    D, V, omega, wv_empir, alpha);
 
+    ci_inf = cat(0);
+    gof_test = cat(1);
+    
+  }else if(inference & modelselect){
+    
+    // Take derivatives
+    arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
+    arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
+    
     // Obtain the difference
     arma::vec diff = theo - wv_empir;
     
     // Calculate the model score according to model selection criteria paper
     score = model_score(D, At_j, omega, V,  diff, N);
-    
-    
-    ci_inf = cat(0);
-    gof_test = cat(1);
-    
   }
   
   // Export information back

@@ -41,6 +41,6 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       double alpha = 0.05, 
                                       std::string compute_v = "fast", unsigned int K = 1, unsigned int H = 100,
                                       unsigned int G = 1000, 
-                                      bool robust=false, double eff = 0.6, bool inference = false);
+                                      bool robust=false, double eff = 0.6, bool inference = false, bool modelselect = false);
                                       
 #endif
