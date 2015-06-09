@@ -226,7 +226,7 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
 #' @param ... Any number of \code{wvar} objects can be passed in
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
-#' @param auto.robustness.label A \code{boolean} that indicates whether the robustness of \code{wvar} objects should be indicated in the legend label
+#' @param auto.label.wvar A \code{boolean} that indicates whether legend label should indicate the \code{wvar} objects are robust or classical
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
 #' @param color.line A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param color.CI A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
@@ -287,7 +287,7 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F)
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
 #' }
-compare.wvar = function(..., split = TRUE, CI = TRUE, auto.robustness.label = T, transparence = 0.1, color.line = NULL, 
+compare.wvar = function(..., split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, color.line = NULL, 
                         color.CI = NULL, line.type = NULL, 
                         graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
@@ -334,31 +334,44 @@ compare.wvar = function(..., split = TRUE, CI = TRUE, auto.robustness.label = T,
   }
   else  {
     
-    #check whether all robust or all classical
-    allRobust = T
-    allClassical = T
-    for(i in 1:numObj){
-      allRobust = allRobust&&obj_list[[i]]$robust
-      allClassical = allClassical&&(!obj_list[[i]]$robust)
-    }
+#     #check whether all robust or all classical
+#     allRobust = T
+#     allClassical = T
+#     for(i in 1:numObj){
+#       allRobust = allRobust&&obj_list[[i]]$robust
+#       allClassical = allClassical&&(!obj_list[[i]]$robust)
+#     }
+#     
+#     #if legend.label is not specified: do something
+#     #else: do nothing, just use what user specifies
+#     if(is.null(legend.label)){
+#       legend.label = c()
+#       if(allRobust||allClassical){
+#         for (i in 1:numObj){
+#           legend.label[i] = paste('Dataset',i)
+#         }
+#       }
+#       else{
+#         for (i in 1:numObj){
+#           legend.label[i] = paste('Dataset',i, if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
+#         }
+#       }
+#     }
+#     
+#     if(auto.label.wvar && (allClassical || allRobust)){
+#       for (i in 1:numObj){
+#         legend.label[i] = paste(legend.label[i], if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
+#       }
+#     }
     
-    #if legend.label is not specified: do something
-    #else: do nothing, just use what user specifies
     if(is.null(legend.label)){
       legend.label = c()
-      if(allRobust||allClassical){
-        for (i in 1:numObj){
-          legend.label[i] = paste('Dataset',i)
-        }
-      }
-      else{
-        for (i in 1:numObj){
-          legend.label[i] = paste('Dataset',i, if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
-        }
+      for (i in 1:numObj){
+        legend.label[i] = paste('Dataset',i)
       }
     }
     
-    if(auto.robustness.label && (allClassical || allRobust)){
+    if(auto.label.wvar){
       for (i in 1:numObj){
         legend.label[i] = paste(legend.label[i], if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
       }
