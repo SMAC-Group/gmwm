@@ -22,7 +22,7 @@ using namespace Rcpp;
 //' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
+arma::vec arma_to_wv_old(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   
   arma::vec n = arma::sort(tau/2);
   unsigned int ntau = tau.n_elem;
@@ -49,6 +49,136 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   
   return wvar;
 }
+
+
+
+//' @title ARMA process to WV
+//' @description This function computes the (haar) WV of an ARMA process
+//' @param ar A \code{vec} containing the coefficients of the AR process
+//' @param ma A \code{vec} containing the coefficients of the MA process
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
+//' @param sigma A \code{double} containing the residual variance
+//' @return A \code{vec} containing the wavelet variance of the ARMA process.
+//' @examples
+//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+//' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
+// [[Rcpp::export]]
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
+  
+  arma::vec n = arma::sort(tau/2);
+  unsigned int ntau = tau.n_elem;
+  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma;
+  
+  arma::vec acfvec = ARMAacf_cpp(ar, ma, as_scalar(tau.tail(1)) - 1);
+  
+  arma::vec wvar(ntau);
+  
+  unsigned int scale = n(0);
+  
+  // initial starting term
+  double term4 = acfvec(scale);
+  wvar(0)=( ( ( scale*(1.0-term4)) / square(scale))*sig2)/2.0;
+  
+  for(unsigned int j = 1; j < ntau; j++){
+    scale = n(j);
+    arma::vec boh(scale - 1);
+    for (unsigned int i=1; i<= scale - 1; i++){
+      double term1 = acfvec(scale-i);
+      double term2 = acfvec(i);
+      double term3 = acfvec(2*scale-i);
+      // Account for starting loop at 1 instead of 0.
+      boh(i-1)=i*((2.0*term1)-term2-term3);
+    }
+    double term4 = acfvec(scale);
+    wvar(j)=((( (scale*(1.0-term4) ) + arma::sum(boh) ) /square(scale))*sig2)/2.0;
+  }
+  
+  return wvar;
+}
+
+
+// [[Rcpp::export]]
+double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha = 0.99){
+  arma::vec obj = abs(ARMAacf_cpp(ar,ma,last_tau -1));
+  
+  obj = abs(cumsum(obj)/sum(obj) - alpha);
+  return as_scalar(find(obj == min(obj))) + 1;
+}
+
+//' @title ARMA process to WV approximation
+//' @description This function computes the (haar) WV of an ARMA process
+//' @param ar A \code{vec} containing the coefficients of the AR process
+//' @param ma A \code{vec} containing the coefficients of the MA process
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
+//' @param sigma A \code{double} containing the residual variance
+//' @return A \code{vec} containing the wavelet variance of the ARMA process.
+//' @examples
+//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+//' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
+// [[Rcpp::export]]
+arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma, double alpha = 0.9999) {
+  
+  arma::vec n = arma::sort(tau/2);
+  unsigned int ntau = tau.n_elem;
+  
+  unsigned int lag = acf_sum(ar, ma, as_scalar(tau.tail(1)), alpha);
+    
+  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma;
+  
+  arma::vec acfvec = ARMAacf_cpp(ar, ma, lag);
+  
+  arma::vec wvar(ntau);
+  
+  
+  
+  double term1;
+  double term2;
+  double term3;
+  
+  unsigned int scale = n(0);
+  
+  // initial starting term
+  double term4 = acfvec(scale);
+  wvar(0)=( ( ( scale*(1.0-term4)) / square(scale))*sig2)/2.0;
+
+  
+  for(unsigned int j = 1; j < ntau; j++){
+    scale = n(j);
+    arma::vec boh(scale - 1);
+    for (unsigned int i=1; i<= scale - 1; i++){
+      if(scale-i > lag){
+        term1 = 0;
+      }else{
+        term1 = acfvec(scale-i);
+      }
+      
+      if(i > lag){
+        term2 = 0;
+      } else{
+        term2 = acfvec(i);
+      }
+      
+      if(2*scale - i > lag){
+        term3 = 0;
+      } else{
+        term3 = acfvec(2*scale-i);
+      }
+
+      // Account for starting loop at 1 instead of 0.
+      boh(i-1)=i*((2.0*term1)-term2-term3);
+    }
+    if(scale > lag){
+      term4 = 0;
+    }else{
+      term4 = acfvec(scale);
+    }
+    wvar(j)=((( (scale*(1.0-term4) ) + arma::sum(boh) ) /square(scale))*sig2)/2.0;
+  }
+  
+  return wvar;
+}
+
+
 
 
 //' @title Quantisation Noise to WV
