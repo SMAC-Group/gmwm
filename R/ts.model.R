@@ -280,11 +280,23 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   q = length(ma)
   
   # If P or Q == 1, this implies we might have a starting guess. 
-  if( p == 1 & q == 1 ){
-    if(is.whole(ar) & is.whole(ma)){
-      ar = rep(-1, ar)
-      ma = rep(-2, ma)
-      starting = TRUE
+  if( p == 1 || q == 1 ){
+    if(p == 1){
+      if(is.whole(ar) & ar != 0){
+        ar = rep(-1, ar)
+        starting = TRUE
+      }else if(ar == 0){
+        ar = numeric(0) # creates a size 0 vector
+      }
+    }
+    
+    if(q == 1){
+      if(is.whole(ma) & ma != 0){
+        ma = rep(-2, ma)
+        starting = TRUE
+      }else if(ma == 0){
+        ma = numeric(0) 
+      }
     }
   }
   
