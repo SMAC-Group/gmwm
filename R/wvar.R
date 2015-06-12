@@ -145,6 +145,8 @@ autoplot.wvar = function(object, ...){
 #' @param color.line A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param color.CI A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. Length of vector must equal to 2. 
+#' @param point.size An \code{integer} that indicates the size of point
+#' @param point.shape An \code{integer} that indicates the shape of point
 #' @param graph.title A \code{string} that indicates the title of the graph
 #' @param graph.title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
@@ -161,7 +163,7 @@ autoplot.wvar = function(object, ...){
 #' @author JJB, Wenchao
 #' @seealso \code{\link{compare.wvar}}
 autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, color.line = NULL, 
-                             color.CI = NULL, line.type = c('solid','dotted'), 
+                             color.CI = NULL, line.type = c('solid','dotted'), point.size = 5, point.shape = 20,
                              graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
                              axis.label.size = 13, axis.tick.size = 11, 
                              title.x.axis = expression(paste("Scale ", tau)),
@@ -172,7 +174,7 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
                              legend.text.size = 13, nrow = 1, ...){
   scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
   
-  p = ggplot(data = obj, mapping = aes(x = scales, y = WV)) + geom_line(mapping = aes(color = dataset), linetype = line.type[1]) + geom_point(mapping = aes(color = dataset), size = 3) +
+  p = ggplot(data = obj, mapping = aes(x = scales, y = WV)) + geom_line(mapping = aes(color = dataset), linetype = line.type[1]) + geom_point(mapping = aes(color = dataset), size = point.size, shape = point.shape) +
      
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) + 
@@ -230,7 +232,9 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
 #' @param color.line A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param color.CI A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
-#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2. 
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2.
+#' @param point.size An \code{integer} that indicates the size of point
+#' @param point.shape An \code{integer} that indicates the shape of point 
 #' @param graph.title A \code{string} that indicates the title of the graph
 #' @param graph.title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
@@ -288,7 +292,7 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, transparence = 0.1, c
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
 #' }
 compare.wvar = function(..., split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, color.line = NULL, 
-                        color.CI = NULL, line.type = NULL, 
+                        color.CI = NULL, line.type = NULL,  point.size = 5, point.shape = 20,
                         graph.title = "Haar Wavelet Variance Representation", graph.title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
                         title.x.axis = expression(paste("Scale ", tau)),
@@ -430,7 +434,7 @@ compare.wvar = function(..., split = TRUE, CI = TRUE, auto.label.wvar = T, trans
       }
       
       autoplot.wvarComp(obj, split = split, CI = CI, transparence = transparence, color.line =color.line, 
-                        color.CI = color.CI, line.type = line.type, 
+                        color.CI = color.CI, line.type = line.type,  point.size = point.size, point.shape = point.shape,
                         graph.title = graph.title, graph.title.size= graph.title.size, 
                         axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                         title.x.axis = title.x.axis,
@@ -446,7 +450,7 @@ compare.wvar = function(..., split = TRUE, CI = TRUE, auto.label.wvar = T, trans
         line.type = c('solid','dotted')
       }
       autoplot.wvarComp(obj, split = split, CI = CI, transparence = transparence, color.line =color.line, 
-                    color.CI = color.CI, line.type = line.type, 
+                    color.CI = color.CI, line.type = line.type,  point.size = point.size, point.shape = point.shape,
                     graph.title = graph.title, graph.title.size= graph.title.size, 
                     axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                     title.x.axis = title.x.axis,
