@@ -30,7 +30,7 @@ arma::field<arma::mat> get_summary(const arma::vec& theta,
   
   // Take derivatives
   arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
-  
+
   // Generate inference information
   if(inference){
     // Obtain a confidence interval for the parameter estimates AND calculate chisq goodness of fit
@@ -46,7 +46,7 @@ arma::field<arma::mat> get_summary(const arma::vec& theta,
     ci_inf = cat(0);
     gof_test = cat(1);
   }
-  
+
   if(modelselect){
     
     // Take derivatives
@@ -58,6 +58,7 @@ arma::field<arma::mat> get_summary(const arma::vec& theta,
     // Calculate the model score according to model selection criteria paper
     score = model_score(D, At_j, omega, V,  diff, N);
   }
+  
 
   // Export information back
   arma::field<arma::mat> out(3);

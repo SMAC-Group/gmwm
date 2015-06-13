@@ -47,6 +47,13 @@
 using namespace arma;
 using namespace Rcpp;
 
+// [[Rcpp::export]]
+arma::vec code_zero(arma::vec theta){
+  
+  theta.elem(find(abs(theta) <= DBL_EPSILON)).fill(DBL_EPSILON);
+  return theta;
+}
+
 //' @title Bootstrap for Matrix V
 //' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
@@ -269,6 +276,8 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
 
+  theta = code_zero(theta);
+  
   if(fullv){
     compute_v = "bootstrap";
   }
@@ -280,6 +289,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
         omega = arma::inv(diagmat(V));
         // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
         theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
+        theta = code_zero(theta);
     }
   }
 
@@ -420,6 +430,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
 
+  theta = code_zero(theta);
+  
   if(fullv){
     compute_v = "bootstrap";
   }
@@ -432,6 +444,9 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
         
         // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
         theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
+        
+        theta = code_zero(theta);
+        
     }
   }
 
