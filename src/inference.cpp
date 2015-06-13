@@ -78,7 +78,7 @@ arma::vec gof_test(const arma::vec& theta,
     
   unsigned int df = tau.n_elem - theta.n_elem;
   
-  double p_value = R::pchisq(test_stat, df, true, false);
+  double p_value = 1.0 - R::pchisq(test_stat, df, true, false);
 
   arma::vec out(3);
   out(0) = test_stat;
@@ -107,17 +107,34 @@ arma::vec gof_test(const arma::vec& theta,
 //' } 
 // [[Rcpp::export]]
 arma::field<arma::mat> inference_summary(const arma::vec& theta, 
-                                        const std::vector<std::string>& desc,
-                                        const arma::field<arma::vec>& objdesc,
-                                        std::string model_type,
-                                        const arma::vec& tau,
-                                        arma::mat D, 
-                                        arma::mat v_hat, arma::mat omega, arma::vec wv_empir, double alpha){
+                                         const std::vector<std::string>& desc,
+                                         const arma::field<arma::vec>& objdesc,
+                                         std::string model_type,
+                                         const arma::vec& tau,
+                                         const arma::mat& D, 
+                                         const arma::mat& v_hat, const arma::mat& omega,
+                                         const arma::vec& wv_empir, unsigned int N, double alpha, bool ci_bootstrap, unsigned int B, bool robust, double eff){
   
   
   
   arma::mat psi = calculate_psi_matrix(D, v_hat, omega);
-  arma::mat ci = theta_ci(theta, psi, alpha);
+  
+  arma::mat ci(theta.n_elem, 3);
+  if(ci_bootstrap){
+    arma::vec sd = gmwm_sd_bootstrapper(theta,
+                         desc, objdesc,
+                         tau, model_type,
+                         N,  robust,  eff,  alpha,
+                         B);
+    
+    ci.col(0) = theta - sd;
+    ci.col(1) = theta + sd;
+    ci.col(2) = sd;
+    
+  
+  }else{
+      ci = theta_ci(theta, psi, alpha);
+  }
   
   arma::vec gof = gof_test(theta, desc, objdesc, model_type, tau, v_hat, wv_empir);
 
