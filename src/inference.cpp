@@ -127,8 +127,8 @@ arma::field<arma::mat> inference_summary(const arma::vec& theta,
                          N,  robust,  eff,  alpha,
                          B);
     
-    ci.col(0) = theta - sd;
-    ci.col(1) = theta + sd;
+    ci.col(0) = theta - 2.0*sd;
+    ci.col(1) = theta + 2.0*sd;
     ci.col(2) = sd;
     
   

@@ -169,7 +169,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   # Auto setting
 
   # Compute fast covariance if large sample, otherwise, bootstrap.
-  if(compute.v == "auto" || compute.v != "fast" || compute.v != "bootstrap"){
+  if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "bootstrap")){
     if(N > 10000){
       compute.v = "fast"
     }else{
@@ -347,11 +347,15 @@ summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
   }
   
   if("ARMA" %in% object$model$desc){
-    warning("ARMA is not currently supported for model selection. The model selection results will not be displayed.")
-    model.select = FALSE
+    
+    if( model.select == T){
+      warning("ARMA is not currently supported for model selection. The model selection results will not be displayed.")
+      model.select = FALSE
+    }
     
     if(ci.bootstrap == FALSE){
-      warning("The numerical derivative of ARMA(p,q), where p > 1 and q > 1, may be inaccurate leading to inappropriate CIs.")
+      warning(paste0("The numerical derivative of ARMA(p,q), where p > 1 and q > 1, may be inaccurate leading to inappropriate CIs.\n",
+              "Consider using the ci.bootstrap = T option on the summary function."))
     }
   }
   
@@ -380,7 +384,6 @@ summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
                      starting = object$starting,
                      seed = object$seed,
                      N = object$N), class = "summary.gmwm")
-  print(x)
 }
 
 #' @title Print summary.gmwm object
