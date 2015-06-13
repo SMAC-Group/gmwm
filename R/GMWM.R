@@ -295,7 +295,7 @@ update.gmwm = function(object, model, ...){
                   model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 
-                  object$robust, object$eff, object$inference || object$modelselect)
+                  object$robust, object$eff, object$inference || object$model.select)
 
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
