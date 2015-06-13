@@ -5,7 +5,7 @@
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU or SSM
 #' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
 #' @param augmented A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).
-#' @param p A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
+#' @param alpha A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
 #' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
 #' @param G An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.
@@ -77,7 +77,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "auto", augmented=FALSE, model.select = model.select, p = 0.05, robust=FALSE, eff=0.6, G=NULL, K = 1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, inference = NULL, model.select = NULL, alpha = 0.05, seed = NULL, G = NULL, K = 1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -86,7 +86,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
   
   # Do we have a valid model?
   if(!is(model, "ts.model")){
-    stop("model must be created from a ts.model object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
+    stop("model must be created from a ts.model object using a supported component (e.g. AR1(), AR(p), MA(q), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
   }
   
   # Information Required by GMWM:
@@ -101,7 +101,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
   starting = model$starting
   
   # Input guessing
-  if(is.null(G) & starting){
+  if((is.null(G) & starting) || !is.whole(G)){
     if(N > 10000){
       G = 1000
     }else{
@@ -110,6 +110,13 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
   }else if(!starting){
     G = 0
   }
+  
+  # For reproducibility
+  if(is.null(seed) || !is.whole(seed)){
+    seed = floor(runif(1, 1, 10000))
+  }
+  
+  set.seed(seed)
   
   
   # Information used in summary.gmwm:
@@ -140,19 +147,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
     }
   }
   
-  # Auto setting
-
-  # Compute fast covariance if large sample, otherwise, bootstrap.
-  if(compute.v == "auto"){
-    if(N > 10000){
-      compute.v = "fast"
-    }else{
-      compute.v = "bootstrap"
-    }
-  }
-  
   # Compute inference on small time series.
-  if(inference == "auto"){
+  if(is.null(inference)){
     if(N > 10000){
       inference = FALSE
     }else{
@@ -160,16 +156,33 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
     } 
   }
   
-  if("ARMA" %in% desc){
-    warning("ARMA is not currently supported for model selection. The model selection results will not be displayed.")
-    model.select = FALSE
+  
+  # Compute model.select on small time series.
+  if(is.null(model.select)){
+    if(N > 10000){
+      model.select = FALSE
+    }else{
+      model.select = TRUE
+    } 
   }
+  
+  # Auto setting
+
+  # Compute fast covariance if large sample, otherwise, bootstrap.
+  if(compute.v == "auto" || compute.v != "fast" || compute.v != "bootstrap"){
+    if(N > 10000){
+      compute.v = "fast"
+    }else{
+      compute.v = "bootstrap"
+    }
+  }
+  
 
   theta = model$theta
 
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
-                                                         p = p, compute_v = compute.v, K = K, H = H, G = G,
-                                                         robust=robust, eff = eff, inference = inference, model.select)
+                                                         p = alpha, compute_v = compute.v, K = K, H = H, G = G,
+                                                         robust=robust, eff = eff, inference || model.select)
   #colnames(out) = model$desc
   
   estimate = out[[1]]
@@ -177,35 +190,35 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", inference = "au
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
-  out = structure(list(estimate = estimate,
+  out = structure(list(data = data,
+                       estimate = estimate,
                        init.guess = init.guess,
                        wv.empir = out[[3]], 
                        ci.low = out[[4]], 
                        ci.high = out[[5]],
-                       compute.v = compute.v,
-                       augmented = augmented,
                        V = out[[6]],
-                       orgV = out[[7]],                       
+                       omega = out[[12]],
+                       obj.fun = out[[11]],
+                       orgV = out[[7]],
+                       theo = out[[9]],
+                       decomp.theo = out[[10]],
                        scales = scales, 
                        robust = robust,
                        eff = eff,
                        model.type = model.type,
+                       compute.v = compute.v,
+                       augmented = augmented,
+                       alpha = alpha,
                        expect.diff = out[[8]],
                        N = N,
                        G = G,
                        H = H,
                        K = K,
-                       theo = out[[9]],
-                       decomp.theo = out[[10]],
                        model = model,
                        starting = model$starting,
                        inference = inference,
-                       ci.theta = out[[11]],
-                       gof.test = out[[12]],
-                       obj.fun = out[[13]],
-                       model.score = out[[14]],
-                       omega = out[[15]],
-                       data = data), class = "gmwm")
+                       model.select = model.select,
+                       seed = seed), class = "gmwm")
   invisible(out)
 }
 
@@ -260,7 +273,7 @@ update.gmwm = function(object, model, ...){
   
   # ID error:
   if( sum(models.active) == 1 & models.active["ARMA"] == 1 & model$starting){
-    warning("ARMA starting guesses using update are NOT based on CSS but an alternative algorithm.")
+    warning("ARMA starting guesses using update.gmwm are NOT based on CSS but an alternative algorithm.")
   }
   
   if(np > length(object$scales)){
@@ -282,7 +295,7 @@ update.gmwm = function(object, model, ...){
                   model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 
-                  object$robust, object$eff)
+                  object$robust, object$eff, object$inference || object$modelselect)
 
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
@@ -304,7 +317,9 @@ update.gmwm = function(object, model, ...){
 #' @title Summary of GMWM object
 #' @description Displays summary information about GMWM object
 #' @method summary gmwm
-#' @param x A \code{GMWM} object
+#' @param object A \code{GMWM} object
+#' @param ci.bootstrap A value containing either: NULL (auto), TRUE, or FALSE
+#' @param model.select A value containing either: NULL (auto), TRUE, FALSE
 #' @param ... other arguments passed to specific methods
 #' @return Text output via print
 #' @author JJB
@@ -315,17 +330,56 @@ update.gmwm = function(object, model, ...){
 #' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
-summary.gmwm = function(object, ...){
+summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
   out = cbind(object$init.guess, object$estimate)
   colnames(out) = c("Initial Guess", "Estimates") 
   
-  if(object$inference){
+  inference = object$inference
+  
+  model.select = object$model.select
+
+  if(is.null(ci.bootstrap)){
+    if(object$N > 10000){
+      ci.bootstrap = FALSE
+    }else{
+      ci.bootstrap = TRUE
+    } 
+  }
+  
+  if("ARMA" %in% object$model$desc){
+    warning("ARMA is not currently supported for model selection. The model selection results will not be displayed.")
+    model.select = FALSE
+    
+    if(ci.bootstrap == FALSE){
+      warning("The numerical derivative of ARMA(p,q), where p > 1 and q > 1, may be inaccurate leading to inappropriate CIs.")
+    }
+  }
+  
+  
+  if(inference || model.select){
+
+    mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM', object$estimate, object$model$desc, object$model$obj.desc,
+                                              object$model.type, object$wv.empir, object$theo, 
+                                              object$scales, object$V, object$omega, object$N, object$alpha, inference, model.select, ci.bootstrap, B, object$robust, object$eff)
+  }else{
+    mm = vector('list',3)
+    mm[1:3] = NA
+  }
+  
+  if(inference){
     out.coln = colnames(out)
-    out = cbind(out, object$ci.theta)
+    out = cbind(out, mm[[1]])
     colnames(out) = c(out.coln, "CI Low", "CI High", "SE")
   }
   
-  x = structure(list(estimates=out, testinfo=object$gof.test, inference=object$inference, starting = object$starting), class = "summary.gmwm")
+  x = structure(list(estimates=out, 
+                     testinfo=mm[[2]],
+                     model.score = mm[[3]],
+                     inference = inference, 
+                     model.select = model.select, 
+                     starting = object$starting,
+                     seed = object$seed,
+                     N = object$N), class = "summary.gmwm")
   print(x)
 }
 
@@ -348,6 +402,7 @@ print.summary.gmwm = function(x, ...){
   print(x$estimates)
   if(x$starting){
     cat("\nThe values supplied under initial guess were generated by the program.\n")
+    cat(paste0("To replicate the guessed parameters, use seed: ",x$seed, "\n"))
   }else{
     cat("\nThe values supplied under initial guess were given by YOU!\n")
   }
@@ -357,7 +412,11 @@ print.summary.gmwm = function(x, ...){
           " on ",x$testinfo[3]," degrees of freedom\n",
           "The resulting p-value is: ", round(x$testinfo[2],4)),"\n\n")
   }else{
-    cat("\nInference was not run. \nTo obtain theta confidence intervals and Goodness of Fit information, please use gmwm() with inference = TRUE.")
+    cat("\nInference was not run. \nTo obtain theta confidence intervals and Goodness of Fit information, please re-run summary() with inference = TRUE.")
+  }
+  
+  if(x$model.select){
+    cat(paste0("\nThe model score statistic is: ", round(x$model.score[[1]]),"\n\n"))
   }
 }
 

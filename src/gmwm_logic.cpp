@@ -38,15 +38,6 @@
 // Guess starting values
 #include "guess_values.h"
 
-// Inference goodies
-#include "inference.h"
-
-// Model Selection criterion
-#include "analytical_matrix_derivatives.h"
-
-// Model Selection criterion
-#include "model_selection.h"
-
 // Count Models
 #include "ts_checks.h"
 
@@ -69,10 +60,10 @@ using namespace Rcpp;
 //' @examples
 //' # Coming soon
 // [[Rcpp::export]]
-arma::mat gmwm_bootstrapper(const arma::vec&  theta,
-                            const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
-                            unsigned int N, bool robust, double eff,
-                            unsigned int H, bool diagonal_matrix){
+arma::mat cov_bootstrapper(const arma::vec&  theta,
+                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
+                           unsigned int N, bool robust, double eff,
+                           unsigned int H, bool diagonal_matrix){
   unsigned int nb_level = floor(log2(N));
     
   arma::mat res(H, nb_level);
@@ -100,6 +91,55 @@ arma::mat gmwm_bootstrapper(const arma::vec&  theta,
   // Return the full covariance matrix
 	return arma::cov(res);
 }
+
+
+//' @title Bootstrap for Matrix V
+//' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+//' @details
+//' Expand in detail...  
+//' @author JJB
+//' @keywords internal
+//' @examples
+//' # Coming soon
+// [[Rcpp::export]]
+arma::vec gmwm_sd_bootstrapper(const arma::vec&  theta,
+                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
+                           const arma::vec& scales, std::string model_type,
+                           unsigned int N, bool robust, double eff, double alpha,
+                           unsigned int H){
+  unsigned int nb_level = floor(log2(N));
+  
+  unsigned int p = theta.n_elem;
+  
+  arma::mat mest(H, p);
+  for(unsigned int i=0; i<H; i++){
+    
+    // Generate x_t ~ F_theta
+    arma::vec x = gen_model(N, theta, desc, objdesc);
+    
+    // MODWT transform
+    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
+
+    // Obtain WV and confidence intervals
+    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    
+    // Obtain the Omega matrix (CI HI, CI LO)
+    arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
+    
+    // Obtain the GMWM estimator's estimates. (WV_EMPIR)
+    mest.row(i) = trans(gmwm_engine(theta, desc, objdesc, model_type, 
+                        wvar.col(0), omega, scales, false));
+    
+  }
+  
+  // Return the sd of bootstrapped estimates
+  return trans(arma::stddev(mest));
+}
+
 
 //' @title Engine for obtaining the GMWM Estimator
 //' @description This function uses the Generalized Method of Wavelet Moments (GMWM) to estimate the parameters of a time series model.
@@ -203,7 +243,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                       bool starting, 
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
-                                      bool robust, double eff){
+                                      bool robust, double eff, bool fullv){
   
   // Number of parameters
   unsigned int np = theta.n_elem;
@@ -228,11 +268,15 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   // Obtain the GMWM estimator estimates.
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
-  
+
+  if(fullv){
+    compute_v = "bootstrap";
+  }
+    
   // Bootstrap the V matrix
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
-        V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H);
+        V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, !fullv);
         omega = arma::inv(diagmat(V));
         // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
         theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
@@ -302,7 +346,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       double alpha, 
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
-                                      bool robust, double eff, bool inference, bool modelselect){
+                                      bool robust, double eff, bool fullv){
   // Variable Declarations
   
   // Length of the Time Series
@@ -313,9 +357,6 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   // Number of parameters
   unsigned int np = theta.n_elem;
-  
-  // Obtain the diagonal matrix when bootstrapping
-  bool diagonal_matrix = true;
   
   // Take the mean of the first difference
   double expect_diff = mean_diff(data);
@@ -379,21 +420,14 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
 
-  
-  Rcout << "inference is?" << inference << std::endl;
-  // Set values to compute inference
-  if(inference){
-    diagonal_matrix = false;
+  if(fullv){
     compute_v = "bootstrap";
-    
   }
-
-    // Enable bootstrapping
+  
+  // Enable bootstrapping
   if(compute_v == "bootstrap"){
-    Rcout << "Active?" << inference << std::endl;
-    
     for(unsigned int k = 0; k < K; k++){
-        V = gmwm_bootstrapper(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix);
+        V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, !fullv);
         omega = arma::inv(diagmat(V));
         
         // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
@@ -419,40 +453,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
-  
-  // Inference test result storage
-  arma::vec gof_test;
-  arma::mat ci_inf; 
-  arma::vec score;
-
-  // Generate inference information
-  if(inference & !modelselect){
-    
-    // Take derivatives
-    arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
-    
-    // Obtain a confidence interval for the parameter estimates AND calculate chisq goodness of fit
-    arma::field<arma::mat> cat = inference_summary(theta, desc,  objdesc, model_type, scales,
-                                                   D, V, omega, wv_empir, alpha);
-
-    ci_inf = cat(0);
-    gof_test = cat(1);
-    
-  }else if(inference & modelselect){
-    
-    // Take derivatives
-    arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
-    arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
-    
-    // Obtain the difference
-    arma::vec diff = theo - wv_empir;
-    
-    // Calculate the model score according to model selection criteria paper
-    score = model_score(D, At_j, omega, V,  diff, N);
-  }
-  
   // Export information back
-  arma::field<arma::mat> out(15);
+  arma::field<arma::mat> out(12);
   out(0) = theta;
   out(1) = guessed_theta;
   out(2) = wv_empir;
@@ -463,11 +465,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   out(7) = expect_diff;
   out(8) = theo;
   out(9) = decomp_theo;
-  out(10) = ci_inf;
-  out(11) = gof_test;
-  out(12) = obj_value;
-  out(13) = score;
-  out(14) = omega;
+  out(10) = obj_value;
+  out(11) = omega;
   return out;
 }
 
@@ -520,7 +519,7 @@ arma::field<arma::mat> simGMWM(const arma::vec& theta, const arma::mat& omega,
   	// Compute augmented GMWM
   	// ------------------------------------
   	// Compute Omega
-  	arma::mat V = gmwm_bootstrapper(GMWM.row(b), desc, max(tau), N, B, var_or_mu);
+  	arma::mat V = cov_bootstrapper(GMWM.row(b), desc, max(tau), N, B, var_or_mu);
   	arma::mat omega_v = arma::inv(diagmat(V));
   	
   	// Empirical WV + variance
