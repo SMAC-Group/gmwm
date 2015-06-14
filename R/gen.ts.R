@@ -18,11 +18,7 @@ gen.ts = function(model, N = 1000){
   }
   
   if(is(model,"gmwm")){
-    model$model$theta = as.numeric(model$estimate)
-    
-    model = model$model
-    
-    model$starting = F  
+    model = model$model.hat
   }
   
   # Information Required by GMWM:

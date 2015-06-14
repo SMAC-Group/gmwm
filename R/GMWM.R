@@ -21,8 +21,6 @@
 #' This function is under work. Some of the features are active. Others... Not so much. 
 #' What is NOT active:
 #' 1. Augmented GMWM (additional moments)
-#' 2. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
-#' 3. ARMA Bootstrapping.
 #' 
 #' The V matrix is calculated by:
 #' \eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.
@@ -190,6 +188,14 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
+  
+  model.hat = model
+  
+  model.hat$starting = F  
+  
+  model.hat$theta = as.numeric(estimate)
+  
+  
   out = structure(list(data = data,
                        estimate = estimate,
                        init.guess = init.guess,
@@ -215,6 +221,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
                        H = H,
                        K = K,
                        model = model,
+                       model.hat = model.hat,
                        starting = model$starting,
                        inference = inference,
                        model.select = model.select,
@@ -313,6 +320,36 @@ update.gmwm = function(object, model, ...){
 
   invisible(object)
 }
+
+
+#' @title GMWM for (Robust) IMU
+#' @description GMM object
+#' @param model A \code{ts.model} object containing one of the allowed models.
+#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 })
+#' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
+#' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
+#' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
+#' @return A \code{gmwm} object that contains:
+#' \itemize{
+#'  \item{}
+#'  \item{}
+#'  \item{}
+#' }
+gmwm.imu = function(model, data, compute.v = "fast",
+                  inference = F,  robust = F, eff = 0.6, ...){
+  gmwm(model = model, 
+       data = data, 
+       compute.v = compute.v,
+       model.type = "imu",
+       inference = inference,
+       model.select = if(is.na(model.select)) F else model.select,
+       robust = robust, 
+       eff = eff,
+       ...
+       )
+}
+
+
 
 #' @title Summary of GMWM object
 #' @description Displays summary information about GMWM object
