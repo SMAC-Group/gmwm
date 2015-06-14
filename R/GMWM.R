@@ -368,8 +368,8 @@ gmwm.imu = function(model, data, compute.v = "fast",
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
 summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
-  out = cbind(object$init.guess, object$estimate)
-  colnames(out) = c("Initial Guess", "Estimates") 
+  out = matrix(object$estimate,ncol=1)
+  colnames(out) = c("Estimates") 
   
   inference = object$inference
   
@@ -421,6 +421,8 @@ summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
                      starting = object$starting,
                      seed = object$seed,
                      N = object$N), class = "summary.gmwm")
+    
+  x
 }
 
 #' @title Print summary.gmwm object
