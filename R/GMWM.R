@@ -458,7 +458,7 @@ print.summary.gmwm = function(x, ...){
   }
   
   if(x$model.select){
-    cat(paste0("\nThe model score statistic is: ", round(x$model.score[[1]]),"\n\n"))
+    cat(paste0("\nThe model score statistic is: ", round(x$model.score[[1]],4),"\n\n"))
   }
 }
 
