@@ -330,9 +330,14 @@ print.summary.gmwm = function(x, ...){
 #' @method plot gmwm
 #' @param x A \code{GMWM} object
 #' @param individual A \code{boolean} that indicates whether the graph should be plotted individually or not
-#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param bw A \code{boolean} that indicates whether the graph should be black and white color scheme
 #' @param color.CI A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines
 #' @param graph.title A \code{string} that indicates the title of the graph
 #' @param graph.title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
@@ -340,11 +345,12 @@ print.summary.gmwm = function(x, ...){
 #' @param title.x.axis A \code{string} that indicates the label on x axis
 #' @param title.y.axis A \code{string} that indicates the label on y axis
 #' @param legend.title A \code{string} that indicates the title of legend
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend 
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend
 #' @param ... other arguments passed to specific methods
-#' @note Use \code{?autoplot.gmwm} and \code{?autoplot.gmwm2} to view specific explanation for parameters \code{color.line}, \code{line.type}. They are different when plotting individually or not 
+#' @note Use \code{?autoplot.gmwm} and \code{?autoplot.gmwm2} to view specific explanation for parameters \code{line.color}, \code{line.type}. They are different when plotting individually or not 
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB
 #' @examples
@@ -354,35 +360,38 @@ print.summary.gmwm = function(x, ...){
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
 #' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
-plot.gmwm = function(x, individual = FALSE, CI = T, transparence = 0.1, 
-                     color.CI = "#003C7D",  
+plot.gmwm = function(x, individual = FALSE, CI = T, transparence = 0.1, bw = F, 
+                     color.CI = "#003C7D", line.type = NULL, line.color = NULL,
+                     point.size = NULL,point.shape = NULL,
                      graph.title = NA, graph.title.size= 15, 
                      axis.label.size = 13, axis.tick.size = 11, 
                      title.x.axis = expression(paste("Scale ", tau)),
                      title.y.axis = expression(paste("Wavelet Variance ", nu)),
-                     legend.title = '', legend.key.size = 1, legend.title.size = 13, 
+                     legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                      legend.text.size = 13, ...){
   
   if(individual){
     # plot individually
-    autoplot.gmwm2(x, CI = CI, transparence = transparence, 
-                   color.CI = color.CI,  
+    autoplot.gmwm2(x, CI = CI, transparence = transparence, bw = bw, 
+                   color.CI = color.CI, line.type = line.type, line.color = line.color,
+                   point.size = point.size, point.shape = point.shape,
                    graph.title = graph.title, graph.title.size= graph.title.size, 
                    axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                    title.x.axis = title.x.axis,
                    title.y.axis = title.y.axis,
-                   legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                   legend.title = legend.title, legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
                    legend.text.size = legend.text.size)
   }
   else{
-    autoplot.gmwm(x, CI = CI, transparence = transparence, 
-                  color.CI = color.CI,  
+    autoplot.gmwm(x, CI = CI, transparence = transparence, bw = bw, 
+                  color.CI = color.CI, line.type = line.type, line.color = line.color,
+                  point.size = point.size, point.shape = point.shape,
                   graph.title = graph.title, graph.title.size= graph.title.size, 
                   axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                   title.x.axis = title.x.axis,
                   title.y.axis = title.y.axis,
-                  legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-                  legend.text.size = legend.text.size)
+                  legend.title = legend.title, legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                  legend.text.size = legend.text.size )
   }
 }
 
@@ -390,12 +399,15 @@ plot.gmwm = function(x, individual = FALSE, CI = T, transparence = 0.1,
 #' @title Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
 #' @method autoplot gmwm2
-#' @param object A \code{GMWM} object.
-#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted
+#' @param object A \code{GMWM} object
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
-#' @param color.line A \code{vector} of \code{string} that indicates the color of the lines for Empirical WV and CI. Default value is \code{c("#003C7D", "#003C7D")}
+#' @param bw A \code{boolean} that indicates whether the graph should be black and white color scheme
 #' @param color.CI A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
-#' @param line.type A \code{vector} that indicates the type of lines for Empirical WV and its CI. Default value is \code{c("solid","dotted")}
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for each latent process, Implied WV, Empirical WV, and CI respectively
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines for each latent process, Implied WV, Empirical WV, and CI respectively
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines
 #' @param graph.title A \code{string} that indicates the title of the graph
 #' @param graph.title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
@@ -403,20 +415,22 @@ plot.gmwm = function(x, individual = FALSE, CI = T, transparence = 0.1,
 #' @param title.x.axis A \code{string} that indicates the label on x axis
 #' @param title.y.axis A \code{string} that indicates the label on y axis
 #' @param legend.title A \code{string} that indicates the title of legend
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend 
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend
 #' @param ... other arguments passed to specific methods
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM for each latent process.
 #' @author JJB
-autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, color.line = c("#003C7D", "#003C7D"), 
-                          color.CI = "#003C7D", line.type = c("solid","dotted"), 
+autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, bw = F, 
+                          color.CI = "#003C7D", line.type = NULL, line.color = NULL,
+                          point.size = NULL,point.shape = NULL,
                           graph.title = NA, graph.title.size= 15, 
                           axis.label.size = 13, axis.tick.size = 11, 
                           title.x.axis = expression(paste("Scale ", tau)),
                           title.y.axis = expression(paste("Wavelet Variance ", nu)),
-                          legend.title = '', legend.key.size = 1, legend.title.size = 13, 
-                          legend.text.size = 13, ...){
+                          legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
+                          legend.text.size = 13,...){
   #require package: grid
   .x=low=high=trans_breaks=trans_format=math_format=NULL
   
@@ -424,44 +438,144 @@ autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, color.line = c("#0
   L = length(object$model$desc) + 1
   
   # Get names of latent processes
-  nom = letters[1:L]
+  nom = as.character(1:L)
   
-  # Construct data.frame
-  df = data.frame(scales = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
-                  process = rep(nom, each = length(object$scales)))
-  WV = data.frame(var = object$wv.empir, low = object$ci.low, high = object$ci.high, scale = object$scales)
-  
-  p = ggplot(data = WV, mapping = aes(x = scale, y = var), colour = color.line[1]) + geom_line(linetype = line.type[1]) + geom_point(size = 3) 
-    
-  if(CI){
-    p = p + 
-      geom_line(mapping = aes(y = low), colour = color.line[2], linetype = line.type[2]) +
-      geom_line(mapping = aes(y = high), colour = color.line[2], linetype = line.type[2]) +
-      geom_ribbon(mapping = aes(ymin = low, ymax = high), fill = alpha(color.CI, transparence))
-      #geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1, fill = "#003C7D") +
+  #check parameter
+  params = c('line.type', 'line.color', 'point.size','point.shape','legend.label')
+  if(CI == T) {numLegend = 2+L}else{numLegend = 1+L}#should be called numLabel
+  for(i in 1:length(params)){
+    one_param = params[i]
+    if( !is.null(get(one_param)) && length(get(one_param))!=numLegend){
+      warning(paste('Parameter', one_param, 'requires',numLegend,'elements,','but', length(get(one_param)),
+                    'is supplied.','Default setting is used.'))
+      assign(one_param,NULL)
+    }
   }
   
-  p = p + geom_line(data = df, mapping = aes(x = scales, y = WV, color = process)) + 
-    xlab(title.x.axis ) + ylab( title.y.axis) +
+  process.color = rainbow(L-1)
+  process.bw_color = gray.colors(L-1, start = 0.2, end = max( max(1, L-2)/(L-1), 0.7))
+  
+  #Parameter Order:  each process, Implied WV, Emp WV, CI
+  if(CI == T){
+    if(is.null(line.type)){line.type = c(rep('solid', L), 'solid','dotted')}
+    if(length(line.type)==L+2){line.type = c(line.type, tail(line.type,1))}
+    
+    #process.color = rainbow(L-1)
+    if(is.null(line.color)){line.color = c( process.color, "#F47F24", "#003C7D", "#999999" )}
+    if(bw){
+      #line.color = c("#000000", "#b2b2b2", "#404040")
+      #process.bw_color = gray.colors(L-1, start = 0.2, end = max(1, L-2)/(L-1))
+      line.color = c(process.bw_color, "#000000", "#b2b2b2", "#404040" )
+      color.CI = "grey50"
+    }
+    if(length(line.color)==L+2){line.color = c(line.color, tail(line.color,1) )}
+    
+    if(is.null(point.size)){point.size = c(rep(0,L-1),5, 5,0)}
+    if(length(point.size)==L+2){point.size = c(point.size, tail(point.size,1) )}
+    
+    if(is.null(point.shape)){point.shape = c(rep(46,L-1),20, 20,46) }
+    if(length(point.shape)==L+2){point.shape = c(point.shape, tail(point.shape,1) )}
+    
+    process.label=c(object$model$desc,paste(object$model$desc, collapse = ' + '))
+    if(is.null(legend.label)){legend.label = c(process.label,
+                                               expression(paste("Empirical WV ", hat(nu))), 
+                                               expression(paste("CI(", hat(nu)," , 0.95)" )) )}
+    
+    df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
+                    process = rep(nom, each = length(object$scales)))
+    WV = data.frame(emp = object$wv.empir, low = object$ci.low, high = object$ci.high, scale = object$scales)
+    melt.wv = melt(WV, id.vars = 'scale')
+    
+    
+    breaks = c(nom, 'emp','low')
+    legend.color = c(rep(NA, L+1), color.CI)
+    legend.linetype = c(line.type[1:(L+1)],'blank')
+    legend.pointshape = c(point.shape[1:(L+1)],NA)
+    #legend.pointsize = c(point.size[1:2],0)
+    
+  }else{
+    if(is.null(line.type)){line.type = c(rep('solid', L), 'solid')}
+    
+    #process.color = rainbow(L-1)
+    if(is.null(line.color)){line.color = c( process.color, "#F47F24", "#003C7D")}
+    if(bw){
+      #line.color = c("#000000", "#b2b2b2", "#404040")
+      line.color = c(process.bw_color, "#000000", "#b2b2b2" )
+    }
+    
+    if(is.null(point.size)){point.size = c(rep(0,L-1),5, 5)}
+    if(is.null(point.shape)){point.shape =c(rep(46,L-1),20, 20 ) }
+    
+    process.label=c(object$model$desc,paste(object$model$desc, collapse = ' + '))
+    if(is.null(legend.label)){legend.label = c(process.label,
+                                               expression(paste("Empirical WV ", hat(nu))) )}
+    
+    df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
+                    process = rep(nom, each = length(object$scales)))
+    WV = data.frame(emp = object$wv.empir, scale = object$scales)
+    melt.wv = melt(WV, id.vars = 'scale')
+    
+    breaks = c(nom, 'emp')
+    #legend.color = c(rep(NA, L+1), color.CI)
+    #legend.linetype = c(line.type[1:(L+1)],'blank')
+    #legend.pointshape = c(point.shape[1:(L+1)],NA)
+    
+  }
+  
+  #special case: only one process
+  #Hack: not really change every parameter
+  if(L == 2){
+    breaks = c(breaks[2], breaks[3:length(breaks)])
+    legend.label = c(legend.label[2], legend.label[3:length(legend.label)])
+    legend.color = c(legend.color[2], legend.color[3:length(legend.color)])
+    legend.linetype = c(legend.linetype[2], legend.linetype[3:length(legend.linetype)])
+    legend.pointshape = c(legend.pointshape[2], legend.pointshape[3:length(legend.pointshape)])
+  }
+  
+  p = ggplot() + 
+    geom_line(data = df, mapping = aes(x = scale, y = WV,color = process, linetype = process)) + 
+    geom_point(data = df, mapping = aes(x = scale, y = WV, color = process, size = process, shape = process)) + 
+    
+    geom_line( data = melt.wv, mapping = aes(x = scale, y = value, color = variable, linetype = variable) )+
+    geom_point(data = melt.wv, mapping = aes(x = scale, y = value, color = variable, size = variable, shape = variable)) + 
+    
+    scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
+    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
+    scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
+    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
+  
+  if(CI){
+    p = p +
+      geom_ribbon(data = WV, mapping = aes(x = scale, y = NULL,ymin =low, ymax = high ), fill = color.CI, alpha = transparence, show_guide = T) +
+      #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
+      guides(colour = guide_legend(override.aes = list(fill = legend.color, linetype = legend.linetype, shape = legend.pointshape)))
+  }
+   
+  p = p +  
     scale_y_log10( breaks = trans_breaks("log10", function(x) 10^x),
                    labels = trans_format("log10", math_format(10^.x))) +
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    #scale_colour_discrete(name  =" ", labels=c(object$model$desc,paste(object$model$desc, collapse = ' + '))) +
-    scale_colour_discrete(name = legend.title, labels=c(object$model$desc,paste(object$model$desc, collapse = ' + '))) +
-    coord_cartesian(ylim = c(min(object$ci.low), (1.05)*max(object$ci.high))) +
+                  labels = trans_format("log10", math_format(10^.x)))
+     
+  if(bw){
+    p = p + theme_bw()
+  }
+  
+  p = p +
     xlab(title.x.axis) + ylab(title.y.axis) + ggtitle(graph.title) +
-    
     theme(
       plot.title = element_text(size=graph.title.size),
       axis.title.y = element_text(size= axis.label.size),
       axis.text.y  = element_text(size= axis.tick.size),
       axis.title.x = element_text(size= axis.label.size),
       axis.text.x  = element_text(size= axis.tick.size),
+      #legend.key = element_rect(fill=NA), 
       legend.key.size = unit(legend.key.size, "cm"),
       legend.text = element_text(size = legend.text.size),  
-      legend.title = element_text(size = legend.title.size))  
-    #scale_colour_hue(name = legend.title)
+      legend.title = element_text(size = legend.title.size),
+      #legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
+      #legend.justification=legendPlace[1:2], legend.position=legendPlace[3:4],
+      legend.text.align = 0)  
   
   if (is.na(graph.title)){
     if(object$robust){
@@ -473,6 +587,7 @@ autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, color.line = c("#0
   }
   
   p
+  
 }
 
 
@@ -482,16 +597,20 @@ autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, color.line = c("#0
 #' @param object A \code{GMWM} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
+#' @param bw A \code{boolean} that indicates whether the graph should be black and white color scheme
 #' @param color.CI A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
-#' @param line.type A \code{vector} that indicates the type of lines for Empirical WV, CI and Implied WV respectively. Default value is \code{c("solid","dotted","solid")}
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for Implied WV, Empirical WV, and CI respectively. Default value is \code{c("solid","solid","dotted")} when \code{CI = T}
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines for Implied WV, Empirical WV, and CI respectively
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines
 #' @param graph.title A \code{string} that indicates the title of the graph
 #' @param graph.title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param title.x.axis A \code{string} that indicates the label on x axis
 #' @param title.y.axis A \code{string} that indicates the label on y axis
-#' @param facet.title.size An \code{integer} that indicates the size of facet label
 #' @param legend.title A \code{string} that indicates the title of legend
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend 
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend
@@ -505,72 +624,131 @@ autoplot.gmwm2 = function(object, CI = T, transparence = 0.1, color.line = c("#0
 #' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' mod = gmwm(2*AR1(), data = x)
 #' autoplot(mod)
-autoplot.gmwm = function(object,  CI = T, transparence = 0.1,  
-                         color.CI = "#003C7D", line.type = c("solid","dotted","solid"), 
+autoplot.gmwm = function(object,  CI = T, transparence = 0.1, bw = F, 
+                         color.CI = "#003C7D", line.type = NULL, line.color = NULL,
+                         point.size = NULL,point.shape = NULL,
                          graph.title = NA, graph.title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          title.x.axis = expression(paste("Scale ", tau)),
                          title.y.axis = expression(paste("Wavelet Variance ", nu)),
-                         legend.title = '', legend.key.size = 1, legend.title.size = 13, 
+                         legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
+  
   #require pakage: scales, grid
   low=high=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
   
-  cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#56B4E9")
-  
-  WV = data.frame(emp = object$wv.empir,
-                  low = object$ci.low,
-                  high = object$ci.high,
-                  scale = object$scales,
-                  theo = object$theo)
-
-  p = ggplot(data = WV, mapping = aes(x = scale)) +  geom_line(aes(y = emp, colour = "LINE1"), linetype = line.type[1]) + geom_point(aes(y = emp,colour = "LINE1"), size = 3) +
-    geom_line(aes(y = theo, colour = "LINE3"), linetype = line.type[3]) + 
-    geom_point(aes(y = theo, colour = "LINE3"), size = 3, shape = 1) 
-    
-  
-  if(CI){
-    p = p + 
-      geom_line(aes(y = low, colour = "LINE2"), linetype = line.type[2]) +
-      geom_line(aes(y = high, colour = "LINE2"), linetype = line.type[2]) +
-      geom_ribbon(mapping = aes(ymin = low, ymax = high), fill = alpha(color.CI, transparence))
-      #geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) 
+  #check parameter
+  #params = list(line.type, line.color, point.size, point.shape, legend.label)
+  params = c('line.type', 'line.color', 'point.size','point.shape','legend.label')
+  if(CI == T) {numLegend = 3}else{numLegend = 2}#should be called numLabel
+  for(i in 1:length(params)){
+    one_param = params[i]
+    if( !is.null(get(one_param)) && length(get(one_param))!=numLegend){
+      warning(paste('Parameter', one_param, 'requires',numLegend,'elements,','but', length(get(one_param)),
+                    'is supplied.','Default setting is used.'))
+      assign(one_param,NULL)
+    }
   }
   
-  #decide where to place the legend
-  legendPlace = placeLegend(WV$emp[1], WV$low[ length(WV$low) ], WV$high[ length(WV$high)])
+  temp = data.frame( theo = object$theo,
+                     emp = object$wv.empir,
+                     low = object$ci.low,
+                     high = object$ci.high,
+                     scale = object$scales)
+  
+  if(CI == T){
+    if(is.null(line.type)){line.type = c('solid','solid','dotted')}
+    if(length(line.type)==3){line.type = c(line.type,line.type[3])}
+    
+    if(is.null(line.color)){line.color = c("#F47F24","#003C7D", "#999999")}
+    if(bw){
+      line.color = c("#000000", "#b2b2b2", "#404040")
+      color.CI = "grey50"
+    }
+    if(length(line.color)==3){line.color = c(line.color,line.color[3])}
+    
+    if(is.null(point.size)){point.size = c(5,5,0)}
+    if(length(point.size)==3){point.size = c(point.size,point.size[3])}
+    
+    if(is.null(point.shape)){point.shape = c(20,20,46) }
+    if(length(point.shape)==3){point.shape = c(point.shape,point.shape[3])}
+    
+    if(is.null(legend.label)){legend.label = c(expression(paste("Implied WV ", nu,"(",hat(theta),")")),
+                                               expression(paste("Empirical WV ", hat(nu))), 
+                                               expression(paste("CI(", hat(nu)," , 0.95)" )))}
+    
+    
+    WV = melt(temp, id.vars = 'scale')
+    breaks = c('theo','emp','low')
+    legend.color = c(NA,NA,color.CI)
+    legend.linetype = c(line.type[1:2],'blank')
+    legend.pointshape = c(point.shape[1:2],NA)
+    #legend.pointsize = c(point.size[1:2],0)
+    
+  }else{
+    if(is.null(line.type)){line.type = c('solid','solid')}
+    if(is.null(line.color)){line.color = c("#F47F24","#003C7D")}
+    if(bw){
+      line.color = c("#000000", "#b2b2b2")}
+    if(is.null(point.size)){point.size = c(5,5)}
+    if(is.null(point.shape)){point.shape = c(20,20) }
+    if(is.null(legend.label)){legend.label = c(expression(paste("Implied WV ", nu,"(",hat(theta),")")),
+                                               expression(paste("Empirical WV ", hat(nu))))}
+    
+    WV = melt(temp, id.vars = 'scale', measure.vars = c('theo','emp'))
+    breaks = c('theo','emp')
+    #legend.color = c(NA,NA)
+  }
+  
+  p = ggplot(data = WV, mapping = aes(x = scale)) + geom_line(aes(y = value, color = variable, linetype = variable)) +
+      geom_point(aes(y = value, shape = variable, size = variable,color = variable)) + 
+      scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label) +
+      scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks,labels = legend.label)+
+       
+      scale_size_manual(name = legend.title, values = c(point.size),breaks = breaks,labels = legend.label) +
+      scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label) 
+      
+  
+  if(CI){
   p = p +
+    geom_ribbon(data = temp, mapping = aes(ymin = low, ymax = high),fill = color.CI, show_guide = T,alpha = transparence) +
+    
+    #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
+    guides(colour = guide_legend(override.aes = list(fill = legend.color, linetype = legend.linetype, shape = legend.pointshape)))
+   
+  }
+       
+  #decide where to place the legend
+  legendPlace = placeLegend(temp$emp[1], temp$low[ length(temp$low) ], temp$high[ length(temp$high)])    
+  p = p + 
+    
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) + 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) 
-  if (CI){
-    p = p + scale_colour_manual(name=legend.title, labels=c(expression(paste("Empirical WV ", hat(nu))), 
-                                                            expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Implied WV ", nu,"(",hat(theta),")"))), 
-                                values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
-      guides(colour = guide_legend(override.aes = list(size = c(1,1,1), colour = c("#000000","#999999","#56B4E9"))))
+                  labels = trans_format("log10", math_format(10^.x)))
+  if(bw){
+    p = p + theme_bw()
   }
-  else{
-    p = p + scale_colour_manual(name=legend.title, labels=c(expression(paste("Empirical WV ", hat(nu))), expression(paste("Implied WV ", nu,"(",hat(theta),")"))), 
-                                values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
-      guides(colour = guide_legend(override.aes = list(size = c(1,1), colour = c("#000000","#56B4E9"))))
-  }
-   
+  
   p = p +
     xlab(title.x.axis) + ylab(title.y.axis) + ggtitle(graph.title) +
     theme(
-          plot.title = element_text(size=graph.title.size),
-          axis.title.y = element_text(size= axis.label.size),
-          axis.text.y  = element_text(size= axis.tick.size),
-          axis.title.x = element_text(size= axis.label.size),
-          axis.text.x  = element_text(size= axis.tick.size),
-          legend.key = element_rect(fill=NA), 
-          legend.key.size = unit(legend.key.size, "cm"),
-          legend.text = element_text(size = legend.text.size),  
-          legend.title = element_text(size = legend.title.size),
-          legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
-          legend.justification=legendPlace[1:2], legend.position=legendPlace[3:4])  
-  #scale_colour_hue(name = legend.title)
+      plot.title = element_text(size=graph.title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      legend.key = element_rect(fill=NA), 
+      legend.key.size = unit(legend.key.size, "cm"),
+      legend.text = element_text(size = legend.text.size),  
+      legend.title = element_text(size = legend.title.size),
+      #legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
+      legend.justification=legendPlace[1:2], legend.position=legendPlace[3:4],
+      legend.text.align = 0)  
+  
+  if(!bw){
+    p = p + theme(legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+  }
   
   if (is.na(graph.title)){
     if(object$robust){
