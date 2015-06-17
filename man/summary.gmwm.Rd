@@ -4,12 +4,17 @@
 \alias{summary.gmwm}
 \title{Summary of GMWM object}
 \usage{
-\method{summary}{gmwm}(object, ...)
+\method{summary}{gmwm}(object, ci.bootstrap = NULL, ci.b = 20,
+  optim.bootstrap = NULL, o.b = 100, ...)
 }
 \arguments{
+\item{object}{A \code{GMWM} object}
+
+\item{ci.bootstrap}{A value containing either: NULL (auto), TRUE, or FALSE}
+
 \item{...}{other arguments passed to specific methods}
 
-\item{x}{A \code{GMWM} object}
+\item{model.select}{A value containing either: NULL (auto), TRUE, FALSE}
 }
 \value{
 Text output via print

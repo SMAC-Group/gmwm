@@ -6,7 +6,7 @@
 \usage{
 \method{autoplot}{wvarComp}(obj, split = TRUE, CI = TRUE,
   transparence = 0.1, color.line = NULL, color.CI = NULL,
-  line.type = c("solid", "dotted"),
+  line.type = c("solid", "dotted"), point.size = 5, point.shape = 20,
   graph.title = "Haar Wavelet Variance Representation",
   graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
@@ -29,6 +29,10 @@
 \item{color.CI}{A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
 
 \item{line.type}{A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. Length of vector must equal to 2.}
+
+\item{point.size}{An \code{integer} that indicates the size of point}
+
+\item{point.shape}{An \code{integer} that indicates the shape of point}
 
 \item{graph.title}{A \code{string} that indicates the title of the graph}
 

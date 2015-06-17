@@ -4,12 +4,10 @@
 \alias{model_score}
 \title{Model Score}
 \usage{
-model_score(A, At_j, omega, v_hat, diff, N)
+model_score(A, D, omega, v_hat, diff)
 }
 \arguments{
 \item{A}{A \code{mat} that contains the first derivatives of the processes}
-
-\item{At_j}{A \code{mat} that contains the second derivative of each process}
 
 \item{omega}{A \code{mat} that contains the omega used when calculating the GMWM}
 
@@ -17,7 +15,7 @@ model_score(A, At_j, omega, v_hat, diff, N)
 
 \item{diff}{A \code{vec} that is the difference of the WV empirical and WV theoretical}
 
-\item{T}{An \code{unsigned int} that is awesome!}
+\item{At_j}{A \code{mat} that contains the second derivative of each process}
 }
 \value{
 A \code{vec}
@@ -26,6 +24,7 @@ A \code{vec}
 Calculates the modeling score of a GMWM
 }
 \details{
-TBA
+The equation is slightly different than that stated in the paper due to the bootstrap already incorporating in
+N.
 }
 

@@ -5,8 +5,9 @@
 \title{GMWM for IMU, ARMA, SSM, and Robust}
 \usage{
 gmwm(model, data, model.type = "ssm", compute.v = "auto",
-  inference = "auto", augmented = FALSE, p = 0.05, robust = FALSE,
-  eff = 0.6, G = NULL, K = 1, H = 100)
+  augmented = FALSE, robust = FALSE, eff = 0.6, inference = NULL,
+  model.select = NULL, alpha = 0.05, seed = NULL, G = NULL, K = 1,
+  H = 100)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}
@@ -19,11 +20,11 @@ gmwm(model, data, model.type = "ssm", compute.v = "auto",
 
 \item{augmented}{A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).}
 
-\item{p}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
-
 \item{robust}{A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).}
 
 \item{eff}{A \code{double} between 0 and 1 that indicates the efficiency.}
+
+\item{alpha}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
 
 \item{G}{An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.}
 
@@ -46,8 +47,6 @@ GMM object
 This function is under work. Some of the features are active. Others... Not so much.
 What is NOT active:
 1. Augmented GMWM (additional moments)
-2. Guessing ARMA models is NOT supported. You must supply specific parameters (see example below)
-3. ARMA Bootstrapping.
 
 The V matrix is calculated by:
 \eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.

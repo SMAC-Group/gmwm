@@ -5,7 +5,7 @@
 \title{Compute the Inference Summary}
 \usage{
 inference_summary(theta, desc, objdesc, model_type, tau, D, v_hat, omega,
-  wv_empir, alpha)
+  wv_empir, N, alpha, ci_bootstrap, B, robust, eff)
 }
 \value{
 A \code{field<mat>} where

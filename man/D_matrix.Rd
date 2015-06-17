@@ -2,24 +2,32 @@
 % Please edit documentation in R/RcppExports.R
 \name{D_matrix}
 \alias{D_matrix}
-\title{D Matrix}
+\title{Analytic D matrix of Processes}
 \usage{
-D_matrix(At_j, omega, diff)
+D_matrix(theta, desc, objdesc, tau, omegadiff)
 }
 \arguments{
-\item{At_j}{A \code{mat} that is of dimensions J x P containing the sederivative of A(theta_hat_j)/dTheta_hat_(j,tau)}
+\item{theta}{A \code{vec} containing the list of estimated parameters.}
 
-\item{omega}{A \code{mat} that is of dimension P x P used in obtaining the GMWM estimator.}
+\item{desc}{A \code{vector<string>} containing a list of descriptors.}
 
-\item{diff}{A \code{vec} that is the difference of the WV empirical and WV theoretical}
+\item{objdesc}{A \code{field<vec>} containing a list of object descriptors.}
+
+\item{tau}{A \code{vec} containing the scales e.g. 2^(1:J)}
 }
 \value{
-A \code{mat}
+A \code{matrix} with the process derivatives going down the column
 }
 \description{
-D Matrix
+This function computes each process to WV (haar) in a given model.
 }
 \details{
-TBA
+Function returns the matrix effectively known as "D"
+}
+\examples{
+#TBA
+}
+\author{
+JJB
 }
 

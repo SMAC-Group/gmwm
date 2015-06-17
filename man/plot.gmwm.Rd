@@ -5,23 +5,34 @@
 \title{Wrapper to Graph Solution of the Generalized Method of Wavelet Moments}
 \usage{
 \method{plot}{gmwm}(x, individual = FALSE, CI = T, transparence = 0.1,
-  color.CI = "#003C7D", graph.title = NA, graph.title.size = 15,
-  axis.label.size = 13, axis.tick.size = 11,
+  bw = F, color.CI = "#003C7D", line.type = NULL, line.color = NULL,
+  point.size = NULL, point.shape = NULL, graph.title = NA,
+  graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
   title.y.axis = expression(paste("Wavelet Variance ", nu)),
-  legend.title = "", legend.key.size = 1, legend.title.size = 13,
-  legend.text.size = 13, ...)
+  legend.title = "", legend.label = NULL, legend.key.size = 1,
+  legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
 \item{x}{A \code{GMWM} object}
 
 \item{individual}{A \code{boolean} that indicates whether the graph should be plotted individually or not}
 
-\item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted}
+\item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
 
+\item{bw}{A \code{boolean} that indicates whether the graph should be black and white color scheme}
+
 \item{color.CI}{A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)}
+
+\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines}
+
+\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines}
+
+\item{point.size}{A \code{vector} of \code{integer} that indicates the size of points on lines}
+
+\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of points on lines}
 
 \item{graph.title}{A \code{string} that indicates the title of the graph}
 
@@ -36,6 +47,8 @@
 \item{title.y.axis}{A \code{string} that indicates the label on y axis}
 
 \item{legend.title}{A \code{string} that indicates the title of legend}
+
+\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend}
 
 \item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend}
 
@@ -52,7 +65,7 @@ A ggplot2 panel containing the graph of the empirical and theoretical wavelet va
 Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 }
 \note{
-Use \code{?autoplot.gmwm} and \code{?autoplot.gmwm2} to view specific explanation for parameters \code{color.line}, \code{line.type}. They are different when plotting individually or not
+Use \code{?autoplot.gmwm} and \code{?autoplot.gmwm2} to view specific explanation for parameters \code{line.color}, \code{line.type}. They are different when plotting individually or not
 }
 \examples{
 # AR
