@@ -150,7 +150,7 @@ arma::mat deriv_ar1(double phi, double sig2, arma::vec tau){
 // [[Rcpp::export]]
 arma::mat deriv_2nd_ar1(double phi, double sig2, arma::vec tau){
      unsigned int ntau = tau.n_elem;
-     arma::mat D(ntau,2);
+     arma::mat D(ntau,3);
      
      //double phi_n = pow(phi, 0.5); // phi^(1/2)
      
@@ -169,9 +169,14 @@ arma::mat deriv_2nd_ar1(double phi, double sig2, arma::vec tau){
                       + (phi * (phi * (phi * (tau - 4.0) % (phi * (tau - 3.0) - 4.0) - 2.0 * (tau - 3.0) % tau + 16.0 ) + 4 * (tau + 1) ) + tau % (tau + 1.0) ) % phi_tau
                       + 3.0 * phi * ( phi * (phi * (square(phi)*tau + 2.0 * phi * (tau + 6.0) + 16.0 ) - 2.0 * (tau - 8.0) ) - tau + 4 )
                   );
-                  
+
+     // partial derivative with respect to phi and sig2
+     D.col(1) = (2.0/(tausq * pow(phi - 1.0, 4.0)*pow(phi + 1.0, 2.0))) % 
+                  (-3.0 + tau - 2.0*phi_tau_1ov2 % (-2.0 - tau + phi * (-4.0 + (-6.0 +tau)*phi)) +
+                    phi_tau % (-1.0 - tau +phi*(-2.0 + (-3.0 + tau)*phi)) - phi * (6.0 - tau + phi*(9.0+tau+phi*tau)) );
+
      // partial derivative with respect to sig2
-     D.col(1).fill(0);
+     D.col(2).fill(0);
      
      return D;
 }
@@ -208,7 +213,7 @@ arma::mat deriv_dr(double omega, arma::vec tau){
 // [[Rcpp::export]]
 arma::mat deriv_2nd_dr(arma::vec tau){
      unsigned int ntau = tau.n_elem;
-     arma::mat D(ntau, 1);
+     arma::mat D(ntau,1);
      D.col(0) = arma::square(tau);
      return D;
 }
@@ -354,39 +359,64 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
 //' @examples
 //' #TBA
 // [[Rcpp::export]]
-arma::mat derivative_second_matrix(const arma::vec& theta, 
-                                  const std::vector<std::string>& desc,
-                                  const arma::field<arma::vec>& objdesc,
-                                  const arma::vec& tau){
-                                  
+arma::mat D_matrix(const arma::vec& theta, 
+                   const std::vector<std::string>& desc,
+                   const arma::field<arma::vec>& objdesc,
+                   const arma::vec& tau, const arma::vec& omegadiff){
+  
   unsigned int num_desc = desc.size();
-  arma::mat D = arma::zeros<arma::mat>(tau.n_elem, theta.n_elem);
-    
+  
+  
+  unsigned int p = theta.n_elem;
+  
+  unsigned int ntau = tau.n_elem;
+  
+  // P x J
+  arma::mat A_i = arma::zeros<arma::mat>(p, ntau); 
+  
+  // P x P
+  arma::mat D(p, p);
+  
   unsigned int i_theta = 0;
   for(unsigned int i = 0; i < num_desc; i++){
-    
     // Add ARMA
-  
+    
     double theta_value = theta(i_theta);
     
     std::string element_type = desc[i];
     
     // AR 1
     if(element_type == "AR1"){
-
+      
       ++i_theta;
       double sig2 = theta(i_theta);
       
-      // Compute theoretical WV
-      D.cols(i_theta-1,i_theta) = deriv_2nd_ar1(theta_value, sig2, tau);
+      // Return matrix with d/dtheta^2, d/dthetasig, d/dsig^2
+      arma::mat s = deriv_2nd_ar1(theta_value, sig2, tau).t();
+      
+      // Modify p columns for phi
+      A_i.rows(i_theta-1, i_theta) = s.rows(0,1);
+      
+      D.col(i_theta-1) = A_i * omegadiff;
+      
+      // Modify p columns for sig
+      A_i.rows(i_theta-1, i_theta) = s.rows(1,2);
+      
+      D.col(i_theta) = A_i * omegadiff;
+      
+      A_i.row(i_theta-1).fill(0);
     }
     else if(element_type == "ARMA"){
       // implement later      
-
+      
     }
     // DR
     else if(element_type == "DR"){
-      D.col(i_theta) = deriv_2nd_dr(tau);
+      
+      A_i.row(i_theta) = deriv_2nd_dr(tau).t(); 
+      D.col(i_theta) = A_i * omegadiff;
+      
+      A_i.row(i_theta).fill(0);
     }
     else{
       // Already zero! (YAYAYA!)
@@ -394,6 +424,6 @@ arma::mat derivative_second_matrix(const arma::vec& theta,
     
     ++i_theta;
   }
-
+  
   return D;
 }

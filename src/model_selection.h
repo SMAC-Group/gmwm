@@ -1,10 +1,8 @@
 #ifndef MODEL_SELECTION
 #define MODEL_SELECTION
 
-arma::mat D_matrix(arma::mat At_j, arma::mat omega, arma::mat diff);
+arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega);
 
-arma::mat B_matrix(arma::mat A, arma::mat a_omega);
-
-arma::vec model_score(arma::mat A, arma::mat At_j, arma::mat omega, arma::mat v_hat, arma::vec diff, unsigned int T);
+arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat, arma::vec diff);
 
 #endif

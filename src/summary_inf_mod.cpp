@@ -29,7 +29,7 @@ arma::field<arma::mat> get_summary(const arma::vec& theta,
   arma::vec score;
   
   // Take derivatives
-  arma::mat D = derivative_first_matrix(theta, desc, objdesc, scales);
+  arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
 
   // Generate inference information
   if(inference){
@@ -39,7 +39,7 @@ arma::field<arma::mat> get_summary(const arma::vec& theta,
                                                    objdesc,
                                                    model_type,
                                                    scales,
-                                                   D, 
+                                                   A, 
                                                    V, omega,
                                                    wv_empir, N, alpha , ci_bootstrap, B, robust, eff);
     
@@ -49,14 +49,14 @@ arma::field<arma::mat> get_summary(const arma::vec& theta,
 
   if(modelselect){
     
-    // Take derivatives
-    arma::mat At_j = derivative_second_matrix(theta, desc, objdesc, scales);
-    
     // Obtain the difference
     arma::vec diff = theo - wv_empir;
     
+    // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
+    arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*diff);
+    
     // Calculate the model score according to model selection criteria paper
-    score = model_score(D, At_j, omega, V,  diff, N);
+    score = model_score(A, D, omega, V,  diff);
   }
   
 
