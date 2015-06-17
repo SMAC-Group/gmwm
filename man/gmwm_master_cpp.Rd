@@ -5,7 +5,7 @@
 \title{Master Wrapper for the GMWM Estimator}
 \usage{
 gmwm_master_cpp(data, theta, desc, objdesc, model_type, starting, alpha,
-  compute_v, K, H, G, robust, eff, inference)
+  compute_v, K, H, G, robust, eff, fullv)
 }
 \arguments{
 \item{data}{A \code{vec} containing the data.}

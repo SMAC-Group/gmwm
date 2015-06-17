@@ -7,7 +7,7 @@
 gen.ts(model, N = 1000)
 }
 \arguments{
-\item{model}{A \code{ts.model} object containing one of the allowed models.}
+\item{model}{A \code{ts.model} or \code{gmwm} object containing one of the allowed models.}
 
 \item{N}{An \code{interger} containing the amount of observations for the time series.}
 }
@@ -18,9 +18,7 @@ A \code{vec} that contains combined time series.
 Create a time series based on a supplied time series model.
 }
 \details{
-This function is under work. Some of the features are active. Others... Not so much.
-What is NOT active:
-1. Simulating an ARMA time series
+This function accepts either a ts.model object (e.g. AR1(phi = .3, sigma2 =1) + WN(sigma2 = 1)) or a gmwm object.
 }
 \examples{
 # AR
