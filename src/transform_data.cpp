@@ -123,8 +123,11 @@ arma::vec transform_values(const arma::vec& theta,
   
   
   for(unsigned int i = 0; i < num_desc; i++){
+    
+    std::string element_type = desc[i];
+    
     // AR 1
-    if(desc[i] == "AR1" ){
+    if(element_type == "AR1" ){
       
       // Apply model specific parameter transformation
       if(model_type == "imu"){
@@ -136,7 +139,7 @@ arma::vec transform_values(const arma::vec& theta,
       // Increase index for phi term
       ++i_theta;
     }
-    else if( desc[i] == "ARMA" ) {
+    else if(element_type == "ARMA" ) {
       
       // Obtain the ARMA Model information
       arma::vec arma_params = objdesc(i);
@@ -186,8 +189,13 @@ arma::vec transform_values(const arma::vec& theta,
       
     }// end if
     
-    // Take care of SIGMA2 term
-    starting(i_theta) = log(theta(i_theta));
+    if(element_type != "DR" ){
+      // Take care of SIGMA2 term
+      starting(i_theta) = log(theta(i_theta));
+      
+    }else{
+      starting(i_theta) = theta(i_theta);
+    } // we assume that drift in this case is identity
     
     ++i_theta;
   } // end for
@@ -263,10 +271,15 @@ arma::colvec untransform_values(const arma::vec& theta,
             i_theta += q;
           }// end else
           
-    } // end if
+      } // end if
 
-      // Take care of SIGMA2 term or other term...
-      result(i_theta) = exp(theta(i_theta));
+      if(element_type != "DR" ){
+        // Take care of SIGMA2 term or other term...
+        result(i_theta) = exp(theta(i_theta));
+        
+      }else{
+        result(i_theta) = theta(i_theta);
+      } // we assume that drift in this case is identity
       
       ++i_theta;
   }  
