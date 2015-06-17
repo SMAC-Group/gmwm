@@ -4,32 +4,12 @@
 
 using namespace Rcpp;
 
-//' @title D Matrix
-//' @description D Matrix
-//' @param At_j A \code{mat} that is of dimensions J x P containing the sederivative of A(theta_hat_j)/dTheta_hat_(j,tau)
-//' @param omega A \code{mat} that is of dimension P x P used in obtaining the GMWM estimator.
-//' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
-//' @return A \code{mat}
-//' @details
-//' TBA
-// [[Rcpp::export]]
-arma::mat D_matrix(const arma::mat& At_j, const arma::mat& omega, const arma::vec& diff){
-  unsigned int p = At_j.n_cols;
-  unsigned int J = At_j.n_rows;
-  arma::vec save = omega*diff; // (J x J) * (J x 1) = J x 1
-  arma::mat D(p, p);
 
-  arma::mat temp = arma::zeros<arma::mat>(p, J);
-  for(unsigned int i = 0; i < p; i++){
-    // force to column vector
-    temp.row(i) = arma::trans(At_j.col(i));
-    
-    D.col(i) = temp*save; // (P x J) * (J x 1) = P x 1
-    temp.row(i).fill(0);
-  }
-  
-  return D;
-}
+/* To whom it may concern....
+ * 
+ * The D matrix is located in the analytical_matrix_derivatives.cpp code file.
+ * 
+ */
 
 //' @title B Matrix
 //' @description B Matrix
@@ -39,7 +19,7 @@ arma::mat D_matrix(const arma::mat& At_j, const arma::mat& omega, const arma::ve
 //' @details
 //' TBA
 // [[Rcpp::export]]
-arma::mat B_matrix(arma::mat A, arma::mat at_omega){
+arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega){
   unsigned int p = A.n_cols;
   arma::mat B(p,p);
   
@@ -57,27 +37,25 @@ arma::mat B_matrix(arma::mat A, arma::mat at_omega){
 //' @param omega A \code{mat} that contains the omega used when calculating the GMWM
 //' @param v_hat A \code{mat} that contains the covariance matrix
 //' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
-//' @param T An \code{unsigned int} that is awesome!
 //' @return A \code{vec}
 //' @details
-//' TBA
+//' The equation is slightly different than that stated in the paper due to the bootstrap already incorporating in 
+//' N.
 // [[Rcpp::export]]
-arma::vec model_score(arma::mat A, arma::mat At_j, arma::mat omega, arma::mat v_hat, arma::vec diff, unsigned int N){
+arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat, arma::vec diff){
   
   arma::mat At = arma::trans(A);
-  arma::mat D = D_matrix(At_j, omega, diff);
   arma::mat B = B_matrix(A, At*omega);
   
   arma::mat d_b = D-B;
   arma::mat db_t = arma::trans(d_b);
-  
   arma::mat dTheta = -arma::inv(db_t * d_b)*db_t*At*omega;
 
   arma::vec score_info(3);
   
-  score_info(0) = arma::as_scalar(arma::trans(diff)*omega*diff + 2.0/double(N)*arma::trace(A * dTheta * omega * v_hat));
+  score_info(0) = arma::as_scalar(arma::trans(diff)*omega*diff + 2.0*arma::trace(A * dTheta * omega * v_hat));
   score_info(1) = arma::as_scalar(arma::trans(diff)*omega*diff);
-  score_info(2) = 2.0/double(N)*arma::trace(A * dTheta * omega * v_hat);
+  score_info(2) = 2.0*arma::trace(A * dTheta * omega * v_hat);
   
   // Return the score
   return score_info;

@@ -367,20 +367,31 @@ gmwm.imu = function(model, data, compute.v = "fast",
 #' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
-summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
+summary.gmwm = function(object, ci.bootstrap = NULL, ci.b = 20, optim.bootstrap = NULL, o.b = 100, ...){
   out = matrix(object$estimate,ncol=1)
   colnames(out) = c("Estimates") 
   
   inference = object$inference
   
   model.select = object$model.select
+  
+  N = object$N
 
   if(is.null(ci.bootstrap)){
-    if(object$N > 10000){
+    if(N > 10000){
       ci.bootstrap = FALSE
     }else{
       ci.bootstrap = TRUE
     } 
+  }
+  
+  if(is.null(optim.bootstrap)){
+    if(N > 10000){
+      optim.bootstrap = FALSE
+    }else{
+      optim.bootstrap = TRUE
+    }
+    
   }
   
   if("ARMA" %in% object$model$desc){
@@ -401,7 +412,8 @@ summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
 
     mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM', object$estimate, object$model$desc, object$model$obj.desc,
                                               object$model.type, object$wv.empir, object$theo, 
-                                              object$scales, object$V, object$omega, object$N, object$alpha, inference, model.select, ci.bootstrap, B, object$robust, object$eff)
+                                              object$scales, object$V, solve(object$orgV), N, 
+                                              object$alpha, inference, model.select, ci.bootstrap, ci.b, object$robust, object$eff)
   }else{
     mm = vector('list',3)
     mm[1:3] = NA
@@ -420,7 +432,7 @@ summary.gmwm = function(object, ci.bootstrap = NULL, B = 20, ...){
                      model.select = model.select, 
                      starting = object$starting,
                      seed = object$seed,
-                     N = object$N), class = "summary.gmwm")
+                     N = N), class = "summary.gmwm")
     
   x
 }
