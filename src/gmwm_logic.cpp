@@ -286,13 +286,17 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, !fullv);
-        omega = arma::inv(diagmat(V));
+        //omega = arma::inv(diagmat(V));
         // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
-        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
-        theta = code_zero(theta);
+        //theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
+        //theta = code_zero(theta);
     }
   }
-
+  // Order AR1s so largest phi is first!
+  if(count_models(desc)["AR1"] > 1){
+    theta = order_AR1s(theta, desc, objdesc);
+  }
+  
   // Obtain the theoretical WV.
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
@@ -419,10 +423,10 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
       theta = Rcpp_ARIMA(data, objdesc(0)); 
       starting = false;
       
-      Rcpp::Rcout << "Guessed Theta:" << theta << std::endl;
     }else{     
       theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
     }
+    
     guessed_theta = theta;
   }
 
@@ -440,12 +444,12 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
         V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, !fullv);
-        omega = arma::inv(diagmat(V));
+        //omega = arma::inv(diagmat(V));
         
         // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
-        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
+        //theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
         
-        theta = code_zero(theta);
+        //theta = code_zero(theta);
         
     }
   }
@@ -458,7 +462,15 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     if(p != 0 && invert_check(arma::join_cols(arma::ones<arma::vec>(1), -theta.rows(0, p - 1))) == false){
       cout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
     }
-  }  
+  } 
+  
+  
+  std::map<std::string, int> models = count_models(desc);
+  
+  // Order AR1s so largest phi is first!
+   if(count_models(desc)["AR1"] > 1){
+     theta = order_AR1s(theta, desc, objdesc);
+   }
 
   // Obtain the objective value function
   arma::vec obj_value(1);

@@ -66,3 +66,64 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
   return w;		
 } 
 
+// [[Rcpp::export]]
+arma::vec order_AR1s(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec> objdesc){
+  int AR1_old_loc = -1;
+  
+  double AR1_phi_prev = 0;
+  
+  double AR1_phi_act = 0;
+  
+  unsigned int i_theta = 0;
+  
+  for(unsigned int i = 0; i < desc.size(); i++){
+    std::string element_type = desc[i];
+    
+    if(element_type == "AR1"){
+      // Is this the first AR1 element in the stack?
+      if(AR1_old_loc != -1){
+        
+        AR1_phi_act = theta(i_theta);
+        
+        // Make the largest phi value first.
+        if(AR1_phi_prev < AR1_phi_act){
+          
+          // Put old phi in current position
+          theta(i_theta) = AR1_phi_prev;
+          
+          // Move large phi value to old location 
+          theta(AR1_old_loc) = AR1_phi_act;
+          
+          // Extract new sig in current position
+          AR1_phi_prev = theta(i_theta+1);
+          
+          // Update sigma2 of the new location with the old value
+          theta(i_theta + 1) = theta(AR1_old_loc+1);
+    
+          // Update old location with old sig2. 
+          theta(AR1_old_loc+1) = AR1_phi_prev;
+          
+          // Store new low theta!
+          AR1_phi_prev = theta(i_theta);
+        }
+        
+        // Else: The current one is less than the previous.
+        
+        // Update old AR1 location 
+        AR1_old_loc = i_theta;
+          
+      }else{ // First element, initialize values.
+        AR1_old_loc = i_theta;
+        AR1_phi_prev = theta(i_theta);
+      }
+      
+      i_theta += 2;
+    }else if(element_type == "ARMA"){
+      i_theta += sum(objdesc(i));  
+    }else{
+      i_theta++;
+    }
+  }
+  
+  return theta;
+}
