@@ -92,47 +92,192 @@ summary.wvar = function(object, ...){
 #' @description Creates the wavelet variance graph
 #' @method plot wvar
 #' @param x A \code{wvar} object.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param color.CI A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines.
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines.
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param graph.title A \code{string} that indicates the title of the graph.
+#' @param graph.title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param title.x.axis A \code{string} that indicates the label on x axis.
+#' @param title.y.axis A \code{string} that indicates the label on y axis.
+#' @param legend.title A \code{string} that indicates the title of legend.
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. 
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend.
 #' @param ... other arguments passed to specific methods
 #' @return A ggplot2 graph containing the wavelet variances.
+#' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
 #' @author JJB
 #' @seealso \code{\link{autoplot.wvar}}
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
-#' out = wvar(modwt(x))
+#' out = wvar(x)
 #' plot( out )
-plot.wvar = function(x, ...){
-  autoplot.wvar(x)
+plot.wvar = function(x, transparence = 0.1, background = 'grey',  
+                     color.CI = "#003C7D", line.type = c('solid','dotted'), line.color = c('#003C7D', '#999999'),
+                     point.size = c(5,0), point.shape = c(20,46),
+                     graph.title = NA, graph.title.size= 15, 
+                     axis.label.size = 13, axis.tick.size = 11, 
+                     title.x.axis = expression(paste("Scale ", tau)),
+                     title.y.axis = expression(paste("Wavelet Variance ", nu)),
+                     legend.title = '',  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) ),
+                     legend.key.size = 1, legend.title.size = 13, 
+                     legend.text.size = 13, ...){
+  autoplot.wvar(x, transparence = transparence, background = background,  
+                color.CI = color.CI, line.type = line.type, line.color = line.color,
+                point.size = point.size, point.shape = point.shape,
+                graph.title = graph.title, graph.title.size= graph.title.size, 
+                axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                title.x.axis = title.x.axis,
+                title.y.axis = title.y.axis,
+                legend.title = legend.title,  legend.label = legend.label,
+                legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                legend.text.size = legend.text.size )
 }
 
 #' @title Graph Wavelet Variances
 #' @description Creates the wavelet variance graph
 #' @method autoplot wvar
 #' @param object A \code{wvar} object.
-#' @param ... other arguments passed to specific methods
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param color.CI A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines.
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines.
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param graph.title A \code{string} that indicates the title of the graph.
+#' @param graph.title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param title.x.axis A \code{string} that indicates the label on x axis.
+#' @param title.y.axis A \code{string} that indicates the label on y axis.
+#' @param legend.title A \code{string} that indicates the title of legend.
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. 
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend.
+#' @param ... other arguments passed to specific methods.
 #' @return A ggplot2 graph containing the wavelet variances.
+#' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
 #' @author JJB
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
-#' out = wvar(modwt(x))
+#' out = wvar(x)
 #' autoplot( out )
-autoplot.wvar = function(object, ...){
+autoplot.wvar = function(object, transparence = 0.1, background = 'grey',  
+                         color.CI = "#003C7D", line.type = c('solid','dotted'), line.color = c('#003C7D', '#999999'),
+                         point.size = c(5,0), point.shape = c(20,46),
+                         graph.title = NA, graph.title.size= 15, 
+                         axis.label.size = 13, axis.tick.size = 11, 
+                         title.x.axis = expression(paste("Scale ", tau)),
+                         title.y.axis = expression(paste("Wavelet Variance ", nu)),
+                         legend.title = '',  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) ),
+                         legend.key.size = 1, legend.title.size = 13, 
+                         legend.text.size = 13, ...){
   .x=low=high=trans_breaks=trans_format=math_format=NULL
-  name = if(object$robust){ "Robust"} else{ "Classic" }
+  
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Default setting is used.")
+    background = 'grey'
+  }
+  
+  #check parameter
+  params = c('line.type', 'line.color', 'point.size', 'point.shape', 'legend.label')
+  requireLength = c(2, 2, 2, 2, 2)
+  legend.label.default = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) )
+  default = list(c('solid','dotted'), c('#003C7D', '#999999'),  c(5, 0), c(20,46), legend.label.default)
+  nullIsFine = c(rep(F,5))
+  for (i in 1:length(params)){
+    one_param = params[i]
+    if( length(get(one_param))!=requireLength[i]){
+      isNull = is.null(get(one_param))
+      if(isNull && nullIsFine[i]){}else{
+        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
+                      'is supplied.','Default setting is used.'))
+        }
+      assign(one_param, default[[i]])
+    }
+  }
+  
+  
+  #process parameter (insert some values)
+  params = params[-5];from = 2; to = 3; times = 1;
+  for(i in 1:length(params)){
+    real_param = get(params[i])
+    target = real_param[from]
+    stuff = rep(target, times)
+    one_param = params[i]
+    
+    assign(one_param, c(real_param, stuff))
+  }
+  
+  
+  #other parameter
+  breaks = c('var', 'low')
+  legend.color = c(NA, alpha(color.CI, transparence) )
+  legend.linetype = c(line.type[1], 'blank')
+  legend.pointshape = c(point.shape[1], NA)
+  
   WV = data.frame(var = object$variance, low = object$ci_low, high = object$ci_high, scale = object$scales)
-  CI = ggplot(WV, aes( x = scale, y = low), colour = "#003C7D") + geom_line(linetype = "dotted", colour = "#003C7D") + 
-    geom_line(aes(y = high),linetype = "dotted", colour = "#003C7D") +
-    geom_line(aes(y = var)) + geom_point(aes(y = var), size = 3) +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+  melt.wv = melt(WV, id.vars = 'scale')
+  p = ggplot() + geom_line(data = melt.wv, mapping = aes(x = scale, y = value, color = variable, linetype = variable)) +
+    geom_point(data = melt.wv, mapping =aes(x = scale, y = value, color = variable, size = variable, shape = variable)) +
+    
+    scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label ) +
+    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
+    scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
+    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label) +
+  
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) + 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1, fill = "#003C7D") +
-    ggtitle(paste0("Haar Wavelet Variance Representation for ", name, " Calculation"))
+                  labels = trans_format("log10", math_format(10^.x)))
   
-  CI
+  #if(CI){
+    p = p + geom_ribbon(data = WV, mapping = aes(ymin = low , ymax = high, x = scale, y = NULL), alpha = transparence, fill = color.CI, show_guide = T) +
+      guides(colour = guide_legend(override.aes = list(fill = legend.color, linetype = legend.linetype, shape = legend.pointshape)))
+  #}
+    if( background == 'white'){
+      p = p + theme_bw() 
+    }
+    if(background %in% c('gray','grey')){
+      p = p + theme(legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))
+    }
+    
+    #decide where to place the legend
+    legendPlace = placeLegend(WV$var[1], WV$low[ length(WV$low) ], WV$high[ length(WV$high)])  
+    
+    p = p +
+      xlab(title.x.axis) + ylab(title.y.axis) + ggtitle(graph.title) +
+      theme(
+        plot.title = element_text(size=graph.title.size),
+        axis.title.y = element_text(size= axis.label.size),
+        axis.text.y  = element_text(size= axis.tick.size),
+        axis.title.x = element_text(size= axis.label.size),
+        axis.text.x  = element_text(size= axis.tick.size),
+        #legend.key = element_rect(fill=NA), 
+        legend.key.size = unit(legend.key.size, "cm"),
+        legend.text = element_text(size = legend.text.size),  
+        legend.title = element_text(size = legend.title.size),
+        legend.justification=legendPlace[1:2], legend.position=legendPlace[3:4],
+        legend.text.align = 0)  
+    
+    if (is.na(graph.title)){
+      name = if(object$robust){ "Robust"} else{ "Classic" }
+      p = p +
+        ggtitle(paste0("Haar Wavelet Variance Representation for ", name, " Calculation"))
+    }
+    
+    p
 }
 
 #' @title Detail Implementation to Compare Wavelet Variances
