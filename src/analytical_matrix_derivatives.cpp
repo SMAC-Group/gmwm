@@ -2,15 +2,9 @@
 #include "analytical_matrix_derivatives.h"
 #include "inline_functions.h"
 #include "process_to_wv.h"
+#include "rtoarmadillo.h"
 
 using namespace Rcpp;
-
-
-// [[Rcpp::export]]
-arma::vec seq_cpp(unsigned int n){
-  arma::vec seq = arma::ones<arma::vec>(n);
-  return cumsum(seq) - 1;
-}
 
 // [[Rcpp::export]]
 arma::vec arma_adapter(const arma::vec& theta,
@@ -69,12 +63,14 @@ arma::mat jacobian_arma(const arma::vec& theta,
     st(i) = submat;
   }
   
+  arma::vec seq_n = seq_len_cpp(n) - 1;
+  
   for (unsigned int k = 0; k < r; k++) {
     for (unsigned int i = 0; i < n; i++) {
       
       // We need to replace this badly with something more generic.
-      st(i).col(k) = (arma_adapter(theta + h % (i == seq_cpp(n)), p,q, tau) 
-                        - arma_adapter(theta - h % (i == seq_cpp(n)), p,q, tau)) / (2 * h(i));
+      st(i).col(k) = (arma_adapter(theta + h % (i == seq_n), p,q, tau) 
+                        - arma_adapter(theta - h % (i == seq_n), p,q, tau)) / (2 * h(i));
       
     }
     h = h/v;
@@ -397,14 +393,18 @@ arma::mat D_matrix(const arma::vec& theta,
       // Modify p columns for phi
       A_i.rows(i_theta-1, i_theta) = s.rows(0,1);
       
+      // Calculate the D matrix column value for the phi
       D.col(i_theta-1) = A_i * omegadiff;
       
       // Modify p columns for sig
       A_i.rows(i_theta-1, i_theta) = s.rows(1,2);
       
+      // Calculate the D matrix column value for the sigma
       D.col(i_theta) = A_i * omegadiff;
       
+      // Clear the Ai matrix
       A_i.row(i_theta-1).fill(0);
+      
     }
     else if(element_type == "ARMA"){
       // implement later      

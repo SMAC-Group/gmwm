@@ -9,6 +9,80 @@ using namespace Rcpp;
 
 // A special define is included in rtoarmadillo.h used in these functions...
 
+
+
+
+//' @title Generate a sequence of values
+//' @description Creates a vector containing a sequence of values starting at the initial point and going to the terminal point.
+//' @param a An \code{int}, that denotes the starting point.
+//' @param b An \code{int}, that denotes the ending point.
+//' @return A \code{vector} containing values moving from a to b. There are no restrictions on A's range.
+//' @seealso \code{\link{rwishart}} 
+//' @author James J Balamuta
+//' @examples 
+//' #Call with the following data:
+//' seq_cpp(3, 5)
+//' seq_cpp(5, 3)
+// [[Rcpp::export]]
+arma::vec seq_cpp(int a, int b){
+  int d = abs(b-a)+1;
+  
+  int inc = ( a < b ? 1 : -1 );
+  arma::vec s(d);
+  
+  s.fill(inc);
+  s(0) = a;
+
+  return cumsum(s);
+}
+
+//' @title Generate a sequence of values based on supplied number
+//' @description Creates a vector containing a sequence of values starting at 1 and going to the terminal point.
+//' @param n An \code{int} that denotes the length of the vector.
+//' @return A \code{vector} containing values moving from 1 to n.
+//' @author James J Balamuta
+//' @examples 
+//' #Call with the following data:
+//' seq_len_cpp(5)
+// [[Rcpp::export]]
+arma::vec seq_len_cpp(unsigned int n){
+  arma::vec seq = arma::ones<arma::vec>(n);
+  return cumsum(seq);
+}
+
+
+//' @title Find Quantiles
+//' @description Attempts to find quantiles
+//' @param x A \code{vec} that denotes the starting point.
+//' @param b A \code{vec}, that denotes the ending point.
+//' @return A \code{vector} containing the quantiles
+//' @author James J Balamuta
+//' @examples 
+//' #Call with the following data:
+//' quantile_cpp(c(1,2,3,4,5,6,7), c(.25,.5,.75))
+//' quantile(c(1,2,3,4,5,6,7), c(.25,.5,.75))
+// [[Rcpp::export]]
+arma::vec quantile_cpp(arma::vec x, const arma::vec& probs) {
+  
+  unsigned int n = x.n_elem;
+  
+  arma::uvec index = arma::conv_to<arma::uvec>::from( (n - 1) * probs);
+  arma::uvec lo = floor(index);
+  arma::uvec hi = ceil(index);
+  
+  // bad for sorting large data. need partial sort.
+  x = sort(x);
+  
+  arma::vec qs = x(lo);
+  arma::uvec i = index > lo;
+  arma::uvec h = (index - lo);
+  h = h.elem(i);
+  qs.elem(i) = (1 - h) % qs.elem(i) + h % x.elem(hi.elem(i));
+  
+  return qs;
+}
+
+
 //' @title Lagged Differences in Armadillo
 //' @description Returns the ith difference of a time series of rth lag.
 //' @param x A \code{vec} that is the time series

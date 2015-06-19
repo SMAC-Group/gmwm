@@ -3,6 +3,12 @@
 
 #define my_isok(x) (!ISNA(x) & !ISNAN(x))
 
+arma::vec seq_cpp(int a, int b);
+
+arma::vec seq_len_cpp(unsigned int n);
+
+arma::vec quantile_cpp(arma::vec x, const arma::vec& probs);
+
 arma::vec diff_cpp(arma::vec x, unsigned int lag = 1, unsigned int differences = 1);
 
 arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max);

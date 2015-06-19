@@ -22,47 +22,6 @@ using namespace Rcpp;
 //' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
-arma::vec arma_to_wv_old(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
-  
-  arma::vec n = arma::sort(tau/2);
-  unsigned int ntau = tau.n_elem;
-  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma;
-  
-  arma::vec wvar(ntau);
-  
-  // initial starting term
-  arma::vec term4 = ARMAacf_cpp(ar, ma, n(0));
-  wvar(0)=( ( ( n(0)*(1.0-term4(term4.n_elem-1))) / square(n(0)))*sig2)/2.0;
-
-  for(unsigned int j = 1; j < ntau; j++){
-    arma::vec boh(n(j) - 1);
-    for (int i=1; i<= n(j) - 1; i++){
-      arma::vec term1=ARMAacf_cpp(ar, ma, (n(j)-i));
-      arma::vec term2=ARMAacf_cpp(ar, ma, i);
-      arma::vec term3=ARMAacf_cpp(ar, ma, (2*n(j)-i));
-      // Account for starting loop at 1 instead of 0.
-      boh(i-1)=i*((2.0*term1(term1.n_elem-1))-term2(term2.n_elem-1)-term3(term3.n_elem-1));
-    }
-    arma::vec term4=ARMAacf_cpp(ar, ma, n(j));
-    wvar(j)=((( (n(j)*(1.0-term4(term4.n_elem-1)) ) + arma::sum(boh) ) /square(n(j)))*sig2)/2.0;
-  }
-  
-  return wvar;
-}
-
-
-
-//' @title ARMA process to WV
-//' @description This function computes the (haar) WV of an ARMA process
-//' @param ar A \code{vec} containing the coefficients of the AR process
-//' @param ma A \code{vec} containing the coefficients of the MA process
-//' @param tau A \code{vec} containing the scales e.g. 2^tau
-//' @param sigma A \code{double} containing the residual variance
-//' @return A \code{vec} containing the wavelet variance of the ARMA process.
-//' @examples
-//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
-//' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
-// [[Rcpp::export]]
 arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   
   arma::vec n = arma::sort(tau/2);

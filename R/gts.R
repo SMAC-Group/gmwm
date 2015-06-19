@@ -29,6 +29,7 @@ gts = function(data, name = "", freq = 1, unit = "sec"){
   # Check if the data is in matrix form
   if (is.matrix(data)) {
     ndata = nrow(data)
+    colnames(data) = NULL
   } else {
     ndata = length(data)
   }

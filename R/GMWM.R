@@ -75,7 +75,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, inference = NULL, model.select = NULL, alpha = 0.05, seed = NULL, G = NULL, K = 1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, alpha = 0.05, seed = NULL, G = NULL, K = 1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -144,25 +144,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we  at least need the same number of scales as parameters to estimate.")
     }
   }
-  
-  # Compute inference on small time series.
-  if(is.null(inference)){
-    if(N > 10000){
-      inference = FALSE
-    }else{
-      inference = TRUE
-    } 
-  }
-  
-  
-  # Compute model.select on small time series.
-  if(is.null(model.select)){
-    if(N > 10000){
-      model.select = FALSE
-    }else{
-      model.select = TRUE
-    } 
-  }
+
   
   # Auto setting
 
@@ -180,7 +162,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
 
   out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = alpha, compute_v = compute.v, K = K, H = H, G = G,
-                                                         robust=robust, eff = eff, inference || model.select)
+                                                         robust=robust, eff = eff)
   #colnames(out) = model$desc
   
   estimate = out[[1]]
@@ -188,24 +170,24 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
-  
+  # Create a new model object.
   model.hat = model
   
   model.hat$starting = F  
   
   model.hat$theta = as.numeric(estimate)
   
-  
+  # Release model
   out = structure(list(data = data,
                        estimate = estimate,
                        init.guess = init.guess,
                        wv.empir = out[[3]], 
                        ci.low = out[[4]], 
                        ci.high = out[[5]],
+                       orgV = out[[7]],
                        V = out[[6]],
                        omega = out[[12]],
                        obj.fun = out[[11]],
-                       orgV = out[[7]],
                        theo = out[[9]],
                        decomp.theo = out[[10]],
                        scales = scales, 
@@ -223,8 +205,6 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
                        model = model,
                        model.hat = model.hat,
                        starting = model$starting,
-                       inference = inference,
-                       model.select = model.select,
                        seed = seed), class = "gmwm")
   invisible(out)
 }
@@ -273,6 +253,11 @@ update.gmwm = function(object, model, ...){
   summary.desc = model$desc
   
   models.active = count_models(desc)
+  
+  # Set seed for reproducibility
+  
+  set.seed(object$seed)
+  
   # Identifiability issues
   if(any( models.active[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
@@ -302,8 +287,17 @@ update.gmwm = function(object, model, ...){
                   model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 
-                  object$robust, object$eff, object$inference || object$model.select)
+                  object$robust, object$eff)
 
+  
+  model.hat = model
+  
+  model.hat$starting = F  
+  
+  model.hat$theta = as.numeric(estimate)
+  
+  object$model.hat = model.hat
+  
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
   init.guess = out[[2]]
@@ -335,18 +329,19 @@ update.gmwm = function(object, model, ...){
 #'  \item{}
 #'  \item{}
 #' }
-gmwm.imu = function(model, data, compute.v = "fast",
-                  inference = F,  robust = F, eff = 0.6, ...){
-  gmwm(model = model, 
+gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
+  
+  x = gmwm(model = model, 
        data = data, 
        compute.v = compute.v,
        model.type = "imu",
-       inference = inference,
-       model.select = if(is.na(model.select)) F else model.select,
        robust = robust, 
        eff = eff,
        ...
        )
+  class(x) = c("gmwm_imu","gmwm")
+  
+  x
 }
 
 
@@ -355,10 +350,32 @@ gmwm.imu = function(model, data, compute.v = "fast",
 #' @description Displays summary information about GMWM object
 #' @method summary gmwm
 #' @param object A \code{GMWM} object
-#' @param ci.bootstrap A value containing either: NULL (auto), TRUE, or FALSE
+#' @param inference A value containing either: NULL (auto), TRUE, or FALSE
 #' @param model.select A value containing either: NULL (auto), TRUE, FALSE
+#' @param bs.gof A value containing either: NULL (auto), TRUE, FALSE
+#' @param bs.gof.p.ci A value containing either: NULL (auto), TRUE, FALSE
+#' @param bs.theta.est A value containing either: NULL (auto), TRUE, FALSE
+#' @param bs.ci A value containing either: NULL (auto), TRUE, FALSE
+#' @param bs.optimism A value containing either: NULL (auto), TRUE, FALSE
+#' @param B An \code{int} that indicates how many bootstraps should be performed.
 #' @param ... other arguments passed to specific methods
-#' @return Text output via print
+#' @return A \code{summary.gmwm} object with:
+#' \itemize{
+#'  \item{estimates}{Estimated Theta Values}
+#'  \item{testinfo}{Goodness of Fit Information}
+#'  \item{model.score}{Model Score Criterion Info}
+#'  \item{model.select}{Model Score calculated? T/F}
+#'  \item{inference}{Inference performed? T/F}
+#'  \item{bs.gof}{Bootstrap GOF? T/F}
+#'  \item{bs.gof.p.ci}{Bootstrap GOF P-Value CI? T/F}
+#'  \item{bs.theta.est}{Bootstrap Theta Estimates? T/F}
+#'  \item{bs.ci}{Bootstrap CI? T/F}
+#'  \item{bs.optimism}{Bootstrap Optimism? T/F}
+#'  \item{starting}{Indicates if program supplied initial starting values}
+#'  \item{seed}{Seed used during guessing / bootstrapping}
+#'  \item{obj.fun}{Value of obj.fun at minimized theta}
+#'  \item{N}{Length of Time Series}
+#' }
 #' @author JJB
 #' @examples
 #' # AR
@@ -367,31 +384,44 @@ gmwm.imu = function(model, data, compute.v = "fast",
 #' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
-summary.gmwm = function(object, ci.bootstrap = NULL, ci.b = 20, optim.bootstrap = NULL, o.b = 100, ...){
-  out = matrix(object$estimate,ncol=1)
+summary.gmwm = function(object, inference = NULL, model.select = NULL, 
+                        bs.gof = NULL,  bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL, bs.optimism = NULL,
+                        B = 50, ...){
+  out = object$estimate
   colnames(out) = c("Estimates") 
   
-  inference = object$inference
-  
-  model.select = object$model.select
-  
   N = object$N
-
-  if(is.null(ci.bootstrap)){
-    if(N > 10000){
-      ci.bootstrap = FALSE
-    }else{
-      ci.bootstrap = TRUE
-    } 
+  
+  # Enable values if small time series.
+  auto = if(N > 10000) FALSE else TRUE
+  
+  # Auto set values
+  if(is.null(inference)){
+    inference = auto
   }
   
-  if(is.null(optim.bootstrap)){
-    if(N > 10000){
-      optim.bootstrap = FALSE
-    }else{
-      optim.bootstrap = TRUE
-    }
-    
+  if(is.null(model.select)){
+    model.select = auto
+  }
+
+  if(is.null(bs.gof)){
+    bs.gof= if(inference) auto else F
+  }
+  
+  if(is.null(bs.gof.p.ci)){
+    bs.gof.p.ci = if(inference) auto else F
+  }
+  
+  if(is.null(bs.theta.est)){
+    bs.theta.est = if(inference) auto else F
+  }
+  
+  if(is.null(bs.ci)){
+    bs.ci = if(inference) auto else F
+  }
+  
+  if(is.null(bs.optimism)){
+    bs.optimism = if(model.select) auto else F
   }
   
   if("ARMA" %in% object$model$desc){
@@ -403,17 +433,21 @@ summary.gmwm = function(object, ci.bootstrap = NULL, ci.b = 20, optim.bootstrap 
     
     if(ci.bootstrap == FALSE){
       warning(paste0("The numerical derivative of ARMA(p,q), where p > 1 and q > 1, may be inaccurate leading to inappropriate CIs.\n",
-              "Consider using the ci.bootstrap = T option on the summary function."))
+              "Consider using the bs.ci = T option on the summary function."))
     }
   }
   
-  
   if(inference || model.select){
-
-    mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM', object$estimate, object$model$desc, object$model$obj.desc,
-                                              object$model.type, object$wv.empir, object$theo, 
-                                              object$scales, object$V, solve(object$orgV), N, 
-                                              object$alpha, inference, model.select, ci.bootstrap, ci.b, object$robust, object$eff)
+    mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM',object$estimate, 
+                                                    object$model$desc, object$model$obj.desc,
+                                                    object$model.type, 
+                                                    object$wv.empir, object$theo,object$scales,
+                                                    object$V, solve(object$orgV), object$obj.fun,
+                                                    N, object$alpha,
+                                                    object$robust, object$eff,
+                                                    inference, model.select, object$compute.v == "bootstrap",
+                                                    bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci, bs.optimism, 
+                                                    B)
   }else{
     mm = vector('list',3)
     mm[1:3] = NA
@@ -430,8 +464,14 @@ summary.gmwm = function(object, ci.bootstrap = NULL, ci.b = 20, optim.bootstrap 
                      model.score = mm[[3]],
                      inference = inference, 
                      model.select = model.select, 
+                     bs.gof = bs.gof,
+                     bs.gof.p.ci = bs.gof.p.ci,
+                     bs.theta.est = bs.theta.est, 
+                     bs.ci = bs.ci,
+                     bs.optimism = bs.optimism,
                      starting = object$starting,
                      seed = object$seed,
+                     obj.fun = object$obj.fun,
                      N = N), class = "summary.gmwm")
     
   x
@@ -452,26 +492,40 @@ summary.gmwm = function(object, ci.bootstrap = NULL, ci.b = 20, optim.bootstrap 
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
 print.summary.gmwm = function(x, ...){
+  
   cat("Model Information: \n")
   print(x$estimates)
-  if(x$starting){
-    cat("\nThe values supplied under initial guess were generated by the program.\n")
-    cat(paste0("To replicate the guessed parameters, use seed: ",x$seed, "\n"))
-  }else{
-    cat("\nThe values supplied under initial guess were given by YOU!\n")
-  }
+  cat("\n* The values used in the optimization were", 
+      {if(x$starting) "generated by the program." else "given by YOU!"},"\n\n")
+
+  cat(paste0("Objective Function: ", round(x$obj.fun,4),"\n\n"))
   
+    
   if(x$inference){
-    cat(paste0("\nThe Goodness of Fit test statistic is: ", round(x$testinfo[1],2),
+    cat(paste0({if(x$bs.gof) "Bootstrapped" else "Asymptotic"}," Goodness of Fit: \n"))
+    if(x$bs.gof){
+      cat(paste0("Test Statistic: ", round(x$obj.fun,2),"\n",
+                 "P-Value: ", round(x$testinfo[1],4)), 
+                {if(x$bs.gof.p.ci) paste0(" CI: (", round(x$testinfo[2],4),", ", round(x$testinfo[3],4), ")")})
+
+    }else{
+      cat(paste0("Test Statistic: ", round(x$testinfo[1],2),
           " on ",x$testinfo[3]," degrees of freedom\n",
-          "The resulting p-value is: ", round(x$testinfo[2],4)),"\n\n")
-  }else{
-    cat("\nInference was not run. \nTo obtain theta confidence intervals and Goodness of Fit information, please re-run summary() with inference = TRUE.")
+          "The resulting p-value is: ", round(x$testinfo[2],4)))
+    }
+    cat("\n\n")
   }
   
   if(x$model.select){
-    cat(paste0("\nThe model score statistic is: ", round(x$model.score[[1]],4),"\n\n"))
+    cat(paste0({ if(x$bs.optimism) "Bootstrapped" else "Asymptotic"}," Model Criterion: \n"))
+    
+    cat(paste0("Model Score Statistic: ", round(x$model.score[[1]],4),"\n",
+               "Optimism: ", round(x$model.score[[2]],4), 
+              "\n"))
   }
+  
+  if(x$bs.gof || x$bs.optimism)
+  cat(paste0("\nTo replicate the results, use seed: ",x$seed, "\n"))
 }
 
 
