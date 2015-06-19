@@ -2,6 +2,9 @@
 
 #include "model_selection.h"
 
+// Needed for COV bootstrap
+#include "bootstrappers.h"
+
 using namespace Rcpp;
 
 

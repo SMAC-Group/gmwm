@@ -87,8 +87,65 @@ arma::mat cov_bootstrapper(const arma::vec&  theta,
 }
 
 
-//' @title Bootstrap for Matrix V
+
+//' @title Bootstrap for Optimism
 //' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+//' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+//' @details
+//' Expand in detail...  
+//' @author JJB
+//' @keywords internal
+//' @examples
+//' # Coming soon
+// [[Rcpp::export]]
+arma::mat optimism_bootstrapper(const arma::vec&  theta,
+                                const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
+                                const arma::vec& scales, std::string model_type, 
+                                unsigned int N, bool robust, double eff, double alpha,
+                                unsigned int H){
+  unsigned int nb_level = floor(log2(N));
+  
+  unsigned int p = theta.n_elem;
+  
+  arma::mat theo(nb_level, H);
+  
+  arma::mat all_wv_empir(nb_level, H);
+
+  for(unsigned int i=0; i<H; i++){
+    
+    // Generate x_t ~ F_theta
+    arma::vec x = gen_model(N, theta, desc, objdesc);
+    
+    // MODWT transform
+    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
+    
+    // Obtain WV and confidence intervals
+    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    
+    // Obtain the Omega matrix (CI HI, CI LO)
+    arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
+    
+    // Obtain the GMWM estimator's estimates. (WV_EMPIR)
+    arma::vec est = gmwm_engine(theta, desc, objdesc, model_type, 
+                                wvar.col(0), omega, scales, false);
+    
+
+    // Decomposition of the WV.
+    theo.col(i) = theoretical_wv(est, desc, objdesc, scales);
+    
+    all_wv_empir.col(i) = wvar.col(0);
+  }
+  
+  // Optimism Matrix bootstrap result 
+  return cov(all_wv_empir.t(),theo.t());
+}
+
+
+//' @title Bootstrap for Standard Deviations of Theta Estimates
+//' @description Using the bootstrap approach, we simulate a model based on user supplied parameters
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.
 //' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
@@ -171,7 +228,7 @@ arma::vec boot_pval_gof(double obj, const arma::vec& obj_boot, unsigned int B = 
 
 
 
-//' @title Bootstrap for Matrix V
+//' @title Bootstrap for Estimating Both Theta and Theta SD
 //' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.
@@ -234,7 +291,7 @@ arma::field<arma::mat> gmwm_param_bootstrapper(const arma::vec&  theta,
 
 
 
-//' @title Bootstrap for Matrix V
+//' @title Bootstrap for Everything!
 //' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.

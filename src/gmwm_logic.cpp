@@ -209,14 +209,19 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   // Obtain the theoretical WV.
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
-
+  
+  // Obtain the objective value function
+  arma::vec obj_value(1);
+  obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
+  
   // Export calculations to R.
-  arma::field<arma::mat> out(5);
+  arma::field<arma::mat> out(6);
   out(0) = theta;
   out(1) = guessed_theta;
   out(2) = V;
   out(3) = theo;
   out(4) = decomp_theo;
+  out(5) = obj_value;
   
   return out;
                                         
@@ -405,6 +410,9 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   out(11) = omega;
   return out;
 }
+
+
+
 
 /*
 
