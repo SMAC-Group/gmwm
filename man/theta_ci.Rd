@@ -4,14 +4,14 @@
 \alias{theta_ci}
 \title{Generate the Confidence Interval for Theta Estimates}
 \usage{
-theta_ci(theta, psi, alpha)
+theta_ci(theta, A, v_hat, omega, alpha)
 }
 \arguments{
 \item{theta}{}
 
 \item{psi}{}
 
-\item{alpha}{}
+\item{z}{}
 }
 \value{
 A \code{mat} that has the first column

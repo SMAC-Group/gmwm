@@ -4,8 +4,7 @@
 \alias{gmwm.imu}
 \title{GMWM for (Robust) IMU}
 \usage{
-gmwm.imu(model, data, compute.v = "fast", inference = F, robust = F,
-  eff = 0.6, ...)
+gmwm.imu(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}
