@@ -178,8 +178,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   model.hat$theta = as.numeric(estimate)
   
   # Release model
-  out = structure(list(data = data,
-                       estimate = estimate,
+  out = structure(list(estimate = estimate,
                        init.guess = init.guess,
                        wv.empir = out[[3]], 
                        ci.low = out[[4]], 
@@ -532,10 +531,16 @@ print.summary.gmwm = function(x, ...){
 #' @title Predict future points in the time series using the solution of the Generalized Method of Wavelet Moments
 #' @description Creates a prediction using the estimated values of GMWM through the ARIMA function within R.
 #' @method predict gmwm
-#' @param object GMWM 
+#' @param object A \code{gmwm} object 
+#' @param data.in.gmwm The data SAME EXACT DATA used in the GMWM estimation
 #' @param n.ahead Number of observations to guess.
-#' @param data Set used to create the GMWM.
-predict.gmwm = function(object, n.ahead, ...){
+#' @return A \code{predict.gmwm} object with:
+#' \itemize{
+#' \item{pred}{Predictions}
+#' \item{se}{SE}
+#' \item{resid}{Residuals}
+#' }
+predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
   
   ts.mod = object$model
   
@@ -547,7 +552,7 @@ predict.gmwm = function(object, n.ahead, ...){
   p = objdesc[1]
   q = objdesc[2]
   
-  mod = arima(object$data, order = c(p, 0, q),
+  mod = arima(data.in.gmwm, order = c(p, 0, q),
               method="ML",
               fixed = object$estimate[1:(p+q)],
               transform.pars = F,
