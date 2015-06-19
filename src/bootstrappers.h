@@ -12,6 +12,11 @@ arma::vec gmwm_sd_bootstrapper(const arma::vec&  theta,
                                unsigned int N, bool robust, double eff, double alpha,
                                unsigned int H);
 
+arma::mat optimism_bootstrapper(const arma::vec&  theta,
+                                const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
+                                const arma::vec& scales, std::string model_type, 
+                                unsigned int N, bool robust, double eff, double alpha,
+                                unsigned int H);
 
 arma::vec boot_pval_gof(double obj, const arma::vec& obj_boot, unsigned int B, double alpha);
 
