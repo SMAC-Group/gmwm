@@ -42,7 +42,7 @@ arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega){
 //' The equation is slightly different than that stated in the paper due to the bootstrap already incorporating in 
 //' N.
 // [[Rcpp::export]]
-arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat, arma::vec diff){
+arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat, double obj_value){
   
   arma::mat At = arma::trans(A);
   arma::mat B = B_matrix(A, At*omega);
@@ -51,11 +51,10 @@ arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat
   arma::mat db_t = arma::trans(d_b);
   arma::mat dTheta = -arma::inv(db_t * d_b)*db_t*At*omega;
 
-  arma::vec score_info(3);
+  arma::vec score_info(2);
   
-  score_info(0) = arma::as_scalar(arma::trans(diff)*omega*diff + 2.0*arma::trace(A * dTheta * omega * v_hat));
-  score_info(1) = arma::as_scalar(arma::trans(diff)*omega*diff);
-  score_info(2) = 2.0*arma::trace(A * dTheta * omega * v_hat);
+  score_info(0) = obj_value + arma::as_scalar(2.0*arma::trace(A * dTheta * omega * v_hat));
+  score_info(1) = 2.0*arma::trace(A * dTheta * omega * v_hat);
   
   // Return the score
   return score_info;

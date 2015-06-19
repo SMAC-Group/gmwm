@@ -1,49 +1,75 @@
 #include <RcppArmadillo.h>
 
+#include "inference.h"
+
 // Need for getObjFun
 #include "objective_functions.h"
 
 // Need for gmwm_engine in chisq test
 #include "gmwm_logic.h"
 
-
-//#include "inference.h"
 using namespace Rcpp;
 
 //' @title Calculate the Psi matrix
 //' @description Computes the Psi matrix using supplied parameters
-//' @param D
-//' @param v_hat
-//' @param omega
+//' @param A first derivative matrix
+//' @param v_hat bootstrapped V
+//' @param omega original omega matrix
 //' @return A \code{mat} that has the first column 
 // [[Rcpp::export]]
-arma::mat calculate_psi_matrix(const arma::mat& D, const arma::mat& v_hat, const arma::mat& omega){ 
-  arma::mat D_trans = arma::trans(D);
-  arma::mat B = arma::inv(D_trans*omega*D)*D_trans*omega;
+arma::mat calculate_psi_matrix(const arma::mat& A, const arma::mat& v_hat, const arma::mat& omega){ 
+  arma::mat A_trans = arma::trans(A);
+  arma::mat B = arma::inv(A_trans*omega*A)*A_trans*omega;
   
   return B*v_hat*arma::trans(B);
+}
+
+//' @title Format the Confidence Interval for Estimates
+//' @description Creates hi and lo confidence based on SE and alpha.
+//' @param theta
+//' @param se
+//' @param alpha
+//' @return A \code{mat} that has:
+//' \itemize{
+//' \item Column 1: Lo CI
+//' \item Column 2: Hi CI
+//' \item Column 3: SE
+//' }
+// [[Rcpp::export]]
+arma::mat format_ci(const arma::vec& theta,
+                    const arma::vec& se,
+                    double alpha){
+  
+  double z = R::qnorm(1-alpha, 0, 1, true, false);
+  
+  unsigned int nparams = theta.n_elem;
+  arma::mat ci(nparams, 3);
+  
+  ci.col(0) = theta - z*se;
+  ci.col(1) = theta + z*se;
+  ci.col(2) = se;
+  
+  return ci;
 }
 
 //' @title Generate the Confidence Interval for Theta Estimates
 //' @description yaya
 //' @param theta
 //' @param psi
-//' @param alpha
+//' @param z
 //' @return A \code{mat} that has the first column 
 // [[Rcpp::export]]
-arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha){
-  unsigned int nparams = theta.n_elem;
-  arma::mat ci(nparams, 3);
-  double z = R::qnorm(1-alpha, 0, 1, true, false);
+arma::mat theta_ci(const arma::vec& theta,
+                   const arma::mat& A, 
+                   const arma::mat& v_hat, const arma::mat& omega, double alpha){
+
+  arma::mat psi = calculate_psi_matrix(A, v_hat, omega);
   
   arma::vec se = sqrt(diagvec(psi));
-  
-  ci.col(0) = theta - z*se;
-  ci.col(1) = theta + z*se;
-  ci.col(2) = se;
 
-  return ci;
+  return format_ci(theta, se, alpha);
 }
+
 
 //' @title Compute the GOF Test
 //' @description yaya
@@ -57,7 +83,7 @@ arma::mat theta_ci(arma::vec theta, arma::mat psi, double alpha){
 //' \item DF
 //' } 
 // [[Rcpp::export]]
-arma::vec gof_test(const arma::vec& theta, 
+arma::vec gof_test(arma::vec theta, 
                    const std::vector<std::string>& desc,
                    const arma::field<arma::vec>& objdesc,
                    std::string model_type,
@@ -87,61 +113,3 @@ arma::vec gof_test(const arma::vec& theta,
 
   return out;
 }
-
-//' @title Compute the Inference Summary 
-//' @description Calls CI and GOF Test computation functions. 
-//' @return A \code{field<mat>} where
-//' \itemize{
-//' \item CI
-//' \itemize{
-//' \item Lower Bound
-//' \item Upper Bound
-//' \item Standard Error
-//' }
-//' \item GOF
-//' \itemize{
-//' \item Test Statistic
-//' \item P-Value
-//' \item DF
-//' }
-//' } 
-// [[Rcpp::export]]
-arma::field<arma::mat> inference_summary(const arma::vec& theta, 
-                                         const std::vector<std::string>& desc,
-                                         const arma::field<arma::vec>& objdesc,
-                                         std::string model_type,
-                                         const arma::vec& tau,
-                                         const arma::mat& D, 
-                                         const arma::mat& v_hat, const arma::mat& omega,
-                                         const arma::vec& wv_empir, unsigned int N, double alpha, bool ci_bootstrap, unsigned int B, bool robust, double eff){
-  
-  
-  
-  arma::mat psi = calculate_psi_matrix(D, v_hat, omega);
-  
-  arma::mat ci(theta.n_elem, 3);
-  if(ci_bootstrap){
-    arma::vec sd = gmwm_sd_bootstrapper(theta,
-                         desc, objdesc,
-                         tau, model_type,
-                         N,  robust,  eff,  alpha,
-                         B);
-    
-    ci.col(0) = theta - 2.0*sd;
-    ci.col(1) = theta + 2.0*sd;
-    ci.col(2) = sd;
-    
-  
-  }else{
-      ci = theta_ci(theta, psi, alpha);
-  }
-  
-  arma::vec gof = gof_test(theta, desc, objdesc, model_type, tau, v_hat, wv_empir);
-
-  arma::field<arma::mat> out(2);
-  
-  out(0) = ci;
-  out(1) = gof;
-
-  return out;
-} 
