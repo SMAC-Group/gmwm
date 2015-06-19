@@ -5,9 +5,8 @@
 \title{GMWM for IMU, ARMA, SSM, and Robust}
 \usage{
 gmwm(model, data, model.type = "ssm", compute.v = "auto",
-  augmented = FALSE, robust = FALSE, eff = 0.6, inference = NULL,
-  model.select = NULL, alpha = 0.05, seed = NULL, G = NULL, K = 1,
-  H = 100)
+  augmented = FALSE, robust = FALSE, eff = 0.6, alpha = 0.05,
+  seed = NULL, G = NULL, K = 1, H = 100)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}

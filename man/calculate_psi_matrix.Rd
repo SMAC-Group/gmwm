@@ -4,14 +4,14 @@
 \alias{calculate_psi_matrix}
 \title{Calculate the Psi matrix}
 \usage{
-calculate_psi_matrix(D, v_hat, omega)
+calculate_psi_matrix(A, v_hat, omega)
 }
 \arguments{
-\item{D}{}
+\item{A}{first derivative matrix}
 
-\item{v_hat}{}
+\item{v_hat}{bootstrapped V}
 
-\item{omega}{}
+\item{omega}{original omega matrix}
 }
 \value{
 A \code{mat} that has the first column

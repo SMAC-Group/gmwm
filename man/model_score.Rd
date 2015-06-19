@@ -4,7 +4,7 @@
 \alias{model_score}
 \title{Model Score}
 \usage{
-model_score(A, D, omega, v_hat, diff)
+model_score(A, D, omega, v_hat, obj_value)
 }
 \arguments{
 \item{A}{A \code{mat} that contains the first derivatives of the processes}
@@ -13,9 +13,9 @@ model_score(A, D, omega, v_hat, diff)
 
 \item{v_hat}{A \code{mat} that contains the covariance matrix}
 
-\item{diff}{A \code{vec} that is the difference of the WV empirical and WV theoretical}
-
 \item{At_j}{A \code{mat} that contains the second derivative of each process}
+
+\item{diff}{A \code{vec} that is the difference of the WV empirical and WV theoretical}
 }
 \value{
 A \code{vec}
