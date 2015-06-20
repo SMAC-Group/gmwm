@@ -886,8 +886,8 @@ autoplot.gmwm = function(object,  CI = T, transparence = 0.1, bw = F,
     }
   }
   
-  temp = data.frame( theo = object$theo,
-                     emp = object$wv.empir,
+  temp = data.frame( emp = object$wv.empir,
+                     theo = object$theo,
                      low = object$ci.low,
                      high = object$ci.high,
                      scale = object$scales)
@@ -896,7 +896,7 @@ autoplot.gmwm = function(object,  CI = T, transparence = 0.1, bw = F,
     if(is.null(line.type)){line.type = c('solid','solid','dotted')}
     if(length(line.type)==3){line.type = c(line.type,line.type[3])}
     
-    if(is.null(line.color)){line.color = c("#F47F24","#003C7D", "#999999")}
+    if(is.null(line.color)){line.color = c("#003C7D","#F47F24", "#999999")}
     if(bw){
       line.color = c("#000000", "#b2b2b2", "#404040")
       color.CI = "grey50"
@@ -917,10 +917,9 @@ autoplot.gmwm = function(object,  CI = T, transparence = 0.1, bw = F,
     WV = melt(temp, id.vars = 'scale')
     breaks = c('theo','emp','low')
     legend.color = c(NA,NA,color.CI)
-    legend.linetype = c(line.type[1:2],'blank')
-    legend.pointshape = c(point.shape[1:2],NA)
+    legend.linetype = c(line.type[2:1],'blank')
+    legend.pointshape = c(point.shape[2:1],NA)
     #legend.pointsize = c(point.size[1:2],0)
-    
   }else{
     if(is.null(line.type)){line.type = c('solid','solid')}
     if(is.null(line.color)){line.color = c("#F47F24","#003C7D")}
@@ -937,23 +936,23 @@ autoplot.gmwm = function(object,  CI = T, transparence = 0.1, bw = F,
   }
   
   p = ggplot(data = WV, mapping = aes(x = scale)) + geom_line(aes(y = value, color = variable, linetype = variable)) +
-      geom_point(aes(y = value, shape = variable, size = variable,color = variable)) + 
-      scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label) +
-      scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks,labels = legend.label)+
-       
-      scale_size_manual(name = legend.title, values = c(point.size),breaks = breaks,labels = legend.label) +
-      scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label) 
-      
+    geom_point(aes(y = value, shape = variable, size = variable,color = variable)) + 
+    scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label) +
+    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks,labels = legend.label)+
+    
+    scale_size_manual(name = legend.title, values = c(point.size),breaks = breaks,labels = legend.label) +
+    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label) 
+  
   
   if(CI){
-  p = p +
-    geom_ribbon(data = temp, mapping = aes(ymin = low, ymax = high),fill = color.CI, show_guide = T,alpha = transparence) +
+    p = p +
+      geom_ribbon(data = temp, mapping = aes(ymin = low, ymax = high),fill = color.CI, show_guide = T,alpha = transparence) +
+      
+      #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
+      guides(colour = guide_legend(override.aes = list(fill = legend.color, linetype = legend.linetype, shape = legend.pointshape)))
     
-    #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
-    guides(colour = guide_legend(override.aes = list(fill = legend.color, linetype = legend.linetype, shape = legend.pointshape)))
-   
   }
-       
+  
   #decide where to place the legend
   legendPlace = placeLegend(temp$emp[1], temp$low[ length(temp$low) ], temp$high[ length(temp$high)])    
   p = p + 
@@ -997,6 +996,7 @@ autoplot.gmwm = function(object,  CI = T, transparence = 0.1, bw = F,
   
   p
 }
+
 
 #' @title Compare GMWM Model Fits on Same Graph
 #' @description Creates a single graph that contains two GMWM models plotted against each other.
