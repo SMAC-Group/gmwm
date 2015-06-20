@@ -1,6 +1,5 @@
 #' @title Place Legend
 #' @description This function decides where the legend should be put (top left or bottom left)
-#' @method placeLegend
 #' @param wv_1 A \code{double} that indicates the first value of \code{wv.empir}
 #' @param low_n A \code{doble} that indicates the last value of \code{ci.low}
 #' @param high_n A \code{dobule} that indicates the last value of \code{ci.high}
