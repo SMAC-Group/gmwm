@@ -75,7 +75,7 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, alpha = 0.05, seed = NULL, G = NULL, K = 1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100){
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -110,10 +110,6 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   }
   
   # For reproducibility
-  if(is.null(seed) || !is.whole(seed)){
-    seed = floor(runif(1, 1, 10000))
-  }
-  
   set.seed(seed)
   
   
