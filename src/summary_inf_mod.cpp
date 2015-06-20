@@ -50,11 +50,14 @@ arma::field<arma::mat> get_summary(arma::vec theta,
   
   
   if(!(bs_ci || bs_optimism || bs_gof) & !fullV & (inference || model_select)){
+    Rcout << "stand alone" << std::endl;
      V = cov_bootstrapper(theta,
                        desc, objdesc,
                        N, robust, eff,
                        B, true);
-  }else if(bs_ci & bs_optimism & bs_gof){
+  }else if(bs_ci || bs_optimism || bs_gof){
+    Rcout << "BS model" << std::endl;
+    
     arma::field<arma::mat> bs = all_bootstrapper(theta,
                                                  desc, objdesc,
                                                  scales, model_type, 
@@ -111,6 +114,8 @@ arma::field<arma::mat> get_summary(arma::vec theta,
      *  and the model_score diff (theo-wv_empir).
      */
     if(bs_optimism){
+      
+      Rcout << "BS" << std::endl;
       arma::vec temp(2);
       
       double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
@@ -120,6 +125,8 @@ arma::field<arma::mat> get_summary(arma::vec theta,
       
       score = temp;
     }else{
+      Rcout << "Asymptotic" << std::endl;
+      
       // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
       arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
     
