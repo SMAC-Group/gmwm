@@ -19,7 +19,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 arma::mat calculate_psi_matrix(const arma::mat& A, const arma::mat& v_hat, const arma::mat& omega){ 
   arma::mat A_trans = arma::trans(A);
-  arma::mat B = arma::inv(A_trans*omega*A)*A_trans*omega;
+  arma::mat B = arma::pinv(A_trans*omega*A)*A_trans*omega;
   
   return B*v_hat*arma::trans(B);
 }

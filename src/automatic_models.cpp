@@ -33,7 +33,8 @@ std::map<int, std::vector<std::string> > master_model(){
   models[1].push_back("AR1");
   models[1].push_back("AR1");
   
-   models[2].push_back("AR1");
+  // AR1() + WN()
+  models[2].push_back("AR1");
   models[2].push_back("AR1");
   models[2].push_back("AR1");
   models[2].push_back("WN");

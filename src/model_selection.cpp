@@ -52,7 +52,7 @@ arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat
   
   arma::mat d_b = D-B;
   arma::mat db_t = arma::trans(d_b);
-  arma::mat dTheta = -arma::inv(db_t * d_b)*db_t*At*omega;
+  arma::mat dTheta = -arma::pinv(db_t * d_b)*db_t*At*omega;
 
   arma::vec score_info(2);
   
