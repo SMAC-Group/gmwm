@@ -33,8 +33,7 @@ std::map<int, std::vector<std::string> > master_model(){
   models[1].push_back("AR1");
   models[1].push_back("AR1");
   
-  // 3AR1() + WN()
-  models[2].push_back("AR1");
+   models[2].push_back("AR1");
   models[2].push_back("AR1");
   models[2].push_back("AR1");
   models[2].push_back("WN");
@@ -105,7 +104,7 @@ arma::mat auto_select(const arma::vec& data,
                                                 model_type, 
                                                 true, //starting
                                                 alpha, 
-                                                "bootstrap", // compute V
+                                                "fast", // compute V
                                                 K, H,
                                                 G, 
                                                 robust, eff);
@@ -118,7 +117,7 @@ arma::mat auto_select(const arma::vec& data,
   arma::vec wv_empir = master(2);
   
   // Get bootstrapped V
-  arma::mat V = master(5); // Bootstrapped V (largest model)
+  arma::mat V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
   
   // Get the original "FAST" matrix
   arma::mat orgV = master(6); // Original V
