@@ -149,12 +149,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   # Auto setting
 
   # Compute fast covariance if large sample, otherwise, bootstrap.
-  if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "bootstrap")){
-    if(N > 10000){
-      compute.v = "fast"
-    }else{
-      compute.v = "bootstrap"
-    }
+  if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "diag")){
+    compute.v = "fast"
   }
   
 
@@ -444,7 +440,7 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
                                                     object$V, solve(object$orgV), object$obj.fun,
                                                     N, object$alpha,
                                                     object$robust, object$eff,
-                                                    inference, model.select, object$compute.v == "bootstrap",
+                                                    inference, model.select, F, # fullV is always false. Need same logic updates.
                                                     bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci, bs.optimism, 
                                                     B)
   }else{
