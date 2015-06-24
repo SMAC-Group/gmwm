@@ -15,50 +15,131 @@
 //#include "automatic_models.h"
 using namespace Rcpp;
 
+// std::map<int, std::vector<std::string> > master_model(){
+//   
+//   std::map<int, std::vector<std::string> > models;
+//   
+//   // 4AR1() + WN()
+//   models[0].push_back("AR1");
+//   models[0].push_back("AR1");
+//   models[0].push_back("AR1");
+//   models[0].push_back("AR1");
+//   models[0].push_back("WN");
+//   
+//   // 4AR1()
+//   models[1].push_back("AR1");
+//   models[1].push_back("AR1");
+//   models[1].push_back("AR1");
+//   models[1].push_back("AR1");
+//   
+//   // AR1() + WN()
+//   models[2].push_back("AR1");
+//   models[2].push_back("AR1");
+//   models[2].push_back("AR1");
+//   models[2].push_back("WN");
+//   
+//   // 3AR1()
+//   models[3].push_back("AR1");
+//   models[3].push_back("AR1");
+//   models[3].push_back("AR1");
+//   
+//   
+//   // 2AR1()+WN()
+//   models[4].push_back("AR1");
+//   models[4].push_back("AR1");
+//   models[4].push_back("WN");
+//   
+//   // 2AR1()
+//   models[5].push_back("AR1");
+//   models[5].push_back("AR1");
+//   
+//   // AR1()
+//   models[6].push_back("AR1");
+//   
+//   // WN()
+//   models[7].push_back("WN");
+//   
+//   return models;
+// }
+
+
 //[[Rcpp::export]]
 std::map<int, std::vector<std::string> > master_model(){
   
   std::map<int, std::vector<std::string> > models;
   
-  // 4AR1() + WN()
-  models[0].push_back("AR1");
+  
+  // 3AR1() + WN() + RW()
   models[0].push_back("AR1");
   models[0].push_back("AR1");
   models[0].push_back("AR1");
   models[0].push_back("WN");
+  models[0].push_back("RW");
+
+  // 3AR1() + RW()
+  models[1].push_back("AR1");
+  models[1].push_back("AR1");
+  models[1].push_back("AR1");
+  models[1].push_back("RW");
   
-  // 4AR1()
-  models[1].push_back("AR1");
-  models[1].push_back("AR1");
-  models[1].push_back("AR1");
-  models[1].push_back("AR1");
-  
-  // AR1() + WN()
+  // 3AR1() + WN()
   models[2].push_back("AR1");
   models[2].push_back("AR1");
   models[2].push_back("AR1");
   models[2].push_back("WN");
   
+  
   // 3AR1()
   models[3].push_back("AR1");
   models[3].push_back("AR1");
   models[3].push_back("AR1");
-  
-  
-  // 2AR1()+WN()
+
+  // 2AR1() + WN() + RW()
   models[4].push_back("AR1");
   models[4].push_back("AR1");
   models[4].push_back("WN");
+  models[4].push_back("RW");
+  
+  // 2AR1() + RW()
+  models[5].push_back("AR1");
+  models[5].push_back("AR1");
+  models[5].push_back("RW");
+  
+  // 2AR1() + WN()
+  models[6].push_back("AR1");
+  models[6].push_back("AR1");
+  models[6].push_back("WN");
   
   // 2AR1()
-  models[5].push_back("AR1");
-  models[5].push_back("AR1");
+  models[7].push_back("AR1");
+  models[7].push_back("AR1");
+
+  // AR1() + WN() + RW()
+  models[8].push_back("AR1");
+  models[8].push_back("WN");
+  models[8].push_back("RW");
   
-  // AR1()
-  models[6].push_back("AR1");
+  // AR1() + RW()
+  models[9].push_back("AR1");
+  models[9].push_back("RW");
+  
+  // AR1() + WN()
+  models[10].push_back("AR1");
+  models[10].push_back("AR1");
+  models[10].push_back("WN");
+  
+  // WN() + RW()
+  models[11].push_back("WN");
+  models[11].push_back("RW");
   
   // WN()
-  models[7].push_back("WN");
+  models[12].push_back("WN");
+
+  // RW()
+  models[13].push_back("RW");
+  
+  // AR1()
+  models[14].push_back("AR1");
 
   return models;
 }
