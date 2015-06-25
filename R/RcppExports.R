@@ -104,6 +104,14 @@ avar_mo_cpp <- function(x) {
     .Call('GMWM_avar_mo_cpp', PACKAGE = 'GMWM', x)
 }
 
+arma_adapter <- function(theta, p, q, tau) {
+    .Call('GMWM_arma_adapter', PACKAGE = 'GMWM', theta, p, q, tau)
+}
+
+jacobian_arma <- function(theta, p, q, tau) {
+    .Call('GMWM_jacobian_arma', PACKAGE = 'GMWM', theta, p, q, tau)
+}
+
 #' Analytic D matrix for AR(1) process
 #' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
 #' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
@@ -115,9 +123,9 @@ avar_mo_cpp <- function(x) {
 #' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
 #' @author JJB
 #' @examples
-#' deriv_AR1(.3, 1, 2^(1:5))
-deriv_AR1 <- function(phi, sig2, tau) {
-    .Call('GMWM_deriv_AR1', PACKAGE = 'GMWM', phi, sig2, tau)
+#' deriv_ar1(.3, 1, 2^(1:5))
+deriv_ar1 <- function(phi, sig2, tau) {
+    .Call('GMWM_deriv_ar1', PACKAGE = 'GMWM', phi, sig2, tau)
 }
 
 #' Analytic second derivative matrix for AR(1) process
@@ -131,9 +139,9 @@ deriv_AR1 <- function(phi, sig2, tau) {
 #' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
 #' @author JJB
 #' @examples
-#' deriv_2nd_AR1(.3, 1, 2^(1:5))
-deriv_2nd_AR1 <- function(phi, sig2, tau) {
-    .Call('GMWM_deriv_2nd_AR1', PACKAGE = 'GMWM', phi, sig2, tau)
+#' deriv_2nd_ar1(.3, 1, 2^(1:5))
+deriv_2nd_ar1 <- function(phi, sig2, tau) {
+    .Call('GMWM_deriv_2nd_ar1', PACKAGE = 'GMWM', phi, sig2, tau)
 }
 
 #' Analytic D matrix for drift process
@@ -145,9 +153,9 @@ deriv_2nd_AR1 <- function(phi, sig2, tau) {
 #' Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
 #' @author JJB
 #' @examples
-#' deriv_DR(5.3, 2^(1:5))
-deriv_DR <- function(omega, tau) {
-    .Call('GMWM_deriv_DR', PACKAGE = 'GMWM', omega, tau)
+#' deriv_dr(5.3, 2^(1:5))
+deriv_dr <- function(omega, tau) {
+    .Call('GMWM_deriv_dr', PACKAGE = 'GMWM', omega, tau)
 }
 
 #' Analytic second derivative matrix for drift process
@@ -159,9 +167,9 @@ deriv_DR <- function(omega, tau) {
 #' Taking second derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{{{\partial ^2}}}{{\partial \omega _0^2}}{\nu ^2}\left( \tau  \right) = {\tau ^2}}{tau^2}
 #' @author JJB
 #' @examples
-#' deriv_2nd_DR(2^(1:5))
-deriv_2nd_DR <- function(tau) {
-    .Call('GMWM_deriv_2nd_DR', PACKAGE = 'GMWM', tau)
+#' deriv_2nd_dr(2^(1:5))
+deriv_2nd_dr <- function(tau) {
+    .Call('GMWM_deriv_2nd_dr', PACKAGE = 'GMWM', tau)
 }
 
 #' Analytic D matrix quantisation noise process
@@ -173,9 +181,9 @@ deriv_2nd_DR <- function(tau) {
 #' The second derivative derivative with respect to \eqn{Q _0^2}{Q[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
 #' @author JJB
 #' @examples
-#' deriv_QN(2^(1:5))
-deriv_QN <- function(tau) {
-    .Call('GMWM_deriv_QN', PACKAGE = 'GMWM', tau)
+#' deriv_qn(2^(1:5))
+deriv_qn <- function(tau) {
+    .Call('GMWM_deriv_qn', PACKAGE = 'GMWM', tau)
 }
 
 #' Analytic D matrix random walk process
@@ -187,9 +195,9 @@ deriv_QN <- function(tau) {
 #' The second derivative derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial \sigma_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
 #' @author JJB
 #' @examples
-#' deriv_RW(2^(1:5))
-deriv_RW <- function(tau) {
-    .Call('GMWM_deriv_RW', PACKAGE = 'GMWM', tau)
+#' deriv_rw(2^(1:5))
+deriv_rw <- function(tau) {
+    .Call('GMWM_deriv_rw', PACKAGE = 'GMWM', tau)
 }
 
 #' Analytic D matrix white noise process
@@ -200,9 +208,45 @@ deriv_RW <- function(tau) {
 #' Taking the derivative with respect to \eqn{\sigma _0^2}{sigma_0^2} yields: \eqn{\frac{\partial }{{\partial \sigma _0^2}}{\nu ^2}\left( \tau  \right) = \frac{1}{\tau }}{1/tau}
 #' @author JJB
 #' @examples
-#' deriv_WN(2^(1:5))
-deriv_WN <- function(tau) {
-    .Call('GMWM_deriv_WN', PACKAGE = 'GMWM', tau)
+#' deriv_wn(2^(1:5))
+deriv_wn <- function(tau) {
+    .Call('GMWM_deriv_wn', PACKAGE = 'GMWM', tau)
+}
+
+#' Analytic D matrix of Processes
+#' @description This function computes each process to WV (haar) in a given model.
+#' @param theta A \code{vec} containing the list of estimated parameters.
+#' @param desc A \code{vector<string>} containing a list of descriptors.
+#' @param objdesc A \code{field<vec>} containing a list of object descriptors.
+#' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+#' @return A \code{matrix} with the process derivatives going down the column
+#' @details
+#' Function returns the matrix effectively known as "D"
+#' @author JJB
+#' @examples
+#' deriv_qwn(2^(1:5))
+derivative_first_matrix <- function(theta, desc, objdesc, tau) {
+    .Call('GMWM_derivative_first_matrix', PACKAGE = 'GMWM', theta, desc, objdesc, tau)
+}
+
+#' Analytic D matrix of Processes
+#' @description This function computes each process to WV (haar) in a given model.
+#' @param theta A \code{vec} containing the list of estimated parameters.
+#' @param desc A \code{vector<string>} containing a list of descriptors.
+#' @param objdesc A \code{field<vec>} containing a list of object descriptors.
+#' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+#' @return A \code{matrix} with the process derivatives going down the column
+#' @details
+#' Function returns the matrix effectively known as "D"
+#' @author JJB
+#' @examples
+#' #TBA
+D_matrix <- function(theta, desc, objdesc, tau, omegadiff) {
+    .Call('GMWM_D_matrix', PACKAGE = 'GMWM', theta, desc, objdesc, tau, omegadiff)
+}
+
+Rcpp_ARIMA <- function(data, params) {
+    .Call('GMWM_Rcpp_ARIMA', PACKAGE = 'GMWM', data, params)
 }
 
 #' @title Reverse Subset Column
@@ -266,88 +310,139 @@ field_to_matrix <- function(x) {
     .Call('GMWM_field_to_matrix', PACKAGE = 'GMWM', x)
 }
 
+#' @title Accumulation of Armadillo field<vec>
+#' @description Sums vectors in a field into a single variable.
+#' @param x A \code{field<vec>}.
+#' @return An \code{mat} containing the field elements within a column.
+#' @author JJB
+#' @examples
+#' x=rnorm(100)
+#' field_to_matrix(modwt_cpp(x))
 sum_field_vec <- function(x) {
     .Call('GMWM_sum_field_vec', PACKAGE = 'GMWM', x)
 }
 
-mean_diff <- function(x) {
-    .Call('GMWM_mean_diff', PACKAGE = 'GMWM', x)
+master_model <- function() {
+    .Call('GMWM_master_model', PACKAGE = 'GMWM')
 }
 
-transform_values <- function(theta, desc, objdesc, model_type) {
-    .Call('GMWM_transform_values', PACKAGE = 'GMWM', theta, desc, objdesc, model_type)
+auto_select <- function(data, model_type, alpha, compute_v, K, H, G, robust, eff, bs_optimism) {
+    .Call('GMWM_auto_select', PACKAGE = 'GMWM', data, model_type, alpha, compute_v, K, H, G, robust, eff, bs_optimism)
 }
 
-untransform_values <- function(theta, desc, objdesc, model_type) {
-    .Call('GMWM_untransform_values', PACKAGE = 'GMWM', theta, desc, objdesc, model_type)
-}
-
-gmwm_bootstrapper <- function(theta, desc, objdesc, tau, N, robust, eff, B = 100L) {
-    .Call('GMWM_gmwm_bootstrapper', PACKAGE = 'GMWM', theta, desc, objdesc, tau, N, robust, eff, B)
-}
-
-ar1_draw <- function(draw_id, last_phi, sigma_tot, model_type) {
-    .Call('GMWM_ar1_draw', PACKAGE = 'GMWM', draw_id, last_phi, sigma_tot, model_type)
-}
-
-count_AR1s <- function(s) {
-    .Call('GMWM_count_AR1s', PACKAGE = 'GMWM', s)
-}
-
-count_models <- function(desc) {
-    .Call('GMWM_count_models', PACKAGE = 'GMWM', desc)
-}
-
-#' @title Randomly guess a starting parameter
-#' @description Sets starting parameters for each of the given parameters. 
-#' @param desc A \code{vector<string>} that contains the model's components.
-#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
-#' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
-#' @param num_params An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
-#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
-#' @param N A \code{integer} that contains the number of observations in the data.
-#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
-#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
-#' @param B A \code{integer} that indicates how many random draws that should be performed.
-#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
-#' @examples
-#' #TBA
-guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B = 1000L) {
-    .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
-}
-
-#' @title User Specified Initial Values for GMWM Estimator
-#' @description This function uses the Generalized Method of Wavelet Moments to estimate the parameters of a time series model.
+#' @title Bootstrap for Matrix V
+#' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
 #' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 #' @param desc A \code{vector<string>} indicating the models that should be considered.
-#' @param V A \code{matrix} that represents the covariance matrix.
-#' @param wv_empir A \code{vector} that contains the empirical wavelet variance
-#' @param N A \code{integer} that indicates the length of the signal being studied.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
 #' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
 #' @details
-#' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-#' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
-#' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-#' options are:
-#' \itemize{
-#'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-#'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
-#'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-#'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-#'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-#'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-#' }
-#' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
-#' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-#' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-#' 
+#' Expand in detail...  
 #' @author JJB
-#' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 #' @keywords internal
 #' @examples
 #' # Coming soon
-adv_gmwm_cpp <- function(theta, desc, objdesc, model_type, V, wv_empir, tau) {
-    .Call('GMWM_adv_gmwm_cpp', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, V, wv_empir, tau)
+cov_bootstrapper <- function(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix) {
+    .Call('GMWM_cov_bootstrapper', PACKAGE = 'GMWM', theta, desc, objdesc, N, robust, eff, H, diagonal_matrix)
+}
+
+#' @title Bootstrap for Optimism
+#' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+#' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+#' @details
+#' Expand in detail...  
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' # Coming soon
+optimism_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
+    .Call('GMWM_optimism_bootstrapper', PACKAGE = 'GMWM', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+}
+
+#' @title Bootstrap for Standard Deviations of Theta Estimates
+#' @description Using the bootstrap approach, we simulate a model based on user supplied parameters
+#' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+#' @details
+#' Expand in detail...  
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' # Coming soon
+gmwm_sd_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
+    .Call('GMWM_gmwm_sd_bootstrapper', PACKAGE = 'GMWM', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+}
+
+#' @title Generate the Confidence Interval for GOF Bootstrapped
+#' @description yaya
+#' @param theta
+#' @param psi
+#' @param alpha
+#' @return A \code{vec} that has the alpha/2.0 quantile and then the 1-alpha/2.0 quantile. 
+boot_pval_gof <- function(obj, obj_boot, B = 1000L, alpha = 0.05) {
+    .Call('GMWM_boot_pval_gof', PACKAGE = 'GMWM', obj, obj_boot, B, alpha)
+}
+
+#' @title Bootstrap for Estimating Both Theta and Theta SD
+#' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+#' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+#' @details
+#' Expand in detail...  
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' # Coming soon
+gmwm_param_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
+    .Call('GMWM_gmwm_param_bootstrapper', PACKAGE = 'GMWM', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+}
+
+#' @title Bootstrap for Everything!
+#' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+#' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+#' @details
+#' Expand in detail...  
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' # Coming soon
+all_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
+    .Call('GMWM_all_bootstrapper', PACKAGE = 'GMWM', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+}
+
+#' @title Absolute Value or Modulus of a Complex Number Squared.
+#' @description Computes the squared value of the Modulus.
+#' @param x A \code{cx_vec}. 
+#' @return A \code{vec} containing the modulus squared for each element.
+#' @details Consider a complex number defined as: \eqn{z = x + i y} with real \eqn{x} and \eqn{y},
+#' The modulus is defined as: \eqn{r = Mod\left(z\right) = \sqrt{\left(x^2 + y^2\right)}}{r = Mod(z) = sqrt(x^2 + y^2)}
+#' This function will return: \eqn{r^2 = Mod\left(z\right)^2 = x^2 + y^2}
+#' @examples
+#' Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
+Mod_squared_cpp <- function(x) {
+    .Call('GMWM_Mod_squared_cpp', PACKAGE = 'GMWM', x)
+}
+
+#' @title Absolute Value or Modulus of a Complex Number.
+#' @description Computes the value of the Modulus.
+#' @param x A \code{cx_vec}. 
+#' @return A \code{vec} containing the modulus for each element.
+#' @details Consider a complex number defined as: \eqn{z = x + i y} with real \eqn{x} and \eqn{y},
+#' The modulus is defined as: \eqn{r = Mod(z) = \sqrt{(x^2 + y^2)}}
+#' @examples
+#' Mod_cpp(c(1+.5i, 2+1i, 5+9i))
+Mod_cpp <- function(x) {
+    .Call('GMWM_Mod_cpp', PACKAGE = 'GMWM', x)
 }
 
 #' @title Computes the (MODWT) wavelet covariance matrix
@@ -366,6 +461,21 @@ adv_gmwm_cpp <- function(theta, desc, objdesc, model_type, V, wv_empir, tau) {
 #' }
 compute_cov_cpp <- function(signal_modwt, nb_level, compute_v = "diag", robust = TRUE, eff = 0.6) {
     .Call('GMWM_compute_cov_cpp', PACKAGE = 'GMWM', signal_modwt, nb_level, compute_v, robust, eff)
+}
+
+#' @title Computes the (MODWT) wavelet covariance matrix using Chi-square confidence interval bounds
+#' @description Calculates the (MODWT) wavelet covariance matrix using Chi-square confidence interval bounds
+#' @param ci_hi A \code{vec} that contains the upper confidence interval points.
+#' @param ci_lo A \code{vec} that contains the lower confidence interval points.
+#' @return A diagonal matrix.
+#' @examples
+#' \dontrun{
+#' x=runif(100)
+#' y=x+3
+#' fast_cov_cpp(y,x)
+#' }
+fast_cov_cpp <- function(ci_hi, ci_lo) {
+    .Call('GMWM_fast_cov_cpp', PACKAGE = 'GMWM', ci_hi, ci_lo)
 }
 
 #' @title Discrete Wavelet Transform
@@ -500,6 +610,316 @@ gen_rw <- function(N, sigma2 = 1) {
     .Call('GMWM_gen_rw', PACKAGE = 'GMWM', N, sigma2)
 }
 
+#' @title Generate ARMA
+#' @description Generate observations for a supplied ARMA model.
+#' @param N An \code{integer} for signal length.
+#' @param ar A \code{vec} that contains the AR coefficients.
+#' @param ma A \code{vec} that contains the MA coefficients.
+#' @param sigma2 A \code{double} that contains process variance.
+#' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+#' @details The innovations are generated from a normal distribution.
+#' @return A \code{vec} that contains the generated observations.
+gen_arma <- function(N, ar, ma, sigma2 = 1.5, n_start = 0L) {
+    .Call('GMWM_gen_arma', PACKAGE = 'GMWM', N, ar, ma, sigma2, n_start)
+}
+
+#' @title Generate Time Series based on Model (Internal)
+#' @description Create a time series based on a supplied time series model.
+#' @param N An \code{interger} containing the amount of observations for the time series.
+#' @param theta A \code{vec} containing the parameters to use to generate the model
+#' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..)
+#' @param objdesc A \code{field<vec>} contains the different model objects e.g. AR1 = c(1,1)
+#' @return A \code{vec} that contains combined time series.
+#' @details
+#' This function is under work. Some of the features are active. Others... Not so much. 
+#' What is NOT active:
+#' 1. Simulating an ARMA time series
+#' @examples
+#' # AR
+#' set.seed(1336)
+#' gen_model(1000, c(.9,1), "AR1", list(c(1,1)))
+gen_model <- function(N, theta, desc, objdesc) {
+    .Call('GMWM_gen_model', PACKAGE = 'GMWM', N, theta, desc, objdesc)
+}
+
+code_zero <- function(theta) {
+    .Call('GMWM_code_zero', PACKAGE = 'GMWM', theta)
+}
+
+#' @title Engine for obtaining the GMWM Estimator
+#' @description This function uses the Generalized Method of Wavelet Moments (GMWM) to estimate the parameters of a time series model.
+#' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+#' @param model_type A \code{string} that represents the model transformation
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance
+#' @param omega A \code{mat} that represents the covariance matrix.
+#' @param scales A \code{vec} that contains the scales or taus (2^(1:J))
+#' @param starting A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).
+#' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+#' @details
+#' If type = "imu" or "ssm", then parameter vector should indicate the characters of the models that compose the latent or state-space model.
+#' The model options are:
+#' \itemize{
+#'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+#'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+#'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+#'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+#'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+#'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+#' }
+#' If model_type = "imu" or type = "ssm" then
+#' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+#' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+#' 
+#' @author JJB
+#' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+#' @keywords internal
+#' @examples
+#' # Coming soon
+gmwm_engine <- function(theta, desc, objdesc, model_type, wv_empir, omega, scales, starting) {
+    .Call('GMWM_gmwm_engine', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, wv_empir, omega, scales, starting)
+}
+
+#' @title Update Wrapper for the GMWM Estimator
+#' @description This function uses information obtained previously (e.g. WV covariance matrix) to re-estimate a different model parameterization
+#' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+#' @param model_type A \code{string} that represents the model transformation
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance
+#' @param omega A \code{mat} that represents the covariance matrix.
+#' @param scales A \code{vec} that contains the scales or taus (2^(1:J))
+#' @param starting A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).
+#' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
+#' @details
+#' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+#' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+#' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+#' options are:
+#' \itemize{
+#'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+#'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+#'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+#'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+#'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+#'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+#' }
+#' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+#' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+#' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+#' 
+#' @author JJB
+#' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+#' @keywords internal
+#' @examples
+#' # Coming soon
+gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff) {
+    .Call('GMWM_gmwm_update_cpp', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, N, expect_diff, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff)
+}
+
+#' @title Master Wrapper for the GMWM Estimator
+#' @description This function generates WV, GMWM Estimator, and an initial test estimate.
+#' @param data A \code{vec} containing the data.
+#' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+#' @param model_type A \code{string} that represents the model transformation
+#' @param starting A \code{bool} that indicates whether the supplied values are guessed (T) or are user-based (F).
+#' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100
+#' @param compute_v A \code{string} that describes what kind of covariance matrix should be computed.
+#' @param K An \code{int} that controls how many times theta is updated.
+#' @param H An \code{int} that controls how many bootstrap replications are done.
+#' @param G An \code{int} that controls how many guesses at different parameters are made.
+#' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+#' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+#' @param inference A \code{bool} that indicates whether inference should be run on the supplied model.
+#' @return A \code{field<mat>} that contains a list of ever-changing estimates...
+#' @details
+#' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
+#' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+#' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+#' options are:
+#' \itemize{
+#'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+#'   \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+#'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+#'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+#'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+#'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+#' }
+#' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+#' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+#' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+#' 
+#' @author JJB
+#' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+#' @keywords internal
+#' @examples
+#' # Coming soon
+gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff) {
+    .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
+}
+
+#' @title Randomly guess starting parameters for AR1
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param draw_id An \code{unsigned int} that contains the draw principles.
+#' @param last_phi A \code{double} containing the last guessed phi value.
+#' @param sigma2_total A \code{double} that contains the sum of all WVs. 
+#' @param model_type A \code{string} that describes the model transformation.
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @examples
+#' #TBA
+ar1_draw <- function(draw_id, last_phi, sigma2_total, model_type) {
+    .Call('GMWM_ar1_draw', PACKAGE = 'GMWM', draw_id, last_phi, sigma2_total, model_type)
+}
+
+#' @title Randomly guess starting parameters for ARMA
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param p An \code{unsigned int} that contains the amount of AR parameters to generate.
+#' @param q An \code{unsigned int} that contains the amount of MA parameters to generate.
+#' @param sigma2_total A \code{double} that contains the sum of all WVs. 
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @examples
+#' #TBA
+arma_draws <- function(p, q, sigma2_total) {
+    .Call('GMWM_arma_draws', PACKAGE = 'GMWM', p, q, sigma2_total)
+}
+
+#' @title Randomly guess a starting parameter
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param desc A \code{vector<string>} that contains the model's components.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @param model_type A \code{string} that indicates whether it is an SSM or IMU.
+#' @param num_param An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
+#' @param N A \code{integer} that contains the number of observations in the data.
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+#' @param B A \code{integer} that indicates how many random draws that should be performed.
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @examples
+#' #TBA
+guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
+    .Call('GMWM_guess_initial', PACKAGE = 'GMWM', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+}
+
+#' @title Indirect Inference for ARMA
+idf_arma <- function(ar, ma, sigma2, N, robust, eff, H) {
+    .Call('GMWM_idf_arma', PACKAGE = 'GMWM', ar, ma, sigma2, N, robust, eff, H)
+}
+
+#' @title Indirect Inference for ARMA
+idf_arma_total <- function(ar, ma, sigma2, N, robust, eff, H) {
+    .Call('GMWM_idf_arma_total', PACKAGE = 'GMWM', ar, ma, sigma2, N, robust, eff, H)
+}
+
+#' @title Calculate the Psi matrix
+#' @description Computes the Psi matrix using supplied parameters
+#' @param A first derivative matrix
+#' @param v_hat bootstrapped V
+#' @param omega original omega matrix
+#' @return A \code{mat} that has the first column 
+calculate_psi_matrix <- function(A, v_hat, omega) {
+    .Call('GMWM_calculate_psi_matrix', PACKAGE = 'GMWM', A, v_hat, omega)
+}
+
+#' @title Format the Confidence Interval for Estimates
+#' @description Creates hi and lo confidence based on SE and alpha.
+#' @param theta
+#' @param se
+#' @param alpha
+#' @return A \code{mat} that has:
+#' \itemize{
+#' \item Column 1: Lo CI
+#' \item Column 2: Hi CI
+#' \item Column 3: SE
+#' }
+format_ci <- function(theta, se, alpha) {
+    .Call('GMWM_format_ci', PACKAGE = 'GMWM', theta, se, alpha)
+}
+
+#' @title Generate the Confidence Interval for Theta Estimates
+#' @description yaya
+#' @param theta
+#' @param psi
+#' @param z
+#' @return A \code{mat} that has the first column 
+theta_ci <- function(theta, A, v_hat, omega, alpha) {
+    .Call('GMWM_theta_ci', PACKAGE = 'GMWM', theta, A, v_hat, omega, alpha)
+}
+
+#' @title Compute the GOF Test
+#' @description yaya
+#' @param theta
+#' @param psi
+#' @param p
+#' @return A \code{vec} that has
+#' \itemize{
+#' \item Test Statistic
+#' \item P-Value
+#' \item DF
+#' } 
+gof_test <- function(theta, desc, objdesc, model_type, tau, v_hat, wv_empir) {
+    .Call('GMWM_gof_test', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, tau, v_hat, wv_empir)
+}
+
+#' @title B Matrix
+#' @description B Matrix
+#' @param A A \code{mat} containing the first derivatives of the process.
+#' @param at_omega A \code{mat} containing A^T * Omega
+#' @return A \code{mat}
+#' @details
+#' TBA
+B_matrix <- function(A, at_omega) {
+    .Call('GMWM_B_matrix', PACKAGE = 'GMWM', A, at_omega)
+}
+
+#' @title Model Score
+#' @description Calculates the modeling score of a GMWM
+#' @param A A \code{mat} that contains the first derivatives of the processes
+#' @param At_j  A \code{mat} that contains the second derivative of each process
+#' @param omega A \code{mat} that contains the omega used when calculating the GMWM
+#' @param v_hat A \code{mat} that contains the covariance matrix
+#' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
+#' @return A \code{vec}
+#' @details
+#' The equation is slightly different than that stated in the paper due to the bootstrap already incorporating in 
+#' N.
+model_score <- function(A, D, omega, v_hat, obj_value) {
+    .Call('GMWM_model_score', PACKAGE = 'GMWM', A, D, omega, v_hat, obj_value)
+}
+
+#' @title Extract Object
+#' @description Extracts the object information and returns it.
+#' @param theta A \code{vec} containing the theta values.
+#' @param objdesc A \code{vec} at the desc point.
+#' @param cur_position An \code{integer} at the current position.
+#' @return A \code{field<vec>} containing the breakdown of the object.
+obj_extract <- function(theta, objdesc, cur_position) {
+    .Call('GMWM_obj_extract', PACKAGE = 'GMWM', theta, objdesc, cur_position)
+}
+
+getObjFunStarting <- function(theta, desc, objdesc, model_type, wv_empir, tau) {
+    .Call('GMWM_getObjFunStarting', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, wv_empir, tau)
+}
+
+getObjFun <- function(theta, desc, objdesc, model_type, omega, wv_empir, tau) {
+    .Call('GMWM_getObjFun', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, omega, wv_empir, tau)
+}
+
+#' @title Root Finding C++
+#' @description Used to interface with Armadillo
+do_polyroot_arma <- function(z) {
+    .Call('GMWM_do_polyroot_arma', PACKAGE = 'GMWM', z)
+}
+
+#' @title Root Finding C++
+#' @description Vroom Vroom
+do_polyroot_cpp <- function(z) {
+    .Call('GMWM_do_polyroot_cpp', PACKAGE = 'GMWM', z)
+}
+
 #' @title ARMA process to WV
 #' @description This function computes the (haar) WV of an ARMA process
 #' @param ar A \code{vec} containing the coefficients of the AR process
@@ -512,6 +932,24 @@ gen_rw <- function(N, sigma2 = 1) {
 #' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 arma_to_wv <- function(ar, ma, tau, sigma) {
     .Call('GMWM_arma_to_wv', PACKAGE = 'GMWM', ar, ma, tau, sigma)
+}
+
+acf_sum <- function(ar, ma, last_tau, alpha = 0.99) {
+    .Call('GMWM_acf_sum', PACKAGE = 'GMWM', ar, ma, last_tau, alpha)
+}
+
+#' @title ARMA process to WV approximation
+#' @description This function computes the (haar) WV of an ARMA process
+#' @param ar A \code{vec} containing the coefficients of the AR process
+#' @param ma A \code{vec} containing the coefficients of the MA process
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
+#' @param sigma A \code{double} containing the residual variance
+#' @return A \code{vec} containing the wavelet variance of the ARMA process.
+#' @examples
+#' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+#' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
+arma_to_wv_app <- function(ar, ma, tau, sigma, alpha = 0.9999) {
+    .Call('GMWM_arma_to_wv_app', PACKAGE = 'GMWM', ar, ma, tau, sigma, alpha)
 }
 
 #' @title Quantisation Noise to WV
@@ -596,7 +1034,7 @@ ar1_to_wv <- function(phi, sig2, tau) {
 #' @param desc A \code{vector<string>} containing a list of descriptors.
 #' @param objdesc A \code{field<vec>} containing a list of object descriptors.
 #' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
-#' @return A \code{vec} containing the wavelet variance of the AR(1) process.
+#' @return A \code{vec} containing the wavelet variance of the model.
 #' @examples
 #' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
 #' ntau = floor(log(length(x.sim),2))
@@ -605,6 +1043,78 @@ ar1_to_wv <- function(phi, sig2, tau) {
 #' plot(tau, wv.theo, col = "red")
 theoretical_wv <- function(theta, desc, objdesc, tau) {
     .Call('GMWM_theoretical_wv', PACKAGE = 'GMWM', theta, desc, objdesc, tau)
+}
+
+#' @title Each Models Process Decomposed to WV
+#' @description This function computes each process to WV (haar) in a given model.
+#' @param theta A \code{vec} containing the list of estimated parameters.
+#' @param desc A \code{vector<string>} containing a list of descriptors.
+#' @param objdesc A \code{field<vec>} containing a list of object descriptors.
+#' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+#' @return A \code{mat} containing the wavelet variance of each process in the model
+#' @examples
+#' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
+#' ntau = floor(log(length(x.sim),2))
+#' tau = 2^(1:ntau)
+#' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
+#' plot(tau, wv.theo, col = "red")
+decomp_theoretical_wv <- function(theta, desc, objdesc, tau) {
+    .Call('GMWM_decomp_theoretical_wv', PACKAGE = 'GMWM', theta, desc, objdesc, tau)
+}
+
+#' @title Decomposed WV to Single WV
+#' @description This function computes the combined processes to WV (haar) in a given model.
+#' @param decomp A \code{mat} with scales as rows and processes as columns
+#' @return A \code{vec} containing the wavelet variance of the process for the overall model
+#' @examples
+#' x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
+#' ntau = floor(log(length(x.sim),2))
+#' tau = 2^(1:ntau)
+#' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
+#' plot(tau, wv.theo, col = "red")
+decomp_to_theo_wv <- function(decomp) {
+    .Call('GMWM_decomp_to_theo_wv', PACKAGE = 'GMWM', decomp)
+}
+
+#' @title Generate a sequence of values
+#' @description Creates a vector containing a sequence of values starting at the initial point and going to the terminal point.
+#' @param a An \code{int}, that denotes the starting point.
+#' @param b An \code{int}, that denotes the ending point.
+#' @return A \code{vector} containing values moving from a to b. There are no restrictions on A's range.
+#' @seealso \code{\link{rwishart}} 
+#' @author James J Balamuta
+#' @examples 
+#' #Call with the following data:
+#' seq_cpp(3, 5)
+#' seq_cpp(5, 3)
+seq_cpp <- function(a, b) {
+    .Call('GMWM_seq_cpp', PACKAGE = 'GMWM', a, b)
+}
+
+#' @title Generate a sequence of values based on supplied number
+#' @description Creates a vector containing a sequence of values starting at 1 and going to the terminal point.
+#' @param n An \code{int} that denotes the length of the vector.
+#' @return A \code{vector} containing values moving from 1 to n.
+#' @author James J Balamuta
+#' @examples 
+#' #Call with the following data:
+#' seq_len_cpp(5)
+seq_len_cpp <- function(n) {
+    .Call('GMWM_seq_len_cpp', PACKAGE = 'GMWM', n)
+}
+
+#' @title Find Quantiles
+#' @description Attempts to find quantiles
+#' @param x A \code{vec} that denotes the starting point.
+#' @param b A \code{vec}, that denotes the ending point.
+#' @return A \code{vector} containing the quantiles
+#' @author James J Balamuta
+#' @examples 
+#' #Call with the following data:
+#' quantile_cpp(c(1,2,3,4,5,6,7), c(.25,.5,.75))
+#' quantile(c(1,2,3,4,5,6,7), c(.25,.5,.75))
+quantile_cpp <- function(x, probs) {
+    .Call('GMWM_quantile_cpp', PACKAGE = 'GMWM', x, probs)
 }
 
 #' @title Lagged Differences in Armadillo
@@ -705,31 +1215,6 @@ ARMAacf_cpp <- function(ar, ma, lag_max) {
     .Call('GMWM_ARMAacf_cpp', PACKAGE = 'GMWM', ar, ma, lag_max)
 }
 
-#' @title Absolute Value or Modulus of a Complex Number Squared.
-#' @description Computes the squared value of the Modulus.
-#' @param x A \code{cx_vec}. 
-#' @return A \code{vec} containing the modulus squared for each element.
-#' @details Consider a complex number defined as: \eqn{z = x + i y} with real \eqn{x} and \eqn{y},
-#' The modulus is defined as: \eqn{r = Mod\left(z\right) = \sqrt{\left(x^2 + y^2\right)}}{r = Mod(z) = sqrt(x^2 + y^2)}
-#' This function will return: \eqn{r^2 = Mod\left(z\right)^2 = x^2 + y^2}
-#' @examples
-#' Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
-Mod_squared_cpp <- function(x) {
-    .Call('GMWM_Mod_squared_cpp', PACKAGE = 'GMWM', x)
-}
-
-#' @title Absolute Value or Modulus of a Complex Number.
-#' @description Computes the value of the Modulus.
-#' @param x A \code{cx_vec}. 
-#' @return A \code{vec} containing the modulus for each element.
-#' @details Consider a complex number defined as: \eqn{z = x + i y} with real \eqn{x} and \eqn{y},
-#' The modulus is defined as: \eqn{r = Mod(z) = \sqrt{(x^2 + y^2)}}
-#' @examples
-#' Mod_cpp(c(1+.5i, 2+1i, 5+9i))
-Mod_cpp <- function(x) {
-    .Call('GMWM_Mod_cpp', PACKAGE = 'GMWM', x)
-}
-
 #' @title Discrete Fourier Transformation for Autocovariance Function
 #' @description Calculates the autovariance function (ACF) using Discrete Fourier Transformation.
 #' @param x A \code{cx_vec}. 
@@ -743,6 +1228,14 @@ Mod_cpp <- function(x) {
 #' dft_acf(x)
 dft_acf <- function(x) {
     .Call('GMWM_dft_acf', PACKAGE = 'GMWM', x)
+}
+
+mean_diff <- function(x) {
+    .Call('GMWM_mean_diff', PACKAGE = 'GMWM', x)
+}
+
+get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, model_select, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, bs_optimism, B) {
+    .Call('GMWM_get_summary', PACKAGE = 'GMWM', theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, model_select, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, bs_optimism, B)
 }
 
 #' @title Pseudo Logit Inverse Function
@@ -780,7 +1273,7 @@ pseudo_logit <- function(x) {
 
 #' @title Logit Function
 #' @description This function computes the logit link function.
-#' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
+#' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
 #' @return A \code{vec} containing logit terms.
 #' @examples
 #' x.sim = runif(100)
@@ -789,11 +1282,81 @@ logit <- function(x) {
     .Call('GMWM_logit', PACKAGE = 'GMWM', x)
 }
 
+#' @title Logit Function
+#' @description This function computes the logit link function.
+#' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
+#' @return A \code{vec} containing logit terms.
+#' @examples
+#' x.sim = runif(100)
+#' logit(x.sim)
+logit2 <- function(x) {
+    .Call('GMWM_logit2', PACKAGE = 'GMWM', x)
+}
+
+#' @title Logit2 Inverse Function
+#' @description This function computes the inverse of a logit transformation of the parameters.
+#' @param x A \code{vec} containing real numbers.
+#' @return A \code{vec} containing logit probabilities.
+#' @examples
+#' x.sim = rnorm(100)
+#' logit_inv(x.sim)
+logit2_inv <- function(x) {
+    .Call('GMWM_logit2_inv', PACKAGE = 'GMWM', x)
+}
+
+#' @title Transform Values for Optimization
+#' @description Transform parameter guesses prior to estimating with GMWM
+#' @return A \code{vec} containing the transformed guesses.
+transform_values <- function(theta, desc, objdesc, model_type) {
+    .Call('GMWM_transform_values', PACKAGE = 'GMWM', theta, desc, objdesc, model_type)
+}
+
+#' @title Revert Transform Values for Display
+#' @description Undo the previous transform of parameter guesses to obtain the GMWM estimates.
+#' @return A \code{vec} containing the undone transformation of parameters.
+untransform_values <- function(theta, desc, objdesc, model_type) {
+    .Call('GMWM_untransform_values', PACKAGE = 'GMWM', theta, desc, objdesc, model_type)
+}
+
+minroot <- function(x) {
+    .Call('GMWM_minroot', PACKAGE = 'GMWM', x)
+}
+
+#' @title Check Invertibility Conditions
+#' @description Checks the invertiveness of series of coefficients.
+#' @param x A \code{cx_vec} that has a 1 appended before the coefficents. (e.g. c(1, x))
+#' @return True (if outside unit circle) || False (if inside unit circle)
+invert_check <- function(x) {
+    .Call('GMWM_invert_check', PACKAGE = 'GMWM', x)
+}
+
+#' @title Count Models
+#' @description Count the amount of models that exist.
+#' @param desc A \code{vector<string>} that contains the model's components.
+#' @return A \code{map<string, int>} containing how frequent the model component appears.
+#' @examples
+#' #TBA
+count_models <- function(desc) {
+    .Call('GMWM_count_models', PACKAGE = 'GMWM', desc)
+}
+
+order_AR1s <- function(theta, desc, objdesc) {
+    .Call('GMWM_order_AR1s', PACKAGE = 'GMWM', theta, desc, objdesc)
+}
+
+model_objdesc <- function(desc) {
+    .Call('GMWM_model_objdesc', PACKAGE = 'GMWM', desc)
+}
+
+model_theta <- function(desc) {
+    .Call('GMWM_model_theta', PACKAGE = 'GMWM', desc)
+}
+
 #' @title Generate eta3 confidence interval
 #' @description Computes the eta3 CI
 #' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
 #' @param dims A \code{String} indicating the confidence interval being calculated.
-#' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 #' @return A \code{matrix} with the structure:
 #' \itemize{
 #'  \item{Column 1}{Wavelet Variance}
@@ -807,15 +1370,15 @@ logit <- function(x) {
 #' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 #' y = wave_variance(signal_modwt_bw)
 #' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
-ci_eta3 <- function(y, dims, p) {
-    .Call('GMWM_ci_eta3', PACKAGE = 'GMWM', y, dims, p)
+ci_eta3 <- function(y, dims, alpha_ov_2) {
+    .Call('GMWM_ci_eta3', PACKAGE = 'GMWM', y, dims, alpha_ov_2)
 }
 
 #' @title Generate eta3 robust confidence interval
 #' @description Computes the eta3 robust CI
 #' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
 #' @param dims A \code{String} indicating the confidence interval being calculated.
-#' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
+#' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
 #' @param eff A \code{double} that indicates the efficiency.
 #' @return A \code{matrix} with the structure:
 #' \itemize{
@@ -829,9 +1392,9 @@ ci_eta3 <- function(y, dims, p) {
 #' decomp = modwt_cpp(x, "haar", 4, boundary="periodic")
 #' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 #' y = wave_variance(signal_modwt_bw, robust = TRUE,  eff = 0.6)
-#' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025, robust = TRUE, eff = 0.6)
-ci_eta3_robust <- function(y, dims, p, eff) {
-    .Call('GMWM_ci_eta3_robust', PACKAGE = 'GMWM', y, dims, p, eff)
+#' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
+ci_eta3_robust <- function(y, dims, alpha_ov_2, eff) {
+    .Call('GMWM_ci_eta3_robust', PACKAGE = 'GMWM', y, dims, alpha_ov_2, eff)
 }
 
 #' @title Generate a Confidence intervval for a Univariate Time Series
@@ -839,7 +1402,7 @@ ci_eta3_robust <- function(y, dims, p, eff) {
 #' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
 #' @param y A \code{vec} that contains the wave variance.
 #' @param type A \code{String} indicating the confidence interval being calculated.
-#' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
+#' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
 #' @param robust A \code{boolean} to determine the type of wave estimation.
 #' @param eff A \code{double} that indicates the efficiency.
 #' @return A \code{matrix} with the structure:
@@ -858,8 +1421,8 @@ ci_eta3_robust <- function(y, dims, p, eff) {
 #' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 #' y = wave_variance(signal_modwt_bw)
 #' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
-ci_wave_variance <- function(signal_modwt_bw, y, type = "eta3", p = 0.025, robust = FALSE, eff = 0.6) {
-    .Call('GMWM_ci_wave_variance', PACKAGE = 'GMWM', signal_modwt_bw, y, type, p, robust, eff)
+ci_wave_variance <- function(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = FALSE, eff = 0.6) {
+    .Call('GMWM_ci_wave_variance', PACKAGE = 'GMWM', signal_modwt_bw, y, type, alpha_ov_2, robust, eff)
 }
 
 #' @title Generate a Wave Variance for a Univariate Time Series
@@ -884,7 +1447,7 @@ wave_variance <- function(signal_modwt_bw, robust = FALSE, eff = 0.6) {
 #' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
-#' @param p A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 #' @param ci_type A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"
 #' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
 #' @return A \code{mat} with the structure:
@@ -899,8 +1462,8 @@ wave_variance <- function(signal_modwt_bw, robust = FALSE, eff = 0.6) {
 #' x=rnorm(100)
 #' decomp = modwt(x)
 #' wvar_cpp(decomp$data, robust = FALSE)
-wvar_cpp <- function(signal_modwt, robust = FALSE, eff = 0.6, p = 0.025, ci_type = "eta3", strWavelet = "haar") {
-    .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', signal_modwt, robust, eff, p, ci_type, strWavelet)
+wvar_cpp <- function(signal_modwt, robust = FALSE, eff = 0.6, alpha = 0.05, ci_type = "eta3", strWavelet = "haar") {
+    .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', signal_modwt, robust, eff, alpha, ci_type, strWavelet)
 }
 
 #' @title Computes the MODWT scales
