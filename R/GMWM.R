@@ -335,7 +335,21 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
   x
 }
 
+optimism.manual = function(object, V){
+    mat = get.mat.gmwm(object)
+    DmB = mat$D - mat$B
+    jacob = -ginv(t(DmB)%*%DmB)%*%t(DmB)%*%mat$A%*%mat$omega
+    2*sum(diag(mat$A%*%jacob%*%mat$omega%*%V))
+}
 
+get.mat.gmwm = function(object){
+  A = derivative_first_matrix(object$estimate, object$model$desc, object$model$objdesc, object$scale)
+  omega = object$omega
+  B = B_matrix(A, t(A)%*%omega)
+  D = D_matrix(object$estimate, object$model$desc, object$model$objdesc, object$scale, omega%*%(object$wv.empir - object$theo));
+  out = list(A = A, B = B, D = D, omega = omega)
+  out
+}
 
 #' @title Summary of GMWM object
 #' @description Displays summary information about GMWM object
