@@ -338,7 +338,7 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 optimism.manual = function(object, V){
     mat = get.mat.gmwm(object)
     DmB = mat$D - mat$B
-    jacob = -ginv(t(DmB)%*%DmB)%*%t(DmB)%*%mat$A%*%mat$omega
+    jacob = -ginv(t(DmB)%*%DmB)%*%t(DmB)%*%t(mat$A)%*%mat$omega
     2*sum(diag(mat$A%*%jacob%*%mat$omega%*%V))
 }
 
