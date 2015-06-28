@@ -668,13 +668,9 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   
   # Get names of latent processes
   # Avoids file system naming issue (e.g. image1, image22, image3)
-  if(L <= 9){
-    nom = paste0("z0",1:L)
-  }else{
-    nom = paste0("z0",1:9)
-    nom = c(nom, paste0("z", as.character(10:L)))
-  }
-
+  nlen = nchar(L)
+  nom = sprintf(paste0("z%0",nlen,"d"),1:L)
+  
   Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628" ,"#F781BF", "#999999")
   modulus = (L-1)%/% 9
   remainder = (L-1)%% 9
