@@ -596,7 +596,7 @@ plot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = 
     if(CI == T) {numLabel = 3}else {numLabel = 2}
   }else{
     L = length(object$model$desc) + 1 # Find number of latent processes
-    if((L-1)> 9){warning('Object has more than 9 latent processes, but the palette has only 9 colors')}
+    if(!bw && (L-1)> 9){warning('Object has more than 9 latent processes, but the palette has only 9 colors')}
     if(CI == T) {numLabel = 2+L}else{numLabel = 1+L}
   }
   
@@ -667,8 +667,14 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   L = length(object$model$desc) + 1
   
   # Get names of latent processes
-  nom = paste0('z', as.character(1:L) )
-  
+  # Avoids file system naming issue (e.g. image1, image22, image3)
+  if(L <= 9){
+    nom = paste0("z0",1:L)
+  }else{
+    nom = paste0("z0",1:9)
+    nom = c(nom, paste0("z", as.character(10:L)))
+  }
+
   Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628" ,"#F781BF", "#999999")
   modulus = (L-1)%/% 9
   remainder = (L-1)%% 9
@@ -705,6 +711,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
     
     df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
                     process = rep(nom, each = length(object$scales)))
+    
     WV = data.frame(emp = object$wv.empir, low = object$ci.low, high = object$ci.high, scale = object$scales)
     melt.wv = melt(WV, id.vars = 'scale')
     
