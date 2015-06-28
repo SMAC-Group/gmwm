@@ -22,3 +22,12 @@ placeLegend = function(wv_1, low_n, high_n){
   return( c(legend.justification, legend.position) )
   
 }
+
+#' @title Frequent Graph Setting for Paper
+#' @description This function sets some parameters such as plot.margin.
+#' @return A ggplot2 panel containing the frequent graph setting for paper.
+paperSetting = function(){
+  p = theme(axis.title.y=element_text(vjust=3.5), axis.title.x=element_text(vjust=-2.5), 
+          plot.title = element_text(vjust=2.5), plot.margin=unit(c(0.7,0.1,0.7,0.7),"cm"))
+  return(p)
+}
