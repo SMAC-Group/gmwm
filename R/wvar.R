@@ -91,7 +91,7 @@ summary.wvar = function(object, ...){
 #' @title Wrapper to ggplot Wavelet Variances Graph
 #' @description Creates the wavelet variance graph
 #' @method plot wvar
-#' @param object A \code{wvar} object.
+#' @param x A \code{wvar} object.
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
 #' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
@@ -102,7 +102,7 @@ summary.wvar = function(object, ...){
 #' x=rnorm(100)
 #' out = wvar(x)
 #' plot( out )
-plot.wvar = function(object, transparence = 0.1, background = 'white', bw = F, 
+plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F, 
                      CI.color = "#003C7D", line.type = c('solid','dotted'), line.color = c('#003C7D', '#999999'),
                      point.size = c(5,0), point.shape = c(20,46),
                      title = NA, title.size= 15, 
@@ -112,7 +112,7 @@ plot.wvar = function(object, transparence = 0.1, background = 'white', bw = F,
                      legend.title = '',  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) ),
                      legend.key.size = 1, legend.title.size = 13, 
                      legend.text.size = 13, ...){
-  autoplot.wvar(object, transparence = transparence, background = background, bw = bw, 
+  autoplot.wvar(x, transparence = transparence, background = background, bw = bw, 
                 CI.color = CI.color, line.type = line.type, line.color = line.color,
                 point.size = point.size, point.shape = point.shape,
                 title = title, title.size= title.size, 
@@ -147,7 +147,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
                          legend.title = '',  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) ),
                          legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
-  .x=low=high=trans_breaks=trans_format=math_format=NULL
+  .x=low=high=trans_breaks=trans_format=math_format=value=variable=NULL
   
   if( !(background %in% c('grey','gray', 'white')) ){
     warning("Parameter background: No such option. Set background to 'white'")
@@ -245,7 +245,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 #' @title Detail Implementation to Compare Wavelet Variances
 #' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
 #' @method autoplot wvarComp
-#' @param obj A \code{data frame} that contains data in order to plot
+#' @param object A \code{data frame} that contains data in order to plot
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -265,12 +265,12 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 #' @param legend.title A \code{string} that indicates the title of legend
 #' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend
-#' @param legend.label.size An \code{integer} that indicates the size of title on legend
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend.
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend
 #' @param nrow An \code{integer} that indicates number of rows
 #' @author JJB, Wenchao
 #' @seealso \code{\link{compare.wvar}}
-autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
                              CI.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
                              title = "Haar Wavelet Variance Representation", title.size= 15, 
                              axis.label.size = 13, axis.tick.size = 11, 
@@ -281,10 +281,10 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, background = 'white',
                              legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
                              legend.text.size = 13, nrow = 1, ...){
   
-  scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
+  scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=dataset=NULL
   
   #p = ggplot(data = obj, mapping = aes(x = scales, y = WV)) + geom_line(mapping = aes(color = dataset), linetype = line.type[1]) + geom_point(mapping = aes(color = dataset), size = point.size, shape = point.shape) +
-  p = ggplot(data = obj, mapping = aes(x = scales, y = WV)) + geom_line(mapping = aes(color = dataset), linetype = line.type[1]) + geom_point(mapping = aes(color = dataset, size = dataset, shape = dataset) ) +
+  p = ggplot(data = object, mapping = aes(x = scales, y = WV)) + geom_line(mapping = aes(color = dataset), linetype = line.type[1]) + geom_point(mapping = aes(color = dataset, size = dataset, shape = dataset) ) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) + 
@@ -404,10 +404,14 @@ autoplot.wvarComp = function(obj, split = TRUE, CI = TRUE, background = 'white',
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('red','green'))
 #' #4. Change default setting
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'))
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), facet.label.size = 9)
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), legend.label = c('1','2','3','4'))
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F)
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
+#' facet.label.size = 9)
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
+#' legend.label = c('1','2','3','4'))
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
+#' legend.label = c('1','2','3','4'), split = F)
+#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
+#' legend.label = c('1','2','3','4'), split = F, CI = F)
 #' }
 compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
                         CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
