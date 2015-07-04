@@ -14,6 +14,7 @@ Depends:
 Imports: 
     Rcpp (>= 0.11.3),
     scales,
-    grid
+    grid,
+    reshape2
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: testthat
