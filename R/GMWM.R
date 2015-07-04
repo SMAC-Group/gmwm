@@ -578,8 +578,9 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method plot gmwm
-#' @param object A \code{GMWM} object
+#' @param x A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB, Wenchao
@@ -590,7 +591,7 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
 #' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
-plot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
+plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                      point.size = NULL,point.shape = NULL,
                      title = NA, title.size= 15, 
@@ -609,7 +610,7 @@ plot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = 
   if(!process.decomp){
     if(CI == T) {numLabel = 3}else {numLabel = 2}
   }else{
-    L = length(object$model$desc) + 1 # Find number of latent processes
+    L = length(x$model$desc) + 1 # Find number of latent processes
     if(!bw && (L-1)> 9){warning('Object has more than 9 latent processes, but the palette has only 9 colors')}
     if(CI == T) {numLabel = 2+L}else{numLabel = 1+L}
   }
@@ -634,7 +635,7 @@ plot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = 
   ## call
   if(process.decomp){
     # plot individually
-    autoplot.gmwm2(object, background = background, CI = CI, transparence = transparence, bw = bw, 
+    autoplot.gmwm2(x, background = background, CI = CI, transparence = transparence, bw = bw, 
                    CI.color = CI.color, line.type = line.type, line.color = line.color,
                    point.size = point.size, point.shape = point.shape,
                    title = title, title.size= title.size, 
@@ -645,7 +646,7 @@ plot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = 
                    legend.text.size = legend.text.size)
   }
   else{
-    autoplot.gmwm(object, background = background, CI = CI, transparence = transparence, bw = bw, 
+    autoplot.gmwm(x, background = background, CI = CI, transparence = transparence, bw = bw, 
                   CI.color = CI.color, line.type = line.type, line.color = line.color,
                   point.size = point.size, point.shape = point.shape,
                   title = title, title.size= title.size, 
@@ -662,6 +663,7 @@ plot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = 
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
 #' @method autoplot gmwm2
 #' @param object A \code{GMWM} object
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM for each latent process.
 #' @author JJB, Wenchao
@@ -675,7 +677,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
                           legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                           legend.text.size = 13,...){
   #require package: grid
-  .x=low=high=trans_breaks=trans_format=math_format=NULL
+  .x=low=high=trans_breaks=trans_format=math_format=value=variable=process=NULL
   
   # Find number of latent processes
   L = length(object$model$desc) + 1
@@ -821,6 +823,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method autoplot gmwm
 #' @param object A \code{GMWM} object
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB, Wenchao
@@ -841,7 +844,7 @@ autoplot.gmwm = function(object, CI = T, background = 'white', transparence = 0.
                          legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
   #require pakage: scales, grid
-  low=high=emp=theo=trans_breaks=trans_format=math_format=.x=NULL
+  low=high=emp=theo=trans_breaks=trans_format=math_format=.x=value=variable=NULL
 
   temp = data.frame( emp = object$wv.empir,
                      low = object$ci.low,
