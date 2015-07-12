@@ -255,7 +255,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 #' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. Length of vector must equal to 2. 
 #' @param point.size A \code{vector} of \code{integer} that indicates the size of point
 #' @param point.shape A \code{vector} of \code{integer} that indicates the shape of point
-#' @param title A \code{string} that indicates the title of the graph
+#' @param title A \code{string} that indicates the title of the graph 
 #' @param title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark

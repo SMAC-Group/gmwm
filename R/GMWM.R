@@ -436,7 +436,7 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
       model.select = FALSE
     }
     
-    if(ci.bootstrap == FALSE){
+    if(bs.ci == FALSE){
       warning(paste0("The numerical derivative of ARMA(p,q), where p > 1 and q > 1, may be inaccurate leading to inappropriate CIs.\n",
               "Consider using the bs.ci = T option on the summary function."))
     }
