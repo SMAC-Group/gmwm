@@ -938,6 +938,355 @@ autoplot.gmwm = function(object, CI = T, background = 'white', transparence = 0.
 }
 
 
+
+#' @title Graphically Compare GMWM Model Fit
+#' @description Creates GMWM model fits of different models on split graphs within the same panel.
+#' @param ... Several \code{gmwm} objects
+#' @param split A \code{boolean} indicating true or false to place model fits on different or the same graphs.
+#' @return A ggplot2 panel containing two graphs of the wavelet variance.
+#' @author JJB, Wenchao
+#' @examples
+#' \dontrun{# AR
+#' set.seed(8836)
+#' n = 200
+#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' GMWM1 = gmwm(AR1(), data = x)
+#' GMWM2 = gmwm(2*AR1(), data = x)
+#' compare.models(GMWM1, GMWM2, split = FALSE)}
+compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
+                        CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
+                        title = "Haar Wavelet Variance Representation", title.size= 15, 
+                        axis.label.size = 13, axis.tick.size = 11, 
+                        axis.x.label = expression(paste("Scale ", tau)),
+                        axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                        facet.label.size = 13,
+                        legend.label = NULL,
+                        legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
+                        legend.text.size = 13, nrow = 1 ){
+  
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Set background to 'white'")
+    background = 'white'
+  }
+  
+  obj_list = list(...)
+  numObj = length(obj_list)
+  object.names = as.character(substitute(...()))
+  
+  #check parameter
+  #   params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape', 'legend.label')
+  #   requireLength = c(3, numObj, numObj, numObj, numObj, numObj)
+  #   default = list(c('solid','dotted'), NULL,  NULL, rep(5, numObj), rep(20, numObj), NULL)
+  #   nullIsFine = c(rep(T,6))
+  #   for (i in 1:length(params)){
+  #     one_param = params[i]
+  #     if( length(get(one_param))!=requireLength[i]){
+  #       isNull = is.null(get(one_param))
+  #       if(isNull && nullIsFine[i]){}else{
+  #         warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
+  #                       'is supplied.','Default setting is used.'))
+  #       }
+  #       assign(one_param, default[[i]])
+  #     }
+  #   }
+  
+  if(CI){
+    if(is.null(point.size)){point.size = rep(c(5,5,5,5), numObj)}
+    if(is.null(point.shape)){point.shape = rep(c(46, 46, 20, 1), numObj)}
+    if(is.null(line.type)){line.type = rep(c('dotted','dotted', 'solid','solid'), numObj)}
+    
+    #line.color
+    #'Dark2'
+    Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
+    modulus = numObj%/% 8
+    remainder = numObj%% 8
+    wv.palette = c( rep(Dark2 , times = modulus), Dark2[1:remainder] )
+    
+    if (numObj == 2){
+      wv.palette = c("#003C7D","#F47F24")}
+    theo.palette = alpha(wv.palette, 0.7)
+    
+    line.color = rep(NA, numObj* 4) #initialize
+    for (i in 1:numObj){
+      for (j in 1:4){
+        if(j==1||j==2||j==3){
+          line.color [4*i-4 + j] = wv.palette[i]
+        }else{
+          line.color[4*i] = theo.palette[i]
+        }
+      }
+    }
+    # if attributes are same, use same color
+    for(i in 1:(numObj-1)){
+      for(j in (i+1):numObj ){
+        same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
+        if(same.scales){
+          same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
+          same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
+          same.alpha = obj_list[[i]]$alpha == obj_list[[j]]$alpha
+          if(same.wv){line.color[4*(j-1)+3] = line.color[4*(i-1)+3]}
+          if(same.theo){line.color[4*(j-1)+4] = line.color[4*(i-1)+4]}
+          if(same.wv && same.alpha){
+            line.color[4*(j-1)+1] = line.color[4*(i-1)+1]
+            line.color[4*(j-1)+2] = line.color[4*(i-1)+2]
+          }
+        }
+      }
+    }
+    
+    CI.color = rep(NA, numObj)
+    for(i in 1:numObj){
+      CI.color[i] = line.color[4*(i-1) +1]
+    }
+    CI.color = alpha(CI.color, transparence)
+    
+    #for legend.label
+    #wv_string = expression(paste("Empirical WV ", hat(nu),' and ','CI') )
+    wv_string = bquote("Empirical WV"~hat(nu)~'and'~'CI')
+  }else{
+    if(is.null(point.size)){point.size = rep(c(5,5), numObj)}
+    if(is.null(point.shape)){point.shape = rep(c(20, 1), numObj)}
+    if(is.null(line.type)){line.type = rep(c('solid','solid'), numObj)}
+    
+    #line.color
+    #'Dark2'
+    Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
+    modulus = numObj%/% 8
+    remainder = numObj%% 8
+    wv.palette = c( rep(Dark2 , times = modulus), Dark2[1:remainder] )
+    
+    if (numObj == 2){
+      wv.palette = c("#003C7D","#F47F24")}
+    theo.palette = alpha(wv.palette, 0.7)
+    
+    line.color = rep(NA, numObj* 2) #initialize
+    for (i in 1:numObj){
+      for (j in 1:2){
+        if(j==1){
+          line.color [2*(i-1) + j] = wv.palette[i]
+        }else{
+          line.color[2*i] = theo.palette[i]
+        }
+      }
+    }
+    # if attributes are same, use same color
+    for(i in 1:(numObj-1)){
+      for(j in (i+1):numObj ){
+        same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
+        if(same.scales){
+          same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
+          same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
+          if(same.wv){line.color[2*(j-1)+1] = line.color[2*(i-1)+1]}
+          if(same.theo){line.color[2*(j-1)+2] = line.color[2*(i-1)+2]}
+        }
+      }
+    }
+    #for legend.label
+    #wv_string = expression(paste("Empirical WV ", hat(nu)))
+    wv_string = bquote("Empirical WV" ~hat(nu))
+  }
+  
+  #legend.label
+  #theo_string = expression(paste("Implied WV ", nu,"(",hat(theta),")"))
+  theo_string = bquote("Implied WV"~nu*"("*hat(theta)*")")
+  
+  if(is.null(legend.label)){
+    legend.label = c()
+    legend.label_raw = c()
+    for (i in 1:(2* numObj) ){
+      legend.label_raw[i] = paste( object.names[(i-1)%/%2 + 1] )
+      if(auto.label.wvar){
+        legend.label_raw[i] = paste(legend.label_raw[i], if(obj_list[[(i-1)%/%2 + 1]]$robust) '(Robust)' else '(Classical)')}
+      if(i%%2 == 1){
+        legend.label[i] = as.expression(bquote(.(legend.label_raw[i])~ .(wv_string) ) )
+      }else{
+        legend.label[i] = as.expression(bquote( .(legend.label_raw[i])~ .(theo_string)) )
+      }
+    }
+  }
+  
+  #breaks
+  breaks = rep(NA, 2*numObj)
+  for(i in 1:(2* numObj)){
+    if(i%%2 == 1){
+      breaks[i] = paste( object.names[(i-1)%/%2 + 1], 'WV')
+    }else{
+      breaks[i] = paste( object.names[(i-1)%/%2 + 1], 'z_theo')
+    }
+  }
+  
+  if (numObj == 0){
+    stop('At least one wvar object should be given')
+  }
+  else if (numObj == 1){
+    ## just plot
+    plot(...)
+  }
+  else  {
+    
+    total.len = 0
+    each.len = numeric(numObj)
+    for (i in 1:numObj){
+      each.len[i] = length(obj_list[[i]]$wv.empir)
+      total.len = total.len + each.len[i]
+    }
+    
+    if(CI){
+      #Initialize empty data frame with right number of rows
+      obj = data.frame(WV = numeric(total.len),
+                       scales = numeric(total.len),
+                       low = numeric(total.len),
+                       high = numeric(total.len),
+                       z_theo = numeric(total.len),
+                       dataset = 'XYZ', stringsAsFactors=FALSE)
+      
+      #put data into data frame
+      t = 1
+      for (i in 1:numObj){
+        d = each.len[i]
+        obj[t:(t+d-1),] = data.frame(WV = obj_list[[i]]$wv.empir,
+                                     scales = obj_list[[i]]$scales,
+                                     low = obj_list[[i]]$ci.low,
+                                     high = obj_list[[i]]$ci.high,
+                                     z_theo = obj_list[[i]]$theo,
+                                     dataset = object.names[i], stringsAsFactors=FALSE)
+        t = t +d
+      }
+    }else{
+      #Initialize empty data frame with right number of rows
+      obj = data.frame(WV = numeric(total.len),
+                       scales = numeric(total.len),
+                       z_theo = numeric(total.len),
+                       dataset = 'XYZ', stringsAsFactors=FALSE)
+      
+      #put data into data frame
+      t = 1
+      for (i in 1:numObj){
+        d = each.len[i]
+        obj[t:(t+d-1),] = data.frame(WV = obj_list[[i]]$wv.empir,
+                                     scales = obj_list[[i]]$scales,
+                                     z_theo = obj_list[[i]]$theo,
+                                     dataset = object.names[i], stringsAsFactors=FALSE)
+        t = t +d
+      }
+    }
+    
+    melt.obj = melt(obj, id.vars = c('scales', 'dataset'))
+    if (numObj == 2 ){
+      autoplot.gmwmComp(melt.obj, breaks = breaks, split = split, CI = CI, background = background, transparence = transparence, line.color =line.color, 
+                        CI.color = CI.color, line.type = line.type,  point.size = point.size, point.shape = point.shape,
+                        title = title, title.size= title.size, 
+                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                        axis.x.label = axis.x.label,
+                        axis.y.label = axis.y.label,
+                        facet.label.size = facet.label.size,
+                        legend.label = legend.label,
+                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                        legend.text.size = legend.text.size,
+                        nrow = nrow)
+    }
+    else{
+      autoplot.gmwmComp(melt.obj, breaks = breaks, split = split, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+                        CI.color = CI.color, line.type = line.type,  point.size = point.size, point.shape = point.shape,
+                        title = title, title.size= title.size, 
+                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                        axis.x.label = axis.x.label,
+                        axis.y.label = axis.y.label,
+                        facet.label.size = facet.label.size,
+                        legend.label = legend.label,
+                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                        legend.text.size = legend.text.size,
+                        nrow = nrow)
+    }
+    
+  }
+  
+}
+
+#' @title Compare GMWM Model Fits with \code{ggplot2}
+#' @description Creates a single graph that contains several GMWM models plotted against each other.
+#' @param object A \code{data.frame} containing both sets of GMWM object data.
+#' @param ... other arguments passed to specific methods
+#' @return A ggplot2 panel containing one graph with several GMWM models plotted against each other.
+#' @author JJB, Wenchao
+autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+                             CI.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
+                             title = "Haar Wavelet Variance Representation", title.size= 15, 
+                             axis.label.size = 13, axis.tick.size = 11, 
+                             axis.x.label = expression(paste("Scale ", tau)),
+                             axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                             facet.label.size = 13,
+                             legend.label = NULL,
+                             legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
+                             legend.text.size = 13, nrow = 1, ...){
+  
+  scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=dataset=NULL
+  
+  if(CI){object.CI = object[object$variable =='low'|object$variable=='high', ]}
+  object$variable = paste(object$dataset, object$variable)
+  
+  p = ggplot() + 
+    geom_line( data = object, mapping = aes(x = scales, y = value, color = variable, linetype = variable)) + 
+    geom_point(data = object, mapping = aes(x = scales, y = value, color = variable, size = variable, shape = variable)) +
+    
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) + 
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x)))
+    
+    p = p + scale_size_manual(name = legend.title, values = point.size, breaks = breaks,labels = legend.label ) +
+    scale_shape_manual(name = legend.title, values = point.shape, breaks = breaks,labels = legend.label) +
+    scale_linetype_manual(name = legend.title, values = line.type, breaks = breaks,labels = legend.label) +
+    scale_color_manual(name = legend.title, values = line.color, breaks = breaks,labels = legend.label)
+  
+  if(CI){
+    object.CI = dcast(object.CI, scales+ dataset~variable)
+    p = p + 
+      geom_ribbon(data = object.CI, mapping = aes(x = scales, ymin = low, ymax = high, fill = dataset), alpha = transparence, show_guide = T)
+    
+    legend.fill = rep(NA, 2*length(CI.color))
+    for(i in 1:length(legend.fill)){
+      if(i%%2 == 1){
+        legend.fill[i] = CI.color[(i-1)%/%2+1]
+      }else{
+        legend.fill[i] = NA
+      }
+    }
+    
+    #get CI.color from above function
+    p = p + 
+      scale_fill_manual(name = legend.title, values = CI.color, breaks = breaks,labels = legend.label) +
+      guides(colour = guide_legend(override.aes = list(fill = legend.fill)) )
+  }
+  
+  if( background == 'white'){
+    p = p + theme_bw() 
+  }
+  
+  if (split){
+    p = p + facet_wrap(~dataset,nrow = nrow) 
+    #+ theme(legend.position="none")
+  }
+  
+  p = p +  xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
+    theme(
+      plot.title = element_text(size= title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      legend.key.size = unit(legend.key.size, "cm"),
+      legend.text = element_text(size = legend.text.size),  
+      legend.title = element_text(size = legend.title.size),
+      legend.background = element_rect(fill="transparent"),
+      strip.text = element_text(size = facet.label.size),
+      legend.text.align = 0) 
+  
+  p
+}
+
+
+
 #' @title Compare GMWM Model Fits on Same Graph
 #' @description Creates a single graph that contains two GMWM models plotted against each other.
 #' @method autoplot comp
@@ -953,41 +1302,41 @@ autoplot.gmwm = function(object, CI = T, background = 'white', transparence = 0.
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
-autoplot.comp = function(object, ...){
-  
-  low=high=emp=theo=model2=trans_breaks=trans_format=math_format=.x=NULL
-  
-  cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#EF8A1C","LINE4"="#6E8BBF")
-  
-  WV = data.frame(emp = object$wv.empir,
-                  low = object$ci.low,
-                  high = object$ci.high,
-                  scale = object$scales,
-                  theo = object$theo1,
-                  model2 = object$theo2)
-  CI = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
-    geom_line(aes(y = high, colour = "LINE2"),linetype = "dotted") +
-    geom_line(aes(y = emp, colour = "LINE1")) + geom_point(aes(y = emp, colour = "LINE1"), size = 3) +
-    geom_line(aes(y = theo, colour = "LINE3"), size = 1) + 
-    geom_line(aes(y = model2, colour = "LINE4"), size = 1) + 
-    geom_point(aes(y = theo, colour = "LINE3"), size = 4, shape = 1) +
-    geom_point(aes(y = model2, colour = "LINE4"), size = 4, shape = 0) +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
-    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) + 
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) +
-    ggtitle("Haar Wavelet Variance Representation") + 
-    scale_colour_manual(name=" ", labels=c(expression(paste("Empirical WV ", hat(nu))), 
-                                           expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Model 1: ", nu,"(",hat(theta)[1],")")),expression(paste("Model 2: ", nu,"(",hat(theta)[2],")"))), 
-                        values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
-    guides(colour = guide_legend(override.aes = list(size = c(1,1,1,1), colour = c("#000000","#999999","#EF8A1C","#6E8BBF")))) +
-    theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
-          legend.justification=c(0,0), legend.position=c(0,0)) 
-  
-  CI
-}
+# autoplot.comp = function(object, ...){
+#   
+#   low=high=emp=theo=model2=trans_breaks=trans_format=math_format=.x=NULL
+#   
+#   cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#EF8A1C","LINE4"="#6E8BBF")
+#   
+#   WV = data.frame(emp = object$wv.empir,
+#                   low = object$ci.low,
+#                   high = object$ci.high,
+#                   scale = object$scales,
+#                   theo = object$theo1,
+#                   model2 = object$theo2)
+#   CI = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
+#     geom_line(aes(y = high, colour = "LINE2"),linetype = "dotted") +
+#     geom_line(aes(y = emp, colour = "LINE1")) + geom_point(aes(y = emp, colour = "LINE1"), size = 3) +
+#     geom_line(aes(y = theo, colour = "LINE3"), size = 1) + 
+#     geom_line(aes(y = model2, colour = "LINE4"), size = 1) + 
+#     geom_point(aes(y = theo, colour = "LINE3"), size = 4, shape = 1) +
+#     geom_point(aes(y = model2, colour = "LINE4"), size = 4, shape = 0) +
+#     xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) + 
+#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) +
+#     geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) +
+#     ggtitle("Haar Wavelet Variance Representation") + 
+#     scale_colour_manual(name=" ", labels=c(expression(paste("Empirical WV ", hat(nu))), 
+#                                            expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Model 1: ", nu,"(",hat(theta)[1],")")),expression(paste("Model 2: ", nu,"(",hat(theta)[2],")"))), 
+#                         values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
+#     guides(colour = guide_legend(override.aes = list(size = c(1,1,1,1), colour = c("#000000","#999999","#EF8A1C","#6E8BBF")))) +
+#     theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
+#           legend.justification=c(0,0), legend.position=c(0,0)) 
+#   
+#   CI
+# }
 
 
 #' @title Compare GMWM Model Fit on Split Graphs
@@ -1005,59 +1354,59 @@ autoplot.comp = function(object, ...){
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = TRUE)}
-autoplot.compSplit = function(object, ...){
-  
-  low=high=emp=theo=model2=trans_breaks=trans_format=math_format=.x=NULL
-  
-  cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#56B4E9")
-  
-  WV = data.frame(emp = object$wv.empir,
-                  low = object$ci.low,
-                  high = object$ci.high,
-                  scale = object$scales,
-                  theo = object$theo1,
-                  model2 = object$theo2)
-  
-  CI1 = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
-    geom_line(aes(y = high, colour = "LINE2"),linetype = "dotted") +
-    geom_line(aes(y = emp, colour = "LINE1")) + geom_point(aes(y = emp, colour = "LINE1"), size = 3) +
-    geom_line(aes(y = theo, colour = "LINE3")) + 
-    geom_point(aes(y = theo, colour = "LINE3"), size = 4, shape = 1) +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
-    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) + 
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) +
-    ggtitle("Model 1") + 
-    scale_colour_manual(name=" ", labels=c(expression(paste("Empirical WV ", hat(nu))), 
-                                           expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Implied WV ", nu,"(",hat(theta)[1],")"))), 
-                        values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
-    guides(colour = guide_legend(override.aes = list(size = c(1,1,1), colour = c("#000000","#999999","#56B4E9")))) +
-    theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
-          legend.justification=c(0,0), legend.position=c(0,0))
-  
-  CI2 = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
-    geom_line(aes(y = high, colour = "LINE2"),linetype = "dotted") +
-    geom_line(aes(y = emp, colour = "LINE1")) + geom_point(aes(y = emp, colour = "LINE1"), size = 3) +
-    geom_line(aes(y = model2, colour = "LINE3")) + 
-    geom_point(aes(y = model2, colour = "LINE3"), size = 4, shape = 1) +
-    xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
-    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) + 
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) +
-    ggtitle("Model 2") + 
-    scale_colour_manual(name=" ", labels=c(expression(paste("Empirical WV ", hat(nu))), 
-                                           expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Implied WV ", nu,"(",hat(theta)[2],")"))), 
-                        values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
-    guides(colour = guide_legend(override.aes = list(size = c(1,1,1), colour = c("#000000","#999999","#56B4E9")))) +
-    theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
-          legend.justification=c(0,0), legend.position=c(0,0))
-  
-  multiplot(CI1, CI2, cols=2)	
-}
+# autoplot.compSplit = function(object, ...){
+#   
+#   low=high=emp=theo=model2=trans_breaks=trans_format=math_format=.x=NULL
+#   
+#   cols = c("LINE1"="#000000", "LINE2"="#999999", "LINE3"="#56B4E9")
+#   
+#   WV = data.frame(emp = object$wv.empir,
+#                   low = object$ci.low,
+#                   high = object$ci.high,
+#                   scale = object$scales,
+#                   theo = object$theo1,
+#                   model2 = object$theo2)
+#   
+#   CI1 = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
+#     geom_line(aes(y = high, colour = "LINE2"),linetype = "dotted") +
+#     geom_line(aes(y = emp, colour = "LINE1")) + geom_point(aes(y = emp, colour = "LINE1"), size = 3) +
+#     geom_line(aes(y = theo, colour = "LINE3")) + 
+#     geom_point(aes(y = theo, colour = "LINE3"), size = 4, shape = 1) +
+#     xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) + 
+#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) +
+#     geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) +
+#     ggtitle("Model 1") + 
+#     scale_colour_manual(name=" ", labels=c(expression(paste("Empirical WV ", hat(nu))), 
+#                                            expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Implied WV ", nu,"(",hat(theta)[1],")"))), 
+#                         values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
+#     guides(colour = guide_legend(override.aes = list(size = c(1,1,1), colour = c("#000000","#999999","#56B4E9")))) +
+#     theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
+#           legend.justification=c(0,0), legend.position=c(0,0))
+#   
+#   CI2 = ggplot(WV, aes( x = scale, y = low)) + geom_line(aes(colour = "LINE2"), linetype = "dotted") +
+#     geom_line(aes(y = high, colour = "LINE2"),linetype = "dotted") +
+#     geom_line(aes(y = emp, colour = "LINE1")) + geom_point(aes(y = emp, colour = "LINE1"), size = 3) +
+#     geom_line(aes(y = model2, colour = "LINE3")) + 
+#     geom_point(aes(y = model2, colour = "LINE3"), size = 4, shape = 1) +
+#     xlab( expression(paste("Scale ", tau))) + ylab( expression(paste("Wavelet variance ", nu))) +
+#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) + 
+#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+#                   labels = trans_format("log10", math_format(10^.x))) +
+#     geom_polygon(aes(y = c(low,rev(high)), x = c(scale,rev(scale))), alpha = 0.1) +
+#     ggtitle("Model 2") + 
+#     scale_colour_manual(name=" ", labels=c(expression(paste("Empirical WV ", hat(nu))), 
+#                                            expression(paste("CI(", hat(nu)," , 0.95)" )), expression(paste("Implied WV ", nu,"(",hat(theta)[2],")"))), 
+#                         values=cols, guide = guide_legend(fill = NULL,colour = NULL)) +
+#     guides(colour = guide_legend(override.aes = list(size = c(1,1,1), colour = c("#000000","#999999","#56B4E9")))) +
+#     theme(legend.key = element_rect(fill=NA), legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"), 
+#           legend.justification=c(0,0), legend.position=c(0,0))
+#   
+#   multiplot(CI1, CI2, cols=2)	
+# }
 
 #' @title Graphically Compare GMWM Model Fit Between Two Models
 #' @description Creates GMWM model fits of two models on split graphs within the same panel.
@@ -1075,13 +1424,13 @@ autoplot.compSplit = function(object, ...){
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
-compare.models = function(GMWM1, GMWM2, split = FALSE){
-  x = data.frame(wv.empir = GMWM1$wv.empir, ci.low = GMWM1$ci.low, 
-                 ci.high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
-  if (split == TRUE){
-    class(x) = "compSplit"
-  }else{
-    class(x) = "comp"
-  }
-  autoplot(x)
-}
+# compare.models = function(GMWM1, GMWM2, split = FALSE){
+#   x = data.frame(wv.empir = GMWM1$wv.empir, ci.low = GMWM1$ci.low, 
+#                  ci.high = GMWM1$ci.high, scales = GMWM1$scales, theo1 = GMWM1$theo, theo2 = GMWM2$theo) 
+#   if (split == TRUE){
+#     class(x) = "compSplit"
+#   }else{
+#     class(x) = "comp"
+#   }
+#   autoplot(x)
+# }
