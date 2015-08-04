@@ -61,7 +61,7 @@ gts = function(data, name = "", freq = 1, unit = "sec"){
 #' @param title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label.
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
-#' @param to_unit A \code{string} indicating the unit which the data is converted to. It can be sec, min, hour, day, month and year.
+#' @param to.unit A \code{string} indicating the unit which the data is converted to. It can be sec, min, hour, day, month and year.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
 #' @param ... other arguments passed to specific methods
@@ -75,7 +75,7 @@ plot.gts = function(x, background = 'white',
                     line.type = 'solid', line.color = '#003C7D',
                     point.size = 0, point.shape = 20,
                     title = NULL, title.size= 15, 
-                    axis.label.size = 13, axis.tick.size = 11, to_unit = NULL,
+                    axis.label.size = 13, axis.tick.size = 11, to.unit = NULL,
                     axis.x.label = 'Time', axis.y.label = deparse(substitute(x)), ... ){
   x1=y1=NULL
   
@@ -85,21 +85,24 @@ plot.gts = function(x, background = 'white',
   }
   
   if(class(x)!='gts'){stop('x must be a gts object. Use function gts() to create it.')}
+  if(x$freq == 0){stop('freq cannot be zero.')}
   
   #prepare data
   len = length(x$data)
-  df = data.frame(y1 = x$data, x1 = 1:len )
+  df = data.frame(y1 = x$data, x1 = 0:(len-1) )
   
-  if( is.null(x$unit) && is.null(to_unit)==F ){warning('Unit of x is NULL. Conversion cannot be done.')}
+  if( is.null(x$unit) && is.null(to.unit)==F ){warning('Unit of x is NULL. Conversion cannot be done.')}
   if( is.null(x$unit) == F ){
-    if( is.null(to_unit) == F){
-      obj = convert.gts(df$x1, x$unit, to_unit)
+    if( is.null(to.unit) == F){
+      obj = convert.gts(df$x1, x$unit, to.unit)
       if(obj$converted){
         df$x1 = obj$x
-        axis.x.label = paste0(axis.x.label, ' (',to_unit,')')
+        axis.x.label = paste0(axis.x.label, ' (',to.unit,')')
       }
     }
   }
+  #deal with freq
+  df$x1 = df$x1/x$freq
   
   p = ggplot(data = df, mapping = aes(x = x1,y = y1)) + geom_line(linetype = line.type, color = line.color) + 
     geom_point(color = line.color, size = point.size, shape = point.shape)
@@ -126,8 +129,8 @@ plot.gts = function(x, background = 'white',
 
 #' @title Convert Unit of Time Series Data
 #' @param x A \code{vector}.
-#' @param from_unit A \code{string} indicating the unit which the data is converted from.
-#' @param to_unit A \code{string} indicating the unit which the data is converted to.
+#' @param from.unit A \code{string} indicating the unit which the data is converted from.
+#' @param to.unit A \code{string} indicating the unit which the data is converted to.
 #' @return A list with the following structure:
 #' \itemize{
 #'  \item{x} {Data.}
@@ -138,32 +141,32 @@ plot.gts = function(x, background = 'white',
 #' convert.gts(x, 'sec', 'min')
 #' y = 1:10
 #' convert.gts(y, 'hour', 'sec')
-convert.gts = function(x, from_unit, to_unit){
+convert.gts = function(x, from.unit, to.unit){
   #second, min, hour, day, month, year
   unit = c(se = 1, mi = 2, ho = 3, da = 4, mo = 5, ye = 6)
   
   #assume 1 month = 30 days
   ratio = c(60, 60, 24, 30, 12)
-  from_unit_1 = substr(from_unit, 1, 2)
-  to_unit_1 = substr(to_unit, 1, 2)
+  from.unit_1 = substr(from.unit, 1, 2)
+  to.unit_1 = substr(to.unit, 1, 2)
   
   #check unit:
   no_convert = F
-  if(from_unit_1 == to_unit_1){no_convert = T}
-  if(is.na(unit[from_unit_1]) ) {
-    message = paste('No such unit: ', from_unit, '. Available units are sec, min, hour, day, month and year. Conversion is terminated.', sep = '')
+  if(from.unit_1 == to.unit_1){no_convert = T}
+  if(is.na(unit[from.unit_1]) ) {
+    message = paste('No such unit: ', from.unit, '. Available units are sec, min, hour, day, month and year. Conversion is terminated.', sep = '')
     warning(message); no_convert = T}
-  if(is.na(unit[to_unit_1]) ) {
-    message = paste('No such unit: ', to_unit, '. Available units are sec, min, hour, day, month and year. Conversion is terminated.', sep = '')
+  if(is.na(unit[to.unit_1]) ) {
+    message = paste('No such unit: ', to.unit, '. Available units are sec, min, hour, day, month and year. Conversion is terminated.', sep = '')
     warning(message); no_convert = T}
   
   if(!no_convert){
-    if(unit[from_unit_1] > unit[to_unit_1]){
-      temp = ratio[unit[to_unit_1]: (unit[from_unit_1]-1)]
+    if(unit[from.unit_1] > unit[to.unit_1]){
+      temp = ratio[unit[to.unit_1]: (unit[from.unit_1]-1)]
       multiplier = prod(temp)
       x = x*multiplier
     }else{
-      temp = ratio[unit[from_unit_1]: (unit[to_unit_1]-1) ]
+      temp = ratio[unit[from.unit_1]: (unit[to.unit_1]-1) ]
       multiplier = prod(temp)
       x = x/multiplier
     }
