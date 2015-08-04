@@ -73,7 +73,7 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double 
     unsigned int num_elem = dims.n_elem;
 
     arma::mat out(num_elem, 3);
-    eff = sqrt(eff);
+    eff = sqrt(sqrt(eff));
     for(unsigned int i = 0; i<num_elem;i++){
       double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
       out(i,1) = eff * eta3 * y(i)/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
