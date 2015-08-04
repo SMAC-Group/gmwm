@@ -578,6 +578,49 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
 plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
+                         CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                         point.size = NULL,point.shape = NULL,
+                         title = NA, title.size= 15, 
+                         axis.label.size = 13, axis.tick.size = 11, 
+                         axis.x.label = expression(paste("Scale ", tau)),
+                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                         legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
+                         legend.text.size = 13, ... ){
+  
+  autoplot.gmwm(x, process.decomp = process.decomp, background = background, CI = CI, transparence = transparence, bw = bw, 
+                 CI.color = CI.color, line.type = line.type, line.color = line.color,
+                 point.size = point.size, point.shape = point.shape,
+                 title = title, title.size= title.size, 
+                 axis.label.size = axis.label.size, axis.tick.size = axis.tick.size , 
+                 axis.x.label = axis.x.label,
+                 axis.y.label = axis.y.label,
+                 legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                 legend.text.size = legend.text.size)
+  
+}
+
+
+#' @title Graph Solution of the Generalized Method of Wavelet Moments
+#' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
+#' @method autoplot gmwm
+#' @param x A \code{GMWM} object
+#' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @template CommonParams
+#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
+#' @author JJB, Wenchao
+#' @examples
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
+#' mod = gmwm(AR1(), data=x, model.type="imu")
+#' autoplot(mod)
+#' 
+#' y = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' mod = gmwm(2*AR1(), data = y)
+#' autoplot(mod)
+autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                      point.size = NULL,point.shape = NULL,
                      title = NA, title.size= 15, 
@@ -632,7 +675,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
                    legend.text.size = legend.text.size)
   }
   else{
-    autoplot.gmwm(x, background = background, CI = CI, transparence = transparence, bw = bw, 
+    autoplot.gmwm1(x, background = background, CI = CI, transparence = transparence, bw = bw, 
                   CI.color = CI.color, line.type = line.type, line.color = line.color,
                   point.size = point.size, point.shape = point.shape,
                   title = title, title.size= title.size, 
@@ -645,7 +688,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 }
 
 
-#' @title Graph Solution of the Generalized Method of Wavelet Moments
+#' @title Graph Solution of the Generalized Method of Wavelet Moments for Each Process
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
 #' @method autoplot gmwm2
 #' @param object A \code{GMWM} object
@@ -805,22 +848,15 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
 }
 
 
-#' @title Graph Solution of the Generalized Method of Wavelet Moments
+#' @title Graph Solution of the Generalized Method of Wavelet Moments Non-individually
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
-#' @method autoplot gmwm
+#' @method autoplot gmwm1
 #' @param object A \code{GMWM} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB, Wenchao
-#' @examples
-#' # AR
-#' set.seed(1336)
-#' n = 200
-#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
-#' mod = gmwm(2*AR1(), data = x)
-#' autoplot(mod)
-autoplot.gmwm = function(object, CI = T, background = 'white', transparence = 0.1, bw = F, 
+autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0.1, bw = F, 
                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                          point.size = NULL, point.shape = NULL,
                          title = NA, title.size= 15, 
