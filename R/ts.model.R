@@ -15,9 +15,9 @@
 #' @examples
 #' AR1()
 #' AR1(phi=.32, sigma=1.3)
-AR1 = function(phi = NULL, sigma2 = NULL) {
+AR1 = function(phi = NULL, sigma2 = 1) {
   starting = FALSE;
-  if(is.null(phi) || is.null(sigma2)){
+  if(is.null(phi)){
     phi = 0;
     sigma2 = 1;
     starting = TRUE;
@@ -50,18 +50,23 @@ AR1 = function(phi = NULL, sigma2 = NULL) {
 #' }
 #' @author JJB
 #' @examples
-#' AR()
-#' AR(phi=.32, sigma=1.3)
-AR = function(phi = NULL, sigma2 = NULL) {
+#' AR(1) # Slower version of AR1()
+#' AR(phi=.32, sigma=1.3) # Slower version of AR1()
+#' AR(2) # Equivalent to ARMA(2,0).
+AR = function(phi = NULL, sigma2 = 1) {
   starting = FALSE;
-  if(is.null(phi) || is.null(sigma2)){
-   phi = 0;
-   sigma2 = 1;
+  
+  if(is.null(phi)){
+    stop("Must supply either a whole number of a string of numbers for phi parameter in AR().")
+  }
+  
+  p = length(phi)
+  if(p == 1 & is.whole(phi)){
+   p = phi
+   phi = rep(0,p)
    starting = TRUE;
   }
 
-  p = length(phi)
-  
   out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
                       theta = c(phi,sigma2),
                       plength = 2,
@@ -88,16 +93,19 @@ AR = function(phi = NULL, sigma2 = NULL) {
 #' @author JJB
 #' @examples
 #' MA()
-#' MA(phi=.32, sigma=1.3)
-MA = function(theta = NULL, sigma2 = NULL) {
+#' MA(theta=.32, sigma=1.3)
+MA = function(theta = NULL, sigma2 = 1) {
   starting = FALSE;
-  if(is.null(theta) || is.null(sigma2)){
-   theta = 0;
-   sigma2 = 1;
-   starting = TRUE;
+  if(is.null(theta)){
+    stop("Must supply either a whole number of a string of doubles for theta parameter in MA().")
   }
   
   q = length(theta)
+  if(q == 1 & is.whole(theta)){
+    q = theta
+    theta = rep(1,q)
+    starting = TRUE;
+  }
   
   out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
                       theta = c(theta,sigma2),
