@@ -1,9 +1,11 @@
 .Rproj.user
 .Rhistory
 .RData
+.Rbuildignore
 src/*.o
 src/*.so
 src/*.dll
 src/RcppExports.o
 src/RcppExports.cpp
 R/RcppExports.R
+GMWM.Rproj
