@@ -245,10 +245,6 @@ arma::vec gen_arma(const unsigned int N,
 //' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..)
 //' @param objdesc A \code{field<vec>} contains the different model objects e.g. AR1 = c(1,1)
 //' @return A \code{vec} that contains combined time series.
-//' @details
-//' This function is under work. Some of the features are active. Others... Not so much. 
-//' What is NOT active:
-//' 1. Simulating an ARMA time series
 //' @examples
 //' # AR
 //' set.seed(1336)
@@ -344,17 +340,17 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
 //' @param N An \code{interger} containing the amount of observations for the time series.
 //' @param theta A \code{vec} containing the parameters to use to generate the model.
 //' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..).
-//' @param objdesc A \code{field<vec>} contains the different model objects e.g. AR1 = c(1,1)
-//' @return A \code{cube} that contains data for each decomposed and combined time series.
+//' @param objdesc A \code{field<vec>} containing the different model objects e.g. AR1 = c(1,1)
+//' @return A \code{mat} containing data for each decomposed and combined time series.
 //' @examples
 //' # AR
 //' set.seed(1336)
 //' gen_lts(1000, c(.9,1), "AR1", list(c(1,1)))
 // [[Rcpp::export]]
-arma::cube gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
+arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
   unsigned int i_theta = 0;
   unsigned int num_desc = desc.size();
-  arma::cube x = arma::zeros<arma::cube>(N, 1, num_desc+1);
+  arma::mat x = arma::zeros<arma::mat>(N, num_desc+1);
   
   for(unsigned int i = 0; i < num_desc; i++){
     double theta_value = theta(i_theta);
@@ -369,8 +365,8 @@ arma::cube gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std
       
       // Compute theoretical WV
       // Store it into cube x
-      x.slice(i) = gen_ar1(N, theta_value, sig2);
-      x.slice(num_desc) += x.slice(i);
+      x.col(i) = gen_ar1(N, theta_value, sig2);
+      x.col(num_desc) += x.col(i);
       
     }
     else if(desc[i] == "ARMA"){
@@ -409,29 +405,29 @@ arma::cube gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std
       double sig2 = theta(i_theta);
       
       // Modified arima.sim
-      x.slice(i) = gen_arma(N, ar, ma, sig2, 0);
-      x.slice(num_desc) += x.slice(i);
+      x.col(i) = gen_arma(N, ar, ma, sig2, 0);
+      x.col(num_desc) += x.col(i);
     }
     // DR
     else if(desc[i] == "DR"){
-      x.slice(i) = gen_dr(N, theta_value);
-      x.slice(num_desc) += x.slice(i);
+      x.col(i) = gen_dr(N, theta_value);
+      x.col(num_desc) += x.col(i);
 
     }
     // QN
     else if(desc[i] == "QN"){
-      x.slice(i) = gen_qn(N, theta_value);
-      x.slice(num_desc) += x.slice(i);
+      x.col(i) = gen_qn(N, theta_value);
+      x.col(num_desc) += x.col(i);
     }
     // RW
     else if(desc[i] == "RW"){
-      x.slice(i) = gen_rw(N, theta_value);
-      x.slice(num_desc) += x.slice(i);
+      x.col(i) = gen_rw(N, theta_value);
+      x.col(num_desc) += x.col(i);
     }
     // WN
     else {
-      x.slice(i) = gen_wn(N, theta_value);
-      x.slice(num_desc) += x.slice(i);
+      x.col(i) = gen_wn(N, theta_value);
+      x.col(num_desc) += x.col(i);
     }
     
     // Increment theta once to account for popped value
