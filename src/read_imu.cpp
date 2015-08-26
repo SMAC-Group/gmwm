@@ -61,8 +61,8 @@ imu_info get_imu_info(std::string imu_type){
     imu.time_type     = 8; // double
     imu.data_type     = 8; // double
     imu.header_size   = 0;
-    imu.scale_gyro    = 0.00000484813681109536; // Scale gyro to rad
-    imu.scale_acc     = 0.001;			            // scale accel to m/s
+    imu.scale_gyro    = ((1.0/3600.0)/360.0)*2.0*M_PI; // Scale gyro to rad
+    imu.scale_acc     = 0.001;			                   // scale accel to m/s
   }else if(imu_type == "NAVCHIP_INT"){
     imu.name          = "NAVCHIP_INT";
     imu.time_type     = 8; // double
@@ -95,7 +95,7 @@ imu_info get_imu_info(std::string imu_type){
 //' \item NAVCHIP_FLT
 //' }
 //' 
-//' We hope to soon be able to support: XSENA.
+//' We hope to soon be able to support delimited files.
 //' @return A matrix with dimensions N x 7, where the columns represent:
 //' \describe{
 //' \item{Col 0}{Time}
@@ -107,12 +107,14 @@ imu_info get_imu_info(std::string imu_type){
 //' \item{Col 6}{Accel 3}
 //' }
 //' @references
-//' Thanks goes to Philipp Clausen of EPFL for providing a matlab function that reads in IMUs.
-//' The function below is a heavily modified port of MATLAB code into Armadillo/C++.
+//' Thanks goes to Philipp Clausen of Labo TOPO, EPFL, Switzerland, topo.epfl.ch, Tel:+41(0)21 693 27 55
+//' for providing a matlab function that reads in IMUs.
+//' The function below is a heavily modified port of MATLAB code into Armadillo/C++. 
+//' 
 //' @examples
 //' read_imu("F:/Desktop/short_test_data.imu","IXSEA")
 // [[Rcpp::export]]
-arma::mat read_imu(std::string file_path, std::string imu_type) {
+arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
   
   // -- File Operations
   
@@ -202,13 +204,22 @@ arma::mat read_imu(std::string file_path, std::string imu_type) {
   // Data Rate
   double fIMU = 1.0/mean_diff(data.col(0));
     
-  // fIMU = round(fIMU); 
-  printf("(data @ %.2f Hz, sGr %f sAc %f) ...", fIMU, imu.scale_gyro, imu.scale_acc); 
+  fIMU = round(fIMU); 
+  
+  //printf("(data @ %.2f Hz, sGr %f sAc %f) ...", fIMU, imu.scale_gyro, imu.scale_acc); 
     
   // Scale data
   data.cols(1,3) *= fIMU * imu.scale_gyro;  
   data.cols(4,6) *= fIMU * imu.scale_acc; 
-   
-  return data;
+  
+  arma::vec stats(3);
+  stats(0) = fIMU;
+  stats(1) = imu.scale_gyro;
+  stats(2) = imu.scale_acc;
+  
+  arma::field<arma::mat> out(2);
+  out(0) = data;
+  out(1) = stats;
+  return out;
 }
 
