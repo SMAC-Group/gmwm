@@ -246,7 +246,7 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
     }
   }
   #deal with freq
-  df$x1 = df$x1/object$freq
+  #df$x1 = df$x1/object$freq
   
   p = ggplot(data = df, mapping = aes(x = x1,y = y1)) + geom_line(linetype = line.type, color = line.color) + 
     geom_point(color = line.color, size = point.size, shape = point.shape)
