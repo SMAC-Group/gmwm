@@ -1,5 +1,104 @@
-#' @title Generate Latent Time Series based on Model
-#' @description Create a time series based on a supplied time series model.
+#' @title Generate Latent Time Series Object Based on Data
+#' @description Create a \code{lts} object based on a supplied matrix or data frame.
+#' @param data A multiple-column \code{matrix} or \code{data.frame}. It must contain at least 2 columns. The last column must equal to the sum of all previous columns.
+#' @param x.lim If not \code{NULL}, it is a \code{vector} with two numeric values setting the limit on x-axis.
+#' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
+#' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
+#' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
+#' @param process A \code{vector} that contains model names of decomposed and combined processes.
+#' @return A \code{lts} object with the structure:
+#' \itemize{
+#'   \item{x:} {A \code{matirx} that contains x-axis values to plot}
+#'   \item{process:} {A \code{vector} that contains model names of decomposed and combined processes}
+#'   \item{data:} {A \code{matrix} that contains data for decomposed and combined processes}
+#'   \item{freq:} {Numeric representation of frequency}
+#'   \item{unit:} {String representation of the unit}
+#'   \item{name:} {Name of the dataset}
+#' }
+#' @author Wenchao
+#' @examples
+#' model1 = AR1(phi = .99, sigma = 1) 
+#' model2 = WN(sigma2=1)
+#' col1 = gen.gts(model1, N = 1000)$data
+#' col2 = gen.gts(model2, N = 1000)$data
+#' testMat = cbind(col1, col2, col1+col2)
+#' testLts = lts(testMat, x.lim = c(1,N), unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
+#' plot(testLts)
+lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = NULL){
+  
+  if(!is(data,'matrix') && !is(data,'data.frame')){
+    stop('data must be a matrix or data frame.')
+  }
+  
+  # Force data.frame to matrix  
+  if (is.data.frame(data)){ 
+    data = data.matrix(data)
+  }
+
+  #check ncol
+  ncolumn = ncol(data)
+  if(ncolumn<2){
+    stop('data must have at least two columns.')
+  }
+  
+  #check ndata
+  ndata = nrow(data)
+  if(ndata == 0 ){stop('data contains 0 observation.')}
+  
+  #check: the last column must equal to the sum of all previous columns
+  tolerance = 1E-4
+  sumAllPreviousColumns = apply(data[,1:(ncolumn-1),drop = F], MARGIN = 1, sum)
+  checkVec = sumAllPreviousColumns - data[,ncolumn]
+  if(any(checkVec>tolerance)){
+    stop(paste0('The last column of data must equal to the sum of all previous columns. The tolerance is ', tolerance,'.' ))
+  }
+  
+  #check process
+  if(!is.null(process)){
+    if(length(process) != ncolumn ){
+      stop(paste0('data has ', ncolumn, ' processes (including the combined one). You must specify the name of each process in parameter "process".') )
+    }
+  }else{
+    process = c(paste(rep('process', times = ncolumn-1), 1:(ncolumn-1)), 'combined process')
+  }
+  
+  #check freq
+  if(!is(freq,"numeric") || length(freq)!=1){
+    stop("freq must be numeric")
+  }
+  if(freq<=0) {stop('freq must be larger than 0.')}
+  
+  if(!is.null(unit)){
+    if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
+      stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
+    }
+  }
+  
+  if(is.null(x.lim)){
+    x = seq(from = 0, to = (ndata-1), length.out = ndata)
+  }else{
+    if(class(x.lim)!="numeric" || length(x.lim)!=2){
+      stop('x.lim must be a numeric vector with 2 values.')}
+    if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
+      stop('x.lim cannot create a vector which has the same length of the data you supplied.')
+    }
+    x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
+  }
+  
+  out = structure(list(
+    x = as.matrix(x),
+    process = process,
+    data = data,
+    name = name, 
+    freq = freq, 
+    unit = unit), class = 'lts' )
+  
+  invisible(out)
+}
+
+
+#' @title Generate Latent Time Series Object Based on Model
+#' @description Create a \code{lts} object based on a supplied time series model.
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
 #' @param N An \code{interger} indicating the amount of observations generated in this function.
 #' @param x.lim A \code{vector} with two numeric values setting the limit on x-axis.
@@ -80,7 +179,7 @@ gen.lts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name
   invisible(out)
 }
 
-#' @title Plot the Latent Structure in Time Series
+#' @title Wrapper Function to Plot the Graph of Latent Time Series
 #' @description This function is implemented with ggplot2.
 #' @method plot lts
 #' @param x A \code{lts} object
@@ -101,8 +200,7 @@ gen.lts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name
 #' @param ncol An \code{integer} that indicates number of columns.
 #' @param nrow An \code{integer} that indicates number of rows.
 #' @param ... other arguments passed to specific methods.
-#' @return A ggplot2 panel containing the graph of time series.
-#' @details The unit conversion feature is still under work.
+#' @return A ggplot2 panel containing the graph of latent time series.
 #' @author Wenchao
 #' @examples
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
@@ -126,7 +224,7 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
 
 }
 
-#' @title Plot the Latent Structure in Time Series
+#' @title Plot the Latent Time Series Graph
 #' @description This function is implemented with ggplot2.
 #' @method autoplot lts
 #' @param object A \code{lts} object
@@ -148,7 +246,6 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
 #' @param nrow An \code{integer} that indicates number of rows.
 #' @param ... other arguments passed to specific methods.
 #' @return A ggplot2 panel containing the graph of latent time series.
-#' @details The unit conversion feature is still under work.
 #' @author Wenchao
 #' @examples
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
@@ -188,24 +285,15 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   
   if(is.null(line.type)){line.type = rep('solid', numLabel)}
   if(is.null(line.color)){
-    Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628" ,"#F781BF", "#999999")
-    modulus = numLabel%/% 9
-    remainder = numLabel%% 9
-    line.color = c( rep(Set1, times = modulus), Set1[1:remainder] )
+    #Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628" ,"#F781BF", "#999999")
+    #modulus = numLabel%/% 9
+    #remainder = numLabel%% 9
+    #line.color = c( rep(Set1, times = modulus), Set1[1:remainder] )
+    
+    line.color = ggColor(numLabel)
   }
   if(is.null(point.size)){point.size = rep(0, numLabel)}
   if(is.null(point.shape)){point.shape = rep(20, numLabel)}
-  
-#   if( is.null(x$unit) && is.null(to_unit)==F ){warning('Unit of x is NULL. Conversion cannot be done.')}
-#   if( is.null(x$unit) == F ){
-#     if( is.null(to_unit) == F){
-#       obj = convert.gts(df$x1, x$unit, to_unit)
-#       if(obj$converted){
-#         df$x1 = obj$x
-#         axis.x.label = paste0(axis.x.label, ' (',to_unit,')')
-#       }
-#     }
-#   }
   
   num.desc = length(object$process)
   #A data frame doesn't allow columns to have the same name, but the decomposed processes might be same
@@ -216,8 +304,20 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   # prepare data frame to plot
   df = as.data.frame(object$data)
   colnames(df) = object$process
-  #deal with freq
-  df$x = object$x/object$freq
+  #no need to deal with freq
+  #df$x = object$x/object$freq
+  df$x = object$x
+  
+  if( is.null(object$unit) && is.null(to.unit)==F ){warning('Unit of object is NULL. Conversion was not done.')}
+  if( is.null(object$unit) == F ){
+    if( is.null(to.unit) == F){
+      obj = unitConversion(df$x, object$unit, to.unit)
+      if(obj$converted){
+        df$x = obj$x
+        message(paste0('Unit of object is converted from ', object$unit, ' to ', to.unit), appendLF = T)
+      }
+    }
+  }
   
   # melt the data
   melt.df = melt(df, id.vars = c('x'))
@@ -250,7 +350,7 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   
 }
 
-#' @title Generate a Demo about the Latent Structure in Time Series
+#' @title Generate a Demo about the Latent Time Series
 #' @description Create a time series based on the supplied model, then generate a demo about its latent structure
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
 #' @param N An \code{interger} indicating the amount of observations for the time series.
@@ -261,8 +361,6 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 #' @author Wenchao
 #' @details
 #' This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2 =1) + WN(sigma2 = 1)) or a \code{gmwm} object.
-#' 
-#' The unit conversion feature is still under work.
 #' @examples
 #' # AR
 #' set.seed(1336)
