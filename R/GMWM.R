@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 #' @title GMWM for Sensors, ARMA, SSM, and Robust
 #' @description GMM object
 #' @param model A \code{ts.model} object containing one of the allowed models.
@@ -1496,6 +1497,8 @@ autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background
 #   }
 #   autoplot(x)
 =======
+=======
+>>>>>>> parent of bb11c27... Updated terminology...
 #' @title GMWM for IMU, ARMA, SSM, and Robust
 #' @description GMM object
 #' @param model A \code{ts.model} object containing one of the allowed models.
