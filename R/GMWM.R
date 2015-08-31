@@ -291,17 +291,17 @@ update.gmwm = function(object, model, ...){
                   object$G, 
                   object$robust, object$eff)
 
+  estimates = out[[1]]
   
   model.hat = model
   
   model.hat$starting = F  
   
-  model.hat$theta = as.numeric(estimate)
+  model.hat$theta = as.numeric(estimates)
   
   object$model.hat = model.hat
   
-  estimates = out[[1]]
-  rownames(estimate) = model$process.desc
+  rownames(estimates) = model$process.desc
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
