@@ -60,9 +60,9 @@ gts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = ""){
   }else{
     if(class(x.lim)!="numeric" || length(x.lim)!=2){
       stop('x.lim must be a numeric vector with 2 values.')}
-    if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
-      stop('x.lim cannot create a vector which has the same length of the data you supplied.')
-    }
+    #if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
+    #  stop('x.lim cannot create a vector which has the same length of the data you supplied.')
+    #}
     x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
   }
   

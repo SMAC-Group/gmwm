@@ -1,7 +1,7 @@
 #' @title GMWM for IMU, ARMA, SSM, and Robust
 #' @description GMM object
 #' @param model A \code{ts.model} object containing one of the allowed models.
-#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 })
+#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU or SSM
 #' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
 #' @param augmented A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).
@@ -46,7 +46,7 @@
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' data = gen.ts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
+#' data = gen.gts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
 #' 
 #' # Models can contain specific parameters e.g.
 #' adv.model = gmwm(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 0.01),
@@ -76,6 +76,17 @@
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
 gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100){
+  
+  #check lts
+  if(is(data,'lts')){
+    warning('lts object is detected. This function can only operate on the combined process.')
+    data = data$data[ ,ncol(data$data)]
+  }
+  
+  #check gts
+  if(is(data,'gts')){
+    data = data$data[,1]
+  }
   
   # Are we receiving one column of data?
   if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
@@ -310,7 +321,7 @@ update.gmwm = function(object, model, ...){
 #' @title GMWM for (Robust) IMU
 #' @description GMM object
 #' @param model A \code{ts.model} object containing one of the allowed models.
-#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 })
+#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
 #' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
 #' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency.

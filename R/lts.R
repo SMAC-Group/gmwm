@@ -22,7 +22,7 @@
 #' col1 = gen.gts(model1, N = 1000)$data
 #' col2 = gen.gts(model2, N = 1000)$data
 #' testMat = cbind(col1, col2, col1+col2)
-#' testLts = lts(testMat, x.lim = c(1,N), unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
+#' testLts = lts(testMat, x.lim = c(1,1000), unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 #' plot(testLts)
 lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = NULL){
   
@@ -79,9 +79,9 @@ lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = N
   }else{
     if(class(x.lim)!="numeric" || length(x.lim)!=2){
       stop('x.lim must be a numeric vector with 2 values.')}
-    if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
-      stop('x.lim cannot create a vector which has the same length of the data you supplied.')
-    }
+    #if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
+    #  stop('x.lim cannot create a vector which has the same length of the data you supplied.')
+    #}
     x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
   }
   
