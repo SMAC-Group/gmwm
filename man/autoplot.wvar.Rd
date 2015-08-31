@@ -4,12 +4,59 @@
 \alias{autoplot.wvar}
 \title{Graph Wavelet Variances}
 \usage{
-\method{autoplot}{wvar}(object, ...)
+\method{autoplot}{wvar}(object, transparence = 0.1, background = "white",
+  bw = F, CI.color = "#003C7D", line.type = c("solid", "dotted"),
+  line.color = c("#003C7D", "#999999"), point.size = c(5, 0),
+  point.shape = c(20, 46), title = NA, title.size = 15,
+  axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = expression(paste("Scale ", tau)),
+  axis.y.label = expression(paste("Wavelet Variance ", nu)),
+  legend.title = "", legend.label = c(expression(paste("Empirical WV ",
+  hat(nu))), expression(paste("CI(", hat(nu), " , 0.95)"))),
+  legend.key.size = 1, legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
 \item{object}{A \code{wvar} object.}
 
-\item{...}{other arguments passed to specific methods}
+\item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.}
+
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
+
+\item{bw}{A \code{boolean} that indicates whether the graph should be black and white color scheme.}
+
+\item{CI.color}{A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)}
+
+\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines.}
+
+\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines.}
+
+\item{point.size}{A \code{vector} of \code{integer} that indicates the size of points on lines.}
+
+\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of points on lines.}
+
+\item{title}{A \code{string} that indicates the title of the graph.}
+
+\item{title.size}{An \code{integer} that indicates the size of title.}
+
+\item{axis.label.size}{An \code{integer} that indicates the size of label.}
+
+\item{axis.tick.size}{An \code{integer} that indicates the size of tick mark.}
+
+\item{axis.x.label}{A \code{string} that indicates the label on x axis.}
+
+\item{axis.y.label}{A \code{string} that indicates the label on y axis.}
+
+\item{legend.title}{A \code{string} that indicates the title of legend.}
+
+\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend.}
+
+\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend.}
+
+\item{legend.title.size}{An \code{integer} that indicates the size of title on legend.}
+
+\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend.}
+
+\item{...}{other arguments passed to specific methods.}
 }
 \value{
 A ggplot2 graph containing the wavelet variances.
@@ -17,10 +64,13 @@ A ggplot2 graph containing the wavelet variances.
 \description{
 Creates the wavelet variance graph
 }
+\note{
+Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
+}
 \examples{
 set.seed(999)
 x=rnorm(100)
-out = wvar(modwt(x))
+out = wvar(x)
 autoplot( out )
 }
 \author{

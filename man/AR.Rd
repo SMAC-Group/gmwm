@@ -4,7 +4,7 @@
 \alias{AR}
 \title{Create an Autoregressive P [AR(P)] Process}
 \usage{
-AR(phi = NULL, sigma2 = NULL)
+AR(phi = NULL, sigma2 = 1)
 }
 \arguments{
 \item{phi}{A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.}
@@ -26,8 +26,9 @@ An S3 object with called ts.model with the following structure:
 Setups the necessary backend for the AR(P) process.
 }
 \examples{
-AR()
-AR(phi=.32, sigma=1.3)
+AR(1) # Slower version of AR1()
+AR(phi=.32, sigma=1.3) # Slower version of AR1()
+AR(2) # Equivalent to ARMA(2,0).
 }
 \author{
 JJB

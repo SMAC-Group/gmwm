@@ -2,26 +2,29 @@
 % Please edit documentation in R/gts.R
 \name{gts}
 \alias{gts}
-\title{Create a GMWM TS Object}
+\title{Create a GMWM TS Object based on data}
 \usage{
-\method{gts}{}(data, name = "", freq = 1, unit = "sec")
+gts(data, x.lim = NULL, freq = 1, unit = NULL, name = "")
 }
 \arguments{
-\item{data}{A one column matrix, data.frame, or numeric vector.}
+\item{data}{A one column \code{matrix}, \code{data.frame}, or a numeric \code{vector}.}
 
-\item{name}{A string that provides an identifier to the data. If not supplied, the name of the first column will be used. Otherwise, it will be registered as "Dataset X"}
+\item{x.lim}{If not \code{NULL}, it is a \code{vector} with two numeric values setting the limit on x-axis.}
 
-\item{freq}{A number that provides the rate of samples.}
+\item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
-\item{unit}{A string that contains the unit expression of the frequency.}
+\item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
+
+\item{name}{A \code{string} that provides an identifier to the data. Default value is an empty string.}
 }
 \value{
-An S3 object with called gts with the following structure:
+A \code{gts} object with the structure:
 \itemize{
- \item{data}{Data set information}
- \item{name}{Name of the Dataset}
- \item{freq}{Numeric representation of frequency}
- \item{Unit}{String representation of the Unit}
+  \item{x:} {A \code{matirx} that contains x-axis values used to plot}
+  \item{data:} {A \code{matrix} that contains data for combined processes}
+  \item{freq:} {Numeric representation of frequency}
+  \item{unit:} {String representation of the unit}
+  \item{name:} {Name of the dataset}
 }
 }
 \description{
@@ -29,9 +32,9 @@ Setups a time series oriented object that works well with graphing and summary u
 }
 \examples{
 m = data.frame(rnorm(5))
-gts(5)
+gts(m)
 
-x = gen.ts(WN(sigma2=1), 50)
+x = gen.gts(WN(sigma2=1), 50)$data
 x = gts(x)
 }
 \author{

@@ -2,18 +2,18 @@
 % Please edit documentation in R/GMWM.R
 \name{gmwm}
 \alias{gmwm}
-\title{GMWM for IMU, ARMA, SSM, and Robust}
+\title{GMWM for Sensors, ARMA, SSM, and Robust}
 \usage{
 gmwm(model, data, model.type = "ssm", compute.v = "auto",
   augmented = FALSE, robust = FALSE, eff = 0.6, alpha = 0.05,
-  seed = NULL, G = NULL, K = 1, H = 100)
+  seed = 1337, G = NULL, K = 1, H = 100)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}
 
-\item{data}{A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 })}
+\item{data}{A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object.}
 
-\item{model.type}{A \code{string} containing the type of GMWM needed e.g. IMU or SSM}
+\item{model.type}{A \code{string} containing the type of GMWM needed e.g. sensor or SSM}
 
 \item{compute.v}{A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"}
 
@@ -25,7 +25,7 @@ gmwm(model, data, model.type = "ssm", compute.v = "auto",
 
 \item{alpha}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
 
-\item{G}{An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.}
+\item{G}{An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.}
 
 \item{K}{An \code{integer} that controls how many times the bootstrapping procedure will be initiated.}
 
@@ -72,7 +72,7 @@ END
 # AR
 set.seed(1336)
 n = 200
-data = gen.ts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
+data = gen.gts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
 
 # Models can contain specific parameters e.g.
 adv.model = gmwm(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 0.01),

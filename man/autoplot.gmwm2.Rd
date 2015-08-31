@@ -2,14 +2,14 @@
 % Please edit documentation in R/GMWM.R
 \name{autoplot.gmwm2}
 \alias{autoplot.gmwm2}
-\title{Graph Solution of the Generalized Method of Wavelet Moments}
+\title{Graph Solution of the Generalized Method of Wavelet Moments for Each Process}
 \usage{
-\method{autoplot}{gmwm2}(object, CI = T, transparence = 0.1, bw = F,
-  color.CI = "#003C7D", line.type = NULL, line.color = NULL,
-  point.size = NULL, point.shape = NULL, graph.title = NA,
-  graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
-  title.x.axis = expression(paste("Scale ", tau)),
-  title.y.axis = expression(paste("Wavelet Variance ", nu)),
+\method{autoplot}{gmwm2}(object, CI = T, background = "white",
+  transparence = 0.1, bw = F, CI.color = "#003C7D", line.type = NULL,
+  line.color = NULL, point.size = NULL, point.shape = NULL, title = NA,
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = expression(paste("Scale ", tau)),
+  axis.y.label = expression(paste("Wavelet Variance ", nu)),
   legend.title = "", legend.label = NULL, legend.key.size = 1,
   legend.title.size = 13, legend.text.size = 13, ...)
 }
@@ -18,43 +18,45 @@
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
 
-\item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
-\item{bw}{A \code{boolean} that indicates whether the graph should be black and white color scheme}
+\item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.}
 
-\item{color.CI}{A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)}
+\item{bw}{A \code{boolean} that indicates whether the graph should be black and white color scheme.}
 
-\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines for each latent process, Implied WV, Empirical WV, and CI respectively}
+\item{CI.color}{A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)}
 
-\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines for each latent process, Implied WV, Empirical WV, and CI respectively}
+\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines.}
 
-\item{point.size}{A \code{vector} of \code{integer} that indicates the size of points on lines}
+\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines.}
 
-\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of points on lines}
+\item{point.size}{A \code{vector} of \code{integer} that indicates the size of points on lines.}
 
-\item{graph.title}{A \code{string} that indicates the title of the graph}
+\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of points on lines.}
 
-\item{graph.title.size}{An \code{integer} that indicates the size of title.}
+\item{title}{A \code{string} that indicates the title of the graph.}
 
-\item{axis.label.size}{An \code{integer} that indicates the size of label}
+\item{title.size}{An \code{integer} that indicates the size of title.}
 
-\item{axis.tick.size}{An \code{integer} that indicates the size of tick mark}
+\item{axis.label.size}{An \code{integer} that indicates the size of label.}
 
-\item{title.x.axis}{A \code{string} that indicates the label on x axis}
+\item{axis.tick.size}{An \code{integer} that indicates the size of tick mark.}
 
-\item{title.y.axis}{A \code{string} that indicates the label on y axis}
+\item{axis.x.label}{A \code{string} that indicates the label on x axis.}
 
-\item{legend.title}{A \code{string} that indicates the title of legend}
+\item{axis.y.label}{A \code{string} that indicates the label on y axis.}
 
-\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend}
+\item{legend.title}{A \code{string} that indicates the title of legend.}
 
-\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend}
+\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend.}
 
-\item{legend.title.size}{An \code{integer} that indicates the size of title on legend}
+\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend.}
 
-\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend}
+\item{legend.title.size}{An \code{integer} that indicates the size of title on legend.}
 
-\item{...}{other arguments passed to specific methods}
+\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend.}
+
+\item{...}{other arguments passed to specific methods.}
 }
 \value{
 A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM for each latent process.
@@ -63,6 +65,6 @@ A ggplot2 panel containing the graph of the empirical and theoretical wavelet va
 Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
 }
 \author{
-JJB
+JJB, Wenchao
 }
 

@@ -2,14 +2,21 @@
 % Please edit documentation in R/GMWM.R
 \name{compare.models}
 \alias{compare.models}
-\title{Graphically Compare GMWM Model Fit Between Two Models}
+\title{Graphically Compare GMWM Model Fit}
 \usage{
-compare.models(GMWM1, GMWM2, split = FALSE)
+compare.models(..., background = "white", split = TRUE, CI = TRUE,
+  auto.label.wvar = T, transparence = 0.1, line.color = NULL,
+  CI.color = NULL, line.type = NULL, point.size = NULL,
+  point.shape = NULL, title = "Haar Wavelet Variance Representation",
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = expression(paste("Scale ", tau)),
+  axis.y.label = expression(paste("Wavelet Variance ", nu)),
+  facet.label.size = 13, legend.label = NULL, legend.title = "",
+  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
+  nrow = 1)
 }
 \arguments{
-\item{GMWM1}{A \code{gmwm} object}
-
-\item{GMWM2}{A \code{gmwm} object}
+\item{...}{Several \code{gmwm} objects}
 
 \item{split}{A \code{boolean} indicating true or false to place model fits on different or the same graphs.}
 }
@@ -17,7 +24,7 @@ compare.models(GMWM1, GMWM2, split = FALSE)
 A ggplot2 panel containing two graphs of the wavelet variance.
 }
 \description{
-Creates GMWM model fits of two models on split graphs within the same panel.
+Creates GMWM model fits of different models on split graphs within the same panel.
 }
 \examples{
 \dontrun{# AR
@@ -29,6 +36,6 @@ GMWM2 = gmwm(2*AR1(), data = x)
 compare.models(GMWM1, GMWM2, split = FALSE)}
 }
 \author{
-JJB
+JJB, Wenchao
 }
 
