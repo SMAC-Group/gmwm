@@ -21,11 +21,6 @@ A \code{vec} that contains combined time series.
 \description{
 Create a time series based on a supplied time series model.
 }
-\details{
-This function is under work. Some of the features are active. Others... Not so much.
-What is NOT active:
-1. Simulating an ARMA time series
-}
 \examples{
 # AR
 set.seed(1336)

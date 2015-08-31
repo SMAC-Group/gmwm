@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{gmwm_param_bootstrapper}
 \alias{gmwm_param_bootstrapper}
-\title{Bootstrap for Matrix V}
+\title{Bootstrap for Estimating Both Theta and Theta SD}
 \usage{
 gmwm_param_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust,
   eff, alpha, H)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{gmwm_sd_bootstrapper}
 \alias{gmwm_sd_bootstrapper}
-\title{Bootstrap for Matrix V}
+\title{Bootstrap for Standard Deviations of Theta Estimates}
 \usage{
 gmwm_sd_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust, eff,
   alpha, H)
@@ -18,7 +18,7 @@ gmwm_sd_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust, eff,
 A \code{vec} that contains the parameter estimates from GMWM estimator.
 }
 \description{
-Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
+Using the bootstrap approach, we simulate a model based on user supplied parameters
 }
 \details{
 Expand in detail...

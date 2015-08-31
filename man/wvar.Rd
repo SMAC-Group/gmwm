@@ -7,7 +7,7 @@
 wvar(x, p = 0.025, robust = FALSE, eff = 0.6)
 }
 \arguments{
-\item{x}{A \code{vector} with dimensions N x 1.}
+\item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object.}
 
 \item{alpha}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
 

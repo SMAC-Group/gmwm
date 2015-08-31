@@ -4,7 +4,7 @@
 \alias{MA}
 \title{Create an Moving Average Q [MA(Q)] Process}
 \usage{
-MA(theta = NULL, sigma2 = NULL)
+MA(theta = NULL, sigma2 = 1)
 }
 \arguments{
 \item{theta}{A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.}
@@ -27,7 +27,7 @@ Setups the necessary backend for the MA(Q) process.
 }
 \examples{
 MA()
-MA(phi=.32, sigma=1.3)
+MA(theta=.32, sigma=1.3)
 }
 \author{
 JJB

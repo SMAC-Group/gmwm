@@ -12,7 +12,7 @@ guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir,
 
 \item{objdesc}{A \code{field<vec>} that contains an object description (e.g. values) of the model.}
 
-\item{model_type}{A \code{string} that indicates whether it is an SSM or IMU.}
+\item{model_type}{A \code{string} that indicates whether it is an SSM or sensor.}
 
 \item{num_param}{An \code{unsigned int} number of parameters in the model (e.g. # of thetas).}
 

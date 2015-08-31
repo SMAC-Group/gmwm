@@ -4,14 +4,15 @@
 \alias{plot.imu}
 \title{Plot the Wavelet Variances in separate and combined way}
 \usage{
-\method{plot}{imu}(x, separate = TRUE, CI = TRUE, transparence = 0.1,
-  color.line = "black", color.CI = "#003C7D", line.type = "solid",
-  graph.title = "Haar Wavelet Variance Representation",
+\method{plot}{imu}(x, separate = TRUE, CI = TRUE, background = "grey",
+  transparence = 0.1, color.line = "black", color.CI = "#003C7D",
+  line.type = "solid", graph.title = "Haar Wavelet Variance Representation",
   graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
   title.y.axis = expression(paste("Wavelet Variance ", nu)),
   facet.title.size = 13, legend.title = "Axis", legend.key.size = 1.3,
-  legend.title.size = 13, legend.text.size = 13, ...)
+  legend.title.size = 13, legend.text.size = 13,
+  facet.label.background = NULL, ...)
 }
 \arguments{
 \item{x}{An \code{imu} object (use \code{imu2WV()} to create it)}
@@ -19,6 +20,8 @@
 \item{separate}{A \code{boolean} that indicates whether the graphs should be split or combined.}
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
+
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
 
@@ -49,6 +52,8 @@
 \item{legend.title.size}{An \code{integer} that indicates the size of title on legend (only work when graphs are combined)}
 
 \item{legend.text.size}{An \code{integer} that indicates the size of key label on legend (only work when graphs are combined)}
+
+\item{facet.label.background}{A \code{string} that indicates the background color of the facet label}
 
 \item{...}{Additional options}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{all_bootstrapper}
 \alias{all_bootstrapper}
-\title{Bootstrap for Matrix V}
+\title{Bootstrap for Everything!}
 \usage{
 all_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust, eff,
   alpha, H)

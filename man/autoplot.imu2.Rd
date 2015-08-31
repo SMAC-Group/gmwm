@@ -4,18 +4,22 @@
 \alias{autoplot.imu2}
 \title{Plot in combined type: 2 graphs}
 \usage{
-\method{autoplot}{imu2}(object, CI = T, transparence = 0.1,
-  line.type = "solid", graph.title = "Haar Wavelet Variance Representation",
+\method{autoplot}{imu2}(object, CI = T, background = "grey",
+  transparence = 0.1, line.type = "solid",
+  graph.title = "Haar Wavelet Variance Representation",
   graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
   title.y.axis = expression(paste("Wavelet Variance ", nu)),
   facet.title.size = 13, legend.title = "Axis", legend.key.size = 1.3,
-  legend.title.size = 13, legend.text.size = 13, ...)
+  legend.title.size = 13, legend.text.size = 13,
+  facet.label.background = alpha("#003C7D", transparence), ...)
 }
 \arguments{
 \item{object}{An \code{imu} object}
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
+
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
 
@@ -42,6 +46,8 @@
 \item{legend.title.size}{An \code{integer} that indicates the size of title on legend}
 
 \item{legend.text.size}{An \code{integer} that indicates the size of key label on legend}
+
+\item{facet.label.background}{A \code{string} that indicates the background color of the facet label}
 
 \item{...}{Additional options}
 }

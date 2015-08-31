@@ -2,7 +2,7 @@
 % Please edit documentation in R/GMWM.R
 \name{update.gmwm}
 \alias{update.gmwm}
-\title{Update GMWM object for IMU, ARMA, SSM, and Robust}
+\title{Update GMWM object for sensor, ARMA, SSM, and Robust}
 \usage{
 \method{update}{gmwm}(object, model, ...)
 }

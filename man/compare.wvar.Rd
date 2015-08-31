@@ -4,19 +4,21 @@
 \alias{compare.wvar}
 \title{Compare Wavelet Variances}
 \usage{
-\method{compare}{wvar}(..., split = TRUE, CI = TRUE, auto.label.wvar = T,
-  transparence = 0.1, color.line = NULL, color.CI = NULL,
-  line.type = NULL, point.size = 5, point.shape = 20,
-  graph.title = "Haar Wavelet Variance Representation",
-  graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
-  title.x.axis = expression(paste("Scale ", tau)),
-  title.y.axis = expression(paste("Wavelet Variance ", nu)),
-  facet.title.size = 13, legend.label = NULL, legend.title = "",
+\method{compare}{wvar}(..., background = "white", split = TRUE, CI = TRUE,
+  auto.label.wvar = T, transparence = 0.1, line.color = NULL,
+  CI.color = NULL, line.type = NULL, point.size = NULL,
+  point.shape = NULL, title = "Haar Wavelet Variance Representation",
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = expression(paste("Scale ", tau)),
+  axis.y.label = expression(paste("Wavelet Variance ", nu)),
+  facet.label.size = 13, legend.label = NULL, legend.title = "",
   legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
   nrow = 1)
 }
 \arguments{
-\item{...}{Any number of \code{wvar} objects can be passed in}
+\item{...}{Any number of \code{wvar} objects can be passed in.}
+
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
 \item{split}{A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)}
 
@@ -26,29 +28,29 @@
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
 
-\item{color.line}{A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
 
-\item{color.CI}{A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+\item{CI.color}{A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
 
 \item{line.type}{A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2.}
 
-\item{point.size}{An \code{integer} that indicates the size of point}
+\item{point.size}{A \code{vector} of \code{integer} that indicates the size of point}
 
-\item{point.shape}{An \code{integer} that indicates the shape of point}
+\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of point}
 
-\item{graph.title}{A \code{string} that indicates the title of the graph}
+\item{title}{A \code{string} that indicates the title of the graph}
 
-\item{graph.title.size}{An \code{integer} that indicates the size of title.}
+\item{title.size}{An \code{integer} that indicates the size of title.}
 
 \item{axis.label.size}{An \code{integer} that indicates the size of label}
 
 \item{axis.tick.size}{An \code{integer} that indicates the size of tick mark}
 
-\item{title.x.axis}{A \code{string} that indicates the label on x axis}
+\item{axis.x.label}{A \code{string} that indicates the label on x axis}
 
-\item{title.y.axis}{A \code{string} that indicates the label on y axis}
+\item{axis.y.label}{A \code{string} that indicates the label on y axis}
 
-\item{facet.title.size}{An \code{integer} that indicates the size of facet label}
+\item{facet.label.size}{An \code{integer} that indicates the size of facet label}
 
 \item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
 
@@ -67,7 +69,7 @@ Compare the estimates given by the classical and robust methods of calculating t
 }
 \note{
 Common error "Error in grid.Call(L_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  : polygon edge not found"
-Just run your codes again. Or try \code{dev.off()}, and run codes again
+Just run your codes again.
 }
 \examples{
 \dontrun{
@@ -100,13 +102,17 @@ compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
 compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
 #3.Obvious errors will be found
 compare.wvar()
-compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('red','green'))
+compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('red','green'))
 #4. Change default setting
-compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'))
-compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), facet.title.size = 9)
-compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'))
-compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F)
-compare.wvar(wvar1, wvar2, wvar3,wvar4, color.CI = c('green','red','blue','black'), legend.label = c('1','2','3','4'), split = F, CI = F)
+compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'))
+compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'),
+facet.label.size = 9)
+compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'),
+legend.label = c('1','2','3','4'))
+compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'),
+legend.label = c('1','2','3','4'), split = F)
+compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'),
+legend.label = c('1','2','3','4'), split = F, CI = F)
 }
 }
 \author{

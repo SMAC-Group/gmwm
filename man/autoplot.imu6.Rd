@@ -4,18 +4,21 @@
 \alias{autoplot.imu6}
 \title{Plot in separate type: 6 graphs}
 \usage{
-\method{autoplot}{imu6}(object, CI = TRUE, transparence = 0.1,
-  color.line = "black", color.CI = "#003C7D", line.type = "solid",
-  graph.title = "Haar Wavelet Variance Representation",
+\method{autoplot}{imu6}(object, CI = TRUE, background = "grey",
+  transparence = 0.1, color.line = "black", color.CI = "#003C7D",
+  line.type = "solid", graph.title = "Haar Wavelet Variance Representation",
   graph.title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   title.x.axis = expression(paste("Scale ", tau)),
   title.y.axis = expression(paste("Wavelet Variance ", nu)),
-  facet.title.size = 13, ...)
+  facet.title.size = 13, facet.label.background = alpha(color.CI,
+  transparence), ...)
 }
 \arguments{
 \item{object}{An \code{imu} object}
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
+
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
 
@@ -38,6 +41,8 @@
 \item{title.y.axis}{A \code{string} that indicates the label on y axis}
 
 \item{facet.title.size}{An \code{integer} that indicates the size of facet label}
+
+\item{facet.label.background}{A \code{string} that indicates the background color of the facet label}
 
 \item{...}{Additional options}
 }

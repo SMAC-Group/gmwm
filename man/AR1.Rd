@@ -4,7 +4,7 @@
 \alias{AR1}
 \title{Create an Autoregressive 1 [AR(1)] Process}
 \usage{
-AR1(phi = NULL, sigma2 = NULL)
+AR1(phi = NULL, sigma2 = 1)
 }
 \arguments{
 \item{phi}{A \code{double} value for the \eqn{\phi}{phi} of an AR1 process.}

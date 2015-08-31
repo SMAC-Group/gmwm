@@ -4,7 +4,7 @@
 \alias{placeLegend}
 \title{Place Legend}
 \usage{
-\method{placeLegend}{}(wv_1, low_n, high_n)
+placeLegend(wv_1, low_n, high_n)
 }
 \arguments{
 \item{wv_1}{A \code{double} that indicates the first value of \code{wv.empir}}
