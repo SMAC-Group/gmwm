@@ -1,7 +1,7 @@
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
 #' @usage wvar(x, p = 0.025, robust = FALSE, eff = 0.6)
-#' @param x A \code{vector} with dimensions N x 1. 
+#' @param x A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object. 
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
 #' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
@@ -25,6 +25,18 @@
 #' # 90% confidence interval
 #' wvar(x, alpha = 0.10)
 wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
+  
+  #check lts
+  if(is(x,'lts')){
+    warning('lts object is detected. This function can only operate on the combined process.')
+    x = x$data[ ,ncol(x$data)]
+  }
+  
+  #check gts
+  if(is(x,'gts')){
+    x = x$data[,1]
+  }
+  
   nlevels =  floor(log2(length(x)))
   decomp = .Call('GMWM_modwt_cpp', PACKAGE = 'GMWM', x, filter_name = "haar", nlevels, boundary="periodic")
   

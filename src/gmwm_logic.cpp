@@ -511,5 +511,4 @@ arma::vec percival(arma::vec x){
   
   arma::vec muhat = Tn-2*log(temp)-(Ahat/square(-2*R::dnorm(temp, 0.0, 1.0, 0)*temp))/(2*x.n_elem);
   return exp(muhat);
-}
-*/
+}*/
