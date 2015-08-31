@@ -300,12 +300,12 @@ update.gmwm = function(object, model, ...){
   
   object$model.hat = model.hat
   
-  estimate = out[[1]]
+  estimates = out[[1]]
   rownames(estimate) = model$process.desc
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
-  object$estimate = estimate
+  object$estimates = estimates
   object$init.guess = init.guess
   
   object$V = out[[3]]
