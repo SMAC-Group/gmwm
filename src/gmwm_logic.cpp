@@ -69,7 +69,7 @@ arma::vec code_zero(arma::vec theta){
 //' @param starting A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).
 //' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
 //' @details
-//' If type = "imu" or "ssm", then parameter vector should indicate the characters of the models that compose the latent or state-space model.
+//' If type = "sensor" or "ssm", then parameter vector should indicate the characters of the models that compose the latent or state-space model.
 //' The model options are:
 //' \itemize{
 //'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
@@ -79,7 +79,7 @@ arma::vec code_zero(arma::vec theta){
 //'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
 //'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 //' }
-//' If model_type = "imu" or type = "ssm" then
+//' If model_type = "sensor" or type = "ssm" then
 //' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
 //' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 //' 
@@ -131,7 +131,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
 //' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
 //' @details
 //' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "sensor" or "SSM", then
 //' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
 //' options are:
 //' \itemize{
@@ -142,7 +142,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
 //'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
 //'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 //' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "sensor" or type = "SSM" then
 //' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
 //' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 //' 
@@ -246,7 +246,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 //' @return A \code{field<mat>} that contains a list of ever-changing estimates...
 //' @details
 //' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "IMU" or "SSM", then
+//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "sensor" or "SSM", then
 //' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
 //' options are:
 //' \itemize{
@@ -257,7 +257,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 //'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
 //'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 //' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "IMU" or type = "SSM" then
+//' If type = "ARMA", the function takes condition least squares as starting values; if type = "sensor" or type = "SSM" then
 //' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
 //' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 //' 
@@ -511,5 +511,4 @@ arma::vec percival(arma::vec x){
   
   arma::vec muhat = Tn-2*log(temp)-(Ahat/square(-2*R::dnorm(temp, 0.0, 1.0, 0)*temp))/(2*x.n_elem);
   return exp(muhat);
-}
-*/
+}*/
