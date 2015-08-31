@@ -130,7 +130,7 @@ arma::vec transform_values(const arma::vec& theta,
     if(element_type == "AR1" ){
       
       // Apply model specific parameter transformation
-      if(model_type == "sensor"){
+      if(model_type == "imu"){
         starting(i_theta) = arma::as_scalar(logit(theta.row(i_theta)));
       }else{ // O.W. SSM case
         starting(i_theta) = arma::as_scalar(pseudo_logit(theta.row(i_theta)));
@@ -150,7 +150,7 @@ arma::vec transform_values(const arma::vec& theta,
       
       
       // Determine transformation to apply
-      if(model_type == "sensor"){
+      if(model_type == "imu"){
         // All parameters but sigma
         unsigned int param_est = i_theta + p + q;
         
@@ -218,7 +218,7 @@ arma::colvec untransform_values(const arma::vec& theta,
       std::string element_type = desc[i];
       // AR 1
   	  if(element_type == "AR1"){
-        if(model_type == "sensor"){
+        if(model_type == "imu"){
           result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
         }else{ // ssm
           result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
@@ -236,7 +236,7 @@ arma::colvec untransform_values(const arma::vec& theta,
         
 
         // Determine transformation to apply
-        if(model_type == "sensor"){
+        if(model_type == "imu"){
           // All parameters but sigma
           unsigned int param_est = i_theta + p + q;
           
