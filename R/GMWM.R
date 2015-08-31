@@ -1,14 +1,14 @@
-#' @title GMWM for IMU, ARMA, SSM, and Robust
+#' @title GMWM for Sensors, ARMA, SSM, and Robust
 #' @description GMM object
 #' @param model A \code{ts.model} object containing one of the allowed models.
 #' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
-#' @param model.type A \code{string} containing the type of GMWM needed e.g. IMU or SSM
+#' @param model.type A \code{string} containing the type of GMWM needed e.g. sensor or SSM
 #' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
 #' @param augmented A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).
 #' @param alpha A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
 #' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
-#' @param G An \code{integer} to sample the space for IMU and SSM models to ensure optimal identitability.
+#' @param G An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.
 #' @param K An \code{integer} that controls how many times the bootstrapping procedure will be initiated.
 #' @param H An \code{integer} that indicates how many different samples the bootstrap will be collect.
 #' @return A \code{gmwm} object that contains:
@@ -133,8 +133,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   }
   
   # Model type issues
-  if(model.type != "imu" && model.type != "ssm"){
-    stop("Model Type must be either IMU or SSM!")
+  if(model.type != "sensor" && model.type != "ssm"){
+    stop("Model Type must be either sensor or SSM!")
   }
   
   # Verify Scales and Parameter Space
@@ -211,7 +211,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   invisible(out)
 }
 
-#' @title Update GMWM object for IMU, ARMA, SSM, and Robust
+#' @title Update GMWM object for sensor, ARMA, SSM, and Robust
 #' @description GMM object
 #' @param object A \code{gmwm} object.
 #' @param model A \code{ts.model} object containing one of the allowed models.
@@ -318,7 +318,7 @@ update.gmwm = function(object, model, ...){
 }
 
 
-#' @title GMWM for (Robust) IMU
+#' @title GMWM for (Robust) sensor
 #' @description GMM object
 #' @param model A \code{ts.model} object containing one of the allowed models.
 #' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
@@ -331,17 +331,17 @@ update.gmwm = function(object, model, ...){
 #'  \item{}
 #'  \item{}
 #' }
-gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
+gmwm.sensor = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
   
   x = gmwm(model = model, 
        data = data, 
        compute.v = compute.v,
-       model.type = "imu",
+       model.type = "sensor",
        robust = robust, 
        eff = eff,
        ...
        )
-  class(x) = c("gmwm_imu","gmwm")
+  class(x) = c("gmwm_sensor","gmwm")
   
   x
 }
@@ -398,7 +398,7 @@ get.mat.gmwm = function(object){
 #' set.seed(1336)
 #' n = 200
 #' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
-#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+#' mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
 #' summary(mod)
 summary.gmwm = function(object, inference = NULL, model.select = NULL, 
                         bs.gof = NULL,  bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL, bs.optimism = NULL,
@@ -505,7 +505,7 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
 #' set.seed(1336)
 #' n = 200
 #' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
-#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+#' mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
 #' summary(mod)
 print.summary.gmwm = function(x, ...){
   
@@ -600,7 +600,7 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' set.seed(1336)
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="imu")
+#' mod = gmwm(AR1(), data=x, model.type="sensor")
 #' plot(mod)
 plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
@@ -639,7 +639,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' set.seed(1336)
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="imu")
+#' mod = gmwm(AR1(), data=x, model.type="sensor")
 #' autoplot(mod)
 #' 
 #' y = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
