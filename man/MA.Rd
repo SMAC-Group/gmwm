@@ -26,8 +26,11 @@ An S3 object with called ts.model with the following structure:
 Setups the necessary backend for the MA(Q) process.
 }
 \examples{
-MA()
-MA(theta=.32, sigma=1.3)
+MA(1) # One theta
+MA(2) # Two thetas!
+
+MA(theta=.32, sigma=1.3) # 1 theta with a specific value.
+MA(theta=c(.3,.5), sigma=.3) # 2 thetas with specific values.
 }
 \author{
 JJB

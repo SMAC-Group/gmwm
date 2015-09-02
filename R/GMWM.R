@@ -228,7 +228,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
 #' set.seed(1336)
 #' n = 200
 #' exact.model = AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1)
-#' data = gen.ts(exact.model)
+#' data = gen.gts(exact.model)
 #' 
 #' # Create an initial model that is not accurate
 #' bad.model = gmwm(AR1(), data = data)
@@ -291,21 +291,22 @@ update.gmwm = function(object, model, ...){
                   object$G, 
                   object$robust, object$eff)
 
-  estimates = out[[1]]
+  print(out)
+  estimate = out[[1]]
   
   model.hat = model
   
   model.hat$starting = F  
   
-  model.hat$theta = as.numeric(estimates)
+  model.hat$theta = as.numeric(estimate)
   
   object$model.hat = model.hat
   
-  rownames(estimates) = model$process.desc
+  rownames(estimate) = model$process.desc
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
-  object$estimates = estimates
+  object$estimate = estimate
   object$init.guess = init.guess
   
   object$V = out[[3]]
@@ -367,26 +368,21 @@ get.mat.gmwm = function(object){
 #' @method summary gmwm
 #' @param object A \code{GMWM} object
 #' @param inference A value containing either: NULL (auto), TRUE, or FALSE
-#' @param model.select A value containing either: NULL (auto), TRUE, FALSE
 #' @param bs.gof A value containing either: NULL (auto), TRUE, FALSE
 #' @param bs.gof.p.ci A value containing either: NULL (auto), TRUE, FALSE
 #' @param bs.theta.est A value containing either: NULL (auto), TRUE, FALSE
 #' @param bs.ci A value containing either: NULL (auto), TRUE, FALSE
-#' @param bs.optimism A value containing either: NULL (auto), TRUE, FALSE
 #' @param B An \code{int} that indicates how many bootstraps should be performed.
 #' @param ... other arguments passed to specific methods
 #' @return A \code{summary.gmwm} object with:
 #' \itemize{
 #'  \item{estimates}{Estimated Theta Values}
 #'  \item{testinfo}{Goodness of Fit Information}
-#'  \item{model.score}{Model Score Criterion Info}
-#'  \item{model.select}{Model Score calculated? T/F}
 #'  \item{inference}{Inference performed? T/F}
 #'  \item{bs.gof}{Bootstrap GOF? T/F}
 #'  \item{bs.gof.p.ci}{Bootstrap GOF P-Value CI? T/F}
 #'  \item{bs.theta.est}{Bootstrap Theta Estimates? T/F}
 #'  \item{bs.ci}{Bootstrap CI? T/F}
-#'  \item{bs.optimism}{Bootstrap Optimism? T/F}
 #'  \item{starting}{Indicates if program supplied initial starting values}
 #'  \item{seed}{Seed used during guessing / bootstrapping}
 #'  \item{obj.fun}{Value of obj.fun at minimized theta}
@@ -397,12 +393,17 @@ get.mat.gmwm = function(object){
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
 #' summary(mod)
-summary.gmwm = function(object, inference = NULL, model.select = NULL, 
-                        bs.gof = NULL,  bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL, bs.optimism = NULL,
+summary.gmwm = function(object, inference = NULL,  
+                        bs.gof = NULL,  bs.gof.p.ci = NULL, 
+                        bs.theta.est = NULL, bs.ci = NULL,
                         B = 50, ...){
+  
+  # Set a different seed to avoid dependency.
+  set.seed(object$seed+5)
+  
   out = object$estimate
   colnames(out) = c("Estimates") 
   
@@ -414,10 +415,6 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
   # Auto set values
   if(is.null(inference)){
     inference = auto
-  }
-  
-  if(is.null(model.select)){
-    model.select = auto
   }
 
   if(is.null(bs.gof)){
@@ -436,17 +433,7 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
     bs.ci = if(inference) auto else F
   }
   
-  if(is.null(bs.optimism)){
-    bs.optimism = if(model.select) auto else F
-  }
-  
   if("ARMA" %in% object$model$desc){
-    
-    if( model.select == T){
-      warning("ARMA is not currently supported for model selection. The model selection results will not be displayed.")
-      model.select = FALSE
-    }
-    
     if(bs.ci == FALSE){
       warning(paste0("The numerical derivative of ARMA(p,q), where p > 1 and q > 1, may be inaccurate leading to inappropriate CIs.\n",
               "Consider using the bs.ci = T option on the summary function."))
@@ -461,8 +448,8 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
                                                     object$V, solve(object$orgV), object$obj.fun,
                                                     N, object$alpha,
                                                     object$robust, object$eff,
-                                                    inference, model.select, F, # fullV is always false. Need same logic updates.
-                                                    bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci, bs.optimism, 
+                                                    inference, F, # fullV is always false. Need same logic updates.
+                                                    bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci,
                                                     B)
   }else{
     mm = vector('list',3)
@@ -477,14 +464,11 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
   
   x = structure(list(estimates=out, 
                      testinfo=mm[[2]],
-                     model.score = mm[[3]],
                      inference = inference, 
-                     model.select = model.select, 
                      bs.gof = bs.gof,
                      bs.gof.p.ci = bs.gof.p.ci,
                      bs.theta.est = bs.theta.est, 
                      bs.ci = bs.ci,
-                     bs.optimism = bs.optimism,
                      starting = object$starting,
                      seed = object$seed,
                      obj.fun = object$obj.fun,
@@ -504,15 +488,19 @@ summary.gmwm = function(object, inference = NULL, model.select = NULL,
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
 #' summary(mod)
 print.summary.gmwm = function(x, ...){
   
   cat("Model Information: \n")
   print(x$estimates)
-  cat("\n* The values used in the optimization were", 
-      {if(x$starting) "generated by the program." else "given by YOU!"},"\n\n")
+  if(x$bs.theta.est){
+    cat("\n> The parameter estimates shown are bootstrapped! To use these results, please save the summary object.")
+  }
+  
+  cat("\n* The initial values of the parameters used in the minimization of the GMWM objective function were ", 
+      {if(x$starting) paste0("generated by the program underneath seed: ",x$seed,".") else "given by YOU!"},"\n\n")
 
   cat(paste0("Objective Function: ", round(x$obj.fun,4),"\n\n"))
   
@@ -532,16 +520,8 @@ print.summary.gmwm = function(x, ...){
     cat("\n\n")
   }
   
-  if(x$model.select){
-    cat(paste0({ if(x$bs.optimism) "Bootstrapped" else "Asymptotic"}," Model Criterion: \n"))
-    
-    cat(paste0("Model Score Statistic: ", round(x$model.score[[1]],4),"\n",
-               "Optimism: ", round(x$model.score[[2]],4), 
-              "\n"))
-  }
-  
-  if(x$bs.gof || x$bs.optimism)
-  cat(paste0("\nTo replicate the results, use seed: ",x$seed, "\n"))
+  if(x$bs.gof || x$bs.theta.est)
+   cat(paste0("\nTo replicate the results, use seed: ",x$seed, "\n"))
 }
 
 
@@ -642,7 +622,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' mod = gmwm(AR1(), data=x, model.type="sensor")
 #' autoplot(mod)
 #' 
-#' y = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' y = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' mod = gmwm(2*AR1(), data = y)
 #' autoplot(mod)
 autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
@@ -1010,7 +990,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
 #' \dontrun{# AR
 #' set.seed(8836)
 #' n = 200
-#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
@@ -1359,7 +1339,7 @@ autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background
 #' \dontrun{# AR
 #' set.seed(1335)
 #' n = 200
-#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
@@ -1411,7 +1391,7 @@ autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background
 #' \dontrun{# AR
 #' set.seed(1355)
 #' n = 200
-#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = TRUE)}
@@ -1481,7 +1461,7 @@ autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background
 #' \dontrun{# AR
 #' set.seed(8836)
 #' n = 200
-#' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
 #' compare.models(GMWM1, GMWM2, split = FALSE)}
