@@ -973,6 +973,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     p = p + theme_bw() 
   }
   
+  
   p = p +
     xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
     theme(
