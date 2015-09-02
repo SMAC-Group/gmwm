@@ -62,3 +62,30 @@ arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat
   // Return the score
   return score_info;
 }
+
+// arma::vec mscore(){
+//   
+//   
+//     arma::vec score;
+//     /* A note to someone in the future...
+//     * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
+//     *  and the model_score diff (theo-wv_empir).
+//     */
+//     if(bs_optimism){
+//       arma::vec temp(2);
+//       
+//       double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
+//       
+//       temp(0) = obj_value + optimism;
+//       temp(1) = optimism;
+//       
+//       score = temp;
+//     }else{
+//       // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
+//       arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
+//       
+//       // Calculate the model score according to model selection criteria paper
+//       score = model_score(A, D, omega, V,  obj_value);
+//     }
+// 
+// }

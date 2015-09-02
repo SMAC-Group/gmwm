@@ -92,8 +92,11 @@ AR = function(phi = NULL, sigma2 = 1) {
 #' }
 #' @author JJB
 #' @examples
-#' MA()
-#' MA(theta=.32, sigma=1.3)
+#' MA(1) # One theta
+#' MA(2) # Two thetas!
+#' 
+#' MA(theta=.32, sigma=1.3) # 1 theta with a specific value.
+#' MA(theta=c(.3,.5), sigma=.3) # 2 thetas with specific values.
 MA = function(theta = NULL, sigma2 = 1) {
   starting = FALSE;
   if(is.null(theta)){

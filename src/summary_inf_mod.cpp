@@ -8,9 +8,6 @@
 // Model Selection criterion
 #include "analytical_matrix_derivatives.h"
 
-// Model Selection criterion
-#include "model_selection.h"
-
 // Bootstraps!
 #include "bootstrappers.h"
 
@@ -18,7 +15,6 @@ using namespace Rcpp;
 
 
 // [[Rcpp::export]]
-
 arma::field<arma::mat> get_summary(arma::vec theta,
                                    const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
                                    std::string model_type, 
@@ -26,8 +22,8 @@ arma::field<arma::mat> get_summary(arma::vec theta,
                                    arma::mat V, const arma::mat& omega, double obj_value,
                                    unsigned int N, double alpha,
                                    bool robust, double eff, 
-                                   bool inference, bool model_select, bool fullV,
-                                   bool bs_gof,  bool bs_gof_p_ci, bool bs_theta_est, bool bs_ci, bool bs_optimism, 
+                                   bool inference, bool fullV,
+                                   bool bs_gof,  bool bs_gof_p_ci, bool bs_theta_est, bool bs_ci, 
                                    unsigned int B){
   
   // Inference test result storage
@@ -35,35 +31,26 @@ arma::field<arma::mat> get_summary(arma::vec theta,
   
   arma::mat ci;
   
-  arma::vec score;
-  
 
   // Bootstrap results
   arma::vec sd;
-  
-  arma::mat cov_nu_nu_theta;
 
   arma::vec bs_obj_values;
     
-    // Take derivatives
-  arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
+
+  // Determine the type of bootstrapper needed.
   
-  
-  if(!(bs_ci || bs_optimism || bs_gof) & !fullV & (inference || model_select)){
+  if(!(bs_ci || bs_gof) & !fullV & inference){
      V = cov_bootstrapper(theta,
                        desc, objdesc,
                        N, robust, eff,
                        B, true);
-  }else if(bs_ci || bs_optimism || bs_gof){
+  }else if(bs_ci || bs_gof){
     arma::field<arma::mat> bs = all_bootstrapper(theta,
                                                  desc, objdesc,
                                                  scales, model_type, 
                                                  N, robust, eff, alpha, B);
     
-    if(bs_optimism){
-      cov_nu_nu_theta = bs(0);
-    }
-
     if(!fullV){
       V = bs(1);
     }
@@ -86,7 +73,8 @@ arma::field<arma::mat> get_summary(arma::vec theta,
     // Obtain a confidence interval for the parameter estimates AND calculate chisq goodness of fit
     if(bs_ci){
       ci = format_ci(theta, sd, alpha);
-    }else if(!bs_ci){
+    }else{
+      arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
       ci = theta_ci(theta, A, V, omega, alpha);
     }
     
@@ -104,36 +92,11 @@ arma::field<arma::mat> get_summary(arma::vec theta,
 
   }
 
-  if(model_select){
-    
-    /* A note to someone in the future...
-     * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
-     *  and the model_score diff (theo-wv_empir).
-     */
-    if(bs_optimism){
-      arma::vec temp(2);
-      
-      double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
-      
-      temp(0) = obj_value + optimism;
-      temp(1) = optimism;
-      
-      score = temp;
-    }else{
-      // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
-      arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
-    
-      // Calculate the model score according to model selection criteria paper
-      score = model_score(A, D, omega, V,  obj_value);
-    }
-  }
-  
 
   // Export information back
-  arma::field<arma::mat> out(3);
+  arma::field<arma::mat> out(2);
   out(0) = ci;
   out(1) = gof;
-  out(2) = score;
   
   return out;
   
