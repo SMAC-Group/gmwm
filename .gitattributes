@@ -11,4 +11,5 @@
 
 # Do not modify line endings
 *.rda binary
-*.nb binary # Mathematic notebook
+*.nb binary 
+# Mathematic notebook
