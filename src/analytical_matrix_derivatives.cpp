@@ -371,7 +371,7 @@ arma::mat D_matrix(const arma::vec& theta,
   arma::mat A_i = arma::zeros<arma::mat>(p, ntau); 
   
   // P x P
-  arma::mat D(p, p);
+  arma::mat D = arma::zeros<arma::mat>(p, p);
   
   unsigned int i_theta = 0;
   for(unsigned int i = 0; i < num_desc; i++){
