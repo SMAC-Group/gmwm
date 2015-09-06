@@ -1,6 +1,7 @@
 #include <RcppArmadillo.h>
 
 #include "bootstrappers.h"
+#include "inference.h"
 #include "gmwm_logic.h"
 
 // Used for scales_cpp
@@ -15,191 +16,165 @@
 //#include "automatic_models.h"
 using namespace Rcpp;
 
-// std::map<int, std::vector<std::string> > master_model(){
-//   
-//   std::map<int, std::vector<std::string> > models;
-//   
-//   // 4AR1() + WN()
-//   models[0].push_back("AR1");
-//   models[0].push_back("AR1");
-//   models[0].push_back("AR1");
-//   models[0].push_back("AR1");
-//   models[0].push_back("WN");
-//   
-//   // 4AR1()
-//   models[1].push_back("AR1");
-//   models[1].push_back("AR1");
-//   models[1].push_back("AR1");
-//   models[1].push_back("AR1");
-//   
-//   // AR1() + WN()
-//   models[2].push_back("AR1");
-//   models[2].push_back("AR1");
-//   models[2].push_back("AR1");
-//   models[2].push_back("WN");
-//   
-//   // 3AR1()
-//   models[3].push_back("AR1");
-//   models[3].push_back("AR1");
-//   models[3].push_back("AR1");
-//   
-//   
-//   // 2AR1()+WN()
-//   models[4].push_back("AR1");
-//   models[4].push_back("AR1");
-//   models[4].push_back("WN");
-//   
-//   // 2AR1()
-//   models[5].push_back("AR1");
-//   models[5].push_back("AR1");
-//   
-//   // AR1()
-//   models[6].push_back("AR1");
-//   
-//   // WN()
-//   models[7].push_back("WN");
-//   
-//   return models;
-// }
 
+// ---- START helper functions
 
-//[[Rcpp::export]]
-std::map<int, std::vector<std::string> > master_model(){
+//' @title Build List of Unique Models
+//' @description Creates a set containing unique strings. 
+//' @param data A \code{mat} that is a binary matrix (0,1) containing the combinations of different variables.
+//' @param x A \code{vec<string>} that contains a list of model descriptors.
+//' @return A \code{set<string>} that contains the list of unique models.
+// [[Rcpp::export]]
+std::set<std::vector<std::string > > build_model_set(const arma::mat& data, std::vector <std::string> x) {
   
-  std::map<int, std::vector<std::string> > models;
-  
-  
-  // 3AR1() + WN() + RW()
-  models[0].push_back("AR1");
-  models[0].push_back("AR1");
-  models[0].push_back("AR1");
-  models[0].push_back("WN");
-  models[0].push_back("RW");
-
-  // 3AR1() + RW()
-  models[1].push_back("AR1");
-  models[1].push_back("AR1");
-  models[1].push_back("AR1");
-  models[1].push_back("RW");
-  
-  // 3AR1() + WN()
-  models[2].push_back("AR1");
-  models[2].push_back("AR1");
-  models[2].push_back("AR1");
-  models[2].push_back("WN");
-  
-  
-  // 3AR1()
-  models[3].push_back("AR1");
-  models[3].push_back("AR1");
-  models[3].push_back("AR1");
-
-  // 2AR1() + WN() + RW()
-  models[4].push_back("AR1");
-  models[4].push_back("AR1");
-  models[4].push_back("WN");
-  models[4].push_back("RW");
-  
-  // 2AR1() + RW()
-  models[5].push_back("AR1");
-  models[5].push_back("AR1");
-  models[5].push_back("RW");
-  
-  // 2AR1() + WN()
-  models[6].push_back("AR1");
-  models[6].push_back("AR1");
-  models[6].push_back("WN");
-  
-  // 2AR1()
-  models[7].push_back("AR1");
-  models[7].push_back("AR1");
-
-  // AR1() + WN() + RW()
-  models[8].push_back("AR1");
-  models[8].push_back("WN");
-  models[8].push_back("RW");
-  
-  // AR1() + RW()
-  models[9].push_back("AR1");
-  models[9].push_back("RW");
-  
-  // AR1() + WN()
-  models[10].push_back("AR1");
-  models[10].push_back("AR1");
-  models[10].push_back("WN");
-  
-  // WN() + RW()
-  models[11].push_back("WN");
-  models[11].push_back("RW");
-  
-  // WN()
-  models[12].push_back("WN");
-
-  // RW()
-  models[13].push_back("RW");
-  
-  // AR1()
-  models[14].push_back("AR1");
+  std::set<std::vector<std::string > > models;
+  for(unsigned int i = 0; i < data.n_rows; i++) {
+    std::vector< std::string > tmp;
+    for(unsigned int j = 0; j < data.n_cols; j++){
+      if(data(i,j) ==  1){ 
+        tmp.push_back( x[j] );
+      }
+    }
+    models.insert(tmp);
+  }
 
   return models;
 }
 
-// [[Rcpp::export]]
-arma::mat auto_select(const arma::vec& data, 
-                      std::string model_type,
-                      double alpha, 
-                      std::string compute_v, unsigned int K, unsigned int H,
-                      unsigned int G, 
-                      bool robust, double eff, bool bs_optimism){
+
+
+arma::rowvec bs_optim_calc(const arma::vec& theta,
+                        const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                        std::string model_type, const arma::vec& scales, const arma::mat& omega, unsigned int N,
+                        double obj_value, double alpha,
+                        std::string compute_v, 
+                        unsigned int K, unsigned int H, unsigned int G, 
+                        bool robust, double eff){
+  
+  std::cout << "Calling Opt Bootstrap" << std::endl;
+  
+  arma::field<arma::mat> bso = opt_n_gof_bootstrapper(theta,
+                                                      desc, objdesc,
+                                                      scales, model_type, 
+                                                      N, robust, eff, alpha,
+                                                      H);
+  arma::mat cov_nu_nu_theta = bso(0);
+  
+  arma::mat bs_obj_values = bso(1);
+  
+  std::cout << "Assigned bootstrapped values" << std::endl;
+  
+  double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
+  
+  std::cout << "Creating output vector" << std::endl;
+  
+  arma::rowvec temp(3);
+  
+  temp(0) = obj_value;
+  
+  Rcpp::Rcout << "First spot in temp is: " << temp(0) << std::endl;
+  temp(1) = obj_value + optimism;
+  Rcpp::Rcout << "Second spot in temp is: " << temp(1) << std::endl;
+  
+  std::cout << "Assigned obj and criterion... trying bootstrap" << std::endl;
+  
+  temp(2) = arma::as_scalar(bootstrap_gof_test(obj_value, bs_obj_values, alpha, false).row(0));
+  
+  std::cout << "Bootstrap assigned" << std::endl;
+  
+  Rcpp::Rcout << "returned temp values" << temp << std::endl;
+  
+  return temp;
+}
+
+
+arma::rowvec asympt_calc(const arma::vec& theta,
+                         const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                         std::string model_type, const arma::vec& scales, const arma::mat& V, const arma::mat& omega,
+                         const arma::vec& wv_empir, const arma::vec& theo, double obj_value){
+  
+  // Take derivatives
+  arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
+
+  /* A note to someone in the future...
+   * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
+   *  and the model_score diff (theo-wv_empir).
+   */
+  
+  // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
+  arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
+  
+  arma::rowvec temp(3);
+  
+  temp(0) = obj_value;
+  temp(1) = arma::as_scalar( model_score(A, D, omega, V,  obj_value).row(0) );
+  temp(2) = arma::as_scalar( gof_test(theta, desc, objdesc, model_type, scales, V, wv_empir).row(0) ); // GoF
+  
+  return temp;
+}
+
+
+// ---- End helper functions
+
+arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
+                          const std::set<std::vector<std::string > >& models,
+                          const std::vector< std::string >& full_model,
+                          std::string model_type,
+                          bool bs_optimism,
+                          double alpha,
+                          std::string compute_v, 
+                          unsigned int K, unsigned int H, unsigned int G, 
+                          bool robust, double eff){
   
   // Number of data points
-  unsigned int N = data.n_elem;
+  unsigned int N = data.n_rows;
   
-  // Keep track of models parsed
-  unsigned int count = 0;
-  
-  // Create a map
-  std::map<int, std::vector<std::string> > models = master_model();
+  // Number of models
+  unsigned int num_models = models.size(); 
   
   // Make an iterator to iterator through it
-  std::map<int, std::vector<std::string> >::iterator iter;
+  std::set<std::vector<std::string > > ::const_iterator iter;
   iter = models.begin(); 
   
   // Get the first model
-  std::vector<std::string> desc = iter->second;
+  std::vector<std::string> desc = full_model;
   
-  // Increment iterator
-  iter++;
+  std::cout << "We are currently running the full model" << std::endl;
+  for(unsigned int i = 0; i<desc.size(); i++){ std::cout << desc[i] << " "; }
+  std::cout << std::endl << "End full model" << std::endl;
+    
+  // Find where the results should be input. (No protection needed, we know it is in the matrix)
+  unsigned int full_model_index = std::distance(models.begin(),models.find(full_model));
+  std::cout << "The full model location is " << full_model_index << std::endl;
+  
   
   // Build the fields off of the first model's description
   arma::vec theta = model_theta(desc);
   arma::field<arma::vec> objdesc = model_objdesc(desc); 
   
   // Build matrix to store results
-  arma::mat results(2, models.size());
+  arma::mat results(num_models, 3);
   
   // Obtain the largest models information
   arma::field<arma::mat> master = gmwm_master_cpp(data, 
-                                                theta,
-                                                desc,
-                                                objdesc, 
-                                                model_type, 
-                                                true, //starting
-                                                alpha, 
-                                                "fast", // compute V
-                                                K, H,
-                                                G, 
-                                                robust, eff);
-    
-
+                                                  theta,
+                                                  desc,
+                                                  objdesc, 
+                                                  model_type, 
+                                                  true, //starting
+                                                  alpha, 
+                                                  "fast", // compute V
+                                                  K, H,
+                                                  G, 
+                                                  robust, eff);
+  
+  Rcpp::Rcout << "The value of the GMWM object is " << master << std::endl;
+  
   // Theta update
   theta = master(0);
   
   // Define WV Empirical
   arma::vec wv_empir = master(2);
-  
-  // Get bootstrapped V
-  arma::mat V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
   
   // Get the original "FAST" matrix
   arma::mat orgV = master(6); // Original V
@@ -216,106 +191,97 @@ arma::mat auto_select(const arma::vec& data,
   // Obtain the obj_value of the function
   double obj_value = arma::as_scalar(master(10));
   
-
+  std::cout << "Objective function for full model: " << obj_value << std::endl;
   
   // Calculate the values of the Scales 
   arma::vec scales = scales_cpp(floor(log2(N)));
   
-
+  // ------------------------------------
   
-  /* A note to someone in the future...
-   * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
-   *  and the model_score diff (theo-wv_empir).
-   */
+  // Here we set up specifics that are used not in a specific mode.
+  
+  // Asymptotic ----
+  
+  // Get bootstrapped V
+  arma::mat V;
+  
+  // Bootstrap ----
+  // Hold optimism result
+  arma::mat cov_nu_nu_theta;
+  
+  // Hold the bootstrapped obj values
+  arma::vec bs_obj_values;
+  
   if(bs_optimism){
-    
-    arma::mat cov_nu_nu_theta = optimism_bootstrapper(theta,
-                                                      desc, objdesc,
-                                                      scales, model_type, 
-                                                      N, robust, eff, alpha,
-                                                      H);
-    
-    double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
-    
-    arma::vec temp(2);
-    temp(0) = obj_value + optimism;
-    temp(1) = optimism;
-    results.col(count) = temp;
+    std::cout << "Testing Optimism bootstrapper" << std::endl;
+    results.row(full_model_index) = bs_optim_calc(theta,  desc,  objdesc, model_type, scales, omega, N,
+                obj_value, alpha, compute_v, K, H, G, robust, eff);
+    std::cout << "Passed Optimism bootstrapper" << std::endl;
   }else{
-    // Take derivatives
-    arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
     
-    // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
-    arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
+    std::cout << "Calculating the CoV, V Matrix, bootstrapper" << std::endl;
+    
+    V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false) * sqrt(N); // Bootstrapped V (largest model)
+    
+    std::cout << "End calculation for the CoV, V Matrix, bootstrapper" << std::endl;
+    
+    Rcpp::Rcout << "V bootstrapped matrix" << std::endl << V << std::endl;
+    
+    std::cout << "Calculating the asymptotic model" << std::endl;
     
     // Calculate the model score according to model selection criteria paper
-    results.col(count) = model_score(A, D, omega, V,  obj_value);
+    results.row(full_model_index) = asympt_calc(theta, desc, objdesc, model_type, scales, V, omega, wv_empir, theo, obj_value);
+    
+    std::cout << "End calculation for the asymptotic model" << std::endl;
   }
   
-  count++;
+  // Initialize counter to keep track of values
+  unsigned int count = 0;
   
   while(iter != models.end()){
-    // Get the first model
-    std::vector<std::string> desc = iter->second;
     
-    
-    // Build the fields off of the first model's description
-    theta = model_theta(desc);
-    objdesc = model_objdesc(desc); 
-    
-    // Run the update version of the GMWM
-    arma::field<arma::mat> update = gmwm_update_cpp(theta,
-                                                      desc, 
-                                                      objdesc, 
-                                                      model_type, 
+    if(full_model_index != count){
+      // Get the first model
+      desc = *iter;
+      
+      std::cout << "We are currently running a nested model" << std::endl;
+      for(unsigned int i = 0; i<desc.size(); i++){ std::cout << desc[i] << " "; }
+      std::cout << std::endl << "End nested model" << std::endl;
+      
+      // Build the fields off of the first model's description
+      theta = model_theta(desc);
+      objdesc = model_objdesc(desc); 
+      
+      // Run the update version of the GMWM
+      arma::field<arma::mat> update = gmwm_update_cpp(theta, desc, objdesc, model_type, 
                                                       N, expect_diff, 
                                                       orgV, scales, wv_empir,
                                                       true, //starting
                                                       "fast", 
-                                                      K,
-                                                      H,
-                                                      G, 
-                                                      robust,
-                                                      eff);
-    
-    
-    // Theta update
-    theta = update(0);
-    
-    // Update theo
-    theo = update(3);
-    
-    // Update objective function
-    obj_value = arma::as_scalar(update(5));
-    
-    /* A note to someone in the future...
-     * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
-     *  and the model_score diff (theo-wv_empir).
-     */    
-    if(bs_optimism){
+                                                      K,H,G, 
+                                                      robust,eff);
       
-      arma::mat cov_nu_nu_theta = optimism_bootstrapper(theta,
-                                                        desc, objdesc,
-                                                        scales, model_type, 
-                                                        N, robust, eff, alpha,
-                                                        H);
       
-      double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
+      // Theta update
+      theta = update(0);
       
-      arma::vec temp(2);
-      temp(0) = obj_value + optimism;
-      temp(1) = optimism;
-      results.col(count) = temp;
-    }else{
-      // Take derivatives
-      arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
+      // Update theo
+      theo = update(3);
       
-      // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
-      arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
+      // Update objective function
+      obj_value = arma::as_scalar(update(5));
       
-      // Calculate the model score according to model selection criteria paper
-      results.col(count) = model_score(A, D, omega, V,  obj_value);
+      std::cout << "Objective function for nested model: " << obj_value << std::endl;
+      
+      if(bs_optimism){
+        results.row(count) = bs_optim_calc(theta,  desc,  objdesc, model_type, scales, omega, N,
+                    obj_value, alpha, compute_v, K, H, G, robust, eff);
+      }else{
+        // Calculate the model score according to model selection criteria paper
+        results.row(count) = asympt_calc(theta, desc, objdesc, model_type, scales, V, omega, wv_empir, theo, obj_value);
+      }
     }
+    // end if
     
     // Increment iterator
     iter++;
@@ -324,5 +290,50 @@ arma::mat auto_select(const arma::vec& data,
     count++;
   }
   
-  return results;
+  std::cout << "Finished computing results!" << std::endl;
+  Rcpp::Rcout << results << std::endl;
+  arma::field< arma::field<arma::mat> > out(1);
+  
+  arma::field<arma::mat> ms(1);
+  ms(0) = results;
+  
+  out(0) = ms;
+  return out;
+}
+
+
+
+// [[Rcpp::export]]
+arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& data,
+                                              const arma::mat& combs,
+                                              const std::vector< std::string >&  full_model,
+                                              double alpha, 
+                                              std::string compute_v, std::string model_type, 
+                                              unsigned int K, unsigned int H, unsigned int G, 
+                                              bool robust, double eff, bool bs_optimism){
+  
+  
+  
+  
+  // Number of columns to process
+  unsigned int V = data.n_cols;
+  
+  // Create a set of unique models.
+  std::set<std::vector<std::string > > models = build_model_set(combs, full_model);
+  
+  arma::field< arma::field<arma::field<arma::mat> > > h(V);
+  
+  for(unsigned int i = 0; i < V; i++){
+    h(i) = model_select(data.col(i),
+      models,
+      full_model,
+      model_type,
+      bs_optimism,
+      alpha,
+      compute_v, 
+      K, H, G, 
+      robust, eff);
+  }
+  
+  return h;
 }
