@@ -108,8 +108,6 @@ arma::mat optimism_bootstrapper(const arma::vec&  theta,
                                 unsigned int H){
   unsigned int nb_level = floor(log2(N));
   
-  unsigned int p = theta.n_elem;
-  
   arma::mat theo(nb_level, H);
   
   arma::mat all_wv_empir(nb_level, H);
@@ -163,8 +161,6 @@ arma::field<arma::mat> opt_n_gof_bootstrapper(const arma::vec&  theta,
                                 unsigned int N, bool robust, double eff, double alpha,
                                 unsigned int H){
   unsigned int nb_level = floor(log2(N));
-  
-  unsigned int p = theta.n_elem;
   
   arma::mat theo(nb_level, H);
   
