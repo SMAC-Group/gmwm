@@ -79,13 +79,7 @@ arma::field<arma::mat> get_summary(arma::vec theta,
     }
     
     if(bs_gof){
-      arma::vec temp(3);
-      
-      temp(0) = sum(obj_value < bs_obj_values)/double(B);
-      if(bs_gof_p_ci){
-        temp.rows(1,2) = boot_pval_gof(obj_value, bs_obj_values, 1000, alpha);
-      }
-      gof = temp; 
+      gof = bootstrap_gof_test(obj_value, bs_obj_values, alpha, bs_gof_p_ci); 
     }else{
       gof = gof_test(theta, desc, objdesc, model_type, scales, V, wv_empir);
     }

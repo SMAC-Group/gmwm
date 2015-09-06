@@ -113,3 +113,26 @@ arma::vec gof_test(arma::vec theta,
 
   return out;
 }
+
+//' @title Compute the Bootstrapped GoF Test
+//' @description yaya
+//' @param obj_value
+//' @param bs_obj_value
+//' @param alpha
+//' @param bs_gof_p_ci A \code{bool} that indicates whether CIs should be included or not.
+//' @return A \code{vec} that has
+//' \itemize{
+//' \item Test Statistic
+//' \item Low CI
+//' \item Upper CI - BS
+//' } 
+// [[Rcpp::export]]
+arma::vec bootstrap_gof_test(double obj_value, arma::vec bs_obj_values, double alpha, bool bs_gof_p_ci){
+  
+  arma::vec temp(1+2*bs_gof_p_ci);
+  temp(0) = sum(obj_value < bs_obj_values)/double(bs_obj_values.n_elem);
+  if(bs_gof_p_ci){
+    temp.rows(1,2) = boot_pval_gof(obj_value, bs_obj_values, 1000, alpha);
+  }
+  return temp;
+}
