@@ -202,7 +202,7 @@ arma::field<arma::mat> opt_n_gof_bootstrapper(const arma::vec&  theta,
   arma::field<arma::mat> out(2);
   
   // Optimism bootstrap result 
-  out(0) = cov(all_wv_empir,theo.t());
+  out(0) = cov(all_wv_empir.t(),theo.t());
 
   // Obj Fun
   out(1) = obj_values; // Use N-1 and take by row

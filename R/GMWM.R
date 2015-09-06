@@ -440,7 +440,7 @@ summary.gmwm = function(object, inference = NULL,
     }
   }
   
-  if(inference || model.select){
+  if(inference){
     mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM',object$estimate, 
                                                     object$model$desc, object$model$obj.desc,
                                                     object$model.type, 
