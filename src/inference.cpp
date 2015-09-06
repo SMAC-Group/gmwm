@@ -2,6 +2,8 @@
 
 #include "inference.h"
 
+#include "bootstrappers.h"
+
 // Need for getObjFun
 #include "objective_functions.h"
 
