@@ -21,17 +21,17 @@ using namespace Rcpp;
 
 //' @title Build List of Unique Models
 //' @description Creates a set containing unique strings. 
-//' @param data A \code{mat} that is a binary matrix (0,1) containing the combinations of different variables.
+//' @param combs A \code{mat} that is a binary matrix (0,1) containing the combinations of different variables.
 //' @param x A \code{vec<string>} that contains a list of model descriptors.
 //' @return A \code{set<string>} that contains the list of unique models.
 // [[Rcpp::export]]
-std::set<std::vector<std::string > > build_model_set(const arma::mat& data, std::vector <std::string> x) {
+std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std::vector <std::string> x) {
   
   std::set<std::vector<std::string > > models;
-  for(unsigned int i = 0; i < data.n_rows; i++) {
+  for(unsigned int i = 0; i < combs.n_rows; i++) {
     std::vector< std::string > tmp;
-    for(unsigned int j = 0; j < data.n_cols; j++){
-      if(data(i,j) ==  1){ 
+    for(unsigned int j = 0; j < combs.n_cols; j++){
+      if(combs(i,j) ==  1){ 
         tmp.push_back( x[j] );
       }
     }
@@ -40,6 +40,117 @@ std::set<std::vector<std::string > > build_model_set(const arma::mat& data, std:
 
   return models;
 }
+
+
+//' @title Find the Common Denominator of the Models
+//' @description Determines the common denominator among models
+//' @param x A \code{vector< vector<string> >} that contains all possible models under consideration
+//' @return A \code{vector<string>} that contains the terms of the common denominator of all models
+// [[Rcpp::export]]
+std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > x ){
+  
+  // Set up iterators to go over the sets
+  std::vector<std::vector<std::string> >::const_iterator it;
+  std::vector<std::string>::const_iterator it2;
+  
+  
+  // Figure out all common terms
+  
+  // AR1s can have an infinite amount of combinations
+  unsigned int maxAR1s = 0;
+  
+  // In the mean time, WN, RW, QN, and DR, can only appear once in a model. 
+  bool WN = false;
+  bool RW = false;
+  bool QN = false;
+  bool DR = false;
+  
+  
+  // Begin iterating through the set. 
+  for(it = x.begin(); it != x.end(); ++it)
+  {
+    
+    // Create an internal counter of AR1s for a given vector
+    unsigned int num_AR1s = 0;
+    
+    // Iterate through the vector 
+    for (it2 = (*it).begin(); it2 != (*it).end(); ++it2){
+
+      if(*it2 == "AR1"){
+        num_AR1s++; // For each AR1 detected, increment by 1. 
+        
+      }else if(*it2 == "WN"){
+        
+        if(!WN){
+          WN = true; // If WN has yet to be set, set it here. 
+        }
+        
+      }else if(*it2 == "RW"){
+        
+        if(!RW){
+          RW = true;
+        }
+        
+      }else if(*it2 == "QN"){
+        
+        if(!QN){
+          QN = true;
+        }
+        
+      }else if(*it2 == "DR"){
+        
+        if(!DR){
+          DR = true;
+        }
+        
+      }
+      // end if block
+      
+      // Does this model have more AR1s than previous models? Y/N?
+      if(num_AR1s > maxAR1s){
+        maxAR1s = num_AR1s;
+      }
+      
+    }
+    // end inner for 
+    
+  }
+  // end outer for
+  
+  // Create a vector holding all the model terms
+  std::vector<std::string> out(maxAR1s+WN+RW+QN+DR);
+  
+  
+  // Begin assigning the terms
+  unsigned int i;
+  
+  for(i = 0; i < maxAR1s; i++){
+    out[i] = "AR1";
+  }
+  
+  if(WN){
+    out[i] = "WN";
+    i++;
+  }
+  
+  if(RW){
+    out[i] = "RW";
+    i++;
+  }
+  
+  if(QN){
+    out[i] = "QN";
+    i++;
+  }
+  
+  if(DR){
+    out[i] = "DR";
+    i++;
+  }
+  
+  return out;
+}
+
 
 
 
@@ -68,17 +179,19 @@ arma::rowvec bs_optim_calc(const arma::vec& theta,
   
   std::cout << "Creating output vector" << std::endl;
   
-  arma::rowvec temp(3);
+  arma::rowvec temp(4);
   
   temp(0) = obj_value;
   
   Rcpp::Rcout << "First spot in temp is: " << temp(0) << std::endl;
-  temp(1) = obj_value + optimism;
+  temp(1) = optimism;
+  
+  temp(2) = obj_value + optimism;
   Rcpp::Rcout << "Second spot in temp is: " << temp(1) << std::endl;
   
   std::cout << "Assigned obj and criterion... trying bootstrap" << std::endl;
   
-  temp(2) = arma::as_scalar(bootstrap_gof_test(obj_value, bs_obj_values, alpha, false).row(0));
+  temp(3) = arma::as_scalar(bootstrap_gof_test(obj_value, bs_obj_values, alpha, false).row(0));
   
   std::cout << "Bootstrap assigned" << std::endl;
   
@@ -104,11 +217,14 @@ arma::rowvec asympt_calc(const arma::vec& theta,
   // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
   arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
   
-  arma::rowvec temp(3);
+  arma::rowvec temp(4);
+  
+  arma::vec result = model_score(A, D, omega, V,  obj_value);
   
   temp(0) = obj_value;
-  temp(1) = arma::as_scalar( model_score(A, D, omega, V,  obj_value).row(0) );
-  temp(2) = arma::as_scalar( gof_test(theta, desc, objdesc, model_type, scales, V, wv_empir).row(0) ); // GoF
+  temp(1) = arma::as_scalar(result.row(1));
+  temp(2) = arma::as_scalar(result.row(0));
+  temp(3) = arma::as_scalar( gof_test(theta, desc, objdesc, model_type, scales, V, wv_empir).row(1) ); // GoF
   
   return temp;
 }
@@ -153,7 +269,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   arma::field<arma::vec> objdesc = model_objdesc(desc); 
   
   // Build matrix to store results
-  arma::mat results(num_models, 3);
+  arma::mat results(num_models, 4);
   
   // Obtain the largest models information
   arma::field<arma::mat> master = gmwm_master_cpp(data, 

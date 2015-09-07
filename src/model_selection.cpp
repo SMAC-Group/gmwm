@@ -50,14 +50,28 @@ arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat
   arma::mat At = arma::trans(A);
   arma::mat B = B_matrix(A, At*omega);
   
+  Rcpp::Rcout << " D = " << D << std::endl;
+  
+  Rcpp::Rcout << " B = " << B << std::endl;
+  
+  
   arma::mat d_b = D-B;
+  Rcpp::Rcout << " d_b = " << d_b << std::endl;
+  
+  
   arma::mat db_t = arma::trans(d_b);
-  arma::mat dTheta = -arma::pinv(db_t * d_b)*db_t*At*omega;
+  
+  
+  Rcpp::Rcout << "db_t * d_b = " << db_t * d_b << std::endl;
+  
+  arma::mat dTheta = -1*arma::pinv(db_t * d_b)*db_t*At*omega;
 
   arma::vec score_info(2);
   
-  score_info(0) = obj_value + arma::as_scalar(2.0*arma::trace(A * dTheta * omega * v_hat));
-  score_info(1) = 2.0*arma::trace(A * dTheta * omega * v_hat);
+  double optimism = arma::as_scalar(2.0*arma::trace(A * dTheta * omega * v_hat));
+  
+  score_info(0) = obj_value + optimism;
+  score_info(1) = optimism;
   
   // Return the score
   return score_info;

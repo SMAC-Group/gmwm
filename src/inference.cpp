@@ -92,6 +92,7 @@ arma::vec gof_test(arma::vec theta,
                    const arma::vec& tau,
                    const arma::mat& v_hat, const arma::vec& wv_empir){
   
+  arma::mat omega = arma::inv(v_hat);
   
   arma::vec estimate = gmwm_engine(theta,
                                    desc, objdesc, 
@@ -100,9 +101,11 @@ arma::vec gof_test(arma::vec theta,
                                   v_hat,
                                   tau,
                                   false); // starting is false
+  
+  
 
   double test_stat = getObjFun(estimate, desc, objdesc, model_type,
-                                arma::inv(v_hat), wv_empir, tau);
+                               omega, wv_empir, tau);
     
   unsigned int df = tau.n_elem - theta.n_elem;
   
