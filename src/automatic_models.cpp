@@ -162,8 +162,6 @@ arma::rowvec bs_optim_calc(const arma::vec& theta,
                         unsigned int K, unsigned int H, unsigned int G, 
                         bool robust, double eff){
   
-  std::cout << "Calling Opt Bootstrap" << std::endl;
-  
   arma::field<arma::mat> bso = opt_n_gof_bootstrapper(theta,
                                                       desc, objdesc,
                                                       scales, model_type, 
@@ -173,30 +171,20 @@ arma::rowvec bs_optim_calc(const arma::vec& theta,
   
   arma::mat bs_obj_values = bso(1);
   
-  std::cout << "Assigned bootstrapped values" << std::endl;
-  
+
   double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
   
-  std::cout << "Creating output vector" << std::endl;
-  
+
   arma::rowvec temp(4);
   
   temp(0) = obj_value;
   
-  Rcpp::Rcout << "First spot in temp is: " << temp(0) << std::endl;
   temp(1) = optimism;
   
   temp(2) = obj_value + optimism;
-  Rcpp::Rcout << "Second spot in temp is: " << temp(1) << std::endl;
-  
-  std::cout << "Assigned obj and criterion... trying bootstrap" << std::endl;
-  
+
   temp(3) = arma::as_scalar(bootstrap_gof_test(obj_value, bs_obj_values, alpha, false).row(0));
-  
-  std::cout << "Bootstrap assigned" << std::endl;
-  
-  Rcpp::Rcout << "returned temp values" << temp << std::endl;
-  
+
   return temp;
 }
 
@@ -255,14 +243,8 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Get the first model
   std::vector<std::string> desc = full_model;
   
-  std::cout << "We are currently running the full model" << std::endl;
-  for(unsigned int i = 0; i<desc.size(); i++){ std::cout << desc[i] << " "; }
-  std::cout << std::endl << "End full model" << std::endl;
-    
   // Find where the results should be input. (No protection needed, we know it is in the matrix)
   unsigned int full_model_index = std::distance(models.begin(),models.find(full_model));
-  std::cout << "The full model location is " << full_model_index << std::endl;
-  
   
   // Build the fields off of the first model's description
   arma::vec theta = model_theta(desc);
@@ -283,8 +265,6 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
                                                   K, H,
                                                   G, 
                                                   robust, eff);
-  
-  Rcpp::Rcout << "The value of the GMWM object is " << master << std::endl;
   
   // Theta update
   theta = master(0);
@@ -307,8 +287,6 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Obtain the obj_value of the function
   double obj_value = arma::as_scalar(master(10));
   
-  std::cout << "Objective function for full model: " << obj_value << std::endl;
-  
   // Calculate the values of the Scales 
   arma::vec scales = scales_cpp(floor(log2(N)));
   
@@ -329,26 +307,15 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   arma::vec bs_obj_values;
   
   if(bs_optimism){
-    std::cout << "Testing Optimism bootstrapper" << std::endl;
     results.row(full_model_index) = bs_optim_calc(theta,  desc,  objdesc, model_type, scales, omega, N,
                 obj_value, alpha, compute_v, K, H, G, robust, eff);
-    std::cout << "Passed Optimism bootstrapper" << std::endl;
   }else{
     
-    std::cout << "Calculating the CoV, V Matrix, bootstrapper" << std::endl;
-    
     V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
-    
-    std::cout << "End calculation for the CoV, V Matrix, bootstrapper" << std::endl;
-    
-    Rcpp::Rcout << "V bootstrapped matrix" << std::endl << V << std::endl;
-    
-    std::cout << "Calculating the asymptotic model" << std::endl;
     
     // Calculate the model score according to model selection criteria paper
     results.row(full_model_index) = asympt_calc(theta, desc, objdesc, model_type, scales, V, omega, wv_empir, theo, obj_value);
     
-    std::cout << "End calculation for the asymptotic model" << std::endl;
   }
   
   // Initialize counter to keep track of values
@@ -359,10 +326,6 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     if(full_model_index != count){
       // Get the first model
       desc = *iter;
-      
-      std::cout << "We are currently running a nested model" << std::endl;
-      for(unsigned int i = 0; i<desc.size(); i++){ std::cout << desc[i] << " "; }
-      std::cout << std::endl << "End nested model" << std::endl;
       
       // Build the fields off of the first model's description
       theta = model_theta(desc);
@@ -387,8 +350,6 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
       // Update objective function
       obj_value = arma::as_scalar(update(5));
       
-      std::cout << "Objective function for nested model: " << obj_value << std::endl;
-      
       if(bs_optimism){
         results.row(count) = bs_optim_calc(theta,  desc,  objdesc, model_type, scales, omega, N,
                     obj_value, alpha, compute_v, K, H, G, robust, eff);
@@ -406,7 +367,6 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     count++;
   }
   
-  std::cout << "Finished computing results!" << std::endl;
   Rcpp::Rcout << results << std::endl;
   arma::field< arma::field<arma::mat> > out(1);
   

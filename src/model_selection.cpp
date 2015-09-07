@@ -50,40 +50,13 @@ arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat
   arma::mat At = arma::trans(A);
   arma::mat B = B_matrix(A, At*omega);
   
-  Rcpp::Rcout << " D = " << std::endl << D << std::endl;
-  
-  Rcpp::Rcout << " B = " << std::endl << B << std::endl;
-  
-  
   arma::mat d_b = D-B;
-  Rcpp::Rcout << " d_b = " << std::endl << d_b << std::endl;
-  
-  
+
   arma::mat db_t = arma::trans(d_b);
-  
-  
-  Rcpp::Rcout << "db_t * d_b = " << std::endl << db_t * d_b << std::endl;
-  
-  Rcpp::Rcout << "pinv from ARMA (dc) = " << std::endl << arma::pinv(db_t * d_b) << std::endl;
-
-  // Rcpp::Rcout << "pinv from ARMA (std) = " << std::endl << arma::pinv(db_t * d_b, "std") << std::endl;
-
-  Rcpp::Rcout << "At = " << std::endl << At << std::endl;
-  
-  Rcpp::Rcout << "Omega = " << std::endl << omega << std::endl;
   
   arma::mat dTheta = -1*arma::pinv(db_t * d_b)*db_t*At*omega;
 
   arma::vec score_info(2);
-  
-  Rcpp::Rcout << "A * dTheta = " << std::endl << A * dTheta << std::endl;
-  
-  Rcpp::Rcout << "A * dTheta * omega = " << std::endl << A * dTheta * omega << std::endl;
-  
-  Rcpp::Rcout << "A * dTheta * omega * v_hat = " << std::endl << A * dTheta * omega * v_hat << std::endl;
-  
-  Rcpp::Rcout << "2.0*arma::trace(A * dTheta * omega * v_hat))" << arma::trace(A * dTheta * omega * v_hat) << std::endl;
-  
   
   double optimism = 2.0*arma::as_scalar(arma::trace(A * dTheta * omega * v_hat));
   
