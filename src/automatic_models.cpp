@@ -215,7 +215,7 @@ arma::rowvec asympt_calc(const arma::vec& theta,
    */
   
   // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
-  arma::mat D = -1*D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
+  arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(theo - wv_empir));
   
   arma::rowvec temp(4);
   
