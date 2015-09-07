@@ -215,7 +215,7 @@ arma::rowvec asympt_calc(const arma::vec& theta,
    */
   
   // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
-  arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
+  arma::mat D = -1*D_matrix(theta, desc, objdesc, scales, omega*(wv_empir - theo));
   
   arma::rowvec temp(4);
   
@@ -337,7 +337,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     
     std::cout << "Calculating the CoV, V Matrix, bootstrapper" << std::endl;
     
-    V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false) * sqrt(N); // Bootstrapped V (largest model)
+    V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
     
     std::cout << "End calculation for the CoV, V Matrix, bootstrapper" << std::endl;
     
@@ -417,6 +417,40 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   return out;
 }
 
+
+
+// [[Rcpp::export]]
+arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec& data,
+                                                                const std::vector<std::vector < std::string > >& model_str, 
+                                                                const std::vector< std::string >&  full_model,
+                                                                double alpha, 
+                                                                std::string compute_v, std::string model_type, 
+                                                                unsigned int K, unsigned int H, unsigned int G, 
+                                                                bool robust, double eff, bool bs_optimism){
+  
+  
+  // Number of columns to process
+  // Create a set of unique models.
+  
+  std::set<std::vector<std::string > > models;
+  for(std::vector<std::vector<std::string> >::const_iterator it = model_str.begin(); it != model_str.end(); ++it) {
+    models.insert(*it);
+  }
+  
+  arma::field< arma::field<arma::field<arma::mat> > > h(1);
+  
+  h(0) = model_select(data,
+      models,
+      full_model,
+      model_type,
+      bs_optimism,
+      alpha,
+      compute_v, 
+      K, H, G, 
+      robust, eff);
+  
+  return h;
+}
 
 
 // [[Rcpp::export]]
