@@ -16,7 +16,6 @@ comb.mat = function(n){
 select.desc.check = function(desc){
   models.active = count_models(desc)
   
-  print(models.active)
   # Identifiability issues
   if(any( models.active[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, one of the supplied models will have identifiability issues. Please submit a new model.")
@@ -40,7 +39,9 @@ select.desc.check = function(desc){
 #' @param G A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @details The models MUST be nested within each other. If the models are not nested, the algorithm creates the "common denominator" model.
 #' @return A \code{rank.models} object.
-rank.models = function(..., data, bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 20, G = 1000){
+rank.models = function(..., data, bootstrap = F, model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 20, G = 1000, seed = 1337){
+  
+  set.seed(seed)
   
   obj_list = list(...)
   numObj = length(obj_list)
@@ -59,9 +60,14 @@ rank.models = function(..., data, bootstrap = F, alpha = 0.05, robust = F, eff =
   }
   
   out = .Call('GMWM_find_full_model', PACKAGE = 'GMWM', x = desc)
+
+  if(!any(sapply(desc, function(x, want) isTRUE(all.equal(x, want)),  out)) ){
+    print("Creating a Common Denominator Model!")
+    desc[[length(desc)+1]] = out
+  }
   
-  print(out)
-  #out  = .Call('GMWM_auto_imu', PACKAGE = 'GMWM', )
+  out = .Call('GMWM_rank_models', PACKAGE = 'GMWM', data, model_str=desc, full_model=out, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
+  
   return(out)
 }
 
@@ -78,7 +84,9 @@ rank.models = function(..., data, bootstrap = F, alpha = 0.05, robust = F, eff =
 #' @param B A \code{integer} that contains the amount of bootstrap replications
 #' @param G A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @return A \code{auto.imu} object.
-auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 20, G = 1000){
+auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 20, G = 1000, seed = 1337){
+  
+  set.seed(seed)
   
   data = as.matrix(data)
   full.str = model$desc
