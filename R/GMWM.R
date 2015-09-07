@@ -1014,8 +1014,8 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
 #' x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' GMWM1 = gmwm(AR1(), data = x)
 #' GMWM2 = gmwm(2*AR1(), data = x)
-#' compare.models(GMWM1, GMWM2, split = FALSE)}
-compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
+#' compare.gmwm(GMWM1, GMWM2, split = FALSE)}
+compare.gmwm = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = F, transparence = 0.1, line.color = NULL, 
                         CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
                         title = "Haar Wavelet Variance Representation", title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
@@ -1024,7 +1024,7 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
                         facet.label.size = 13,
                         legend.label = NULL,
                         legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
-                        legend.text.size = 13, nrow = 1 ){
+                        legend.text.size = 13, nrow = 1, plot.emp.wv = T ){
   
   if( !(background %in% c('grey','gray', 'white')) ){
     warning("Parameter background: No such option. Set background to 'white'")
@@ -1034,6 +1034,28 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
   obj_list = list(...)
   numObj = length(obj_list)
   object.names = as.character(substitute(...()))
+  
+  if (numObj == 0){
+    stop('At least one wvar object should be given')
+  }
+  else if(numObj >2){
+    stop('The function can only deal with at most 2 objects currently. This constraint may be removed in next version.')
+  }
+  else if (numObj == 1){
+    ## just plot
+    if(is.null(CI.color)){CI.color = "#003C7D"}
+    warning('One object is supplied. You are actually calling plot.gmwm().')
+    
+    plot(..., process.decomp = FALSE, background = background,
+         CI = CI, transparence = transparence, bw = F, CI.color = CI.color,
+         line.type = line.type, line.color = line.color, point.size = point.size,
+         point.shape = point.shape, title = title, title.size = title.size, axis.label.size = axis.label.size,
+         axis.tick.size = axis.tick.size, axis.x.label = axis.x.label,
+         axis.y.label = axis.y.label,
+         legend.title = legend.title, legend.label = legend.label, legend.key.size = legend.key.size,
+         legend.title.size = legend.title.size, legend.text.size = legend.text.size)
+  }
+  else  {
   
   #check parameter
   #   params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape', 'legend.label')
@@ -1053,54 +1075,99 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
   #   }
   
   if(CI){
+    #supply order: low, high, emp.wv, imp.wv --- rep it for numObj times
     if(is.null(point.size)){point.size = rep(c(5,5,5,5), numObj)}
     if(is.null(point.shape)){point.shape = rep(c(46, 46, 20, 1), numObj)}
     if(is.null(line.type)){line.type = rep(c('dotted','dotted', 'solid','solid'), numObj)}
     
     #line.color
-    #'Dark2'
-    Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
-    modulus = numObj%/% 8
-    remainder = numObj%% 8
-    wv.palette = c( rep(Dark2 , times = modulus), Dark2[1:remainder] )
-    
-    if (numObj == 2){
-      wv.palette = c("#003C7D","#F47F24")}
-    theo.palette = alpha(wv.palette, 0.7)
-    
-    line.color = rep(NA, numObj* 4) #initialize
-    for (i in 1:numObj){
-      for (j in 1:4){
-        if(j==1||j==2||j==3){
-          line.color [4*i-4 + j] = wv.palette[i]
-        }else{
-          line.color[4*i] = theo.palette[i]
-        }
-      }
-    }
-    # if attributes are same, use same color
-    for(i in 1:(numObj-1)){
-      for(j in (i+1):numObj ){
-        same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
-        if(same.scales){
-          same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
-          same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
-          same.alpha = obj_list[[i]]$alpha == obj_list[[j]]$alpha
-          if(same.wv){line.color[4*(j-1)+3] = line.color[4*(i-1)+3]}
-          if(same.theo){line.color[4*(j-1)+4] = line.color[4*(i-1)+4]}
-          if(same.wv && same.alpha){
-            line.color[4*(j-1)+1] = line.color[4*(i-1)+1]
-            line.color[4*(j-1)+2] = line.color[4*(i-1)+2]
+#     if(is.null(line.color)){
+#       wv.palette = ggColor(numObj)
+#       
+#       if (numObj == 2){
+#         wv.palette = c("#003C7D","#F47F24")}
+#       theo.palette = alpha(wv.palette, 0.7)
+#       
+#       line.color = rep(NA, numObj* 4) #initialize
+#       for (i in 1:numObj){
+#         for (j in 1:4){
+#           if(j==1||j==2||j==3){
+#             line.color [4*i-4 + j] = wv.palette[i]
+#           }else{
+#             line.color[4*i] = theo.palette[i]
+#           }
+#         }
+#       }
+#       # if attributes are same, use same color
+#       for(i in 1:(numObj-1)){
+#         for(j in (i+1):numObj ){
+#           same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
+#           if(same.scales){
+#             same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
+#             same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
+#             same.alpha = obj_list[[i]]$alpha == obj_list[[j]]$alpha
+#             if(same.wv){line.color[4*(j-1)+3] = line.color[4*(i-1)+3]}
+#             if(same.theo){line.color[4*(j-1)+4] = line.color[4*(i-1)+4]}
+#             if(same.wv && same.alpha){
+#               line.color[4*(j-1)+1] = line.color[4*(i-1)+1]
+#               line.color[4*(j-1)+2] = line.color[4*(i-1)+2]
+#             }
+#           }
+#         }
+#       }
+#     }
+    if(is.null(line.color)){
+      #all.colors = ggColor(numObj*2)
+      #wv.palette = all.colors[seq(from = 1, to = 2*numObj, by = 2)]
+      #theo.palette = all.colors[seq(from = 2, to = 2*numObj, by = 2)]
+      
+      #'Dark2'
+      Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
+      modulus = numObj%/% 8
+      remainder = numObj%% 8
+      wv.palette = c( rep(Dark2 , times = modulus), Dark2[1:remainder] )
+      theo.palette = ggColor(numObj)
+      
+      line.color = rep(NA, numObj* 4) #initialize
+      for (i in 1:numObj){
+        for (j in 1:4){
+          if(j==1||j==2||j==3){
+            line.color [4*i-4 + j] = wv.palette[i]
+          }else{
+            line.color[4*i] = theo.palette[i]
           }
         }
       }
+      
+      #???? check length of scales?????
+      # if attributes are same, use same color
+      for(i in 1:(numObj-1)){
+        for(j in (i+1):numObj ){
+          same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
+          if(same.scales){
+            same.wv = obj_list[[i]]$expect.diff == obj_list[[j]]$expect.diff
+            #same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
+            same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
+            same.alpha = obj_list[[i]]$alpha == obj_list[[j]]$alpha
+            if(same.wv){line.color[4*(j-1)+3] = line.color[4*(i-1)+3]}
+            if(same.theo){line.color[4*(j-1)+4] = line.color[4*(i-1)+4]}
+            if(same.wv && same.alpha){
+              line.color[4*(j-1)+1] = line.color[4*(i-1)+1]
+              line.color[4*(j-1)+2] = line.color[4*(i-1)+2]
+            }
+          }
+        }
+      }#end: attributes check
+      
     }
     
-    CI.color = rep(NA, numObj)
-    for(i in 1:numObj){
-      CI.color[i] = line.color[4*(i-1) +1]
+    if(is.null(CI.color)){
+      CI.color = rep(NA, numObj)
+      for(i in 1:numObj){
+        CI.color[i] = line.color[4*(i-1) +1]
+      }
+      CI.color = alpha(CI.color, transparence)
     }
-    CI.color = alpha(CI.color, transparence)
     
     #for legend.label
     #wv_string = expression(paste("Empirical WV ", hat(nu),' and ','CI') )
@@ -1110,39 +1177,37 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
     if(is.null(point.shape)){point.shape = rep(c(20, 1), numObj)}
     if(is.null(line.type)){line.type = rep(c('solid','solid'), numObj)}
     
-    #line.color
-    #'Dark2'
-    Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
-    modulus = numObj%/% 8
-    remainder = numObj%% 8
-    wv.palette = c( rep(Dark2 , times = modulus), Dark2[1:remainder] )
-    
-    if (numObj == 2){
-      wv.palette = c("#003C7D","#F47F24")}
-    theo.palette = alpha(wv.palette, 0.7)
-    
-    line.color = rep(NA, numObj* 2) #initialize
-    for (i in 1:numObj){
-      for (j in 1:2){
-        if(j==1){
-          line.color [2*(i-1) + j] = wv.palette[i]
-        }else{
-          line.color[2*i] = theo.palette[i]
+    if(is.null(line.color)){
+      wv.palette = ggColor(numObj)
+      
+      if (numObj == 2){
+        wv.palette = c("#003C7D","#F47F24")}
+      theo.palette = alpha(wv.palette, 0.7)
+      
+      line.color = rep(NA, numObj* 2) #initialize
+      for (i in 1:numObj){
+        for (j in 1:2){
+          if(j==1){
+            line.color [2*(i-1) + j] = wv.palette[i]
+          }else{
+            line.color[2*i] = theo.palette[i]
+          }
+        }
+      }
+      # if attributes are same, use same color
+      for(i in 1:(numObj-1)){
+        for(j in (i+1):numObj ){
+          same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
+          if(same.scales){
+            same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
+            same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
+            if(same.wv){line.color[2*(j-1)+1] = line.color[2*(i-1)+1]}
+            if(same.theo){line.color[2*(j-1)+2] = line.color[2*(i-1)+2]}
+          }
         }
       }
     }
-    # if attributes are same, use same color
-    for(i in 1:(numObj-1)){
-      for(j in (i+1):numObj ){
-        same.scales = all(obj_list[[i]]$scales == obj_list[[j]]$scales)
-        if(same.scales){
-          same.wv = all(obj_list[[i]]$wv.empir == obj_list[[j]]$wv.empir)
-          same.theo = all(obj_list[[i]]$theo == obj_list[[j]]$theo)
-          if(same.wv){line.color[2*(j-1)+1] = line.color[2*(i-1)+1]}
-          if(same.theo){line.color[2*(j-1)+2] = line.color[2*(i-1)+2]}
-        }
-      }
-    }
+   
     #for legend.label
     #wv_string = expression(paste("Empirical WV ", hat(nu)))
     wv_string = bquote("Empirical WV" ~hat(nu))
@@ -1177,15 +1242,6 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
     }
   }
   
-  if (numObj == 0){
-    stop('At least one wvar object should be given')
-  }
-  else if (numObj == 1){
-    ## just plot
-    plot(...)
-  }
-  else  {
-    
     total.len = 0
     each.len = numeric(numObj)
     for (i in 1:numObj){
@@ -1245,9 +1301,10 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
                         legend.label = legend.label,
                         legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
                         legend.text.size = legend.text.size,
-                        nrow = nrow)
+                        nrow = nrow, plot.emp.wv = plot.emp.wv)
     }
     else{
+      
       autoplot.gmwmComp(melt.obj, breaks = breaks, split = split, CI = CI, background = background, transparence = transparence, line.color = line.color, 
                         CI.color = CI.color, line.type = line.type,  point.size = point.size, point.shape = point.shape,
                         title = title, title.size= title.size, 
@@ -1258,7 +1315,7 @@ compare.models = function(..., background = 'white', split = TRUE, CI = TRUE, au
                         legend.label = legend.label,
                         legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
                         legend.text.size = legend.text.size,
-                        nrow = nrow)
+                        nrow = nrow, plot.emp.wv = plot.emp.wv)
     }
     
   }
@@ -1280,11 +1337,19 @@ autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background
                              facet.label.size = 13,
                              legend.label = NULL,
                              legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
-                             legend.text.size = 13, nrow = 1, ...){
-  
+                             legend.text.size = 13, nrow = 1, plot.emp.wv = T, ...){
   scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=dataset=NULL
   
   if(CI){object.CI = object[object$variable =='low'|object$variable=='high', ]}
+  if(!plot.emp.wv && !CI){
+    object = object[object$variable != 'WV', ]
+    line.color = line.color[seq(from = 2, to = length(line.color), by = 2)]
+    line.type = line.type[seq(from = 2, to = length(line.type), by = 2)]
+    point.size = point.size[seq(from = 2, to = length(point.size), by = 2)]
+    point.shape = point.shape[seq(from = 2, to = length(point.shape), by = 2)]
+    legend.label = legend.label[seq(from = 2, to = length(legend.label), by = 2)]
+    breaks = breaks[seq(from = 2, to = length(breaks), by = 2)]
+  }
   object$variable = paste(object$dataset, object$variable)
   
   p = ggplot() + 
@@ -1346,6 +1411,329 @@ autoplot.gmwmComp = function(object, breaks, split = TRUE, CI = TRUE, background
   
   p
 }
+
+
+
+compare.models = function(..., display.model = T, background = 'white', transparence = 0.1, CI.color = "#003C7D",
+                          line.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
+                          title = "GMWM Models Comparison", title.size= 18, 
+                          axis.label.size = 16, axis.tick.size = 11, 
+                          facet.label.size = 13,
+                          axis.x.label = expression(paste("Scale ", tau)),
+                          axis.y.label = expression(paste("Wavelet Variance ", nu))){
+  
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Set background to 'white'")
+    background = 'white'
+  }
+  
+  obj_list = list(...)
+  numObj = length(obj_list)
+  
+  for(i in 1:numObj){
+    if( !is(obj_list[[i]], 'gmwm') ){
+      stop('Model you supplied was not gmwm object.')
+    }
+  }
+  
+  if(is.null(CI.color)){
+    CI.color = "#003C7D"
+  }
+  
+  if(numObj<1){
+    stop('At least one model must be supplied.')
+  }
+  object.names = as.character(substitute(...()))
+  
+  #check parameter
+  params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape')
+  requireLength = c(2+numObj, 2+numObj, 1, 2+numObj, 2+numObj)
+  default = list(NULL, NULL,  "#003C7D", NULL, NULL)
+  nullIsFine = c(rep(T,5))
+  for (i in 1:length(params)){
+    one_param = params[i]
+    if( length(get(one_param))!=requireLength[i]){
+      isNull = is.null(get(one_param))
+      if(isNull && nullIsFine[i]){}else{
+        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
+                      'is supplied.','Default setting is used.'))
+      }
+      assign(one_param, default[[i]])
+    }
+  }
+  
+  if(numObj == 1){
+    #plot.gmwm will do the parameter checking
+    #other parameters are not listed here. But they can be passed to plot.gmww by '...'
+    warning('One object is supplied. You are actually calling plot.gmwm().')
+    plot.gmwm(obj_list[[1]], background = background, transparence = transparence, CI.color = CI.color, line.type = line.type,
+              line.color = line.color, point.size = point.size, point.shape = point.shape, title = title,
+              title.size = title.size, axis.label.size = axis.label.size, axis.tick.size = axis.tick.size,
+              axis.x.label = axis.x.label, axis.y.label = axis.y.label, ...)
+    
+  }else{
+    
+    for (i in 1:(numObj-1) ){
+      #1. check expect.diff
+      if ( obj_list[[i]]$expect.diff != obj_list[[i+1]]$expect.diff ){
+        stop('This function can only operate on models constrcuted by the same data.') ##############
+      }
+      
+      if(!obj_list[[1]]$robust){
+        #2.1 classical case, make sure all other objects are classical
+        if(obj_list[[i+1]]$robust != F){
+          stop('Make sure your models are all classical, or they are all robust and with same efficiency.')
+        }
+      }else{
+        #2.2 robust case, make sure all other objects are robust and have same eff
+        if(obj_list[[i+1]]$robust != T || (obj_list[[i]]$eff != obj_list[[i+1]]$eff)){
+          stop('Make sure your models are all classical, or they are all robust and with same efficiency.')
+        }
+      }
+    }
+    
+    #create one empty list
+    plot.list = vector('list', numObj * numObj)
+   
+    #common setting
+    commonSet = theme(legend.position = 'none') #remove legend
+                      #axis.title = element_blank(), #remove the space for axes
+                      #plot.margin = unit(c(0,0,0,0), "mm") )#remove margin around the graph
+    
+    #supply order: wv, high/low, model1 imp.wv, model2 imp.wv, model3 imp.wv ....
+    if(is.null(line.color)){
+      wv.color = "#003C7D" #color for emp.wv
+      theo.color = ggColor(numObj) #color for imp.wv
+      high_low.color = wv.color
+    }else{
+      wv.color = line.color[1] #color for emp.wv
+      theo.color = line.color[3:length(line.color)] #color for imp.wv
+      high_low.color = line.color[2]
+    }
+    #line.color1 is supplied to plot.gmwm
+    line.color1 = c(wv.color, high_low.color, theo.color)
+    
+    #line.color2 is supplied to compare.gmwm when CI = T
+    line.color2 = c(rep(high_low.color, 2), wv.color, theo.color)
+    
+    #line.color3 is supplied to compare.gmwm when CI = F
+    line.color3 = c(wv.color, theo.color)
+    
+    
+    if(is.null(line.type)){
+      wv.line.type = "solid" # for emp.wv
+      theo.line.type = rep('solid', numObj) # for imp.wv
+      high_low.line.type = 'dotted'
+    
+    }else{
+      wv.line.type = line.type[1]
+      theo.line.type = line.type[3:length(line.type)]
+      high_low.line.type = line.type[2]
+    }
+    #line.type1 is supplied to plot.gmwm
+    line.type1 = c(wv.line.type, high_low.line.type, theo.line.type)
+    
+    #line.type2 is supplied to compare.gmwm when CI = T
+    line.type2 = c(rep(high_low.line.type, 2), wv.line.type, theo.line.type)
+    
+    #line.type3 is supplied to compare.gmwm when CI = F
+    line.type3 = c(wv.line.type, theo.line.type)
+    
+    
+    if(is.null(point.size)){
+      if(numObj > 10){temp.point.size = 1
+      }else{
+        temp.point.size = 5-0.4*(numObj-1)}
+      
+      wv.point.size = temp.point.size # for emp.wv
+      theo.point.size = rep(temp.point.size, numObj) # for imp.wv
+      high_low.point.size = 0
+    }else{
+      wv.point.size = point.size[1]
+      theo.point.size = point.size[3:length(point.size)]
+      high_low.point.size = point.size[2]
+    }
+    #point.size1 is supplied to plot.gmwm
+    point.size1 = c(wv.point.size, high_low.point.size, theo.point.size)
+    
+    #point.size2 is supplied to compare.gmwm when CI = T
+    point.size2 = c(rep(high_low.point.size, 2), wv.point.size, theo.point.size)
+    
+    #point.size3 is supplied to compare.gmwm when CI = F
+    point.size3 = c(wv.point.size, theo.point.size)
+    
+    
+    if(is.null(point.shape)){
+      wv.point.shape = 20 # for emp.wv
+      theo.point.shape = rep(1, numObj) # for imp.wv
+      high_low.point.shape = 20
+      
+    }else{
+      wv.point.shape = point.shape[1]
+      theo.point.shape = point.shape[3:length(point.shape)]
+      high_low.point.shape = point.shape[2]
+    }
+    #point.shape1 is supplied to plot.gmwm
+    point.shape1 = c(wv.point.shape, high_low.point.shape, theo.point.shape)
+    
+    #point.shape2 is supplied to compare.gmwm when CI = T
+    point.shape2 = c(rep(high_low.point.shape, 2), wv.point.shape, theo.point.shape)
+    
+    #point.shape3 is supplied to compare.gmwm when CI = F
+    point.shape3 = c(wv.point.shape, theo.point.shape)
+    
+    
+    n = numObj
+    for (i in 1:n){ #i: row index
+      for (j in 1:n){ #j: col index
+        if(i == j){
+          
+          #select right title and axis.y.label
+          if(i == 1){
+            if(display.model){new.title = getModel.gmwm(obj_list[[1]])} else{new.title = object.names[1]}
+          }else{
+            new.title = ''
+          }
+          new.axis.y.label = new.title;
+          
+          plot.list[[(i-1)*n+j]] = plot.gmwm( obj_list[[i]], process.decomp = F, background = background,
+                                              CI = T, transparence = transparence, bw = F, CI.color = CI.color, 
+                                              line.type = c(line.type1[1:2], line.type1[i+2]), line.color = c(line.color1[1:2], line.color1[i+2]), 
+                                              point.size = c(point.size1[1:2], point.size1[i+2]), 
+                                              point.shape = c(point.shape1[1:2], point.shape1[i+2]), 
+                                              title = new.title, title.size = facet.label.size, axis.label.size = facet.label.size,
+                                              axis.tick.size = axis.tick.size, axis.x.label = '', axis.y.label = new.axis.y.label ) + 
+            commonSet
+          
+        }else if(i>j){
+          #select axis.y.label
+          if(j == 1){
+            if(display.model){new.axis.y.label = getModel.gmwm(obj_list[[i]])} else{new.axis.y.label = object.names[i]}
+          }else{
+            new.axis.y.label = ''
+          }
+          
+          #reconstruct line.color
+          line.color = c(line.color2[1:3], line.color2[3+i], line.color2[1:3], line.color2[3+j])
+          #reconstruct line.type
+          line.type = c(line.type2[1:3], line.type2[3+i], line.type2[1:3], line.type2[3+j])
+          #reconstruct point.size
+          point.size = c(point.size2[1:3], point.size2[3+i], point.size2[1:3], point.size2[3+j])
+          #reconstruct point.shape
+          point.shape = c(point.shape2[1:3], point.shape2[3+i], point.shape2[1:3], point.shape2[3+j])
+          
+          plot.list[[(i-1)*n+j]] = compare.gmwm(obj_list[[i]], obj_list[[j]], split = F, CI = T, 
+                                                transparence = transparence/2, line.type = line.type, point.size = point.size,
+                                                point.shape = point.shape,
+                                                line.color = line.color, axis.label.size = facet.label.size,
+                                                title = '', axis.x.label = '', axis.y.label = new.axis.y.label ) +
+            commonSet
+          
+        }else{
+          #select title
+          if(i == 1){
+            if(display.model){new.title = getModel.gmwm(obj_list[[j]])} else{new.title = object.names[j]}
+          }else{
+            new.title = ''
+          }
+          
+          #reconstruct line.color
+          line.color = c(line.color3[1], line.color3[1+i], line.color3[1], line.color3[1+j])
+          #reconstruct line.type
+          line.type = c(line.type3[1], line.type3[1+i], line.type3[1], line.type3[1+j])
+          #reconstruct point.size
+          point.size = c(point.size3[1], point.size3[1+i], point.size3[1], point.size3[1+j])
+          #reconstruct point.shape
+          point.shape = c(point.shape3[1], point.shape3[1+i], point.shape3[1], point.shape3[1+j])
+          
+          plot.list[[(i-1)*n+j]] = compare.gmwm(obj_list[[i]], obj_list[[j]], split = F, CI = F, plot.emp.wv = F,
+                                                line.color = line.color, line.type = line.type, point.size = point.size,
+                                                point.shape = point.shape,
+                                                title.size = facet.label.size,
+                                                title = new.title, axis.x.label = '', axis.y.label = '') +
+            commonSet
+          
+        }
+        
+        ### remove axis tick and axis text
+        if(n==2){
+          if(i == 1 && j ==1){
+            plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+              theme(axis.text.x=element_blank(), axis.ticks.x=element_blank() )
+          }
+          if (i == 1 && j == 2){
+            plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+              theme(axis.text=element_blank(), axis.ticks=element_blank() )
+          }
+          if (i == 2 && j == 2){
+            plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+              theme(axis.text.y=element_blank(), axis.ticks.y=element_blank() )
+          }
+        }
+        
+        if(n > 2){
+          
+          if ( i%in% 1:(n-1) && j%in% 2:n){
+            plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] + 
+              theme(axis.text=element_blank(), axis.ticks=element_blank() )
+            
+          }
+          else if (j == 1 && i%in% 1:(n-1) ){
+            plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+              theme(axis.text.x=element_blank(), axis.ticks.x=element_blank() )
+            
+          }else if (i == n&& j%in% 2:n){
+            plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+              theme(axis.text.y=element_blank(), axis.ticks.y=element_blank() )
+          }
+          
+        }
+        
+        #remove the space between each graph
+        if(i==1 && j==1){
+          plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+            theme(plot.margin = unit(c(0,0,0,0), "cm") )
+        }else if(i==1 && j%in%2:n ){
+         plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+           theme(plot.margin = unit(c(0,0,0,-0.5), "cm") )
+        }else if(i%in%2:n && j==1){
+          plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+            theme(plot.margin = unit(c(-0.8,0,0,0), "cm") )
+        }else{
+          plot.list[[(i-1)*n+j]] = plot.list[[(i-1)*n+j]] +
+            theme(plot.margin = unit(c(-0.8,0,0,-0.5), "cm") )
+        }
+        
+      }
+    }
+    
+#     #modify the plot.list to make the graph same size
+#     for(i in 1:(n^2) ){
+#       plot.list[[i]] = ggplotGrob(plot.list[[i]])
+#     }
+#     
+#     if(n^2 %% 2 == 1){to.index = n^2 - 1} else{to.index = n^2}
+#     maxWidth = unit.pmax(plot.list[[n^2]]$widths[2:5])
+#     maxHeight = unit.pmax(plot.list[[n^2]]$heights[2:5])
+#     for(i in seq(from = 1, to = to.index, by = 2)){
+#       maxWidth = unit.pmax(plot.list[[i]]$widths[2:5], plot.list[[i+1]]$widths[2:5], maxWidth)
+#       maxHeight = unit.pmax(plot.list[[i]]$heights[2:5], plot.list[[i+1]]$heights[2:5], maxHeight)
+#     }
+#     
+#     for(i in 1:(n^2)){
+#       plot.list[[i]]$widths[2:5] = as.list(maxWidth)
+#       plot.list[[i]]$heights[2:5] = as.list(maxHeight)
+#     }
+
+  #grid.arrange is just one wrapper function of arrangeGrob
+  args.list <- c(plot.list,list(nrow=n,ncol=n, left = textGrob(label = axis.y.label, rot = 90, gp=gpar(fontsize=axis.label.size) ),
+                                right = textGrob(label = ' ', rot=90),
+                                top = textGrob(title, gp=gpar(fontsize=title.size)),
+                                bottom = textGrob(label = axis.x.label, gp=gpar(fontsize=axis.label.size))) )
+  do.call("grid.arrange", args.list)
+  }
+}
+
 
 
 
