@@ -42,6 +42,25 @@ std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std
 }
 
 
+//' @title Conversion function of Vector to Set
+//' @description Converts a vector into a set
+//' @param x A \code{vec<vec<string>>} that contains a list of model descriptors.
+//' @return A \code{set<vector<string>>} that contains the list of unique models.
+// [[Rcpp::export]]
+std::set<std::vector<std::string> > vector_to_set(std::vector<std::vector<std::string > > model_str){
+  
+  // Number of columns to process
+  // Create a set of unique models.
+  
+  std::set<std::vector<std::string > > models;
+  for(std::vector<std::vector<std::string> >::const_iterator it = model_str.begin(); it != model_str.end(); ++it) {
+    models.insert(*it);
+  }
+  
+  return models;
+}
+
+
 //' @title Find the Common Denominator of the Models
 //' @description Determines the common denominator among models
 //' @param x A \code{vector< vector<string> >} that contains all possible models under consideration
@@ -253,6 +272,8 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Build matrix to store results
   arma::mat results(num_models, 4);
   
+  std::cout << "Processing model 1 out of " << num_models << std::endl;
+  
   // Obtain the largest models information
   arma::field<arma::mat> master = gmwm_master_cpp(data, 
                                                   theta,
@@ -324,6 +345,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   while(iter != models.end()){
     
     if(full_model_index != count){
+      std::cout << "Processing model " << count + 2  << " out of " << num_models << std::endl;
       // Get the first model
       desc = *iter;
       
@@ -367,7 +389,6 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     count++;
   }
   
-  Rcpp::Rcout << results << std::endl;
   arma::field< arma::field<arma::mat> > out(1);
   
   arma::field<arma::mat> ms(1);
@@ -389,13 +410,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
                                                                 bool robust, double eff, bool bs_optimism){
   
   
-  // Number of columns to process
-  // Create a set of unique models.
-  
-  std::set<std::vector<std::string > > models;
-  for(std::vector<std::vector<std::string> >::const_iterator it = model_str.begin(); it != model_str.end(); ++it) {
-    models.insert(*it);
-  }
+  std::set<std::vector < std::string > > models = vector_to_set(model_str);
   
   arma::field< arma::field<arma::field<arma::mat> > > h(1);
   
