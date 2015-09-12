@@ -142,7 +142,7 @@ print.auto.imu = function(object, ...){
   summary.auto.imu(object)
 }
 
-summary.auto.imu = function(object, ...){
+summary.auto.imu = function(object, round = 4, ...){
   
   n.process = length(object)
   
@@ -154,7 +154,7 @@ summary.auto.imu = function(object, ...){
   }
 }
 
-summary.rank.models = function(object, ...){
+summary.rank.models = function(object, round = 4, ...){
   cat("The model ranking is given as: \n")
   print(round(object[[1]][[1]][[1]],4))  
 }
