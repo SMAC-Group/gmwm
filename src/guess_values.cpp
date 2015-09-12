@@ -42,7 +42,7 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, s
       
       // Draw for phi
       temp(0) = 1.0/5.0*(1.0-sqrt(1.0-3.0*U));
-      temp(1) = R::runif(0.95*sigma2_total*(1-square(temp(0))), sigma2_total);
+      temp(1) = R::runif(0.5*sigma2_total*(1-square(temp(0))), sigma2_total);
     }
     else{ // ssm
       // Draw for phi
@@ -59,7 +59,7 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, s
     }
     else{
       // Draw for phi on i==1
-      temp(0) = R::runif(0.995,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
+      temp(0) = R::runif(0.7,0.9999999); //1.0/40.0*(38.0-sqrt(6.0*U-2.0)) + .05;
     }
     
     // Draw for process variance
