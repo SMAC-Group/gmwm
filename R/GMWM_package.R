@@ -15,14 +15,15 @@
 #' @author
 #' James Balamuta \email{balamut2@@illinois.edu},
 #' Stephane Guerrier \email{stephane@@illinois.edu},
-#' Roberto Molinari
+#' Roberto Molinari \email{roberto.molinari@@unige.ch},
+#' Wenchao Yang \email{wyang40@@illinois.edu}
 #'
 #' Stephane Guerrier \email{stephane@@illinois.edu}
 #' @name GMWM-package
 #' @docType package
 #' @useDynLib GMWM
 #' @importFrom Rcpp evalCpp
-#' @import ggplot2 grid scales reshape2
+#' @import ggplot2 grid scales reshape2 gridExtra
 #' @exportPattern ^[[:alpha:]]+
 #' @examples
 #' # Fill in at a later time

@@ -28,14 +28,45 @@ placeLegend = function(wv_1, low_n, high_n){
 #' @return A ggplot2 panel containing the frequent graph setting for paper.
 paperSetting = function(){
   p = theme(axis.title.y=element_text(vjust=3.5), axis.title.x=element_text(vjust=-2.5), 
-          plot.title = element_text(vjust=2.5), plot.margin=unit(c(0.7,0.1,0.7,0.7),"cm"))
+            plot.title = element_text(vjust=2.5), plot.margin=unit(c(0.7,0.1,0.7,0.7),"cm"))
   return(p)
 }
 
 #' @title Emulate ggplot2 default color palette
+#' @param n An \code{integer} indicating how many colors user wants.
 #' @return A \code{vector} containing \code{n} colors
 #' @author John Colby
 ggColor <- function(n) {
   hues = seq(15, 375, length=n+1)
-  hcl(h=hues, l=65, c=100)[1:n]
+  rev(hcl(h=hues, l=70, c=100)[1:n])
+}
+
+#' @title Get the model in a \code{gmwm} object
+#' @param object A \code{gmwm} object
+#' @return A \code{string} containing the model
+getModel.gmwm = function(object){
+  if( !is(object, 'gmwm') ){
+    stop('It must be a gmwm object')
+  }
+  model.desc = object$model.hat$desc
+  count.map = count_models(model.desc)
+  all.model = names(count.map)
+  
+  model = ''
+  for (i in 1:length(all.model)){
+    if(length(model)==1){
+      if(count.map[all.model[i]] == 1){
+        model = bquote(.(all.model[i]))
+      }else if(count.map[all.model[i]]>1){
+        model = bquote(.(count.map[all.model[i]])%*%.(all.model[i]))
+      }
+    }else{
+      if(count.map[all.model[i]] == 1){
+        model = bquote(.(model) * "+" *.(all.model[i]))
+      }else if(count.map[all.model[i]]>1){
+        model = bquote(.(model) * "+" *.(count.map[all.model[i]])%*%.(all.model[i]) )
+      }
+    }
+  }
+  return(as.expression(model) )
 }
