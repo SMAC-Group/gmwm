@@ -9,3 +9,6 @@ src/RcppExports.o
 src/RcppExports.cpp
 R/RcppExports.R
 GMWM.Rproj
+src/RcppExports.cpp
+
+R/RcppExports.R
