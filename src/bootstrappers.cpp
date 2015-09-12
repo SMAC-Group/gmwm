@@ -5,6 +5,9 @@
 
 #include "gmwm_logic.h"
 
+#include "guess_values.h"
+
+
 // Include support functions
 #include "transform_data.h"
 #include "inline_functions.h"
@@ -162,6 +165,8 @@ arma::field<arma::mat> opt_n_gof_bootstrapper(const arma::vec&  theta,
                                 unsigned int H){
   unsigned int nb_level = floor(log2(N));
   
+  unsigned int p = theta.n_elem;
+  
   arma::mat theo(nb_level, H);
   
   arma::mat all_wv_empir(nb_level, H);
@@ -185,12 +190,20 @@ arma::field<arma::mat> opt_n_gof_bootstrapper(const arma::vec&  theta,
     // WV Empirical
     arma::vec wv_empir = wvar.col(0);
     
+    // Take the mean of the first difference
+    double expect_diff = mean_diff(x);
+    
+    arma::vec theta_star = guess_initial(desc, objdesc, model_type, p, expect_diff, N, wv_empir, scales, 10000);
+    
     // Obtain the GMWM estimator's estimates. (WV_EMPIR)
     arma::vec est = gmwm_engine(theta, desc, objdesc, model_type, 
                                 wv_empir, omega, scales, false);
     
+    arma::vec est_starting = gmwm_engine(theta_star, desc, objdesc, model_type, 
+                                         wv_empir, omega, scales, true);
+    
     // Obtain the objective value function
-    obj_values(i) = getObjFun(est, desc, objdesc, model_type, omega, wv_empir, scales); 
+    obj_values(i) = getObjFun(est_starting, desc, objdesc, model_type, omega, wv_empir, scales); 
     
     // Decomposition of the WV.
     theo.col(i) = theoretical_wv(est, desc, objdesc, scales);
@@ -409,13 +422,23 @@ arma::field<arma::mat> all_bootstrapper(const arma::vec&  theta,
     arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
     
     arma::vec wv_empir = wvar.col(0);
+    
+    // Take the mean of the first difference
+    double expect_diff = mean_diff(x);
+    
+    arma::vec theta_star = guess_initial(desc, objdesc, model_type, p, expect_diff, N, wv_empir, scales, 10000);
+    
 
     // Obtain the GMWM estimator's estimates. (WV_EMPIR)
     arma::vec est = gmwm_engine(theta, desc, objdesc, model_type, 
                                 wv_empir, omega, scales, false);
     
+    
+    arma::vec est_starting = gmwm_engine(theta_star, desc, objdesc, model_type, 
+                                         wv_empir, omega, scales, true);
+    
     // Obtain the objective value function
-    obj_values(i) = getObjFun(est, desc, objdesc, model_type, omega, wv_empir, scales); 
+    obj_values(i) = getObjFun(est_starting, desc, objdesc, model_type, omega, wv_empir, scales); 
 
     // Decomposition of the WV.
     theo.col(i) = theoretical_wv(est, desc, objdesc, scales);
@@ -444,6 +467,6 @@ arma::field<arma::mat> all_bootstrapper(const arma::vec&  theta,
   
   // Obj Fun
   out(4) = obj_values; // Use N-1 and take by row
-  
+
   return out;
 }
