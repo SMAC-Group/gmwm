@@ -332,6 +332,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
                 obj_value, alpha, compute_v, K, H, G, robust, eff);
   }else{
     
+    std::cout << "One time computation of the V matrix via bootstrap... Please stand by." << std::endl;
     V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
     
     // Calculate the model score according to model selection criteria paper
@@ -342,10 +343,13 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Initialize counter to keep track of values
   unsigned int count = 0;
   
+  unsigned int countModels = 1;
+  
   while(iter != models.end()){
     
     if(full_model_index != count){
-      std::cout << "Processing model " << count + 2  << " out of " << num_models << std::endl;
+      countModels++;
+      std::cout << "Processing model " << countModels << " out of " << num_models << std::endl;
       // Get the first model
       desc = *iter;
       
