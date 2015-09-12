@@ -347,22 +347,6 @@ gmwm.sensor = function(model, data, compute.v = "fast", robust = F, eff = 0.6, .
   x
 }
 
-optimism.manual = function(object, V){
-    mat = get.mat.gmwm(object)
-    DmB = mat$D - mat$B
-    jacob = -ginv(t(DmB)%*%DmB)%*%t(DmB)%*%t(mat$A)%*%mat$omega
-    2*sum(diag(mat$A%*%jacob%*%mat$omega%*%V))
-}
-
-get.mat.gmwm = function(object){
-  A = derivative_first_matrix(object$estimate, object$model$desc, object$model$objdesc, object$scale)
-  omega = object$omega
-  B = B_matrix(A, t(A)%*%omega)
-  D = D_matrix(object$estimate, object$model$desc, object$model$objdesc, object$scale, omega%*%(object$wv.empir - object$theo));
-  out = list(A = A, B = B, D = D, omega = omega)
-  out
-}
-
 #' @title Summary of GMWM object
 #' @description Displays summary information about GMWM object
 #' @method summary gmwm
@@ -399,7 +383,7 @@ get.mat.gmwm = function(object){
 summary.gmwm = function(object, inference = NULL,  
                         bs.gof = NULL,  bs.gof.p.ci = NULL, 
                         bs.theta.est = NULL, bs.ci = NULL,
-                        B = 50, ...){
+                        B = 100, ...){
   
   # Set a different seed to avoid dependency.
   set.seed(object$seed+5)
@@ -441,7 +425,7 @@ summary.gmwm = function(object, inference = NULL,
   }
   
   if(inference){
-    mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM',object$estimate, 
+    mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM',object$estimate,
                                                     object$model$desc, object$model$obj.desc,
                                                     object$model.type, 
                                                     object$wv.empir, object$theo,object$scales,

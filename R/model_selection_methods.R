@@ -114,7 +114,7 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
 #' @param B A \code{integer} that contains the amount of bootstrap replications
 #' @param G A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @return A \code{auto.imu} object.
-auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 20, G = 1000, seed = 1337){
+auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1000, seed = 1337){
   
   set.seed(seed)
   
@@ -150,11 +150,11 @@ summary.auto.imu = function(object, ...){
   
   for(i in 1:n.process){
     cat(paste0("The model ranking for data column ", i, ": \n"))
-    print(object[[i]][[1]][[1]])
+    print(round(object[[i]][[1]][[1]],4))
   }
 }
 
 summary.rank.models = function(object, ...){
   cat("The model ranking is given as: \n")
-  print(object[[1]][[1]][[1]])  
+  print(round(object[[1]][[1]][[1]],4))  
 }
