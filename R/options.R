@@ -70,3 +70,4 @@ getModel.gmwm = function(object){
   }
   return(as.expression(model) )
 }
+
