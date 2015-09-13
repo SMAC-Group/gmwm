@@ -13,11 +13,28 @@
 
 #include "ts_model_cpp.h"
 
+#include "ts_checks.h"
+
 //#include "automatic_models.h"
 using namespace Rcpp;
 
 
 // ---- START helper functions
+
+unsigned int count_params(const std::vector<std::string>& desc){    
+  std::map<std::string, int> w = count_models(desc);
+  
+  unsigned int params = 0; 
+  for (std::map<std::string, int>::iterator it = w.begin(); it!=w.end(); ++it) {		
+   if(it->first == "AR1" ){
+     params += 2*it->second;
+   }else{
+     params += 1;
+   }
+  }		
+  
+  return params;		
+} 
 
 //' @title Build List of Unique Models
 //' @description Creates a set containing unique strings. 
@@ -332,7 +349,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
                 obj_value, alpha, compute_v, K, H, G, robust, eff);
   }else{
     
-    std::cout << "One time computation of the V matrix via bootstrap... Please stand by." << std::endl;
+    std::cout << "Bootstrapping the covariance matrix... Please stand by." << std::endl;
     V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
     
     // Calculate the model score according to model selection criteria paper
@@ -392,6 +409,40 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     // Increase count
     count++;
   }
+  
+  
+  std::set<std::vector<std::string > > ::const_iterator iter2;
+  
+  iter = models.begin(); 
+  
+  /*
+   * Iterate through all models
+   * If i != j, then 
+   * IF (Complex_i > Complex_j && Obj_i > Obj_j){
+   *  IF(Crit_i < Crit_J)
+   * }
+   */
+  while(iter != models.end()){
+    iter2 = models.begin(); 
+    while(iter2 != models.end()){
+      if(iter != iter2){
+        double m1_index = std::distance(models.begin(),iter);
+        double m2_index = std::distance(models.begin(),iter2);
+        
+        if(count_params(*iter) > count_params(*iter2) && results(m1_index,0) >  results(m2_index,0)){
+          if(results(m1_index,2) < results(m2_index,2)){
+            results(m1_index,1) = results(m2_index,1) + fabs(R::rnorm(0, sqrt(results(m2_index,0)/10) ));
+            
+            //results(m1_index,2) = results(m1_index,0)+ results(m1_index,1);
+          }
+        }
+      }
+      iter2++;
+    }
+   iter++; 
+  }
+  
+  results.col(2) = results.col(0) + results.col(1);
   
   arma::field< arma::field<arma::mat> > out(1);
   
