@@ -75,7 +75,7 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
   #  stop("The number of columns in object doesn't match your supplied indexes for gyroscope and accelerometer.")
   #}
   
-  if(!all(is.wholenumber( c(gyro, acce)) ) ){
+  if(!is.whole( c(gyro, acce)) ){
     stop('Paramater gyroscope and accelerometer must be a vector of integers.')
   }
   
