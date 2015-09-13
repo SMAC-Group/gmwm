@@ -57,7 +57,7 @@ pretty.model.score = function(out, model.names){
 #' @param G A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @details The models MUST be nested within each other. If the models are not nested, the algorithm creates the "common denominator" model.
 #' @return A \code{rank.models} object.
-rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstrap = F, model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 10000, seed = 1337){
+rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstrap = F, model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
   
   set.seed(seed)
   numObj = length(models)
