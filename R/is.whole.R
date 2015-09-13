@@ -10,4 +10,4 @@
 #' is.whole(c(1,2,3))
 #' is.whole(c(.4,.5,.6))
 #' is.whole(c(7,.8,9))
-is.whole = function(x){ is.numeric(x) && floor(x)==x } 
+is.whole = function(x){ is.numeric(x) && all(floor(x)==x) } 
