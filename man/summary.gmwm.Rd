@@ -4,16 +4,13 @@
 \alias{summary.gmwm}
 \title{Summary of GMWM object}
 \usage{
-\method{summary}{gmwm}(object, inference = NULL, model.select = NULL,
-  bs.gof = NULL, bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL,
-  bs.optimism = NULL, B = 50, ...)
+\method{summary}{gmwm}(object, inference = NULL, bs.gof = NULL,
+  bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL, B = 100, ...)
 }
 \arguments{
 \item{object}{A \code{GMWM} object}
 
 \item{inference}{A value containing either: NULL (auto), TRUE, or FALSE}
-
-\item{model.select}{A value containing either: NULL (auto), TRUE, FALSE}
 
 \item{bs.gof}{A value containing either: NULL (auto), TRUE, FALSE}
 
@@ -22,8 +19,6 @@
 \item{bs.theta.est}{A value containing either: NULL (auto), TRUE, FALSE}
 
 \item{bs.ci}{A value containing either: NULL (auto), TRUE, FALSE}
-
-\item{bs.optimism}{A value containing either: NULL (auto), TRUE, FALSE}
 
 \item{B}{An \code{int} that indicates how many bootstraps should be performed.}
 
@@ -34,14 +29,11 @@ A \code{summary.gmwm} object with:
 \itemize{
  \item{estimates}{Estimated Theta Values}
  \item{testinfo}{Goodness of Fit Information}
- \item{model.score}{Model Score Criterion Info}
- \item{model.select}{Model Score calculated? T/F}
  \item{inference}{Inference performed? T/F}
  \item{bs.gof}{Bootstrap GOF? T/F}
  \item{bs.gof.p.ci}{Bootstrap GOF P-Value CI? T/F}
  \item{bs.theta.est}{Bootstrap Theta Estimates? T/F}
  \item{bs.ci}{Bootstrap CI? T/F}
- \item{bs.optimism}{Bootstrap Optimism? T/F}
  \item{starting}{Indicates if program supplied initial starting values}
  \item{seed}{Seed used during guessing / bootstrapping}
  \item{obj.fun}{Value of obj.fun at minimized theta}
@@ -55,7 +47,7 @@ Displays summary information about GMWM object
 # AR
 set.seed(1336)
 n = 200
-xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
 summary(mod)
 }

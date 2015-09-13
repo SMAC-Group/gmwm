@@ -30,7 +30,7 @@ This function is under work. Some of the features are active. Others... Not so m
 set.seed(1336)
 n = 200
 exact.model = AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1)
-data = gen.ts(exact.model)
+data = gen.gts(exact.model)
 
 # Create an initial model that is not accurate
 bad.model = gmwm(AR1(), data = data)
