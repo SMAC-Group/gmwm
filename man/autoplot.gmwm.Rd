@@ -74,7 +74,7 @@ x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
 mod = gmwm(AR1(), data=x, model.type="sensor")
 autoplot(mod)
 
-y = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+y = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 mod = gmwm(2*AR1(), data = y)
 autoplot(mod)
 }

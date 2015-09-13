@@ -21,7 +21,7 @@ Displays summary information about GMWM object
 # AR
 set.seed(1336)
 n = 200
-xt = gen.ts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
 mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
 summary(mod)
 }

@@ -2,40 +2,78 @@
 % Please edit documentation in R/GMWM.R
 \name{compare.models}
 \alias{compare.models}
-\title{Graphically Compare GMWM Model Fit}
+\title{Graphically Compare GMWM Models Constructed by the Same Data}
 \usage{
-compare.models(..., background = "white", split = TRUE, CI = TRUE,
-  auto.label.wvar = T, transparence = 0.1, line.color = NULL,
-  CI.color = NULL, line.type = NULL, point.size = NULL,
-  point.shape = NULL, title = "Haar Wavelet Variance Representation",
-  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
+compare.models(..., display.model = T, background = "white",
+  transparence = 0.1, CI.color = "#003C7D", line.color = NULL,
+  line.type = NULL, point.size = NULL, point.shape = NULL,
+  title = "Comparison of GMWM Models", title.size = 18,
+  axis.label.size = 16, axis.tick.size = 11, facet.label.size = 13,
   axis.x.label = expression(paste("Scale ", tau)),
-  axis.y.label = expression(paste("Wavelet Variance ", nu)),
-  facet.label.size = 13, legend.label = NULL, legend.title = "",
-  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
-  nrow = 1)
+  axis.y.label = expression(paste("Wavelet Variance ", nu)))
 }
 \arguments{
-\item{...}{Several \code{gmwm} objects}
+\item{...}{Several \code{gmwm} objects, and they must be constrcuted by the same data.}
 
-\item{split}{A \code{boolean} indicating true or false to place model fits on different or the same graphs.}
-}
-\value{
-A ggplot2 panel containing two graphs of the wavelet variance.
+\item{display.model}{A \code{boolean} indicating whether the model should be displayed in the facet label.}
+
+\item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
+
+\item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of confidence interval.}
+
+\item{CI.color}{A \code{string} that indicates the color of the confidence interval (e.g. 'black', 'red', '#003C7D', etc.)}
+
+\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines.}
+
+\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines.}
+
+\item{point.size}{A \code{vector} of \code{integer} that indicates the size of points on lines.}
+
+\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of points on lines.}
+
+\item{title}{A \code{string} that indicates the title of the graph.}
+
+\item{title.size}{An \code{integer} that indicates the size of title.}
+
+\item{axis.label.size}{An \code{integer} that indicates the size of label.}
+
+\item{axis.tick.size}{An \code{integer} that indicates the size of tick mark.}
+
+\item{facet.label.size}{An \code{integer} that indicates the size of facet label.}
+
+\item{axis.x.label}{A \code{string} that indicates the label on x axis.}
+
+\item{axis.y.label}{A \code{string} that indicates the label on y axis.}
 }
 \description{
-Creates GMWM model fits of different models on split graphs within the same panel.
+Creates a table of graphs to compare GMWM model fits.
+}
+\details{
+This function only works for \code{gmwm} objects which are constrcuted by same data, and
+all \code{gmwm} objects must be constructed by classical method, or by robust methods
+with the same efficiency. That's because this function assumes each \code{gmwm} object has the same empirical wavelet variance (WV).
+This function will check whether this requirement is satisfied before plotting the graph.
+
+\code{line.type}, \code{line.color}, \code{point.size}, \code{point.size} must be a \code{vector}. You need to follow this order:
+"WV, bounds of CI, model1 implied WV, model2 implied WV, ...."
+
+Please check examples for help.
+
+If you meet the error "polygon edge not found", it is complaining that you don't have enough space to
+plot the graph. Adjust the plot window.
 }
 \examples{
-\dontrun{# AR
-set.seed(8836)
-n = 200
-x = gen.ts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
-GMWM1 = gmwm(AR1(), data = x)
-GMWM2 = gmwm(2*AR1(), data = x)
-compare.models(GMWM1, GMWM2, split = FALSE)}
+\dontrun{
+library(GMWM)
+data(imu)
+model1 = gmwm.sensor(3*AR1(),imu[,2])
+model2 = gmwm.sensor(2*AR1() + RW(),imu[,2])
+compare.models(model1, model2)
+compare.models(model1, model2, display.model = F, point.size = c(4, 0, 4, 4))
+compare.models(model1, model2, transparence = 0.2, line.color = c('black', 'grey', 'blue', 'red'))
+}
 }
 \author{
-JJB, Wenchao
+Wenchao
 }
 

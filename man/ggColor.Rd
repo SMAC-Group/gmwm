@@ -6,6 +6,9 @@
 \usage{
 ggColor(n)
 }
+\arguments{
+\item{n}{An \code{integer} indicating how many colors user wants.}
+}
 \value{
 A \code{vector} containing \code{n} colors
 }
