@@ -569,7 +569,7 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                          point.size = NULL,point.shape = NULL,
-                         title = NA, title.size= 15, 
+                         title = NULL, title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
                          axis.y.label = expression(paste("Wavelet Variance ", nu)),
@@ -612,7 +612,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                      point.size = NULL,point.shape = NULL,
-                     title = NA, title.size= 15, 
+                     title = NULL, title.size= 15, 
                      axis.label.size = 13, axis.tick.size = 11, 
                      axis.x.label = expression(paste("Scale ", tau)),
                      axis.y.label = expression(paste("Wavelet Variance ", nu)),
@@ -688,7 +688,7 @@ autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T
 autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0.1, bw = F, 
                           CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                           point.size = NULL,point.shape = NULL,
-                          title = NA, title.size= 15, 
+                          title = NULL, title.size= 15, 
                           axis.label.size = 13, axis.tick.size = 11, 
                           axis.x.label = expression(paste("Scale ", tau)),
                           axis.y.label = expression(paste("Wavelet Variance ", nu)),
@@ -824,7 +824,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
       legend.text.align = 0 )
     
   
-  if (is.na(title)){
+  if (is.null(title)){
     if(object$robust){
       p = p + ggtitle("Haar Wavelet Variance Robust Representation")
     }
@@ -848,7 +848,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
 autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0.1, bw = F, 
                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                          point.size = NULL, point.shape = NULL,
-                         title = NA, title.size= 15, 
+                         title = NULL, title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
                          axis.y.label = expression(paste("Wavelet Variance ", nu)),
@@ -951,7 +951,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
       legend.background = element_rect(fill="transparent"),
       legend.text.align = 0 )
   # if(!bw){p = p + theme(legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))}
-  if (is.na(title)){
+  if (is.null(title)){
     if(object$robust){
       p = p + ggtitle("Haar Wavelet Variance Robust Representation")
     }
