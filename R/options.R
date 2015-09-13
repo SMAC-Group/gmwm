@@ -71,12 +71,3 @@ getModel.gmwm = function(object){
   return(as.expression(model) )
 }
 
-
-#' @title Check whether one number is integer
-#' @param x A numeric number or a numeric vector
-#' @param tol The tolerance
-#' @return TRUE/FALSE
-is.wholenumber = function(x, tol = .Machine$double.eps){
-  abs(x - round(x)) < tol
-}
-
