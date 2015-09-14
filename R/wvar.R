@@ -107,7 +107,7 @@ summary.wvar = function(object, ...){
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
 #' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
-#' @author JJB
+#' @author JJB, Wenchao
 #' @seealso \code{\link{autoplot.wvar}}
 #' @examples
 #' set.seed(999)
@@ -121,7 +121,7 @@ plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F,
                      axis.label.size = 13, axis.tick.size = 11, 
                      axis.x.label = expression(paste("Scale ", tau)),
                      axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                     legend.title = '',  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) ),
+                     legend.title = '',  legend.label = NULL,
                      legend.key.size = 1, legend.title.size = 13, 
                      legend.text.size = 13, ...){
   autoplot.wvar(x, transparence = transparence, background = background, bw = bw, 
@@ -143,7 +143,7 @@ plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F,
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
 #' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
-#' @author JJB
+#' @author JJB, Wenchao
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
@@ -156,7 +156,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
                          axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                         legend.title = '',  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) ),
+                         legend.title = '',  legend.label =  NULL,
                          legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
   .x=low=high=trans_breaks=trans_format=math_format=value=variable=NULL
@@ -169,9 +169,10 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
   #check parameter
   params = c('line.type', 'line.color', 'point.size', 'point.shape', 'legend.label')
   requireLength = c(2, 2, 2, 2, 2)
-  legend.label.default = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) )
+  legend.label.default = c(bquote("Empirical WV"~hat(nu)), bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" )) 
+  #legend.label.default = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," ,", 1 - object$alpha, ")" )) )
   default = list(c('solid','dotted'), c('#003C7D', '#999999'),  c(5, 0), c(20,46), legend.label.default)
-  nullIsFine = c(rep(F,5))
+  nullIsFine = c(rep(F,4), T)
   for (i in 1:length(params)){
     one_param = params[i]
     if( length(get(one_param))!=requireLength[i]){
@@ -411,10 +412,7 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 #' wvar4 = wvar(data4)
 #' compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
 #' compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
-#' #3.Obvious errors will be found
-#' compare.wvar()
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('red','green'))
-#' #4. Change default setting
+#' #3. Change default setting
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'))
 #' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
 #' facet.label.size = 9)
