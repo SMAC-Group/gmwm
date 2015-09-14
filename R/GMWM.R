@@ -735,9 +735,14 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
     if(is.null(point.shape)){point.shape = c(20, 46, rep(46,L-1), 1) }
     if(length(point.shape)==L+2){point.shape = c(point.shape[1:2], point.shape[2], tail(point.shape,L) )}
     
-    if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
-                                               expression(paste("CI(", hat(nu)," , 0.95)" )),
-                                               process.label)}
+    if(is.null(legend.label)){
+      #legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
+      #                                         expression(paste("CI(", hat(nu)," , 0.95)" )),
+      #                                        process.label)
+      legend.label = c(bquote("Empirical WV"~hat(nu)), 
+                       bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ),
+                       process.label) 
+    }
     
     df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
                     process = rep(nom, each = length(object$scales)))
@@ -880,9 +885,15 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     if(is.null(point.shape)){point.shape = c(20, 46, 1) }
     if(length(point.shape)==3){point.shape = c(point.shape[1:2],point.shape[2:3])}
     
-    if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
-                                               expression(paste("CI(", hat(nu)," , 0.95)" )),
-                                               expression(paste("Implied WV ", nu,"(",hat(theta),")")) )}
+    if(is.null(legend.label)){
+      #legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
+      #                                         expression(paste("CI(", hat(nu)," , 0.95)" )),
+      #                                         expression(paste("Implied WV ", nu,"(",hat(theta),")")) )
+      
+      legend.label = c(bquote("Empirical WV"~hat(nu)), 
+                       bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ),
+                       bquote("Implied WV"~nu*"("*hat(theta)*")")) 
+    }
     
     WV = melt(temp, id.vars = 'scale')
     breaks = c('emp','low','theo')
@@ -900,7 +911,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))),
                                                expression(paste("Implied WV ", nu,"(",hat(theta),")"))    )}
     
-    WV = melt(temp, id.vars = 'scale', measure.vars = c('theo','emp'))
+    WV = melt(temp, id.vars = 'scale', measure.vars = c('emp', 'theo'))
     breaks = c('emp','theo')
     #legend.color = c(NA,NA)
   }
