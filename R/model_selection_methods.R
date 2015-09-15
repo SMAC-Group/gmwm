@@ -37,10 +37,8 @@ pretty.model.score = function(out, model.names){
   colnames(out) = c("Obj Fun", "Optimism", "Criterion", "GoF P-Value")
   rownames(out) = sapply(model.names, FUN = paste0, collapse=" ")
   
-  out = out[order(out[,3]), ]
-  
-  rownames(out) = paste0(1:nrow(out), ". ", rownames(out) )
-  
+  #out = out[order(out[,3]), ]
+
   out
 }
 
@@ -96,7 +94,10 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
   
   out = .Call('GMWM_rank_models', PACKAGE = 'GMWM', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
   
-  out[[1]][[1]][[1]] = pretty.model.score(out[[1]][[1]][[1]], desc)
+  out[[1]][[1]][[1]] = pretty.model.score(out[[1]][[1]][[1]], desc[ out[[1]][[1]][[2]] ])
+  
+  
+  
   
   class(out) = c("rank.models")
   
@@ -126,8 +127,58 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   out = .Call('GMWM_auto_imu', PACKAGE = 'GMWM', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "sensor", K=1, H=B, G, robust, eff, bootstrap)
   model.names = build_model_set(m, full.str) 
   
+  N = nrow(data)
+  nlevels =  floor(log2(N))
+  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
+  
   for(i in 1:ncol(data)){
-    out[[i]][[1]][[1]] = pretty.model.score(out[[i]][[1]][[1]], model.names)
+    
+    desc = model.names[out[[i]][[1]][[2]]]
+    
+    model.ts = desc.to.ts.model(desc[[1]])
+  
+    out[[i]][[1]][[1]] = pretty.model.score(out[[i]][[1]][[1]], desc)
+    
+    gmwm.obj = out[[i]][[2]]
+    estimate = gmwm.obj[[1]]
+    rownames(estimate) = model.ts$process.desc
+    init.guess = gmwm.obj[[2]]
+    rownames(init.guess) = model.ts$process.desc
+    
+    model.hat = model.ts
+    
+    model.hat$starting = F  
+    
+    model.hat$theta = as.numeric(estimate)
+    
+    # Release model
+    out[[i]][[2]] = structure(list(estimate = estimate,
+                         init.guess = init.guess,
+                         wv.empir = gmwm.obj[[3]], 
+                         ci.low = gmwm.obj[[4]], 
+                         ci.high = gmwm.obj[[5]],
+                         orgV = gmwm.obj[[7]],
+                         V = gmwm.obj[[6]],
+                         omega = gmwm.obj[[12]],
+                         obj.fun = gmwm.obj[[11]],
+                         theo = gmwm.obj[[9]],
+                         decomp.theo = gmwm.obj[[10]],
+                         scales = scales, 
+                         robust = robust,
+                         eff = eff,
+                         model.type = "imu",
+                         compute.v = "fast",
+                         augmented = F,
+                         alpha = alpha,
+                         expect.diff = gmwm.obj[[8]],
+                         N = N,
+                         G = G,
+                         H = B,
+                         K = 1,
+                         model = model.ts, # ADD THIS IN AT A LATER TIME!
+                         model.hat = model.hat,
+                         starting = TRUE,
+                         seed = seed), class = "gmwm")
   }
   
   class(out) = c("auto.imu","rank.models")
@@ -142,19 +193,26 @@ print.auto.imu = function(object, ...){
   summary.auto.imu(object)
 }
 
-summary.auto.imu = function(object, round = 4, ...){
+summary.auto.imu = function(object, digits = 4, ...){
   
   n.process = length(object)
   
   cat(paste0("There were ", n.process, " observed\n\n"))
   
   for(i in 1:n.process){
+    out = object[[i]][[1]][[1]]
     cat(paste0("The model ranking for data column ", i, ": \n"))
-    print(round(object[[i]][[1]][[1]],4))
+    rownames(out) = paste0(1:nrow(out), ". ", rownames(out) )
+    
+    print(round(out,digits))
   }
 }
 
-summary.rank.models = function(object, round = 4, ...){
+summary.rank.models = function(object, digits = 4, ...){
   cat("The model ranking is given as: \n")
-  print(round(object[[1]][[1]][[1]],4))  
+  out = object[[i]][[1]][[1]]
+  
+  rownames(out) = paste0(1:nrow(out), ". ", rownames(out) )
+  
+  print(round(out,digits))
 }

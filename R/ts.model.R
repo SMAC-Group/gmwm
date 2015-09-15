@@ -423,3 +423,15 @@ print.ts.model = function(x, ...){
     cat("The model will be initiated using the initial values you supplied.\n")
   }
 }
+
+desc.to.ts.model = function(desc){
+  theta = .Call('GMWM_model_theta', PACKAGE = 'GMWM', desc)
+  
+  out = structure(list(process.desc = .Call('GMWM_model_process_desc', PACKAGE='GMWM', desc),
+                       theta = theta,
+                       plength = length(theta),
+                       desc = desc,
+                       obj.desc = .Call('GMWM_model_objdesc', PACKAGE = 'GMWM', desc),
+                       starting = FALSE), class = "ts.model")
+  invisible(out)
+}
