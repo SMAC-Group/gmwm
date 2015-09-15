@@ -3,6 +3,28 @@
 
 using namespace Rcpp;
 
+//' Sort Matrix by Column
+//' 
+//' Sorts a given matrix by a specific column while retain the elements in each row.
+//' 
+//' @param x A \code{matrix} to sort
+//' @param col A \code{int} that indicates the column the matrix should sort by.
+//' @details The functional difference between armadillo's sort() and sort_mat() is straight forward.
+//' sort() will sort each column without respect to the rows. 
+//' Using sort_matrix will sort only 1 column and retain the other elements to be in the same row.
+//' @return The matrix sorted by values in the specified column.
+// [[Rcpp::export]]
+arma::mat sort_mat(arma::mat x, unsigned int col){
+  
+  arma::uvec id = arma::sort_index(x.col(col));
+  
+  for(unsigned int i = 0; i<x.n_cols; i++){
+    arma::vec sub = x.col(i);
+    x.col(i) = sub.elem(id);
+  }
+  
+  return x;
+}
 
 //' @title Reverse Subset Column
 //' @description Subsets the column by going from high indices to low (the reverse of the supported practice)

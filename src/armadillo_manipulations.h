@@ -1,6 +1,8 @@
 #ifndef ARMADILLO_MANIPULATIONS
 #define ARMADILLO_MANIPULATIONS
 
+arma::mat sort_mat(arma::mat x, unsigned int col);
+  
 arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end);
 
 arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end);
