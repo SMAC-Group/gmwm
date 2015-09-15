@@ -8,7 +8,7 @@ Maintainer: Stephane Guerrier <stephane@illinois.edu>
 Description: GMWM implements the theoretical framework for Generalized Method
     of Wavelet Moments (GMWM). The package contains functions that allow a user
     to
-License: MIT + file LICENSE
+License: Q + file LICENSE
 Depends: 
     ggplot2
 Imports: 
