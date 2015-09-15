@@ -44,3 +44,22 @@ arma::vec model_theta(std::vector<std::string> desc){
   
   return arma::zeros<arma::vec>(m);
 }
+
+// [[Rcpp::export]]
+std::vector<std::string> model_process_desc(std::vector<std::string> desc){
+  unsigned int n = desc.size();
+
+  std::vector<std::string> proc_desc;
+  
+  for(unsigned int i = 0; i < n; i++){
+    std::string element_type = desc[i];
+    if(element_type == "AR1"){
+      proc_desc.push_back("AR1");
+      proc_desc.push_back("SIGMA2");
+    }else{
+      proc_desc.push_back(element_type);
+    }
+  }
+  
+  return proc_desc;
+}

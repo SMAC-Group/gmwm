@@ -4,6 +4,9 @@
 #include "inference.h"
 #include "gmwm_logic.h"
 
+// Used for armadillo manipulations
+#include "armadillo_manipulations.h"
+
 // Used for scales_cpp
 #include "wave_variance.h"
 
@@ -272,6 +275,9 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Number of models
   unsigned int num_models = models.size(); 
   
+  // Store output from models
+  arma::field<arma::field<arma::mat> > model_results(num_models);
+  
   // Make an iterator to iterator through it
   std::set<std::vector<std::string > > ::const_iterator iter;
   iter = models.begin(); 
@@ -330,6 +336,23 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   
   // ------------------------------------
   
+  // Store output from default GMWM object
+  arma::field<arma::mat> mod_output(12);
+  mod_output(0) = theta;
+  mod_output(1) = master(1);
+  mod_output(2) = wv_empir;
+  mod_output(3) = master(3);
+  mod_output(4) = master(4);
+  mod_output(5) = master(5);
+  mod_output(6) = orgV;
+  mod_output(7) = expect_diff;
+  mod_output(8) = theo;
+  mod_output(9) = master(9);
+  mod_output(10) = obj_value;
+  mod_output(11) = omega;
+  
+  // ------------------------------------
+  
   // Here we set up specifics that are used not in a specific mode.
   
   // Asymptotic ----
@@ -356,6 +379,18 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     results.row(full_model_index) = asympt_calc(theta, desc, objdesc, model_type, scales, V, omega, wv_empir, theo, obj_value);
     
   }
+  
+  // Custom GMWM Update Obj
+  
+  arma::field<arma::mat> model_update_info(6);
+  model_update_info(0) = master(0); // theta
+  model_update_info(1) = master(1); // guessed_theta
+  model_update_info(2) = master(5); // V
+  model_update_info(3) = master(8); // theo
+  model_update_info(4) = master(9); // decomp_theo
+  model_update_info(5) = master(10); // objective value
+  
+  model_results(full_model_index) = model_update_info;
   
   // Initialize counter to keep track of values
   unsigned int count = 0;
@@ -400,6 +435,9 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
         // Calculate the model score according to model selection criteria paper
         results.row(count) = asympt_calc(theta, desc, objdesc, model_type, scales, V, omega, wv_empir, theo, obj_value);
       }
+      
+      model_results(count) = update;
+      
     }
     // end if
     
@@ -410,46 +448,87 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     count++;
   }
   
-  
-  std::set<std::vector<std::string > > ::const_iterator iter2;
-  
-  iter = models.begin(); 
-  
-  /*
-   * Iterate through all models
-   * If i != j, then 
-   * IF (Complex_i > Complex_j && Obj_i > Obj_j){
-   *  IF(Crit_i < Crit_J)
-   * }
-   */
-  while(iter != models.end()){
-    iter2 = models.begin(); 
-    while(iter2 != models.end()){
-      if(iter != iter2){
-        double m1_index = std::distance(models.begin(),iter);
-        double m2_index = std::distance(models.begin(),iter2);
-        
-        if(count_params(*iter) > count_params(*iter2) && results(m1_index,0) >  results(m2_index,0)){
-          if(results(m1_index,2) < results(m2_index,2)){
-            results(m1_index,1) = results(m2_index,1) + fabs(R::rnorm(0, sqrt(results(m2_index,0)/10) ));
-            
-            //results(m1_index,2) = results(m1_index,0)+ results(m1_index,1);
+
+
+  // Only run if in asymptotic mode
+  if(!bs_optimism){
+    
+    std::set<std::vector<std::string > > ::const_iterator iter2;
+    
+    iter = models.begin(); 
+    
+    /*
+     * Iterate through all models
+     * If i != j, then 
+     * IF (Complex_i > Complex_j && Obj_i > Obj_j){
+     *  IF(Crit_i < Crit_J)
+     * }
+     */
+    while(iter != models.end()){
+      iter2 = models.begin(); 
+      while(iter2 != models.end()){
+        if(iter != iter2){
+          double m1_index = std::distance(models.begin(),iter);
+          double m2_index = std::distance(models.begin(),iter2);
+          
+          if(count_params(*iter) > count_params(*iter2) && results(m1_index,0) >  results(m2_index,0)){
+            if(results(m1_index,2) < results(m2_index,2)){
+              results(m1_index,1) = results(m2_index,1) + fabs(R::rnorm(0, sqrt(results(m2_index,0)/10) ));
+            }
           }
         }
+        iter2++;
       }
-      iter2++;
+     iter++; 
     }
-   iter++; 
+    
   }
   
   results.col(2) = results.col(0) + results.col(1);
   
-  arma::field< arma::field<arma::mat> > out(1);
+  // Sort matrix
+  arma::uvec sort_ind = sort_index(results.col(2));
   
-  arma::field<arma::mat> ms(1);
-  ms(0) = results;
+  // Pick the "best" model
+  unsigned int best_model_id = sort_ind(0);
   
+  // Get the sort column index
+  arma::vec ex_sort = arma::conv_to<arma::vec>::from(sort_ind);
+  
+  // Sort the result matrix by Criterion
+  arma::mat sorted = sort_mat(results, 2);
+    
+  // ---------
+  
+  // Set up output feed
+  arma::field< arma::field<arma::mat> > out(2);
+  
+  // Build the results matrix
+  arma::field<arma::mat> ms(2);
+  ms(0) = sorted;
+  ms(1) = ex_sort + 1; // Sorted vector (so R can know desc IDs) ALSO change index
+  
+  // Create m 
+  
+  // If the output object is not the full model, let's inject the new results.
+  if(best_model_id != full_model_index){
+    
+    arma::field<arma::mat> m;
+    m = model_results(best_model_id);
+    mod_output(0) = m(0);
+    mod_output(1) = m(1);
+    mod_output(5) = m(2);
+    mod_output(8) = m(3);
+    mod_output(9) = m(4);
+    mod_output(10) = m(5);
+  }
+
+  
+  // Output to me!
   out(0) = ms;
+  out(1) = mod_output;
+  
+  
   return out;
 }
 
