@@ -677,3 +677,385 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
 #   p
 #   
 # }
+
+
+#' @title Wrapper to Automatic Model Selection Results of IMU Object
+#' @description Creates a graph of the automatic model selection result containing the empirical and theoretical wavelet variances. 
+#' @method plot auto.imu
+#' @param x A \code{auto.imu} object
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of the line drawn (e.g. black, blue, red, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines. 
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param CI.color A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
+#' @param ... Additional options.
+#' @return A panel containing the automatic model selection results of an IMU sensor.
+#' @examples
+#' \dontrun{
+#' data(imu)
+#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' df = auto.imu(test)
+#' plot(df)
+#' plot(df, CI = F)
+#' plot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
+#' }
+plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+                         line.type = NULL, point.size = NULL, point.shape = NULL,
+                         CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
+                         axis.label.size = 13, axis.tick.size = 11, 
+                         axis.x.label = expression(paste("Scale ", tau)),
+                         axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                         facet.label.size = 13, facet.label.background = "#003C7D33",
+                         scales = "free_y",...){
+  
+  autoplot.auto.imu(x, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+  line.type = line.type, point.size = point.size, point.shape = point.shape,
+  CI.color = CI.color, title = title, title.size= title.size, 
+  axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+  axis.x.label = axis.x.label,
+  axis.y.label = axis.y.label, 
+  facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+  scales = scales)
+  
+  
+}
+
+
+#' @title Automatic Model Selection Results of IMU Object
+#' @description Creates a graph of the automatic model selection result containing the empirical and theoretical wavelet variances. 
+#' @method autoplot auto.imu
+#' @param object A \code{auto.imu} object
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of the line drawn (e.g. black, blue, red, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines. 
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param CI.color A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
+#' @param ... Additional options.
+#' @return A panel containing the automatic model selection results of an IMU sensor.
+#' @examples
+#' \dontrun{
+#' data(imu)
+#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' df = auto.imu(test)
+#' autoplot(df)
+#' autoplot(df, CI = F)
+#' autoplot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
+#' }
+autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+                             line.type = NULL, point.size = NULL, point.shape = NULL,
+                             CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
+                             axis.label.size = 13, axis.tick.size = 11, 
+                             axis.x.label = expression(paste("Scale ", tau)),
+                             axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                             facet.label.size = 13, facet.label.background = "#003C7D33",
+                             scales = "free_y",...){
+  
+  ###0. param checking
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Default setting is used.")
+    background = 'white'
+  }
+  
+  if(CI){
+    params = c('line.color', 'line.type', 'point.size', 'point.shape', 'CI.color')
+    requireLength = c(3, 3, 3, 3, 1)
+    default = list(NULL, NULL,  NULL, NULL, "#003C7D")
+    nullIsFine = c(rep(T,5))
+  }else{
+    params = c('line.color', 'line.type', 'point.size', 'point.shape')
+    requireLength = c(2, 2, 2, 2)
+    default = list(NULL, NULL,  NULL, NULL)
+    nullIsFine = c(rep(T,4))
+  }
+  
+  for (i in 1:length(params)){
+    one_param = params[i]
+    if( length(get(one_param))!=requireLength[i]){
+      isNull = is.null(get(one_param))
+      if(isNull && nullIsFine[i]){}else{
+        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
+                      'is supplied.','Default setting is used.'))
+      }
+      assign(one_param, default[[i]])
+    }
+  }
+  
+  ###1. pre-process the object: auto.imu
+  
+  if(!is(object, "auto.imu") ){
+    stop('This function can only operate on auto.imu object.')
+  }
+  
+  #what is num.sensor and ncols
+  num.sensor = object[[1]][[2]]$num.sensor
+  ncols = sum(num.sensor)
+  
+  #what is axis
+  if(num.sensor[1] == 0 || num.sensor[2] == 0){##only "Accelerometer"/only "Gyroscope"
+    axis = rep(0, ncols)
+    for(i in 1:ncols){
+      axis[i] = object[[i]][[2]]$axis
+    }
+    
+  }else{#both 
+    axis = rep(0, ncols/2)
+    
+    for(i in 1:(ncols/2)){
+      axis[i] = object[[i]][[2]]$axis
+    }
+  }
+  
+  #assume 
+  obj.list = vector("list", ncols)
+  for(i in 1:ncols){
+    obj.list[[i]] = object[[i]][[2]]
+    
+  ######---------------------#######
+  #obj.list[[i]]$scales = obj.list[[i]]$scales/100
+  }
+  
+  ##begin: generate the data frame
+  total.len = 0
+  each.len = numeric(ncols)
+  for (i in 1:ncols){
+    each.len[i] = length(obj.list[[i]]$wv.empir)
+    total.len = total.len + each.len[i]
+  }
+  
+  #Initialize empty data frame with right number of rows
+  obj = data.frame(scales = numeric(total.len),
+                   emp = numeric(total.len), 
+                   low = numeric(total.len),
+                   high = numeric(total.len),
+                   theo = numeric(total.len),
+                   axis = 'AXIS',
+                   sensor = 'SENSOR', stringsAsFactors=FALSE)
+  
+  if(num.sensor[2] == 0){ ## only "Gyroscope"
+    #put data into data frame
+    t = 1
+    for (i in 1:ncols){
+      d = each.len[i]
+      
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+                                   emp = obj.list[[i]]$wv.empir,
+                                   low = obj.list[[i]]$ci.low,
+                                   high = obj.list[[i]]$ci.high,
+                                   theo = obj.list[[i]]$theo,
+                                   axis = axis[i], 
+                                   sensor = "Gyroscope",
+                                   stringsAsFactors=FALSE)
+      t = t +d
+    }
+    
+  }else if(num.sensor[1] == 0){ #only "Accelerometer"
+    #put data into data frame
+    t = 1
+    for (i in 1:ncols){
+      d = each.len[i]
+      
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+                                   emp = obj.list[[i]]$wv.empir,
+                                   low = obj.list[[i]]$ci.low,
+                                   high = obj.list[[i]]$ci.high,
+                                   theo = obj.list[[i]]$theo,
+                                   axis = axis[i], 
+                                   sensor = "Accelerometer",
+                                   stringsAsFactors=FALSE)
+      t = t +d
+    }
+    
+  }else{ # both "Gyroscope" and "Accelerometer"
+    #put data into data frame
+    t = 1
+    for (i in 1:ncols){
+      if(i <= length(axis)){
+        temp.axis = axis[i]
+        temp.sensor = "Gyroscope"
+      }else{ 
+        temp.axis = axis[i-length(axis)]
+        temp.sensor = "Accelerometer"
+      }
+      
+      d = each.len[i]
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+                                   emp = obj.list[[i]]$wv.empir,
+                                   low = obj.list[[i]]$ci.low,
+                                   high = obj.list[[i]]$ci.high,
+                                   theo = obj.list[[i]]$theo,
+                                   axis = temp.axis, 
+                                   sensor = temp.sensor,
+                                   stringsAsFactors=FALSE)
+      t = t +d
+    }
+  }
+  
+  #-----END OF DATA PROCESSING-------------------------
+  object = obj
+  
+  ###2. auto-select param
+  if(CI){
+    #default setting
+    #first WV, then CI
+    if(is.null(line.color)){
+      line.color = c("#003C7D", "#003C7D", "#F47F24")
+    }
+    if(is.null(line.type)){
+      line.type = c('solid', 'dotted', 'solid')
+    }
+    if(is.null(point.size)){
+      point.size = c(0, 0, 0)
+    }
+    if(is.null(point.shape)){
+      point.shape = c(20, 20, 1)
+    }
+    
+    ##legend.label
+    #if(is.null(legend.label)){
+    #  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) )
+    #}
+    
+    #change the length to meet the requirement of ggplot2
+    if(length(line.color) == 3){
+      line.color = c(line.color[1:2], line.color[2:3])
+    }
+    
+    if(length(line.type) == 3){
+      line.type = c(line.type[1:2], line.type[2:3])
+    }
+    
+    if(length(point.size) == 3){
+      point.size = c(point.size[1:2], point.size[2:3])
+    }
+    
+    if(length(point.shape) == 3){
+      point.shape = c(point.shape[1:2], point.shape[2:3])
+    }
+    
+    #breaks = c('WV','low')
+    #legend.fill = c(NA, alpha(CI.color,transparence) )
+    #legend.linetype = c(line.type[1],'blank' )
+    #legend.pointshape = c(point.shape[1], NA )
+    
+  }else{
+    
+    if(is.null(line.color)){
+      line.color = c("#003C7D", "#F47F24")
+    }
+    if(is.null(line.type)){
+      line.type = c('solid', 'solid')
+    }
+    if(is.null(point.size)){
+      point.size = c(0,0)
+    }
+    if(is.null(point.shape)){
+      point.shape = c(20, 1)
+    }
+    #if(is.null(legend.label)){
+    #  legend.label = parse(text = c(expression(paste("Empirical WV ", hat(nu))) ) )
+    #}
+    
+    #breaks = c('WV')
+    
+  }
+  
+  ### 3.reconstruct data frame
+  #re-construct the data frame
+  if(CI){
+    obj = data.frame(scales = object$scales,
+                     emp = object$emp,
+                     low = object$low,
+                     high = object$high,
+                     theo = object$theo,
+                     axis = object$axis,
+                     sensor = object$sensor, stringsAsFactors = F)
+    
+  }else{
+    obj = data.frame(scales = object$scales,
+                     emp = object$emp,
+                     theo = object$theo,
+                     axis = object$axis,
+                     sensor = object$sensor, stringsAsFactors = F)
+  }
+  melt.obj = melt(obj, id.vars = c('scales', 'axis', 'sensor'))
+  
+  ### 4. start to plot
+  p = ggplot() +
+    #geom_line(data = melt.obj, mapping = aes(x = scales, y = value, linetype = variable, color = variable), size = 1) +
+    geom_line(data = melt.obj, mapping = aes(x = scales, y = value, linetype = variable, color = variable)) +
+    geom_point(data = melt.obj, mapping = aes(x = scales, y = value, size = variable, shape = variable, color = variable)) +
+    
+    scale_linetype_manual(values = c(line.type)) +
+    scale_shape_manual(values = c(point.shape))+
+    scale_size_manual(values = c(point.size)) +
+    scale_color_manual(values = c(line.color))
+  
+  if(CI){
+    #construct the data frame to plot CI
+    obj.CI = data.frame(scales = object$scales,
+                        low = object$low,
+                        high = object$high,
+                        axis = object$axis,
+                        sensor = object$sensor, stringsAsFactors = F)
+    
+    p = p + 
+      geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show_guide = F)
+    # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
+    #CI.color: a hexadecimal color value
+  }
+  
+  if( background == 'white'){
+    p = p + theme_bw() 
+  }
+  
+  p = p + theme(legend.position='none') + theme(strip.background = element_rect(fill= facet.label.background) )
+  
+  p = p + facet_grid(sensor ~ axis, scales = scales) +
+    
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    
+    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
+    theme(
+      plot.title = element_text(size= title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      #legend.key.size = unit(legend.key.size, "cm"),
+      #legend.text = element_text(size = legend.text.size),  
+      #legend.title = element_text(size = legend.title.size),
+      #legend.background = element_rect(fill="transparent"),
+      #legend.text.align = 0, 
+      strip.text = element_text(size = facet.label.size) )
+  
+  p
+}
+
+
