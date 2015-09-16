@@ -43,6 +43,58 @@ pretty.model.score = function(out, model.names){
 }
 
 
+output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, seed){
+  desc = model.names[out[[1]][[2]]]
+  
+  model.ts = desc.to.ts.model(desc[[1]])
+  
+  out[[1]] = pretty.model.score(out[[1]][[1]], desc)
+  
+  gmwm.obj = out[[2]]
+  estimate = gmwm.obj[[1]]
+  rownames(estimate) = model.ts$process.desc
+  init.guess = gmwm.obj[[2]]
+  rownames(init.guess) = model.ts$process.desc
+  
+  model.hat = model.ts
+  
+  model.hat$starting = F  
+  
+  model.hat$theta = as.numeric(estimate)
+  
+  # Release model
+  out[[2]] = structure(list(estimate = estimate,
+                                 init.guess = init.guess,
+                                 wv.empir = gmwm.obj[[3]], 
+                                 ci.low = gmwm.obj[[4]], 
+                                 ci.high = gmwm.obj[[5]],
+                                 orgV = gmwm.obj[[7]],
+                                 V = gmwm.obj[[6]],
+                                 omega = gmwm.obj[[12]],
+                                 obj.fun = gmwm.obj[[11]],
+                                 theo = gmwm.obj[[9]],
+                                 decomp.theo = gmwm.obj[[10]],
+                                 scales = scales, 
+                                 robust = robust,
+                                 eff = eff,
+                                 model.type = "imu",
+                                 compute.v = "fast",
+                                 augmented = F,
+                                 alpha = alpha,
+                                 expect.diff = gmwm.obj[[8]],
+                                 N = N,
+                                 G = G,
+                                 H = B,
+                                 K = 1,
+                                 model = model.ts, # ADD THIS IN AT A LATER TIME!
+                                 model.hat = model.hat,
+                                 starting = TRUE,
+                                 seed = seed), class = "gmwm")
+  
+  out
+}
+
+
 #' @title Automatically select appropriate model for a set of models
 #' @description Runs through a model selection algorithm to determine the best model in a given set
 #' @param ... Multiple \code{ts.model} objects
@@ -94,10 +146,11 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
   
   out = .Call('GMWM_rank_models', PACKAGE = 'GMWM', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
   
-  out[[1]][[1]][[1]] = pretty.model.score(out[[1]][[1]][[1]], desc[ out[[1]][[1]][[2]] ])
+  N = length(data)
+  nlevels =  floor(log2(N))
+  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
   
-  
-  
+  out[[1]] = output.format(out[[1]], desc, scales, N, alpha, robust, eff, B, G, seed)  
   
   class(out) = c("rank.models")
   
@@ -132,53 +185,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
   
   for(i in 1:ncol(data)){
-    
-    desc = model.names[out[[i]][[1]][[2]]]
-    
-    model.ts = desc.to.ts.model(desc[[1]])
-  
-    out[[i]][[1]][[1]] = pretty.model.score(out[[i]][[1]][[1]], desc)
-    
-    gmwm.obj = out[[i]][[2]]
-    estimate = gmwm.obj[[1]]
-    rownames(estimate) = model.ts$process.desc
-    init.guess = gmwm.obj[[2]]
-    rownames(init.guess) = model.ts$process.desc
-    
-    model.hat = model.ts
-    
-    model.hat$starting = F  
-    
-    model.hat$theta = as.numeric(estimate)
-    
-    # Release model
-    out[[i]][[2]] = structure(list(estimate = estimate,
-                         init.guess = init.guess,
-                         wv.empir = gmwm.obj[[3]], 
-                         ci.low = gmwm.obj[[4]], 
-                         ci.high = gmwm.obj[[5]],
-                         orgV = gmwm.obj[[7]],
-                         V = gmwm.obj[[6]],
-                         omega = gmwm.obj[[12]],
-                         obj.fun = gmwm.obj[[11]],
-                         theo = gmwm.obj[[9]],
-                         decomp.theo = gmwm.obj[[10]],
-                         scales = scales, 
-                         robust = robust,
-                         eff = eff,
-                         model.type = "imu",
-                         compute.v = "fast",
-                         augmented = F,
-                         alpha = alpha,
-                         expect.diff = gmwm.obj[[8]],
-                         N = N,
-                         G = G,
-                         H = B,
-                         K = 1,
-                         model = model.ts, # ADD THIS IN AT A LATER TIME!
-                         model.hat = model.hat,
-                         starting = TRUE,
-                         seed = seed), class = "gmwm")
+    out[[i]] = output.format(out[[i]], model.names, scales, N, alpha, robust, eff, B, G, seed)
   }
   
   class(out) = c("auto.imu","rank.models")
@@ -200,17 +207,19 @@ summary.auto.imu = function(object, digits = 4, ...){
   cat(paste0("There were ", n.process, " observed\n\n"))
   
   for(i in 1:n.process){
-    out = object[[i]][[1]][[1]]
+    out = object[[i]][[1]]
     cat(paste0("The model ranking for data column ", i, ": \n"))
     rownames(out) = paste0(1:nrow(out), ". ", rownames(out) )
     
     print(round(out,digits))
+    
+    cat("\n")
   }
 }
 
 summary.rank.models = function(object, digits = 4, ...){
   cat("The model ranking is given as: \n")
-  out = object[[i]][[1]][[1]]
+  out = object[[1]][[1]]
   
   rownames(out) = paste0(1:nrow(out), ". ", rownames(out) )
   

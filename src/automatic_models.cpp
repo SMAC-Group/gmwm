@@ -583,6 +583,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
   arma::field< arma::field<arma::field<arma::mat> > > h(V);
   
   for(unsigned int i = 0; i < V; i++){
+    std::cout << "Generating models for the " << i + 1 << " column in the data set " << std::endl << std::endl;
     h(i) = model_select(data.col(i),
       models,
       full_model,
@@ -592,6 +593,8 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
       compute_v, 
       K, H, G, 
       robust, eff);
+    
+    std::cout << std::endl;
   }
   
   return h;

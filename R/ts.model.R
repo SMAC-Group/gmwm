@@ -432,6 +432,6 @@ desc.to.ts.model = function(desc){
                        plength = length(theta),
                        desc = desc,
                        obj.desc = .Call('GMWM_model_objdesc', PACKAGE = 'GMWM', desc),
-                       starting = FALSE), class = "ts.model")
+                       starting = TRUE), class = "ts.model")
   invisible(out)
 }
