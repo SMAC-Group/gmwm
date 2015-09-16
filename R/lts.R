@@ -1,7 +1,6 @@
 #' @title Generate Latent Time Series Object Based on Data
 #' @description Create a \code{lts} object based on a supplied matrix or data frame.
 #' @param data A multiple-column \code{matrix} or \code{data.frame}. It must contain at least 2 columns. The last column must equal to the sum of all previous columns.
-#' @param x.lim If not \code{NULL}, it is a \code{vector} with two numeric values setting the limit on x-axis.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
@@ -22,9 +21,9 @@
 #' col1 = gen.gts(model1, N = 1000)$data
 #' col2 = gen.gts(model2, N = 1000)$data
 #' testMat = cbind(col1, col2, col1+col2)
-#' testLts = lts(testMat, x.lim = c(1,1000), unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
+#' testLts = lts(testMat, unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 #' plot(testLts)
-lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = NULL){
+lts = function(data, freq = 1, unit = NULL, name = "", process = NULL){
   
   if(!is(data,'matrix') && !is(data,'data.frame')){
     stop('data must be a matrix or data frame.')
@@ -74,16 +73,9 @@ lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = N
     }
   }
   
-  if(is.null(x.lim)){
-    x = seq(from = 0, to = (ndata-1), length.out = ndata)
-  }else{
-    if(class(x.lim)!="numeric" || length(x.lim)!=2){
-      stop('x.lim must be a numeric vector with 2 values.')}
-    #if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
-    #  stop('x.lim cannot create a vector which has the same length of the data you supplied.')
-    #}
-    x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
-  }
+  #x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
+  x = 0:(ndata-1)
+  
   
   out = structure(list(
     x = as.matrix(x),
@@ -101,7 +93,6 @@ lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = N
 #' @description Create a \code{lts} object based on a supplied time series model.
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
 #' @param N An \code{interger} indicating the amount of observations generated in this function.
-#' @param x.lim A \code{vector} with two numeric values setting the limit on x-axis.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
@@ -122,7 +113,7 @@ lts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = "", process = N
 #' set.seed(1336)
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
 #' gen.lts(model)
-gen.lts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name = ""){
+gen.lts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   
   # Do we have a valid model?
   if(!(is(model, "ts.model") || is(model, "gmwm"))){
@@ -143,10 +134,11 @@ gen.lts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name
     }
   }
 
-  if(class(x.lim)!="numeric" || length(x.lim)!=2){
-    stop('x.lim must be a numeric vector with 2 values.')}
+  #if(class(x.lim)!="numeric" || length(x.lim)!=2){
+  #  stop('x.lim must be a numeric vector with 2 values.')}
   
-  x = seq(from = x.lim[1], to = x.lim[2], length.out = N)
+  #x = seq(from = x.lim[1], to = x.lim[2], length.out = N)
+  x = 0:(N-1)
   
   # Information Required by GMWM:
   desc = model$desc
@@ -304,9 +296,9 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   # prepare data frame to plot
   df = as.data.frame(object$data)
   colnames(df) = object$process
-  #no need to deal with freq
-  #df$x = object$x/object$freq
-  df$x = object$x
+  #need to deal with freq now
+  df$x = object$x/object$freq
+  #df$x = object$x
   
   if( is.null(object$unit) && is.null(to.unit)==F ){warning('Unit of object is NULL. Conversion was not done.')}
   if( is.null(object$unit) == F ){
@@ -354,10 +346,10 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 #' @description Create a time series based on the supplied model, then generate a demo about its latent structure
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
 #' @param N An \code{interger} indicating the amount of observations for the time series.
-#' @param x.lim A \code{vector} with two numeric values setting the limit on x-axis.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
+#' @param ... Additional parameters passed to \code{autoplot.lts}
 #' @author Wenchao
 #' @details
 #' This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2 =1) + WN(sigma2 = 1)) or a \code{gmwm} object.
@@ -366,9 +358,9 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 #' set.seed(1336)
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
 #' demo.lts(model)
-demo.lts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name = "", ...){
+demo.lts = function(model, N = 1000, freq = 1, unit = NULL, name = "", ...){
   
-  object = gen.lts(model = model, N = N,  x.lim= x.lim, freq = freq, unit = unit, name = name)
+  object = gen.lts(model = model, N = N, freq = freq, unit = unit, name = name)
   autoplot.lts(object = object, ...)
   
 }
