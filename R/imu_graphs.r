@@ -416,6 +416,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
                          scales = "free_y",...){
   #require packages: scales
   #WV=scales=.x=low=high=NULL
+  value = variable = low = high = .x = NULL
   
   #legend.label = NULL,
   #legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
@@ -773,6 +774,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
                              facet.label.size = 13, facet.label.background = "#003C7D33",
                              scales = "free_y",...){
+  value = varialbe = low = high = .x = NULL
   
   ###0. param checking
   if( !(background %in% c('grey','gray', 'white')) ){

@@ -1,7 +1,6 @@
 #' @title Create a GMWM TS Object based on data
 #' @description Setups a time series oriented object that works well with graphing and summary utilities
 #' @param data A one column \code{matrix}, \code{data.frame}, or a numeric \code{vector}.
-#' @param x.lim If not \code{NULL}, it is a \code{vector} with two numeric values setting the limit on x-axis.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
@@ -13,14 +12,14 @@
 #'   \item{unit:} {String representation of the unit}
 #'   \item{name:} {Name of the dataset}
 #' }
-#' @author JJB
+#' @author JJB, Wenchao
 #' @examples
 #' m = data.frame(rnorm(5))
 #' gts(m)
 #' 
 #' x = gen.gts(WN(sigma2=1), 50)$data
 #' x = gts(x)
-gts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = ""){
+gts = function(data, freq = 1, unit = NULL, name = ""){
   
   # Force data.frame to matrix  
   if (is.data.frame(data)){ 
@@ -55,16 +54,9 @@ gts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = ""){
     }
   }
   
-  if(is.null(x.lim)){
-    x = seq(from = 0, to = (ndata-1), length.out = ndata)
-  }else{
-    if(class(x.lim)!="numeric" || length(x.lim)!=2){
-      stop('x.lim must be a numeric vector with 2 values.')}
-    #if( !(x.lim[2] - x.lim[1])==(ndata-1)  ){
-    #  stop('x.lim cannot create a vector which has the same length of the data you supplied.')
-    #}
-    x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
-  }
+  x = 0:(ndata-1)
+  #x = seq(from = 0, to = (ndata-1), length.out = ndata)
+  #x = x/freq ###when generate the object, not deal with freq
   
   out = structure(list(
     x = as.matrix(x),
@@ -81,7 +73,6 @@ gts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = ""){
 #' @description Create a \code{gts} object based on a supplied time series model.
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
 #' @param N An \code{interger} containing the amount of observations for the time series.
-#' @param x.lim A \code{vector} with two numeric values setting the limit on x-axis.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
@@ -100,7 +91,7 @@ gts = function(data, x.lim = NULL, freq = 1, unit = NULL, name = ""){
 #' set.seed(1336)
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
 #' gen.gts(model)
-gen.gts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name = ""){
+gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   
   # Do we have a valid model?
   if(!(is(model, "ts.model") || is(model, "gmwm"))){
@@ -122,10 +113,9 @@ gen.gts = function(model, N = 1000, x.lim= c(0,N-1), freq = 1, unit = NULL, name
     }
   }
   
-  if(class(x.lim)!="numeric" || length(x.lim)!=2){
-    stop('x.lim must be a numeric vector with 2 values.')}
-  
-  x = seq(from = x.lim[1], to = x.lim[2], length.out = N)
+  #x = seq(from = 0, to = N-1, length.out = N)
+  #x = x/freq
+  x = 0:(N-1)
   
   # Information Required by GMWM:
   desc = model$desc
@@ -235,6 +225,9 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
   #df = data.frame(y1 = x$data, x1 = 0:(len-1) )
   df = data.frame(y1 = object$data, x1 = object$x )
   
+  #deal with freq
+  df$x1 = df$x1/object$freq
+  
   if( is.null(object$unit) && is.null(to.unit)==F ){warning('Unit of object is NULL. Conversion was not done.')}
   if( is.null(object$unit) == F ){
     if( is.null(to.unit) == F){
@@ -245,8 +238,7 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
       }
     }
   }
-  #deal with freq
-  #df$x1 = df$x1/object$freq
+  
   
   p = ggplot(data = df, mapping = aes(x = x1,y = y1)) + geom_line(linetype = line.type, color = line.color) + 
     geom_point(color = line.color, size = point.size, shape = point.shape)

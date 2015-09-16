@@ -281,6 +281,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend.
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend
 #' @param nrow An \code{integer} that indicates number of rows
+#' @param ... Additional parameters
 #' @author JJB, Wenchao
 #' @seealso \code{\link{compare.wvar}}
 autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 

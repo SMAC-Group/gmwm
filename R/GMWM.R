@@ -592,7 +592,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' @title Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method autoplot gmwm
-#' @param x A \code{GMWM} object
+#' @param object A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
@@ -609,7 +609,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' y = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' mod = gmwm(2*AR1(), data = y)
 #' autoplot(mod)
-autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
+autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                      point.size = NULL,point.shape = NULL,
                      title = NULL, title.size= 15, 
@@ -628,7 +628,7 @@ autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T
   if(!process.decomp){
     if(CI == T) {numLabel = 3}else {numLabel = 2}
   }else{
-    L = length(x$model$desc) + 1 # Find number of latent processes
+    L = length(object$model$desc) + 1 # Find number of latent processes
     if(!bw && (L-1)> 9){warning('Object has more than 9 latent processes, but the palette has only 9 colors')}
     if(CI == T) {numLabel = 2+L}else{numLabel = 1+L}
   }
@@ -653,7 +653,7 @@ autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T
   ## call
   if(process.decomp){
     # plot individually
-    autoplot.gmwm2(x, background = background, CI = CI, transparence = transparence, bw = bw, 
+    autoplot.gmwm2(object, background = background, CI = CI, transparence = transparence, bw = bw, 
                    CI.color = CI.color, line.type = line.type, line.color = line.color,
                    point.size = point.size, point.shape = point.shape,
                    title = title, title.size= title.size, 
@@ -664,7 +664,7 @@ autoplot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T
                    legend.text.size = legend.text.size)
   }
   else{
-    autoplot.gmwm1(x, background = background, CI = CI, transparence = transparence, bw = bw, 
+    autoplot.gmwm1(object, background = background, CI = CI, transparence = transparence, bw = bw, 
                   CI.color = CI.color, line.type = line.type, line.color = line.color,
                   point.size = point.size, point.shape = point.shape,
                   title = title, title.size= title.size, 
@@ -1415,7 +1415,7 @@ autoplot.gmwmComp = function(object, breaks, levels, object.names, split = TRUE,
                              legend.label = NULL,
                              legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
                              legend.text.size = 13, nrow = 1, plot.emp.wv = T, ...){
-  scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=dataset=NULL
+  scales=low=high=WV=emp=theo=trans_breaks=trans_format=math_format=.x=dataset=value=variable=NULL
   
   if(CI){object.CI = object[object$variable =='low'|object$variable=='high', ]}
   if(!plot.emp.wv && !CI){
