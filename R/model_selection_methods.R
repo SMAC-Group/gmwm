@@ -214,16 +214,16 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
     obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed)
     
     obj.gmwm = obj[[2]]
-    if(n.acc != 0 && a.acc != (n.acc - 1)){
+    if(n.acc != 0 && a.acc != (n.acc)){
       a.acc = a.acc + 1 
       obj.gmwm$sensor = "Gyroscope"
       obj.gmwm$axis = axis[a.acc]
-    } else if(n.gyro != 0 && a.gyro != (n.gyro - 1)){
+    } else if(n.gyro != 0 && a.gyro != (n.gyro)){
       a.gyro = a.gyro + 1 
       obj.gmwm$sensor = "Accelerometer"
       obj.gmwm$axis = axis[a.gyro]
     }
-    
+
     obj.gmwm$num.sensor = num.sensor
     
     obj[[2]] = obj.gmwm
