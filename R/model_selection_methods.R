@@ -170,22 +170,64 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
 #' @return A \code{auto.imu} object.
 auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
   
+  #check object
+  if(is.null(data) || !is(data,"imu") ) {
+    stop('Object must an imu object via imu()')
+  }
+  
+  # Extract data for IMU Injection
+  data.in = as.matrix(data$data) 
+  sensors = data$sensor
+  num.sensor = data$num.sensor
+  axis = data$axis
+
+  # Set seed for reproducible results
+  # Need to figure out a way to do set same seed on each model generation.
   set.seed(seed)
   
-  data = as.matrix(data)
+  # Set up data and models for automatic processing
   full.str = model$desc
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('GMWM_auto_imu', PACKAGE = 'GMWM', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "sensor", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('GMWM_auto_imu', PACKAGE = 'GMWM', data.in, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "sensor", K=1, H=B, G, robust, eff, bootstrap)
+  
+  # Handle post processing
+  
+  # Get model names
   model.names = build_model_set(m, full.str) 
   
-  N = nrow(data)
+  # Get basic data info
+  N = nrow(data.in)
   nlevels =  floor(log2(N))
   scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
   
-  for(i in 1:ncol(data)){
-    out[[i]] = output.format(out[[i]], model.names, scales, N, alpha, robust, eff, B, G, seed)
+  # Get set statements for Wenchao
+  n.gyro = num.sensor[1]
+  n.acc = num.sensor[2]
+  
+  a.gyro = 0
+  a.acc = 0
+  
+  for(i in 1:ncol(data.in)){
+    obj = out[[i]]
+    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed)
+    
+    obj.gmwm = obj[[2]]
+    if(n.acc != 0 && a.acc != (n.acc - 1)){
+      a.acc = a.acc + 1 
+      obj.gmwm$sensor = "Gyroscope"
+      obj.gmwm$axis = axis[a.acc]
+    } else if(n.gyro != 0 && a.gyro != (n.gyro - 1)){
+      a.gyro = a.gyro + 1 
+      obj.gmwm$sensor = "Accelerometer"
+      obj.gmwm$axis = axis[a.gyro]
+    }
+    
+    obj.gmwm$num.sensor = num.sensor
+    
+    obj[[2]] = obj.gmwm
+    out[[i]] = obj
   }
   
   class(out) = c("auto.imu","rank.models")
