@@ -182,7 +182,7 @@ arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
   }else{ // Data is a mix of double then 6 ints
     
     double time_buffer[1];
-    int data_buffer[6];
+    int32_t data_buffer[6];
     
     for(unsigned int i = 0; i < nEpochs; i++){
       fread(&time_buffer, 8, 1, fid); // double
