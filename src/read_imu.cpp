@@ -31,21 +31,21 @@ imu_info get_imu_info(std::string imu_type){
   if(imu_type == "IMAR"){
     imu.name          = "IMAR";
     imu.time_type     = 8; // double
-    imu.data_type     = 4; // long
+    imu.data_type     = 4; // int
     imu.header_size   = 0;
     imu.scale_gyro    = 0.10000000*M_PI/180.0/3600.0; // Scale gyro to rad
     imu.scale_acc     = 0.00152588/1000.0;            // scale accel to m/s
   }else if(imu_type == "LN200"){
     imu.name          = "LN200";
     imu.time_type     = 8; // double
-    imu.data_type     = 4; // long
+    imu.data_type     = 4; // int
     imu.header_size   = 0;
     imu.scale_gyro    = 1.0/2097152.0; // Scale gyro to rad
     imu.scale_acc     = 1.0/16384.0;	 // scale accel to m/s
   }else if(imu_type == "LN200IG"){
     imu.name          = "LN200IG";
     imu.time_type     = 8; // double
-    imu.data_type     = 4; // long
+    imu.data_type     = 4; // int
     imu.header_size   = 0;
     imu.scale_gyro    = 1.0/524288.0;    // Scale gyro to rad
     imu.scale_acc     = 1.0/16384.0;		 // scale accel to m/s
@@ -66,7 +66,7 @@ imu_info get_imu_info(std::string imu_type){
   }else if(imu_type == "NAVCHIP_INT"){
     imu.name          = "NAVCHIP_INT";
     imu.time_type     = 8; // double
-    imu.data_type     = 4; // long
+    imu.data_type     = 4; // int
     imu.header_size   = 0;
     imu.scale_gyro    = 0.00000625;       // Scale gyro to rad
     imu.scale_acc     = 0.0000390625;			// scale accel to m/s
@@ -179,15 +179,15 @@ arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
       }
     }
     
-  }else{ // Data is a mix of double then 6 longs
+  }else{ // Data is a mix of double then 6 ints
     
     double time_buffer[1];
-    long data_buffer[6];
+    int data_buffer[6];
     
     for(unsigned int i = 0; i < nEpochs; i++){
       fread(&time_buffer, 8, 1, fid); // double
       
-      fread(&data_buffer, 4, 6, fid); // long
+      fread(&data_buffer, 4, 6, fid); // int
     
       data(i,0) = time_buffer[0];
       
