@@ -37,7 +37,7 @@ wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
     stop("Need to supply a wvar object as the second parameter.")
   }
   
-  out = .Call('GMWM_compute_cov_cpp', PACKAGE = 'GMWM', signal.modwt$data, signal.modwt$nlevels, compute.v, signal.wvar$robust, signal.wvar$eff)
+  out = .Call('gmwm_compute_cov_cpp', PACKAGE = 'gmwm', signal.modwt$data, signal.modwt$nlevels, compute.v, signal.wvar$robust, signal.wvar$eff)
   out = structure(list(V=out[[1]],
                        V.robust=out[[2]], 
                        nlevels=signal.modwt$nlevels, 

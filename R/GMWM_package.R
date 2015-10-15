@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.12.2\cr
-#' Date: \tab 2015-08-04\cr
+#' Version: \tab 0.13.0\cr
+#' Date: \tab 2015-10-15\cr
 #' License: \tab MIT + file LICENSE\cr
 #' }
 #' Some details should be added  
@@ -21,8 +21,9 @@
 #' Stephane Guerrier \email{stephane@@illinois.edu}
 #' @name GMWM-package
 #' @docType package
-#' @useDynLib GMWM
+#' @useDynLib gmwm
 #' @importFrom Rcpp evalCpp
+#' @importFrom devtools install_github
 #' @import ggplot2 grid scales reshape2 gridExtra
 #' @exportPattern ^[[:alpha:]]+
 #' @examples

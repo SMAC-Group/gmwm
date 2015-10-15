@@ -126,7 +126,7 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
   
   
   if(nested == F){
-    full.str = .Call('GMWM_find_full_model', PACKAGE = 'GMWM', x = desc)
+    full.str = .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
     
     if(!any(sapply(desc, function(x, want) isTRUE(all.equal(x, want)),  full.str)) ){
       print("Creating a Common Denominator Model!")
@@ -144,11 +144,11 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
     
   }
   
-  out = .Call('GMWM_rank_models', PACKAGE = 'GMWM', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
   
   N = length(data)
   nlevels =  floor(log2(N))
-  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   out[[1]] = output.format(out[[1]], desc, scales, N, alpha, robust, eff, B, G, seed)  
   
@@ -190,7 +190,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('GMWM_auto_imu', PACKAGE = 'GMWM', data.in, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "sensor", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data.in, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "sensor", K=1, H=B, G, robust, eff, bootstrap)
   
   # Handle post processing
   
@@ -200,7 +200,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   # Get basic data info
   N = nrow(data.in)
   nlevels =  floor(log2(N))
-  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   # Get set statements for Wenchao
   n.gyro = num.sensor[1]

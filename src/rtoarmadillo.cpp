@@ -17,9 +17,8 @@ using namespace Rcpp;
 //' @param a An \code{int}, that denotes the starting point.
 //' @param b An \code{int}, that denotes the ending point.
 //' @return A \code{vector} containing values moving from a to b. There are no restrictions on A's range.
-//' @seealso \code{\link{rwishart}} 
 //' @author James J Balamuta
-//' @examples 
+//' @examples
 //' #Call with the following data:
 //' seq_cpp(3, 5)
 //' seq_cpp(5, 3)

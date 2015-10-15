@@ -425,13 +425,13 @@ print.ts.model = function(x, ...){
 }
 
 desc.to.ts.model = function(desc){
-  theta = .Call('GMWM_model_theta', PACKAGE = 'GMWM', desc)
+  theta = .Call('gmwm_model_theta', PACKAGE = 'gmwm', desc)
   
-  out = structure(list(process.desc = .Call('GMWM_model_process_desc', PACKAGE='GMWM', desc),
+  out = structure(list(process.desc = .Call('gmwm_model_process_desc', PACKAGE='gmwm', desc),
                        theta = theta,
                        plength = length(theta),
                        desc = desc,
-                       obj.desc = .Call('GMWM_model_objdesc', PACKAGE = 'GMWM', desc),
+                       obj.desc = .Call('gmwm_model_objdesc', PACKAGE = 'gmwm', desc),
                        starting = TRUE), class = "ts.model")
   invisible(out)
 }

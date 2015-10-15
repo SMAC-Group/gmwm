@@ -1,4 +1,4 @@
 library(testthat)
-library(GMWM)
+library(gmwm)
 
-test_check("GMWM")
+test_check("gmwm")

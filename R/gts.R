@@ -129,7 +129,7 @@ gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   
   if(!model$starting){
     theta = model$theta
-    out = .Call('GMWM_gen_model', PACKAGE = 'GMWM', N, theta, desc, obj)
+    out = .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, obj)
   }else{
     stop("Need to supply initial values within the ts.model object.")
   }

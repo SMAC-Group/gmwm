@@ -38,10 +38,10 @@ wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
   }
   
   nlevels =  floor(log2(length(x)))
-  decomp = .Call('GMWM_modwt_cpp', PACKAGE = 'GMWM', x, filter_name = "haar", nlevels, boundary="periodic")
+  decomp = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = "haar", nlevels, boundary="periodic")
   
-  out = .Call('GMWM_wvar_cpp', PACKAGE = 'GMWM', decomp, robust, eff, alpha, "eta3", "haar")
-  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
+  out = .Call('gmwm_wvar_cpp', PACKAGE = 'gmwm', decomp, robust, eff, alpha, "eta3", "haar")
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   out = structure(list(variance = out[,1],
                        ci_low = out[,2], 
                        ci_high = out[,3], 

@@ -139,7 +139,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   
   # Verify Scales and Parameter Space
   nlevels =  floor(log2(length(data)))
-  scales = .Call('GMWM_scales_cpp', PACKAGE = 'GMWM', nlevels)
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   if(np > length(scales)){
     stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need at least the same number of scales as parameters to estimate.")
@@ -163,7 +163,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
 
   theta = model$theta
 
-  out = .Call('GMWM_gmwm_master_cpp', PACKAGE = 'GMWM', data, theta, desc, obj, model.type, starting = model$starting,
+  out = .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = alpha, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff)
   #colnames(out) = model$desc
@@ -281,7 +281,7 @@ update.gmwm = function(object, model, ...){
     }
   }
   
-  out = .Call('GMWM_gmwm_update_cpp', PACKAGE = 'GMWM',
+  out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
                   model$theta,
                   desc, obj, 
                   object$model.type, object$N, object$expect.diff, 
@@ -425,7 +425,7 @@ summary.gmwm = function(object, inference = NULL,
   }
   
   if(inference){
-    mm = .Call('GMWM_get_summary', PACKAGE = 'GMWM',object$estimate,
+    mm = .Call('gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
                                                     object$model$desc, object$model$obj.desc,
                                                     object$model.type, 
                                                     object$wv.empir, object$theo,object$scales,

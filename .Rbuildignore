@@ -1,2 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$
+.Rprofile
+man-roxygen
+NEWS\.md
+CONTRIBUTING\.md
+README\.md

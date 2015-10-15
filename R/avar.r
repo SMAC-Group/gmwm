@@ -14,7 +14,7 @@
 #' avar(x)
 avar = function(x) {
   x = as.vector(x)
-  av = .Call('GMWM_avar_mo_cpp', PACKAGE = 'GMWM', x)
+  av = .Call('GMWM_avar_mo_cpp', PACKAGE = 'gmwm', x)
   av = list(clusters = av[,1], allan=av[,2], errors=av[,3])
   av$adev = sqrt(av$allan)
   av$lci = av$adev - av$errors*av$adev

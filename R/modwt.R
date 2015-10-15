@@ -14,7 +14,7 @@
 #' modwt(x)
 modwt = function(x) {
   nlevels =  floor(log2(length(x)))
-  out = .Call('GMWM_modwt_cpp', PACKAGE = 'GMWM', x, filter_name = "haar", nlevels, boundary="periodic")
+  out = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = "haar", nlevels, boundary="periodic")
   out = structure(list(data=out, nlevels=nlevels), class = "gmwm_modwt")
   invisible(out)
 }
