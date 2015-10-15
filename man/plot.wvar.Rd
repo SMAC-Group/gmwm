@@ -11,9 +11,8 @@
   axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
-  legend.title = "", legend.label = c(expression(paste("Empirical WV ",
-  hat(nu))), expression(paste("CI(", hat(nu), " , 0.95)"))),
-  legend.key.size = 1, legend.title.size = 13, legend.text.size = 13, ...)
+  legend.title = "", legend.label = NULL, legend.key.size = 1,
+  legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
 \item{x}{A \code{wvar} object.}
@@ -74,7 +73,7 @@ out = wvar(x)
 plot( out )
 }
 \author{
-JJB
+JJB, Wenchao
 }
 \seealso{
 \code{\link{autoplot.wvar}}

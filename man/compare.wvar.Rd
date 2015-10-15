@@ -100,10 +100,7 @@ wvar3 = wvar(data3)
 wvar4 = wvar(data4)
 compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
 compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
-#3.Obvious errors will be found
-compare.wvar()
-compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('red','green'))
-#4. Change default setting
+#3. Change default setting
 compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'))
 compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'),
 facet.label.size = 9)

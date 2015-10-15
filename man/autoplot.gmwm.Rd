@@ -4,17 +4,18 @@
 \alias{autoplot.gmwm}
 \title{Graph Solution of the Generalized Method of Wavelet Moments}
 \usage{
-\method{autoplot}{gmwm}(x, process.decomp = FALSE, background = "white",
-  CI = T, transparence = 0.1, bw = F, CI.color = "#003C7D",
-  line.type = NULL, line.color = NULL, point.size = NULL,
-  point.shape = NULL, title = NA, title.size = 15, axis.label.size = 13,
-  axis.tick.size = 11, axis.x.label = expression(paste("Scale ", tau)),
+\method{autoplot}{gmwm}(object, process.decomp = FALSE,
+  background = "white", CI = T, transparence = 0.1, bw = F,
+  CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+  point.size = NULL, point.shape = NULL, title = NULL, title.size = 15,
+  axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
   legend.title = "", legend.label = NULL, legend.key.size = 1,
   legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
-\item{x}{A \code{GMWM} object}
+\item{object}{A \code{GMWM} object}
 
 \item{process.decomp}{A \code{boolean} that indicates whether the decomposed processes should be plotted or not}
 

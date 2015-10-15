@@ -11,8 +11,8 @@ GMWM is a Time Series Package
 \tabular{ll}{
 Package: \tab GMWM\cr
 Type: \tab Package\cr
-Version: \tab 0.12.2\cr
-Date: \tab 2015-08-04\cr
+Version: \tab 0.13.0\cr
+Date: \tab 2015-10-15\cr
 License: \tab MIT + file LICENSE\cr
 }
 Some details should be added

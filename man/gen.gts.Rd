@@ -4,15 +4,12 @@
 \alias{gen.gts}
 \title{Create a GMWM TS Object based on model}
 \usage{
-gen.gts(model, N = 1000, x.lim = c(0, N - 1), freq = 1, unit = NULL,
-  name = "")
+gen.gts(model, N = 1000, freq = 1, unit = NULL, name = "")
 }
 \arguments{
 \item{model}{A \code{ts.model} or \code{gmwm} object containing one of the allowed models.}
 
 \item{N}{An \code{interger} containing the amount of observations for the time series.}
-
-\item{x.lim}{A \code{vector} with two numeric values setting the limit on x-axis.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 

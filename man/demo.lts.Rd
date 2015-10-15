@@ -4,21 +4,20 @@
 \alias{demo.lts}
 \title{Generate a Demo about the Latent Time Series}
 \usage{
-demo.lts(model, N = 1000, x.lim = c(0, N - 1), freq = 1, unit = NULL,
-  name = "", ...)
+demo.lts(model, N = 1000, freq = 1, unit = NULL, name = "", ...)
 }
 \arguments{
 \item{model}{A \code{ts.model} or \code{gmwm} object containing one of the allowed models.}
 
 \item{N}{An \code{interger} indicating the amount of observations for the time series.}
 
-\item{x.lim}{A \code{vector} with two numeric values setting the limit on x-axis.}
-
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
 \item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
 
 \item{name}{A \code{string} that provides an identifier to the data. Default value is an empty string.}
+
+\item{...}{Additional parameters passed to \code{autoplot.lts}}
 }
 \description{
 Create a time series based on the supplied model, then generate a demo about its latent structure

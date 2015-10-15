@@ -4,13 +4,10 @@
 \alias{lts}
 \title{Generate Latent Time Series Object Based on Data}
 \usage{
-lts(data, x.lim = NULL, freq = 1, unit = NULL, name = "",
-  process = NULL)
+lts(data, freq = 1, unit = NULL, name = "", process = NULL)
 }
 \arguments{
 \item{data}{A multiple-column \code{matrix} or \code{data.frame}. It must contain at least 2 columns. The last column must equal to the sum of all previous columns.}
-
-\item{x.lim}{If not \code{NULL}, it is a \code{vector} with two numeric values setting the limit on x-axis.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
@@ -40,7 +37,7 @@ model2 = WN(sigma2=1)
 col1 = gen.gts(model1, N = 1000)$data
 col2 = gen.gts(model2, N = 1000)$data
 testMat = cbind(col1, col2, col1+col2)
-testLts = lts(testMat, x.lim = c(1,1000), unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
+testLts = lts(testMat, unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 plot(testLts)
 }
 \author{

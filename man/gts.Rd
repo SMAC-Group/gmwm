@@ -4,12 +4,10 @@
 \alias{gts}
 \title{Create a GMWM TS Object based on data}
 \usage{
-gts(data, x.lim = NULL, freq = 1, unit = NULL, name = "")
+gts(data, freq = 1, unit = NULL, name = "")
 }
 \arguments{
 \item{data}{A one column \code{matrix}, \code{data.frame}, or a numeric \code{vector}.}
-
-\item{x.lim}{If not \code{NULL}, it is a \code{vector} with two numeric values setting the limit on x-axis.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
@@ -38,6 +36,6 @@ x = gen.gts(WN(sigma2=1), 50)$data
 x = gts(x)
 }
 \author{
-JJB
+JJB, Wenchao
 }
 

@@ -6,7 +6,7 @@
 \usage{
 rank.models(data, models = list(AR1() + WN(), AR1()), nested = F,
   bootstrap = F, model.type = "ssm", alpha = 0.05, robust = F,
-  eff = 0.6, B = 50, G = 10000, seed = 1337)
+  eff = 0.6, B = 50, G = 1e+05, seed = 1337)
 }
 \arguments{
 \item{data}{A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.}

@@ -4,15 +4,12 @@
 \alias{gen.lts}
 \title{Generate Latent Time Series Object Based on Model}
 \usage{
-gen.lts(model, N = 1000, x.lim = c(0, N - 1), freq = 1, unit = NULL,
-  name = "")
+gen.lts(model, N = 1000, freq = 1, unit = NULL, name = "")
 }
 \arguments{
 \item{model}{A \code{ts.model} or \code{gmwm} object containing one of the allowed models.}
 
 \item{N}{An \code{interger} indicating the amount of observations generated in this function.}
-
-\item{x.lim}{A \code{vector} with two numeric values setting the limit on x-axis.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 

@@ -25,7 +25,4 @@ seq_cpp(5, 3)
 \author{
 James J Balamuta
 }
-\seealso{
-\code{\link{rwishart}}
-}
 

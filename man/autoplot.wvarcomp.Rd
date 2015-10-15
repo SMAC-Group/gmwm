@@ -61,6 +61,8 @@
 \item{legend.text.size}{An \code{integer} that indicates the size of key label on legend}
 
 \item{nrow}{An \code{integer} that indicates number of rows}
+
+\item{...}{Additional parameters}
 }
 \description{
 Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
