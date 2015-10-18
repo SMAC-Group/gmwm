@@ -36,7 +36,7 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, s
   
   
   if(draw_id == 0){
-    if(model_type == "sensor"){
+    if(model_type == "imu"){
       // Draw from triangle distributions for phi
       double U = R::runif(0.0, 1.0/3.0);
       
@@ -200,7 +200,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
     
     unsigned int i_theta = 0;
 
-    if(models["WN"] >= 1 && model_type=="sensor"){
+    if(models["WN"] >= 1 && model_type=="imu"){
       AR1_counter = 2;
       prev_phi = .9;
     }

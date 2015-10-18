@@ -133,8 +133,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   }
   
   # Model type issues
-  if(model.type != "sensor" && model.type != "ssm"){
-    stop("Model Type must be either sensor or SSM!")
+  if(model.type != "imu" && model.type != "ssm"){
+    stop("Model Type must be either sensor or imu!")
   }
   
   # Verify Scales and Parameter Space
@@ -332,17 +332,17 @@ update.gmwm = function(object, model, ...){
 #'  \item{}
 #'  \item{}
 #' }
-gmwm.sensor = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
+gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
   
   x = gmwm(model = model, 
        data = data, 
        compute.v = compute.v,
-       model.type = "sensor",
+       model.type = "imu",
        robust = robust, 
        eff = eff,
        ...
        )
-  class(x) = c("gmwm_sensor","gmwm")
+  class(x) = c("gmwm_imu","gmwm")
   
   x
 }
@@ -378,7 +378,7 @@ gmwm.sensor = function(model, data, compute.v = "fast", robust = F, eff = 0.6, .
 #' set.seed(1336)
 #' n = 200
 #' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
-#' mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
+#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
 summary.gmwm = function(object, inference = NULL,  
                         bs.gof = NULL,  bs.gof.p.ci = NULL, 
@@ -473,7 +473,7 @@ summary.gmwm = function(object, inference = NULL,
 #' set.seed(1336)
 #' n = 200
 #' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
-#' mod = gmwm(AR1()+AR1(), data=xt, model.type="sensor")
+#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
 print.summary.gmwm = function(x, ...){
   
@@ -564,7 +564,7 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' set.seed(1336)
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="sensor")
+#' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
 plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
@@ -603,7 +603,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' set.seed(1336)
 #' n = 200
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="sensor")
+#' mod = gmwm(AR1(), data=x, model.type="imu")
 #' autoplot(mod)
 #' 
 #' y = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
