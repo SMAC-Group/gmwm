@@ -19,7 +19,7 @@
 #' Wenchao Yang \email{wyang40@@illinois.edu}
 #'
 #' Stephane Guerrier \email{stephane@@illinois.edu}
-#' @name GMWM-package
+#' @name gmwm-package
 #' @docType package
 #' @useDynLib gmwm
 #' @importFrom Rcpp evalCpp

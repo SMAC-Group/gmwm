@@ -29,7 +29,7 @@ using namespace Rcpp;
 //' decomp = modwt_cpp(x, "haar", 4, "periodic")
 //' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 //' y = wave_variance(signal_modwt_bw)
-//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
+//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025)
 // [[Rcpp::export]]
 arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
     
@@ -108,7 +108,7 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double 
 //' decomp = modwt_cpp(x, "haar", 4, boundary="periodic")
 //' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 //' y = wave_variance(signal_modwt_bw)
-//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
+//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025)
 // [[Rcpp::export]]
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y,
                             std::string type = "eta3", double alpha_ov_2 = 0.025, bool robust = false, double eff = 0.6){

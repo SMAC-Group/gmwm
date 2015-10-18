@@ -1,6 +1,5 @@
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
-#' @usage wvar(x, p = 0.025, robust = FALSE, eff = 0.6)
 #' @param x A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object. 
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.

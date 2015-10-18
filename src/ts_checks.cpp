@@ -9,7 +9,10 @@
 #include "complex_tools.h"
 using namespace Rcpp;
 
-
+//' @title Obtain the smallest polynomial root
+//' @description Calculates all the roots of a polynomial and returns the root that is the smallest.
+//' @param x A \code{cx_vec} that has a 1 appended before the coefficents. (e.g. c(1, x))
+//' @return A \code{double} with the minimum root value.
 // [[Rcpp::export]]
 double minroot(const arma::cx_vec& x){
   return min(
@@ -66,6 +69,9 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
   return w;		
 } 
 
+//' @title Order AR1s by size of phi.
+//' @description Changes the order of AR1s in a string by size.
+//' @return A \code{vec} that has AR1s shown in descending parameter value.
 // [[Rcpp::export]]
 arma::vec order_AR1s(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec> objdesc){
   int AR1_old_loc = -1;

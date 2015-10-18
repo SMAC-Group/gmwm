@@ -1,5 +1,17 @@
-## Creates RcppArmadillo S3 object export within R
-
+# Copyright (C) 2012 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+#
+# This file is part of GMWM R Methods Package
+#
+# The `gmwm` R package is free software: you can redistribute it and/or modify it
+# under the terms of the Q Public License included within the packages source
+# as the LICENSE file.
+#
+# The `gmwm` R package is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# You should have received a copy of the Q Public License
+# along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
 
 
 #' @title Calculate the Allan Variance
@@ -14,7 +26,7 @@
 #' avar(x)
 avar = function(x) {
   x = as.vector(x)
-  av = .Call('GMWM_avar_mo_cpp', PACKAGE = 'gmwm', x)
+  av = .Call('gmwm_avar_mo_cpp', PACKAGE = 'gmwm', x)
   av = list(clusters = av[,1], allan=av[,2], errors=av[,3])
   av$adev = sqrt(av$allan)
   av$lci = av$adev - av$errors*av$adev
