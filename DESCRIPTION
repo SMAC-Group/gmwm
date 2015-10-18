@@ -24,5 +24,8 @@ Imports:
     reshape2,
     gridExtra,
     devtools
-LinkingTo: Rcpp, RcppArmadillo
-Suggests: testthat
+LinkingTo: 
+    Rcpp, 
+    RcppArmadillo
+Suggests: 
+    testthat

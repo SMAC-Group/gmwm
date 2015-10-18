@@ -30,6 +30,6 @@ x = rnorm(100)
 decomp = modwt_cpp(x, "haar", 4, "periodic")
 signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
 y = wave_variance(signal_modwt_bw)
-ci_wave_variance(signal_modwt_bw, y, type = "eta3", p = 0.025)
+ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025)
 }
 

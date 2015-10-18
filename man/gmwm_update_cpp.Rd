@@ -37,7 +37,7 @@ parameter vector should indicate the characters of the models that compose the l
 options are:
 \itemize{
   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-  \item{"ARMA"}{an autoregressiveß moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+  \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}

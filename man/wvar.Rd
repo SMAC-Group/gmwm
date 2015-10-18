@@ -4,7 +4,7 @@
 \alias{wvar}
 \title{Wavelet Variance}
 \usage{
-wvar(x, p = 0.025, robust = FALSE, eff = 0.6)
+wvar(x, alpha = 0.05, robust = FALSE, eff = 0.6)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object.}
