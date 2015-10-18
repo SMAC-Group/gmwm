@@ -13,6 +13,18 @@ opt_n_gof_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust, eff,
 \item{desc}{A \code{vector<string>} indicating the models that should be considered.}
 
 \item{objdesc}{A \code{field<vec>} that contains an object description (e.g. values) of the model.}
+
+\item{scales}{A \code{vec} containing the scales of the process.}
+
+\item{model_type}{A \code{string} containing the model type either: SSM or IMU}
+
+\item{N}{A \code{int} indicating how long the integer is.}
+
+\item{robust}{A \code{bool} indicating robust (T) or classical (F).}
+
+\item{eff}{A \code{double} that handles efficiency.}
+
+\item{H}{A \code{int} that indicates how many bootstraps should be obtained.}
 }
 \value{
 A \code{vec} that contains the parameter estimates from GMWM estimator.

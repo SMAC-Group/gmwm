@@ -14,6 +14,8 @@ arma_to_wv_app(ar, ma, tau, sigma, alpha = 0.9999)
 \item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 
 \item{sigma}{A \code{double} containing the residual variance}
+
+\item{alpha}{A \code{double} indicating the cutoff.}
 }
 \value{
 A \code{vec} containing the wavelet variance of the ARMA process.

@@ -14,6 +14,8 @@ D_matrix(theta, desc, objdesc, tau, omegadiff)
 \item{objdesc}{A \code{field<vec>} containing a list of object descriptors.}
 
 \item{tau}{A \code{vec} containing the scales e.g. 2^(1:J)}
+
+\item{omegadiff}{A \code{vec} that contains the result of Omega * (wv_empir - wv_theo)}
 }
 \value{
 A \code{matrix} with the process derivatives going down the column

@@ -6,6 +6,9 @@
 \usage{
 do_polyroot_arma(z)
 }
+\arguments{
+\item{z}{A \code{cx_vec} (complex vector) that has 1 in the beginning (e.g. c(1,3i,-3i))}
+}
 \description{
 Used to interface with Armadillo
 }

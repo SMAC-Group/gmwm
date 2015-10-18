@@ -1,5 +1,6 @@
 #' @title GMWM for Sensors, ARMA, SSM, and Robust
 #' @description GMM object
+#' @export
 #' @param model A \code{ts.model} object containing one of the allowed models.
 #' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. sensor or SSM
@@ -213,8 +214,10 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
 
 #' @title Update GMWM object for sensor, ARMA, SSM, and Robust
 #' @description GMM object
+#' @export
 #' @param object A \code{gmwm} object.
-#' @param model A \code{ts.model} object containing one of the allowed models.
+#' @param model A \code{ts.model} object containing one of the allowed models
+#' @param ... Additional parameters (not used)
 #' @return A \code{gmwm} object that contains:
 #' \itemize{
 #'  \item{}
@@ -326,6 +329,7 @@ update.gmwm = function(object, model, ...){
 #' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
 #' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
+#' @param ... other arguments passed to the main gmwm function
 #' @return A \code{gmwm} object that contains:
 #' \itemize{
 #'  \item{}
@@ -350,6 +354,7 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 #' @title Summary of GMWM object
 #' @description Displays summary information about GMWM object
 #' @method summary gmwm
+#' @export
 #' @param object A \code{GMWM} object
 #' @param inference A value containing either: NULL (auto), TRUE, or FALSE
 #' @param bs.gof A value containing either: NULL (auto), TRUE, FALSE
@@ -464,6 +469,7 @@ summary.gmwm = function(object, inference = NULL,
 #' @title Print summary.gmwm object
 #' @description Displays summary information about GMWM object
 #' @method print summary.gmwm
+#' @export
 #' @param x A \code{GMWM} object
 #' @param ... other arguments passed to specific methods
 #' @return Text output via print
@@ -512,6 +518,7 @@ print.summary.gmwm = function(x, ...){
 #' @title Predict future points in the time series using the solution of the Generalized Method of Wavelet Moments
 #' @description Creates a prediction using the estimated values of GMWM through the ARIMA function within R.
 #' @method predict gmwm
+#' @export
 #' @param object A \code{gmwm} object 
 #' @param data.in.gmwm The data SAME EXACT DATA used in the GMWM estimation
 #' @param n.ahead Number of observations to guess.
@@ -553,6 +560,7 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' @title Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method plot gmwm
+#' @export
 #' @param x A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
@@ -592,6 +600,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' @title Graph Solution of the Generalized Method of Wavelet Moments
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method autoplot gmwm
+#' @export
 #' @param object A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.

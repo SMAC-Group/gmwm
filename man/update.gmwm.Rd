@@ -9,7 +9,9 @@
 \arguments{
 \item{object}{A \code{gmwm} object.}
 
-\item{model}{A \code{ts.model} object containing one of the allowed models.}
+\item{model}{A \code{ts.model} object containing one of the allowed models}
+
+\item{...}{Additional parameters (not used)}
 }
 \value{
 A \code{gmwm} object that contains:

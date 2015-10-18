@@ -6,6 +6,9 @@
 \usage{
 do_polyroot_cpp(z)
 }
+\arguments{
+\item{z}{A \code{vec<complex<double>} (complex vector) that has 1 in the beginning (e.g. c(1,3i,-3i))}
+}
 \description{
 Vroom Vroom
 }

@@ -7,11 +7,13 @@
 boot_pval_gof(obj, obj_boot, B = 1000L, alpha = 0.05)
 }
 \arguments{
-\item{alpha}{}
+\item{obj}{A \code{double} containing the objective value of the solution.}
 
-\item{theta}{}
+\item{obj_boot}{A \code{vec} containing the objective values obtained while bootstrapping under Theta_hat.}
 
-\item{psi}{}
+\item{B}{An \code{int} indicating how many times the bootstrapper should be run.}
+
+\item{alpha}{A \code{double} indicating the amount of confidence for CI}
 }
 \value{
 A \code{vec} that has the alpha/2.0 quantile and then the 1-alpha/2.0 quantile.

@@ -16,6 +16,8 @@ gmwm.imu(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 \item{robust}{A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).}
 
 \item{eff}{A \code{double} between 0 and 1 that indicates the efficiency.}
+
+\item{...}{other arguments passed to the main gmwm function}
 }
 \value{
 A \code{gmwm} object that contains:

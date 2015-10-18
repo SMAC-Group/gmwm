@@ -150,6 +150,12 @@ arma::mat optimism_bootstrapper(const arma::vec&  theta,
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters
 //' @param desc A \code{vector<string>} indicating the models that should be considered.
 //' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+//' @param scales A \code{vec} containing the scales of the process.
+//' @param model_type A \code{string} containing the model type either: SSM or IMU
+//' @param N A \code{int} indicating how long the integer is. 
+//' @param robust A \code{bool} indicating robust (T) or classical (F).
+//' @param eff A \code{double} that handles efficiency.
+//' @param H A \code{int} that indicates how many bootstraps should be obtained.
 //' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
 //' @details
 //' Expand in detail...  
@@ -281,9 +287,10 @@ arma::vec gmwm_sd_bootstrapper(const arma::vec&  theta,
 
 //' @title Generate the Confidence Interval for GOF Bootstrapped
 //' @description yaya
-//' @param theta
-//' @param psi
-//' @param alpha
+//' @param obj A \code{double} containing the objective value of the solution.
+//' @param obj_boot A \code{vec} containing the objective values obtained while bootstrapping under Theta_hat.
+//' @param B An \code{int} indicating how many times the bootstrapper should be run.
+//' @param alpha A \code{double} indicating the amount of confidence for CI
 //' @return A \code{vec} that has the alpha/2.0 quantile and then the 1-alpha/2.0 quantile. 
 // [[Rcpp::export]]
 arma::vec boot_pval_gof(double obj, const arma::vec& obj_boot, unsigned int B = 1000, double alpha = 0.05){

@@ -70,6 +70,7 @@ double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha =
 //' @param ma A \code{vec} containing the coefficients of the MA process
 //' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @param sigma A \code{double} containing the residual variance
+//' @param alpha A \code{double} indicating the cutoff.
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
 //' @examples
 //' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)

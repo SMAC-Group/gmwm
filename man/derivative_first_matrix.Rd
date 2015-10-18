@@ -25,7 +25,8 @@ This function computes each process to WV (haar) in a given model.
 Function returns the matrix effectively known as "D"
 }
 \examples{
-deriv_qwn(2^(1:5))
+mod = AR1(.4,1) + WN(.2) + DR(.005)
+derivative_first_matrix(mod$theta, mod$desc, mod$obj.desc, 2^(1:9))
 }
 \author{
 JJB

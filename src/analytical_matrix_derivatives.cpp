@@ -278,7 +278,8 @@ arma::mat deriv_wn(arma::vec tau){
 //' Function returns the matrix effectively known as "D"
 //' @author JJB
 //' @examples
-//' deriv_qwn(2^(1:5))
+//' mod = AR1(.4,1) + WN(.2) + DR(.005)
+//' derivative_first_matrix(mod$theta, mod$desc, mod$obj.desc, 2^(1:9))
 // [[Rcpp::export]]
 arma::mat derivative_first_matrix(const arma::vec& theta, 
                                   const std::vector<std::string>& desc,
@@ -348,6 +349,7 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
 //' @param desc A \code{vector<string>} containing a list of descriptors.
 //' @param objdesc A \code{field<vec>} containing a list of object descriptors.
 //' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+//' @param omegadiff A \code{vec} that contains the result of Omega * (wv_empir - wv_theo)
 //' @return A \code{matrix} with the process derivatives going down the column
 //' @details
 //' Function returns the matrix effectively known as "D"
