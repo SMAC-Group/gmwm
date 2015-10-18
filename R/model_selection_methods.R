@@ -190,7 +190,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data.in, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "sensor", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data.in, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
   
   # Handle post processing
   

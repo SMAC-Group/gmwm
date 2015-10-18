@@ -32,7 +32,7 @@ This function uses information obtained previously (e.g. WV covariance matrix) t
 }
 \details{
 The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "sensor" or "SSM", then
+indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "imu" or "SSM", then
 parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
 options are:
 \itemize{
@@ -43,7 +43,7 @@ options are:
   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 }
-If type = "ARMA", the function takes condition least squares as starting values; if type = "sensor" or type = "SSM" then
+If type = "ARMA", the function takes condition least squares as starting values; if type = "imu" or type = "SSM" then
 starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
 If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 }

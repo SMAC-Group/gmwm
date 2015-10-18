@@ -30,7 +30,7 @@ A \code{vec} that contains the parameter estimates from GMWM estimator.
 This function uses the Generalized Method of Wavelet Moments (GMWM) to estimate the parameters of a time series model.
 }
 \details{
-If type = "sensor" or "ssm", then parameter vector should indicate the characters of the models that compose the latent or state-space model.
+If type = "imu" or "ssm", then parameter vector should indicate the characters of the models that compose the latent or state-space model.
 The model options are:
 \itemize{
   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
@@ -40,7 +40,7 @@ The model options are:
   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 }
-If model_type = "sensor" or type = "ssm" then
+If model_type = "imu" or type = "ssm" then
 starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
 If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 }
