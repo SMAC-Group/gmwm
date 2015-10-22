@@ -75,11 +75,23 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double 
     unsigned int num_elem = dims.n_elem;
 
     arma::mat out(num_elem, 3);
-    eff = sqrt(sqrt(eff));
+    
+    double q1 = R::qnorm(1-alpha_ov_2, 0.0, 1.0, true, false);
+    
+    double coef = ((-1.0*q1-q1) * sqrt(1.0/eff)) / (-1.0*q1-q1);
+    
+    double eff_mod = sqrt(sqrt(eff));
+    
     for(unsigned int i = 0; i<num_elem;i++){
-      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
-      out(i,1) = eff * eta3 * y(i)/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
-      out(i,2) = eta3 * y(i)/(eff*R::qchisq(alpha_ov_2, eta3, 1, 0)); // Upper CI
+      
+      double wv = y(i); // store WV for i-th case
+      
+      double eta3 = std::max(dims(i)/pow(2,i+1),1.0); 
+      double lci = eff_mod * eta3 * wv/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
+      double uci = eta3 * wv/(eff_mod*R::qchisq(alpha_ov_2, eta3, 1, 0)); // Upper CI
+      
+      out(i,1) = wv - lci*coef;
+      out(i,2) = wv + uci*coef;
     }
 
     out.col(0) = y;
