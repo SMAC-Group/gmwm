@@ -20,4 +20,5 @@ This function computes the second moment of a drift process.
 \examples{
 m2_drift(1, 200)
 }
+\keyword{internal}
 

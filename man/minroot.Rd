@@ -15,4 +15,5 @@ A \code{double} with the minimum root value.
 \description{
 Calculates all the roots of a polynomial and returns the root that is the smallest.
 }
+\keyword{internal}
 

@@ -10,6 +10,7 @@ using namespace Rcpp;
 //' @param omega A \code{double} corresponding to variance of drift.
 //' @param n_ts An \code{int} indicating the length of the time series.
 //' @return A \code{vec} containing the expected value of the drift.
+//' @keywords internal
 //' @examples
 //' e_drift(1,200)
 // [[Rcpp::export]]
@@ -24,6 +25,7 @@ arma::vec e_drift(double omega, int n_ts){
 //' @param omega A \code{double} corresponding to variance of drift.
 //' @param n_ts An \code{int} indicating the length of the time series.
 //' @return A \code{vec} containing the second moment of the drift.
+//' @keywords internal
 //' @examples
 //' m2_drift(1, 200)
 // [[Rcpp::export]]
@@ -38,6 +40,7 @@ arma::vec m2_drift(double omega, int n_ts){
 //' @param omega A \code{double} corresponding to variance of drift.
 //' @param n_ts An \code{int} indicating the length of the time series.
 //' @return A \code{vec} containing the variance of the drift.
+//' @keywords internal
 //' @examples
 //' var_drift(1, 200)
 // [[Rcpp::export]]

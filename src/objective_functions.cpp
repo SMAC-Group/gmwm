@@ -43,6 +43,14 @@ double objFun(const arma::vec& theta,
 	return arma::as_scalar(trans(dif)*omega*dif);
 }
 
+//' @title Retrieve GMWM starting value from Yannick's objective function
+//' @description Obtains the GMWM starting value given by Yannick's objective function optimization
+//' @template tsobj_cpp
+//' @param model_type A \code{string} containing the model type. Either 'imu' or 'ssm'
+//' @param wv_empir A \code{vec} containing the empirical wavelet variance.
+//' @param tau A \code{vec} that contains the scales of 2^(1:J), where J is the number of scales created by the decomposition.
+//' @return A \code{double} that is the value of the Objective function under Yannick's starting algorithm
+//' @keywords internal
 // [[Rcpp::export]]
 double getObjFunStarting(const arma::vec& theta, 
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,
@@ -53,6 +61,15 @@ double getObjFunStarting(const arma::vec& theta,
   return objFunStarting(transformed_theta, desc, objdesc, model_type, wv_empir, tau);
 }
 
+//' @title Retrieve GMWM starting value from Yannick's objective function
+//' @description Obtains the GMWM starting value given by Yannick's objective function optimization
+//' @template tsobj_cpp
+//' @param model_type A \code{string} containing the model type. Either 'imu' or 'ssm'
+//' @param omega A \code{mat} that is the inverse of the diagonal of the V matrix.
+//' @param wv_empir A \code{vec} containing the empirical wavelet variance.
+//' @param tau A \code{vec} that contains the scales of 2^(1:J), where J is the number of scales created by the decomposition.
+//' @return A \code{double} that is the value of the Objective function under Yannick's starting algorithm
+//' @keywords internal
 // [[Rcpp::export]]
 double getObjFun(const arma::vec& theta,
               const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type,

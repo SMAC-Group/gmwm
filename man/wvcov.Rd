@@ -33,12 +33,12 @@ Places the Asymptotic Covariance Matrix in print form.
 set.seed(999)
 x=rnorm(100)
 decomp = modwt(x)
-wv = wvar(decomp)
+wv = wvar(x)
 out = wvcov(decomp, wv, compute.v="diag")
 
 # Robust
 decomp = modwt(x)
-wv = wvar(decomp, robust = TRUE)
+wv = wvar(x, robust = TRUE)
 out = wvcov(decomp, wv, compute.v="diag")
 }
 \author{

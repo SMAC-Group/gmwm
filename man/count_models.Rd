@@ -15,7 +15,5 @@ A \code{map<string, int>} containing how frequent the model component appears.
 \description{
 Count the amount of models that exist.
 }
-\examples{
-#TBA
-}
+\keyword{internal}
 

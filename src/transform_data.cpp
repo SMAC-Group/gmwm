@@ -7,6 +7,7 @@ using namespace Rcpp;
 //' @description This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain 
 //' @param x A \code{vec} containing real numbers.
 //' @return A \code{vec} containing logit probabilities.
+//' @keywords internal
 //' @examples
 //' x.sim = rnorm(100)
 //' pseudo_logit_inv(x.sim)
@@ -25,6 +26,7 @@ double pseudo_logit_inv(double x){
 //' @description This function computes the inverse of a logit transformation of the parameters.
 //' @param x A \code{vec} containing real numbers.
 //' @return A \code{vec} containing logit probabilities.
+//' @keywords internal
 //' @examples
 //' x.sim = rnorm(100)
 //' logit_inv(x.sim)
@@ -41,6 +43,7 @@ double logit_inv(double x){
 //' @description This function compute the link function to constrain parameters to a positive domain.
 //' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
 //' @return A \code{vec} containing logit terms.
+//' @keywords internal
 //' @examples
 //' x.sim = runif(100)
 //' pseudo_logit(x.sim)
@@ -59,6 +62,7 @@ double pseudo_logit(double x){
 //' @description This function computes the logit link function.
 //' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
 //' @return A \code{vec} containing logit terms.
+//' @keywords internal
 //' @examples
 //' x.sim = runif(100)
 //' logit(x.sim)
@@ -77,6 +81,7 @@ double logit(double x){
 //' @description This function computes the logit link function.
 //' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
 //' @return A \code{vec} containing logit terms.
+//' @keywords internal
 //' @examples
 //' x.sim = runif(100)
 //' logit(x.sim)
@@ -99,6 +104,7 @@ double logit2(double x){
 //' @description This function computes the inverse of a logit transformation of the parameters.
 //' @param x A \code{vec} containing real numbers.
 //' @return A \code{vec} containing logit probabilities.
+//' @keywords internal
 //' @examples
 //' x.sim = rnorm(100)
 //' logit_inv(x.sim)
@@ -113,6 +119,8 @@ double logit2_inv(double x){
 
 //' @title Transform Values for Optimization
 //' @description Transform parameter guesses prior to estimating with GMWM
+//' @template tsobj_cpp
+//' @param model_type A \code{string} that contains the model type: \code{"imu"} or \code{"ssm"}
 //' @return A \code{vec} containing the transformed guesses.
 // [[Rcpp::export]]
 arma::vec transform_values(const arma::vec& theta,
@@ -205,6 +213,8 @@ arma::vec transform_values(const arma::vec& theta,
 
 //' @title Revert Transform Values for Display
 //' @description Undo the previous transform of parameter guesses to obtain the GMWM estimates.
+//' @template tsobj_cpp
+//' @param model_type A \code{string} that contains the model type: \code{"imu"} or \code{"ssm"}
 //' @return A \code{vec} containing the undone transformation of parameters.
 // [[Rcpp::export]]
 arma::colvec untransform_values(const arma::vec& theta, 

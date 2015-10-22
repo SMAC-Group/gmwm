@@ -174,6 +174,7 @@ gen.lts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
 #' @title Wrapper Function to Plot the Graph of Latent Time Series
 #' @description This function is implemented with ggplot2.
 #' @method plot lts
+#' @export
 #' @param x A \code{lts} object
 #' @param to.unit A \code{string} indicating the unit which the data is converted to. The supported units are "ns"(nanosecond), "ms"(millisecond), "sec", "min", "hour", "day", "month", and "year".
 #' @param background A \code{string} that determines the graph background. It can be "grey" or "white".
@@ -219,6 +220,7 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
 #' @title Plot the Latent Time Series Graph
 #' @description This function is implemented with ggplot2.
 #' @method autoplot lts
+#' @export
 #' @param object A \code{lts} object
 #' @param to.unit A \code{string} indicating the unit which the data is converted to. The supported units are "ns"(nanosecond), "ms"(millisecond), "sec", "min", "hour", "day", "month", and "year".
 #' @param background A \code{string} that determines the graph background. It can be "grey" or "white".

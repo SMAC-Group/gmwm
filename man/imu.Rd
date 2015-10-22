@@ -41,22 +41,30 @@ is \code{NULL}, specify the axis for each column of data. Check example 1 for he
 }
 \examples{
 \dontrun{
-#example 1
-data(imu)
-test1 = imu(imu, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+if(!require("imudata")){
+   install_imudata()
+   library("imudata")
+}
+
+data(imu6)
+
+# Example 1
+test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
 df1 = wvar.imu(test1)
 plot(df1)
 
-test2 = imu(imu, gyroscope = 1:2, accelerometer = NULL, axis = c('X', 'Y'))
+# Example 2
+test2 = imu(imu6, gyroscope = 1:2, accelerometer = NULL, axis = c('X', 'Y'))
 df2 = wvar.imu(test2)
 plot(df2)
 
-#example 2
-test3 = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+# Example 3
+test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
 df3 = wvar.imu(test3)
 plot(df3)
 
-test4 = imu(imu, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
+# Example 4
+test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
 df4 = wvar.imu(test4)
 plot(df4)}
 }

@@ -25,22 +25,30 @@
 #' @author JJB, Wenchao
 #' @examples
 #' \dontrun{
-#' #example 1
-#' data(imu)
-#' test1 = imu(imu, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' 
+#' # Example 1
+#' test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
 #' df1 = wvar.imu(test1)
 #' plot(df1)
 #' 
-#' test2 = imu(imu, gyroscope = 1:2, accelerometer = NULL, axis = c('X', 'Y'))
+#' # Example 2
+#' test2 = imu(imu6, gyroscope = 1:2, accelerometer = NULL, axis = c('X', 'Y'))
 #' df2 = wvar.imu(test2)
 #' plot(df2)
 #' 
-#' #example 2
-#' test3 = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' # Example 3
+#' test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
 #' df3 = wvar.imu(test3)
 #' plot(df3)
 #' 
-#' test4 = imu(imu, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
+#' # Example 4
+#' test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
 #' df4 = wvar.imu(test4)
 #' plot(df4)}
 imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
@@ -158,8 +166,13 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
 #' @return A \code{wvar.imu} object which can be plotted directly.
 #' @examples
 #' \dontrun{
-#' data(imu)
-#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6)
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 #' df = wvar.imu(test)
 #' }
 wvar.imu = function(x, alpha = 0.05, robust = F, eff = 0.6){
@@ -263,6 +276,7 @@ wvar.imu = function(x, alpha = 0.05, robust = F, eff = 0.6){
 #' @title Wrapper Function to Plot the Wavelet Variances of IMU Object
 #' @description Creates a graph of the wavelet variance for imu object.
 #' @method plot wvar.imu
+#' @export
 #' @param x A \code{wvar.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -285,8 +299,13 @@ wvar.imu = function(x, alpha = 0.05, robust = F, eff = 0.6){
 #' @return A panel containing the graph of an IMU sensor.
 #' @examples
 #' \dontrun{
-#' data(imu)
-#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6)
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 #' df = wvar.imu(test)
 #' plot(df)
 #' plot(df, CI = F)
@@ -315,6 +334,7 @@ plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @title Plot the Wavelet Variances of IMU Object
 #' @description Creates a graph of the wavelet variance for imu object.
 #' @method autoplot wvar.imu
+#' @export
 #' @param object A \code{wvar.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -337,8 +357,13 @@ plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @return A panel containing the graph of an IMU sensor.
 #' @examples
 #' \dontrun{
-#' data(imu)
-#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6)
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 #' df = wvar.imu(test)
 #' autoplot(df)
 #' autoplot(df, CI = F)
@@ -386,6 +411,7 @@ autoplot.wvar.imu = function(object, CI = TRUE, background = 'white', transparen
 #' @title Plot imu object in split type: 6 graphs
 #' @description Plot each WV variance in a split graph
 #' @method autoplot imu6
+#' @export
 #' @param object A \code{wvar.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -683,6 +709,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
 #' @title Wrapper to Automatic Model Selection Results of IMU Object
 #' @description Creates a graph of the automatic model selection result containing the empirical and theoretical wavelet variances. 
 #' @method plot auto.imu
+#' @export
 #' @param x A \code{auto.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -705,8 +732,13 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
 #' @return A panel containing the automatic model selection results of an IMU sensor.
 #' @examples
 #' \dontrun{
-#' data(imu)
-#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
 #' df = auto.imu(test)
 #' plot(df)
 #' plot(df, CI = F)
@@ -737,6 +769,7 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @title Automatic Model Selection Results of IMU Object
 #' @description Creates a graph of the automatic model selection result containing the empirical and theoretical wavelet variances. 
 #' @method autoplot auto.imu
+#' @export
 #' @param object A \code{auto.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -759,8 +792,13 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @return A panel containing the automatic model selection results of an IMU sensor.
 #' @examples
 #' \dontrun{
-#' data(imu)
-#' test = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
 #' df = auto.imu(test)
 #' autoplot(df)
 #' autoplot(df, CI = F)
@@ -774,7 +812,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
                              facet.label.size = 13, facet.label.background = "#003C7D33",
                              scales = "free_y",...){
-  value = varialbe = low = high = .x = NULL
+  value = variable = low = high = .x = NULL
   
   ###0. param checking
   if( !(background %in% c('grey','gray', 'white')) ){

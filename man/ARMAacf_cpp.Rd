@@ -31,4 +31,5 @@ ARMAacf_cpp(numeric(0), .35, lag_max = 10)
 \author{
 R Core Team and JJB
 }
+\keyword{internal}
 

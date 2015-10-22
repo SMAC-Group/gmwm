@@ -19,8 +19,9 @@ using namespace Rcpp;
 //' @param A A \code{mat} containing the first derivatives of the process.
 //' @param at_omega A \code{mat} containing A^T * Omega
 //' @return A \code{mat}
-//' @details
-//' TBA
+//' @backref src/model_selection.cpp
+//' @backref src/model_selection.h
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega){
   unsigned int p = A.n_cols;
@@ -41,6 +42,9 @@ arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega){
 //' @param v_hat A \code{mat} that contains the covariance matrix
 //' @param diff A \code{vec} that is the difference of the WV empirical and WV theoretical
 //' @return A \code{vec}
+//' @keywords internal
+//' @backref src/model_selection.cpp
+//' @backref src/model_selection.h
 //' @details
 //' The equation is slightly different than that stated in the paper due to the bootstrap already incorporating in 
 //' N.

@@ -12,6 +12,8 @@
 \item{data.in.gmwm}{The data SAME EXACT DATA used in the GMWM estimation}
 
 \item{n.ahead}{Number of observations to guess.}
+
+\item{...}{Additional parameters}
 }
 \value{
 A \code{predict.gmwm} object with:

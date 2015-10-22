@@ -19,4 +19,5 @@ This function compute the link function to constrain parameters to a positive do
 x.sim = runif(100)
 pseudo_logit(x.sim)
 }
+\keyword{internal}
 

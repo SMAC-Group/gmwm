@@ -20,12 +20,12 @@
 #' set.seed(999)
 #' x=rnorm(100)
 #' decomp = modwt(x)
-#' wv = wvar(decomp)
+#' wv = wvar(x)
 #' out = wvcov(decomp, wv, compute.v="diag")
 #' 
 #' # Robust
 #' decomp = modwt(x)
-#' wv = wvar(decomp, robust = TRUE)
+#' wv = wvar(x, robust = TRUE)
 #' out = wvcov(decomp, wv, compute.v="diag")
 wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
   
@@ -56,6 +56,7 @@ wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
 #' @title Print Asymptotic Covariance Matrix
 #' @description Places the Asymptotic Covariance Matrix in print form.
 #' @method print wvcov
+#' @export
 #' @param x A \code{wvcov} object
 #' @param ...  further arguments passed to or from other methods
 #' @return Prints the modwt matrix decomposition
@@ -64,7 +65,7 @@ wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
 #' set.seed(999)
 #' x=rnorm(100)
 #' decomp = modwt(x)
-#' wv = wvar(decomp)
+#' wv = wvar(x)
 #' print(wvcov(decomp,wv,compute.v="diag"))
 print.wvcov = function(x, ...){
   print(x$V)
@@ -73,6 +74,7 @@ print.wvcov = function(x, ...){
 #' @title Summary Wavelet Covariance Matrix
 #' @description Prints the Wavelet Covariance Matrix
 #' @method summary wvcov
+#' @export
 #' @param object A \code{wvcov} object
 #' @param ...  additional arguments affecting the summary produced.
 #' @return Prints the modwt matrix decomposition
@@ -81,7 +83,7 @@ print.wvcov = function(x, ...){
 #' set.seed(999)
 #' x=rnorm(100)
 #' decomp = modwt(x)
-#' wv = wvar(decomp)
+#' wv = wvar(x)
 #' summary(wvcov(decomp,wv,compute.v="diag"))
 summary.wvcov=function(object, ...){
   

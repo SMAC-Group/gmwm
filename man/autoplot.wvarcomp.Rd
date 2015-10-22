@@ -73,4 +73,5 @@ JJB, Wenchao
 \seealso{
 \code{\link{compare.wvar}}
 }
+\keyword{internal}
 

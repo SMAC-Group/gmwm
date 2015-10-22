@@ -31,4 +31,5 @@ ARMAtoMA_cpp(numeric(0), 1.0, 10)
 \author{
 R Core Team and JJB
 }
+\keyword{internal}
 

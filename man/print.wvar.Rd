@@ -19,8 +19,8 @@ Displays the summary table of wavelet variance.
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
-out = wvar(modwt(x))
+x = rnorm(100)
+out = wvar(x)
 print( out )
 }
 \author{

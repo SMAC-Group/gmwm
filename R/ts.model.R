@@ -396,6 +396,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' @title Multiple a ts.model by constant
 #' @description Sets up the necessary backend for creating multiple model objects.
 #' @method print ts.model
+#' @export
 #' @param x A \code{numeric} value
 #' @param ... further arguments passed to or from other methods.
 #' @return An S3 object with called ts.model with the following structure:
@@ -407,7 +408,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' @examples
 #' QN() + DR() + WN() + RW() + AR1() + ARMA(1,2)
 #' AR1(phi=.9,sigma2=.1) + WN(sigma2=1) + 
-#' RW(sigma2=.3) + DR(sigma2=.5) + QN(q2=.9) + ARMA(ar=c(.3,.1),ma=c(.3,.2), sigma2= .99)
+#' RW(sigma2=.3) + DR(slope=.5) + QN(q2=.9) + ARMA(ar=c(.3,.1),ma=c(.3,.2), sigma2= .99)
 #' 
 #' AR1(.9,.1) + WN(1) + RW(.3) + DR(.5) + QN(.9) + ARMA(c(.3,.1),c(.3,.2), .99)
 print.ts.model = function(x, ...){
@@ -424,6 +425,17 @@ print.ts.model = function(x, ...){
   }
 }
 
+#' @title Create a ts.model from desc string
+#' @description Sets up the necessary backend for using Cpp functions to build R ts.model objects
+#' @param desc A \code{character} vector containing: \code{"AR1"},\code{"DR"},\code{"WN"},\code{"RW"},\code{"QN"}
+#' @return An S3 object with called ts.model with the following structure:
+#' \itemize{
+#'  \item{desc}
+#'  \item{theta}
+#' }
+#' @author JJB
+#' @examples
+#' desc.to.ts.model(c("AR1","WN"))
 desc.to.ts.model = function(desc){
   theta = .Call('gmwm_model_theta', PACKAGE = 'gmwm', desc)
   

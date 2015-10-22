@@ -21,7 +21,7 @@ A \code{list} with the following structure:
 }
 }
 \description{
-Convert Unit of Time Series Data
+Manipulate the units of time to different ones
 }
 \details{
 The supported units are "ns"(nanosecond), "ms"(millisecond), "sec", "min", "hour", "day", "month", and "year".
@@ -33,4 +33,5 @@ unitConversion(x, 'sec', 'min')
 y = 1:10
 unitConversion(y, 'hour', 'sec')
 }
+\keyword{internal}
 

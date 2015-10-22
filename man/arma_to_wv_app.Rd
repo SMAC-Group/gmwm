@@ -24,9 +24,10 @@ A \code{vec} containing the wavelet variance of the ARMA process.
 This function computes the (haar) WV of an ARMA process
 }
 \examples{
-arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
 }
 \seealso{
 \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 }
+\keyword{internal}
 

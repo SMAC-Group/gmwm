@@ -67,4 +67,5 @@ Creates a graph containing the empirical and theoretical wavelet variances const
 \author{
 JJB, Wenchao
 }
+\keyword{internal}
 

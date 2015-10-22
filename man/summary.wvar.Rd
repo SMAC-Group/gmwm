@@ -20,10 +20,11 @@ Displays the summary table of wavelet variance in addition to CI values and supp
 \examples{
 set.seed(999)
 x=rnorm(100)
-out = wvar(modwt(x))
+out = wvar(x)
 summary( out )
 }
 \author{
 JJB
 }
+\keyword{internal}
 

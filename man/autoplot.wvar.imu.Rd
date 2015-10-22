@@ -61,8 +61,13 @@ Creates a graph of the wavelet variance for imu object.
 }
 \examples{
 \dontrun{
-data(imu)
-test = imu(imu, gyroscope = 1:3, accelerometer = 4:6)
+if(!require("imudata")){
+   install_imudata()
+   library("imudata")
+}
+
+data(imu6)
+test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 df = wvar.imu(test)
 autoplot(df)
 autoplot(df, CI = F)

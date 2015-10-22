@@ -13,6 +13,16 @@
 #include "wv_filters.h"
 
 //' @title Indirect Inference for ARMA
+//' @description Option for indirect inference
+//' @param ar A \code{vec} that contains the coefficients of the AR process.
+//' @param ma A \code{vec} that contains the coefficients of the MA process.
+//' @param sigma2 A \code{double} that indicates the sigma2 parameter of the ARMA process.
+//' @param N A \code{int} that indicates how long the time series is.
+//' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+//' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+//' @param H A \code{int} that indicates how many iterations should take place.
+//' @return A \code{vec} with the indirect inference results.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec idf_arma(const arma::vec& ar, const arma::vec& ma,
                    const double sigma2,
@@ -48,6 +58,16 @@ arma::vec idf_arma(const arma::vec& ar, const arma::vec& ma,
 
 
 //' @title Indirect Inference for ARMA
+//' @description Option for indirect inference
+//' @param ar A \code{vec} that contains the coefficients of the AR process.
+//' @param ma A \code{vec} that contains the coefficients of the MA process.
+//' @param sigma2 A \code{double} that indicates the sigma2 parameter of the ARMA process.
+//' @param N A \code{int} that indicates how long the time series is.
+//' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+//' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+//' @param H A \code{int} that indicates how many iterations should take place.
+//' @return A \code{vec} with the indirect inference results.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec idf_arma_total(const arma::vec& ar, const arma::vec& ma,
                     const double sigma2,

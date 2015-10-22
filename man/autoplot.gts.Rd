@@ -51,4 +51,5 @@ autoplot(x)
 \author{
 Wenchao
 }
+\keyword{internal}
 

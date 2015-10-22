@@ -28,4 +28,5 @@ tau = 2^(1:ntau)
 wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
 plot(tau, wv.theo, col = "red")
 }
+\keyword{internal}
 

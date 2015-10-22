@@ -13,7 +13,30 @@
 
 using namespace Rcpp;
 
-
+//' @title Routing function for summary info
+//' @description Gets all the data for the summary.gmwm function.
+//' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+//' @param model_type A \code{string} that represents the model transformation
+//' @param wv_empir A \code{vec} that 
+//' @param theo A \code{vec} that
+//' @param scales A \code{vec} that
+//' @param V A \code{mat} that contains the V matrix used to obtain the GMWM.
+//' @param omega A \code{mat} that 
+//' @param obj_value A \code{double} that contains the objective function value at the optimized solution.
+//' @param N A \code{int} that indicates how long the time series is.
+//' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100
+//' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+//' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+//' @param inference A \code{bool} that indicates whether inference (e.g. GoF) should be run.
+//' @param fullV A \code{bool} that indicates whether the matrix has been fully bootstrapped.
+//' @param bs_gof A \code{bool} indicating whether the GoF should be bootstrapped or done asymptotically.
+//' @param bs_gof_p_ci A \code{bool} indicating whether a bootstrapped p-value should be generated during the bootstrapped GoF
+//' @param bs_ci A \code{bool} that indicates whether a bootstrapped CI should be obtained or to use analytical derivatives.
+//' @param B A \code{int} that indicates how many iterations should take place.
+//' @return A \code{field<mat>} that contains bootstrapped / asymptotic GoF results as well as CIs.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::field<arma::mat> get_summary(arma::vec theta,
                                    const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 

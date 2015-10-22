@@ -112,7 +112,9 @@ imu_info get_imu_info(std::string imu_type){
 //' The function below is a heavily modified port of MATLAB code into Armadillo/C++. 
 //' 
 //' @examples
-//' read_imu("F:/Desktop/short_test_data.imu","IXSEA")
+//' \dontrun{
+//' read_imu(file_path = "F:/Desktop/short_test_data.imu", imu_type = "IXSEA")
+//' }
 // [[Rcpp::export]]
 arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
   

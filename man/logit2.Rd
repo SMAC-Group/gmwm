@@ -19,4 +19,5 @@ This function computes the logit link function.
 x.sim = runif(100)
 logit(x.sim)
 }
+\keyword{internal}
 

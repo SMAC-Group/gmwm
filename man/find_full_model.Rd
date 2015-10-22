@@ -15,4 +15,5 @@ A \code{vector<string>} that contains the terms of the common denominator of all
 \description{
 Determines the common denominator among models
 }
+\keyword{internal}
 

@@ -61,8 +61,13 @@ Creates a graph of the automatic model selection result containing the empirical
 }
 \examples{
 \dontrun{
-data(imu)
-test = imu(imu, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+if(!require("imudata")){
+   install_imudata()
+   library("imudata")
+}
+
+data(imu6)
+test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
 df = auto.imu(test)
 plot(df)
 plot(df, CI = F)

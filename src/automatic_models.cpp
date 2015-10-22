@@ -44,6 +44,7 @@ unsigned int count_params(const std::vector<std::string>& desc){
 //' @param combs A \code{mat} that is a binary matrix (0,1) containing the combinations of different variables.
 //' @param x A \code{vec<string>} that contains a list of model descriptors.
 //' @return A \code{set<string>} that contains the list of unique models.
+//' @keywords internal
 // [[Rcpp::export]]
 std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std::vector <std::string> x) {
   
@@ -66,6 +67,7 @@ std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std
 //' @description Converts a vector into a set
 //' @param x A \code{vec<vec<string>>} that contains a list of model descriptors.
 //' @return A \code{set<vector<string>>} that contains the list of unique models.
+//' @keywords internal
 // [[Rcpp::export]]
 std::set<std::vector<std::string> > vector_to_set(std::vector<std::vector<std::string > > model_str){
   
@@ -85,6 +87,7 @@ std::set<std::vector<std::string> > vector_to_set(std::vector<std::vector<std::s
 //' @description Determines the common denominator among models
 //' @param x A \code{vector< vector<string> >} that contains all possible models under consideration
 //' @return A \code{vector<string>} that contains the terms of the common denominator of all models
+//' @keywords internal
 // [[Rcpp::export]]
 std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > x ){
   
@@ -532,8 +535,22 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   return out;
 }
 
-
-
+//' @title Find the Rank Models result
+//' @description Provides the core material to create an S3 object for rank.models
+//' @param data A \code{vec} of data.
+//' @param model_str A \code{vector<vector<string>>} that gives a list of models to test.
+//' @param full_model A \code{vector<string>} that contains the largest / full model.
+//' @param alpha A \code{double} that indicates the alpha level for CIs.
+//' @param compute_v A \code{string} indicating the type of V matrix to generate
+//' @param model_type A \code{string} that describes the model generation / transformation: 'ssm' or 'imu'
+//' @param K A \code{int} that controls how many times the GMWM is run. 
+//' @param H A \code{int} that controls how many bootstraps occur.
+//' @param G A \code{int} that controls how many guesses occur.
+//' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
+//' @param eff A \code{double} that indicates the efficiency to use.
+//' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+//' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec& data,
                                                                 const std::vector<std::vector < std::string > >& model_str, 
@@ -561,7 +578,22 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
   return h;
 }
 
-
+//' @title Find the auto imu result
+//' @description Provides the core material to create an S3 object for auto.imu
+//' @param data A \code{mat} containing multiple columns of independent data with the same number of observations.
+//' @param model_str A \code{vector<vector<string>>} that gives a list of models to test.
+//' @param full_model A \code{vector<string>} that contains the largest / full model.
+//' @param alpha A \code{double} that indicates the alpha level for CIs.
+//' @param compute_v A \code{string} indicating the type of V matrix to generate
+//' @param model_type A \code{string} that describes the model generation / transformation: 'ssm' or 'imu'
+//' @param K A \code{int} that controls how many times the GMWM is run. 
+//' @param H A \code{int} that controls how many bootstraps occur.
+//' @param G A \code{int} that controls how many guesses occur.
+//' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
+//' @param eff A \code{double} that indicates the efficiency to use.
+//' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+//' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& data,
                                               const arma::mat& combs,

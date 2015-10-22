@@ -17,7 +17,10 @@ using namespace Rcpp;
 //' @param A first derivative matrix
 //' @param v_hat bootstrapped V
 //' @param omega original omega matrix
+//' @backref src/inference.cpp
+//' @backref src/inference.h
 //' @return A \code{mat} that has the first column 
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat calculate_psi_matrix(const arma::mat& A, const arma::mat& v_hat, const arma::mat& omega){ 
   arma::mat A_trans = arma::trans(A);
@@ -28,15 +31,18 @@ arma::mat calculate_psi_matrix(const arma::mat& A, const arma::mat& v_hat, const
 
 //' @title Format the Confidence Interval for Estimates
 //' @description Creates hi and lo confidence based on SE and alpha.
-//' @param theta
-//' @param se
-//' @param alpha
+//' @param theta A \code{vec} containing the estimates
+//' @param se A \code{vec} containing the standard error
+//' @param alpha A \code{double} that contains the confidence level.
 //' @return A \code{mat} that has:
 //' \itemize{
 //' \item Column 1: Lo CI
 //' \item Column 2: Hi CI
 //' \item Column 3: SE
 //' }
+//' @backref src/inference.cpp
+//' @backref src/inference.h
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat format_ci(const arma::vec& theta,
                     const arma::vec& se,
@@ -55,11 +61,16 @@ arma::mat format_ci(const arma::vec& theta,
 }
 
 //' @title Generate the Confidence Interval for Theta Estimates
-//' @description yaya
-//' @param theta
-//' @param psi
-//' @param z
+//' @description Create an Asymptotic CI for the Theta Estimates.
+//' @param theta A \code{vec} containing the estimates
+//' @param A A \code{mat} that is the first derivative matrix.
+//' @param v_hat A \code{mat} that is the bootstrapped V matrix
+//' @param omega A \code{mat} that is the inverse of the diagonal V matrix.
+//' @param alpha A \code{double} that contains the confidence level.
 //' @return A \code{mat} that has the first column 
+//' @backref src/inference.cpp
+//' @backref src/inference.h
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat theta_ci(const arma::vec& theta,
                    const arma::mat& A, 
@@ -75,15 +86,20 @@ arma::mat theta_ci(const arma::vec& theta,
 
 //' @title Compute the GOF Test
 //' @description yaya
-//' @param theta
-//' @param psi
-//' @param p
+//' @template tsobj_cpp
+//' @param model_type A \code{string} that contains the model type: \code{"imu"} or \code{"ssm"}
+//' @param tau A \code{vec} containing the scales of a proccess.
+//' @param v_hat A \code{mat} that contains the bootstrapped matrix.
+//' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
 //' @return A \code{vec} that has
 //' \itemize{
 //' \item Test Statistic
 //' \item P-Value
 //' \item DF
 //' } 
+//' @backref src/inference.cpp
+//' @backref src/inference.h
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec gof_test(arma::vec theta, 
                    const std::vector<std::string>& desc,
@@ -120,10 +136,10 @@ arma::vec gof_test(arma::vec theta,
 }
 
 //' @title Compute the Bootstrapped GoF Test
-//' @description yaya
-//' @param obj_value
-//' @param bs_obj_value
-//' @param alpha
+//' @description Handles the bootstrap computation and the bootstrapped p-value.
+//' @param obj_value A \code{double} that contains the optimized objective function value.
+//' @param bs_obj_values A \code{vec} that contains the objective function values under bootstrap.
+//' @param alpha A \code{double} that indicates the confidence.
 //' @param bs_gof_p_ci A \code{bool} that indicates whether CIs should be included or not.
 //' @return A \code{vec} that has
 //' \itemize{
@@ -131,6 +147,9 @@ arma::vec gof_test(arma::vec theta,
 //' \item Low CI
 //' \item Upper CI - BS
 //' } 
+//' @backref src/inference.cpp
+//' @backref src/inference.h
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec bootstrap_gof_test(double obj_value, arma::vec bs_obj_values, double alpha, bool bs_gof_p_ci){
   

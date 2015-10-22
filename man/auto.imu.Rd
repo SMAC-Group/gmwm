@@ -24,6 +24,8 @@ auto.imu(data, model = 3 * AR1() + WN() + RW() + QN() + DR(), bootstrap = F,
 \item{B}{A \code{integer} that contains the amount of bootstrap replications}
 
 \item{G}{A \code{integer} that indicates the amount of guesses for caliberating the startup.}
+
+\item{seed}{A \code{integer} that controls the reproducibility of the auto model selection phase.}
 }
 \value{
 A \code{auto.imu} object.

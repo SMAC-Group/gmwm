@@ -43,4 +43,5 @@ filter(x, rep(1, 3), sides = 1, circular = TRUE)
 \author{
 R Core Team and JJB
 }
+\keyword{internal}
 

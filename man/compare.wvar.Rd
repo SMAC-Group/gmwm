@@ -4,7 +4,7 @@
 \alias{compare.wvar}
 \title{Compare Wavelet Variances}
 \usage{
-\method{compare}{wvar}(..., background = "white", split = TRUE, CI = TRUE,
+compare.wvar(..., background = "white", split = TRUE, CI = TRUE,
   auto.label.wvar = T, transparence = 0.1, line.color = NULL,
   CI.color = NULL, line.type = NULL, point.size = NULL,
   point.shape = NULL, title = "Haar Wavelet Variance Representation",

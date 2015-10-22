@@ -11,7 +11,13 @@ rank.models(data, models = list(AR1() + WN(), AR1()), nested = F,
 \arguments{
 \item{data}{A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.}
 
+\item{models}{A list of \code{ts.model} objects.}
+
+\item{nested}{A \code{bool} that indicates whether the ts.model objects are nested within a large object given within the list. If not, the a full model will be created.}
+
 \item{bootstrap}{A \code{bool} that is either true or false to indicate whether we use bootstrap or asymptotic By default, we use asymptotic.}
+
+\item{model.type}{A \code{string} indicating whether the model should be a \code{"ssm"} or \code{"imu"}.}
 
 \item{alpha}{A \code{double} that indicates the level of confidence for the WV CI.}
 
@@ -23,7 +29,7 @@ rank.models(data, models = list(AR1() + WN(), AR1()), nested = F,
 
 \item{G}{A \code{integer} that indicates the amount of guesses for caliberating the startup.}
 
-\item{...}{Multiple \code{ts.model} objects}
+\item{seed}{A \code{integer} that is used to set a seed for reproducibility.}
 }
 \value{
 A \code{rank.models} object.

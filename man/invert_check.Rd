@@ -15,4 +15,5 @@ True (if outside unit circle) || False (if inside unit circle)
 \description{
 Checks the invertiveness of series of coefficients.
 }
+\keyword{internal}
 

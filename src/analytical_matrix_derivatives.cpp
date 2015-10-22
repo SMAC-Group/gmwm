@@ -6,6 +6,16 @@
 
 using namespace Rcpp;
 
+//' @title ARMA Adapter to ARMA to WV Process function
+//' @description Molds the data so that it works with the arma_to_wv function.
+//' @param theta A \code{vec} that contains all the parameter estimates.
+//' @param p A \code{int} that indicates the number of AR coefficients
+//' @param q A \code{int} that indicates the number of MA coefficients.
+//' @param tau A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+//' @return A \code{vec} containing the ARMA to WV results
+//' @keywords internal
+//' @backref src/analytical_matrix_derivatives.cpp
+//' @backref src/analytical_matrix_derivatives.h
 // [[Rcpp::export]]
 arma::vec arma_adapter(const arma::vec& theta,
                        unsigned int p,
@@ -34,7 +44,16 @@ arma::vec arma_adapter(const arma::vec& theta,
 }
 
 
-// Make life better (TM)
+//' @title Calculates the Jacobian for the ARMA process
+//' @description Figure out the Jacobian for an ARMA process.
+//' @param theta A \code{vec} that contains all the parameter estimates.
+//' @param p A \code{int} that indicates the number of AR coefficients
+//' @param q A \code{int} that indicates the number of MA coefficients.
+//' @param tau A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+//' @return A \code{mat} that returns the numerical jacobian of the ARMA process.
+//' @keywords internal
+//' @backref src/analytical_matrix_derivatives.cpp
+//' @backref src/analytical_matrix_derivatives.h
 // [[Rcpp::export]]
 arma::mat jacobian_arma(const arma::vec& theta,
                         unsigned int p,

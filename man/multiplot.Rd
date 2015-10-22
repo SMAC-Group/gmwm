@@ -31,4 +31,5 @@ See the R Graphics Cookbook for more information
 \author{
 Winston Chang
 }
+\keyword{internal}
 

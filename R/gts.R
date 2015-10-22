@@ -148,6 +148,7 @@ gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
 #' @title Plot Time Series Data
 #' @description This function is implemented with ggplot2.
 #' @method plot gts
+#' @export
 #' @param x A \code{gts} object
 #' @param to.unit A \code{string} indicating the unit which the data is converted to. The supported units are "ns"(nanosecond), "ms"(millisecond), "sec", "min", "hour", "day", "month", and "year".
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -186,6 +187,8 @@ plot.gts = function(x, to.unit = NULL, background = 'white',
 #' @title Plot Time Series Data
 #' @description This function is implemented with ggplot2.
 #' @method autoplot gts
+#' @export
+#' @keywords internal
 #' @param object A \code{gts} object
 #' @param to.unit A \code{string} indicating the unit which the data is converted to. The supported units are "ns"(nanosecond), "ms"(millisecond), "sec", "min", "hour", "day", "month", and "year".
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -259,11 +262,9 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
 }
 
 
-# gts.simplify = function(){
-#   
-# }
-
 #' @title Convert Unit of Time Series Data
+#' @description Manipulate the units of time to different ones
+#' @keywords internal
 #' @param x A \code{vector} containing the values on x-axis.
 #' @param from.unit A \code{string} indicating the unit which the data is converted from.
 #' @param to.unit A \code{string} indicating the unit which the data is converted to.

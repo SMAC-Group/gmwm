@@ -25,6 +25,8 @@ gmwm(model, data, model.type = "ssm", compute.v = "auto",
 
 \item{alpha}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
 
+\item{seed}{A \code{integer} that controls the reproducibility of the auto model selection phase.}
+
 \item{G}{An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.}
 
 \item{K}{An \code{integer} that controls how many times the bootstrapping procedure will be initiated.}
@@ -67,6 +69,22 @@ END
 10. Optimize the values to obtain \eqn{\hat{\theta}}{theta^hat}
 END
 11. Return optimized values.
+
+
+The function estimates a variety of time series models. If type = "imu" or "SSM", then
+parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+options are:
+\itemize{
+  \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+  \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+  \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+  \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+  \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+  \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+}
+If type = "ARMA", the function takes condition least squares as starting values; if type = "imu" or type = "SSM" then
+starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 }
 \examples{
 # AR

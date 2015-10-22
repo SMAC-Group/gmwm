@@ -12,6 +12,7 @@
 #' @param G An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.
 #' @param K An \code{integer} that controls how many times the bootstrapping procedure will be initiated.
 #' @param H An \code{integer} that indicates how many different samples the bootstrap will be collect.
+#' @param seed A \code{integer} that controls the reproducibility of the auto model selection phase.
 #' @return A \code{gmwm} object that contains:
 #' \itemize{
 #'  \item{}
@@ -43,6 +44,23 @@
 #' 10. Optimize the values to obtain \eqn{\hat{\theta}}{theta^hat}
 #'END
 #' 11. Return optimized values.
+#' 
+#' 
+#' The function estimates a variety of time series models. If type = "imu" or "SSM", then
+#' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
+#' options are:
+#' \itemize{
+#'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+#'   \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
+#'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
+#'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
+#'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
+#'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
+#' }
+#' If type = "ARMA", the function takes condition least squares as starting values; if type = "imu" or type = "SSM" then
+#' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+#' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
+#' 
 #' @examples
 #' # AR
 #' set.seed(1336)
@@ -379,12 +397,14 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 #' }
 #' @author JJB
 #' @examples
+#' \dontrun{
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
+#' }
 summary.gmwm = function(object, inference = NULL,  
                         bs.gof = NULL,  bs.gof.p.ci = NULL, 
                         bs.theta.est = NULL, bs.ci = NULL,
@@ -470,17 +490,20 @@ summary.gmwm = function(object, inference = NULL,
 #' @description Displays summary information about GMWM object
 #' @method print summary.gmwm
 #' @export
+#' @keywords internal
 #' @param x A \code{GMWM} object
 #' @param ... other arguments passed to specific methods
 #' @return Text output via print
 #' @author JJB
 #' @examples
+#' \dontrun{
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR2(phi=0.95, sigma2 = .1),n)
+#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' summary(mod)
+#' }
 print.summary.gmwm = function(x, ...){
   
   cat("Model Information: \n")
@@ -522,6 +545,7 @@ print.summary.gmwm = function(x, ...){
 #' @param object A \code{gmwm} object 
 #' @param data.in.gmwm The data SAME EXACT DATA used in the GMWM estimation
 #' @param n.ahead Number of observations to guess.
+#' @param ... Additional parameters
 #' @return A \code{predict.gmwm} object with:
 #' \itemize{
 #' \item{pred}{Predictions}
@@ -601,6 +625,7 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method autoplot gmwm
 #' @export
+#' @keywords internal
 #' @param object A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
@@ -689,6 +714,8 @@ autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', C
 #' @title Graph Solution of the Generalized Method of Wavelet Moments for Each Process
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
 #' @method autoplot gmwm2
+#' @export
+#' @keywords internal
 #' @param object A \code{GMWM} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
@@ -854,6 +881,8 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
 #' @title Graph Solution of the Generalized Method of Wavelet Moments Non-individually
 #' @description Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
 #' @method autoplot gmwm1
+#' @export
+#' @keywords internal
 #' @param object A \code{GMWM} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
@@ -1383,6 +1412,9 @@ compare.gmwm = function(..., background = 'white', split = TRUE, CI = TRUE, auto
 
 #' @title Compare GMWM Model Fits with ggplot2 (Internal)
 #' @description Creates a single graph that contains several GMWM models plotted against each other.
+#' @method autoplot gmwmComp
+#' @export
+#' @keywords internal
 #' @param object A \code{data.frame} containing both sets of GMWM object data.
 #' @param breaks A \code{vector} used to determine the legend label.
 #' @param levels A \code{vector} of \code{string} that indicates each level in the dataset.

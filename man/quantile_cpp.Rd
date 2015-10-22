@@ -7,9 +7,9 @@
 quantile_cpp(x, probs)
 }
 \arguments{
-\item{x}{A \code{vec} that denotes the starting point.}
+\item{x}{A \code{vec} of data}
 
-\item{b}{A \code{vec}, that denotes the ending point.}
+\item{probs}{A \code{vec} of the quantiles to find.}
 }
 \value{
 A \code{vector} containing the quantiles
@@ -25,4 +25,5 @@ quantile(c(1,2,3,4,5,6,7), c(.25,.5,.75))
 \author{
 James J Balamuta
 }
+\keyword{internal}
 

@@ -25,4 +25,5 @@ is.whole(c(7,.8,9))
 \author{
 JJB
 }
+\keyword{internal}
 

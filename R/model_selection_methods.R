@@ -3,6 +3,7 @@
 #' @param n The number of variables.
 #' @details Port expand.grid to C++ at a later time...
 #' @return Returns a binary matrix (e.g. 1 or 0) entries
+#' @keywords internal
 comb.mat = function(n){
   c = rep(list(1:0), n)
   expand.grid(c)
@@ -13,6 +14,7 @@ comb.mat = function(n){
 #' @param desc A \code{character} vector containing \code{ts.model} terms from desc. 
 #' @details Checks if there are two or more objects found of type: DR, QN, RW, or WN. In addition, it currently forbids ARMA Models.
 #' @return Returns nothing if there is no issues. Otherwise, it will kill the process. 
+#' @keywords internal
 select.desc.check = function(desc){
   models.active = count_models(desc)
   
@@ -30,9 +32,10 @@ select.desc.check = function(desc){
 #' @title Formats the model score matrix
 #' @description The model score matrix receives the appropriate model numbering, col descriptors, and ordering of models.
 #' @param out A \code{list} containing the model matrix
-#' @param num.models A \code{integer} that indicates the number of models fit. 
+#' @param model.names A \code{character vector} that contains a list of the model names.
 #' @return An updated matrix in the ith position of the list. 
-pretty.model.score = function(out, model.names){
+#' @keywords internal
+cust.model.score = function(out, model.names){
 
   colnames(out) = c("Obj Fun", "Optimism", "Criterion", "GoF P-Value")
   rownames(out) = sapply(model.names, FUN = paste0, collapse=" ")
@@ -42,13 +45,26 @@ pretty.model.score = function(out, model.names){
   out
 }
 
-
+#' @title Formats the rank.models (auto.imu) object
+#' @description Creates the correct GMWM object and rank.models (auto.imu) summary object
+#' @param out A \code{list} containing the model matrix
+#' @param model.names A \code{character vector} that contains the names of the models fit.
+#' @param scales A \code{vector} containing the 2^(1:J) scales.
+#' @param N A \code{int} indicating the length of the time series.
+#' @param alpha A \code{double} indicating the CI confidence.
+#' @param robust A \code{bool} indicating whether to use robust (T) or to use classical (F)
+#' @param eff A \code{double} indicating the efficiency for robust estimation.
+#' @param B A \code{int} to indicate how many bootstraps should occur when generating the V matrix.
+#' @param G A \code{int} to indicate how many guesses should be performed during the grid search
+#' @param seed A \code{seed} to recreate the same GMWM estimator results.
+#' @return An updated matrix in the ith position of the list. 
+#' @keywords internal
 output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, seed){
   desc = model.names[out[[1]][[2]]]
   
   model.ts = desc.to.ts.model(desc[[1]])
   
-  out[[1]] = pretty.model.score(out[[1]][[1]], desc)
+  out[[1]] = cust.model.score(out[[1]][[1]], desc)
   
   gmwm.obj = out[[2]]
   estimate = gmwm.obj[[1]]
@@ -97,17 +113,21 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 
 #' @title Automatically select appropriate model for a set of models
 #' @description Runs through a model selection algorithm to determine the best model in a given set
-#' @param ... Multiple \code{ts.model} objects
 #' @param data A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.
+#' @param models A list of \code{ts.model} objects.
+#' @param nested A \code{bool} that indicates whether the ts.model objects are nested within a large object given within the list. If not, the a full model will be created.
 #' @param bootstrap A \code{bool} that is either true or false to indicate whether we use bootstrap or asymptotic By default, we use asymptotic.
+#' @param model.type A \code{string} indicating whether the model should be a \code{"ssm"} or \code{"imu"}.
 #' @param alpha A \code{double} that indicates the level of confidence for the WV CI.
 #' @param robust A \code{boolean} that indicates whether to use robust estimation.
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency for the robust estimation.
 #' @param B A \code{integer} that contains the amount of bootstrap replications
 #' @param G A \code{integer} that indicates the amount of guesses for caliberating the startup.
+#' @param seed A \code{integer} that is used to set a seed for reproducibility.
 #' @details The models MUST be nested within each other. If the models are not nested, the algorithm creates the "common denominator" model.
 #' @return A \code{rank.models} object.
-rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstrap = F, model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
+rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstrap = F, 
+                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
   
   set.seed(seed)
   numObj = length(models)
@@ -167,6 +187,7 @@ rank.models = function(data, models=list(AR1()+WN(), AR1()), nested = F, bootstr
 #' @param eff A \code{double} between 0 and 1 that indicates the efficiency for the robust estimation.
 #' @param B A \code{integer} that contains the amount of bootstrap replications
 #' @param G A \code{integer} that indicates the amount of guesses for caliberating the startup.
+#' @param seed A \code{integer} that controls the reproducibility of the auto model selection phase.
 #' @return A \code{auto.imu} object.
 auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
   
@@ -234,14 +255,39 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   out  
 }
 
-print.rank.models = function(object, ...){
-  summary.rank.models(object)
+#' Print function for rank.models object
+#' 
+#' Prints the rank.models function nicely.
+#' 
+#' @param x A \code{rank.models} object.
+#' @param ... Additional parameters
+#' @method print rank.models
+#' @export
+print.rank.models = function(x, ...){
+  summary.rank.models(x)
 }
 
-print.auto.imu = function(object, ...){
-  summary.auto.imu(object)
+#' Print function for auto.imu object
+#' 
+#' Prints the auto.imu function nicely.
+#' 
+#' @param x A \code{auto.imu} object.
+#' @param ... Additional parameters
+#' @method print auto.imu
+#' @export
+print.auto.imu = function(x, ...){
+  summary.auto.imu(x)
 }
 
+#' Summary function for auto.imu object
+#' 
+#' Provides a summary of the auto.imu results.
+#' 
+#' @param object A \code{auto.imu} object.
+#' @param digits A \code{int} indicating how the numbers should be rounded.
+#' @param ... Additional parameters
+#' @method summary auto.imu
+#' @export
 summary.auto.imu = function(object, digits = 4, ...){
   
   n.process = length(object)
@@ -259,6 +305,15 @@ summary.auto.imu = function(object, digits = 4, ...){
   }
 }
 
+#' Summary function for rank.models object
+#' 
+#' Provides a summary of the rank.models results.
+#' 
+#' @param object A \code{rank.models} object.
+#' @param digits A \code{int} indicating how the numbers should be rounded.
+#' @param ... Additional parameters
+#' @method summary rank.models
+#' @export
 summary.rank.models = function(object, digits = 4, ...){
   cat("The model ranking is given as: \n")
   out = object[[1]][[1]]

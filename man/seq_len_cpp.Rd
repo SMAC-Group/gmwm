@@ -22,4 +22,5 @@ seq_len_cpp(5)
 \author{
 James J Balamuta
 }
+\keyword{internal}
 

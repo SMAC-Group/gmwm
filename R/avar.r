@@ -16,7 +16,6 @@
 
 #' @title Calculate the Allan Variance
 #' @description Computes the Allan Variance
-#' @usage avar(x)
 #' @param x A \code{vec} containing the time series under observation.
 #' @return Allan variance fixed
 #' @author JJB
@@ -38,6 +37,7 @@ avar = function(x) {
 #' @title Prints Allan Variance
 #' @description Displays the allan variance information
 #' @method print avar
+#' @export
 #' @param x A \code{avar} object.
 #' @param ... Arguments to be passed to methods
 #' @author JJB
@@ -59,6 +59,7 @@ print.avar = function(x, ...) {
 #' @title Plot Allan Variance
 #' @description Displays a plot containing the allan variance
 #' @method plot avar
+#' @export
 #' @param x A \code{avar} object.
 #' @param ... Arguments to be passed to methods
 #' @author JJB
@@ -83,6 +84,7 @@ plot.avar = function(x, ...){
 #' @title Summary Allan Variance
 #' @description Displays the summary table of allan variance
 #' @method summary avar
+#' @export
 #' @param object A \code{avar} object.
 #' @param ...  additional arguments affecting the summary produced.
 #' @author JJB

@@ -21,7 +21,7 @@ Places the Asymptotic Covariance Matrix in print form.
 set.seed(999)
 x=rnorm(100)
 decomp = modwt(x)
-wv = wvar(decomp)
+wv = wvar(x)
 print(wvcov(decomp,wv,compute.v="diag"))
 }
 \author{

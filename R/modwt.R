@@ -22,6 +22,7 @@ modwt = function(x) {
 #' @title Print Maximum Overlap Discrete Wavelet Transform
 #' @description Unlists MODWT object and places it in matrix form
 #' @method print gmwm_modwt
+#' @export
 #' @param x A \code{gmwm_modwt} object
 #' @param ... further arguments passed to or from other methods.
 #' @return Prints the modwt matrix decomposition
@@ -38,6 +39,7 @@ print.gmwm_modwt=function(x, ...){
 #' @title Summary Maximum Overlap Discrete Wavelet Transform
 #' @description Unlists MODWT object and places it in matrix form
 #' @method summary gmwm_modwt
+#' @export
 #' @param object A \code{gmwm_modwt} object
 #' @param ... additional arguments affecting the summary produced.
 #' @return Prints the modwt matrix decomposition

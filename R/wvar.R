@@ -54,14 +54,15 @@ wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
 #' @title Print Wavelet Variances
 #' @description Displays the summary table of wavelet variance.
 #' @method print wvar
+#' @export
 #' @param x A \code{wvar} object.
 #' @param ... further arguments passed to or from other methods.
 #' @author JJB
 #' @return Summary table
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
-#' out = wvar(modwt(x))
+#' x = rnorm(100)
+#' out = wvar(x)
 #' print( out )
 print.wvar = function(x, ...){
   mat = matrix(unlist(x[1:3]),ncol=3,byrow=F)
@@ -73,6 +74,8 @@ print.wvar = function(x, ...){
 #' @title Summary of Wavelet Variances
 #' @description Displays the summary table of wavelet variance in addition to CI values and supplied efficiency.
 #' @method summary wvar
+#' @export
+#' @keywords internal
 #' @param object A \code{wvar} object.
 #' @return Summary table and other properties of the object.
 #' @param ... additional arguments affecting the summary produced.
@@ -80,7 +83,7 @@ print.wvar = function(x, ...){
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
-#' out = wvar(modwt(x))
+#' out = wvar(x)
 #' summary( out )
 summary.wvar = function(object, ...){
   name = if(object$robust){
@@ -102,6 +105,7 @@ summary.wvar = function(object, ...){
 #' @title Wrapper to ggplot Wavelet Variances Graph
 #' @description Creates the wavelet variance graph
 #' @method plot wvar
+#' @export
 #' @param x A \code{wvar} object.
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
@@ -138,6 +142,8 @@ plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F,
 #' @title Graph Wavelet Variances
 #' @description Creates the wavelet variance graph
 #' @method autoplot wvar
+#' @export
+#' @keywords internal
 #' @param object A \code{wvar} object.
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
@@ -257,6 +263,8 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 #' @title Detail Implementation to Compare Wavelet Variances
 #' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
 #' @method autoplot wvarComp
+#' @export
+#' @keywords internal
 #' @param object A \code{data frame} that contains data in order to plot
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
@@ -354,7 +362,6 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 
 #' @title Compare Wavelet Variances
 #' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
-#' @method compare wvar
 #' @param ... Any number of \code{wvar} objects can be passed in.
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.

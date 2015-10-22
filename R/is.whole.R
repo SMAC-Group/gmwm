@@ -1,6 +1,6 @@
 #' @title Integer Check
 #' @description Checks whether the submitted value is an integer
-#' @usage is.whole(x)
+#' @keywords internal
 #' @param x A \code{numeric} value to check to see if it is an integer.
 #' @return A \code{boolean} value indicating whether the value is an integer or not.
 #' @author JJB

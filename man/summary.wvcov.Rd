@@ -21,7 +21,7 @@ Prints the Wavelet Covariance Matrix
 set.seed(999)
 x=rnorm(100)
 decomp = modwt(x)
-wv = wvar(decomp)
+wv = wvar(x)
 summary(wvcov(decomp,wv,compute.v="diag"))
 }
 \author{

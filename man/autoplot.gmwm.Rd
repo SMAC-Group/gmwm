@@ -82,4 +82,5 @@ autoplot(mod)
 \author{
 JJB, Wenchao
 }
+\keyword{internal}
 

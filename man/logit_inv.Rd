@@ -19,4 +19,5 @@ This function computes the inverse of a logit transformation of the parameters.
 x.sim = rnorm(100)
 logit_inv(x.sim)
 }
+\keyword{internal}
 

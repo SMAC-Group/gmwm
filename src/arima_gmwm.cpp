@@ -4,7 +4,11 @@
 
 using namespace Rcpp;
 
-
+//' @title Hook into R's ARIMA function
+//' @description Uses R's ARIMA function to obtain CSS values for starting condition
+//' @param data A \code{vec} of data.
+//' @param params A \code{vec} of the ARMA parameters
+//' @return A \code{vec} containing the CSS of the ARMA parameters.
 // [[Rcpp::export]]
 arma::vec Rcpp_ARIMA(const arma::vec& data,
                      const arma::vec& params){

@@ -13,6 +13,7 @@ using namespace Rcpp;
 //' @description Calculates all the roots of a polynomial and returns the root that is the smallest.
 //' @param x A \code{cx_vec} that has a 1 appended before the coefficents. (e.g. c(1, x))
 //' @return A \code{double} with the minimum root value.
+//' @keywords internal
 // [[Rcpp::export]]
 double minroot(const arma::cx_vec& x){
   return min(
@@ -28,6 +29,7 @@ double minroot(const arma::cx_vec& x){
 //' @description Checks the invertiveness of series of coefficients.
 //' @param x A \code{cx_vec} that has a 1 appended before the coefficents. (e.g. c(1, x))
 //' @return True (if outside unit circle) || False (if inside unit circle)
+//' @keywords internal
 // [[Rcpp::export]]
 bool invert_check(const arma::vec& x){
   return minroot(arma::conv_to<arma::cx_vec>::from(x)) > 1; // Outside the unit circle
@@ -48,8 +50,7 @@ int calc_map_sum(const std::map<std::string, int>& m){
 //' @description Count the amount of models that exist.
 //' @param desc A \code{vector<string>} that contains the model's components.
 //' @return A \code{map<string, int>} containing how frequent the model component appears.
-//' @examples
-//' #TBA
+//' @keywords internal
 // [[Rcpp::export]]
 std::map<std::string, int> count_models(const std::vector<std::string>& desc){    
   std::map<std::string, int> w;	
@@ -71,7 +72,9 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
 
 //' @title Order AR1s by size of phi.
 //' @description Changes the order of AR1s in a string by size.
+//' @template tsobj_cpp
 //' @return A \code{vec} that has AR1s shown in descending parameter value.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec order_AR1s(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec> objdesc){
   int AR1_old_loc = -1;

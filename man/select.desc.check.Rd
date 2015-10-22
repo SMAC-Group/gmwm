@@ -18,4 +18,5 @@ Stops the process in R if there is an issue with the model desc
 \details{
 Checks if there are two or more objects found of type: DR, QN, RW, or WN. In addition, it currently forbids ARMA Models.
 }
+\keyword{internal}
 

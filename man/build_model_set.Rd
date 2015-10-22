@@ -17,4 +17,5 @@ A \code{set<string>} that contains the list of unique models.
 \description{
 Creates a set containing unique strings.
 }
+\keyword{internal}
 

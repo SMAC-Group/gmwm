@@ -19,4 +19,5 @@ This function computes the pseudo inverse of a logit transformation of the param
 x.sim = rnorm(100)
 pseudo_logit_inv(x.sim)
 }
+\keyword{internal}
 

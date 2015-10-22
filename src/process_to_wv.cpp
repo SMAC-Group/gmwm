@@ -55,7 +55,15 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
   return wvar;
 }
 
-
+//' @title Helper Function for ARMA to WV Approximation
+//' @description Indicates where the minimum ARMAacf value is and returns that as an index.
+//' @param ar A \code{vec} containing the coefficients of the AR process
+//' @param ma A \code{vec} containing the coefficients of the MA process
+//' @param last_tau An \code{int} the Jth scale of 2^(1:J)
+//' @param alpha A \code{double} indicating the cutoff.
+//' @return A \code{vec} containing the wavelet variance of the ARMA process.
+//' @keywords internal
+//' @seealso \code{\link{arma_to_wv_app}}
 // [[Rcpp::export]]
 double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha = 0.99){
   arma::vec obj = abs(ARMAacf_cpp(ar,ma,last_tau -1));
@@ -72,8 +80,9 @@ double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha =
 //' @param sigma A \code{double} containing the residual variance
 //' @param alpha A \code{double} indicating the cutoff.
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
+//' @keywords internal
 //' @examples
-//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+//' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
 arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma, double alpha = 0.9999) {
@@ -244,6 +253,7 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau){
 //' tau = 2^(1:ntau)
 //' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
 //' plot(tau, wv.theo, col = "red")
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec theoretical_wv(const arma::vec& theta, 
                          const std::vector<std::string>& desc,
@@ -426,6 +436,7 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
 //' tau = 2^(1:ntau)
 //' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
 //' plot(tau, wv.theo, col = "red")
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec decomp_to_theo_wv(const arma::mat& decomp){
 

@@ -24,4 +24,5 @@ Consider piping back into R and rewrapping the object. (Decrease of about 10 mic
 x=rnorm(100)
 dft_acf(x)
 }
+\keyword{internal}
 

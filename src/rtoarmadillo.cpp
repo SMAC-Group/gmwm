@@ -18,6 +18,7 @@ using namespace Rcpp;
 //' @param b An \code{int}, that denotes the ending point.
 //' @return A \code{vector} containing values moving from a to b. There are no restrictions on A's range.
 //' @author James J Balamuta
+//' @keywords internal
 //' @examples
 //' #Call with the following data:
 //' seq_cpp(3, 5)
@@ -40,6 +41,7 @@ arma::vec seq_cpp(int a, int b){
 //' @param n An \code{int} that denotes the length of the vector.
 //' @return A \code{vector} containing values moving from 1 to n.
 //' @author James J Balamuta
+//' @keywords internal
 //' @examples 
 //' #Call with the following data:
 //' seq_len_cpp(5)
@@ -52,10 +54,11 @@ arma::vec seq_len_cpp(unsigned int n){
 
 //' @title Find Quantiles
 //' @description Attempts to find quantiles
-//' @param x A \code{vec} that denotes the starting point.
-//' @param b A \code{vec}, that denotes the ending point.
+//' @param x A \code{vec} of data
+//' @param probs A \code{vec} of the quantiles to find.
 //' @return A \code{vector} containing the quantiles
 //' @author James J Balamuta
+//' @keywords internal
 //' @examples 
 //' #Call with the following data:
 //' quantile_cpp(c(1,2,3,4,5,6,7), c(.25,.5,.75))
@@ -89,6 +92,7 @@ arma::vec quantile_cpp(arma::vec x, const arma::vec& probs) {
 //' @param differences A \code{dif} that indicates how many differences should be taken
 //' @return A \code{vector} containing the differenced time series.
 //' @author JJB
+//' @keywords internal
 //' @examples
 //' x = rnorm(10000, 0, 1)
 //' diff_cpp(x,1,1)
@@ -115,6 +119,7 @@ arma::vec diff_cpp(arma::vec x, unsigned int lag, unsigned int differences){
 //' @return A \code{column vector} containing coefficients
 //' @details This function is a port of the base stats package's ARMAtoMA. There is no significant speed difference between the two.
 //' @author R Core Team and JJB
+//' @keywords internal
 //' @examples
 //' # ARMA(2,1)
 //' ARMAtoMA_cpp(c(1.0, -0.25), 1.0, 10)
@@ -155,6 +160,7 @@ arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max)
 //' @details This is a port of the cfilter function harnessed by the filter function in stats. 
 //' It is about 5-7 times faster than R's base function. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 //' @author R Core Team and JJB
+//' @keywords internal
 //' @examples
 //' x = 1:100
 //' # 
@@ -232,6 +238,7 @@ arma::vec cfilter(arma::vec x, arma::vec filter, int sides, bool circular)
 //' This is a port of the rfilter function harnessed by the filter function in stats. 
 //' It is about 6-7 times faster than R's base function. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 //' @author R Core Team and JJB
+//' @keywords internal
 //' @examples
 //' x = 1:100
 //' # 
@@ -310,6 +317,7 @@ arma::mat expand_grid_red(int nx){
 //' @return x A \code{matrix} listing values from 1...nx in one column and 1...1, 2...2,....,n...n, in the other
 //' @details This is an implementaiton of the ARMAacf function in R. It is approximately 40x times faster. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 //' @author R Core Team and JJB
+//' @keywords internal
 //' @examples
 //' # ARMA(2,1)
 //' ARMAacf_cpp(c(1.0, -0.25), 1.0, lag_max = 10)
@@ -419,6 +427,7 @@ arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max)
 //' This implementation is 2x as slow as Rs. 
 //' Two issues: 1. memory resize and 2. unoptimized fft algorithm in arma.
 //' Consider piping back into R and rewrapping the object. (Decrease of about 10 microseconds.)
+//' @keywords internal
 //' @examples
 //' x=rnorm(100)
 //' dft_acf(x)
@@ -436,7 +445,14 @@ arma::vec dft_acf(const arma::vec& x){
     return arma::real(iff);
 }
 
-
+//' @title Mean of the First Difference of the Data
+//' @description The mean of the first difference of the data
+//' @param x A \code{vec} containing the data 
+//' @return A \code{double} that contains the mean of the first difference of the data.
+//' @keywords internal
+//' @examples
+//' x=rnorm(100)
+//' mean_diff(x)
 // [[Rcpp::export]]
 double mean_diff(const arma::vec& x){
   return arma::mean(diff_cpp(x, 1, 1));

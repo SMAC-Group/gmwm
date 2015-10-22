@@ -6,8 +6,18 @@ using namespace Rcpp;
 // Goal of file is to be able to recreate a string of values given.
 // Not supported: ARMA
  
- 
- // [[Rcpp::export]]
+//' @title Generate the ts model object description
+//' @description Creates the ts.model's obj.desc value
+//' @param desc A \code{vector<string>} that contains a list of the strings of each process.
+//' @return A \code{field<vec>} that contains the object description of each process.
+//' @details
+//' This function currently does NOT support ARMA models. 
+//' That is, there is no support for ARMA, AR, or MA.
+//' There is support for AR1, WN, DR, QN, and RW.
+//' @keywords internal
+//' @backref src/ts_model_cpp.cpp
+//' @backref src/ts_model_cpp.h
+// [[Rcpp::export]]
 arma::field<arma::vec> model_objdesc(std::vector<std::string> desc){
   unsigned int n = desc.size();
   arma::field<arma::vec> objdesc(n);
@@ -26,8 +36,19 @@ arma::field<arma::vec> model_objdesc(std::vector<std::string> desc){
   
   return objdesc;
 }
- 
- 
+
+
+//' @title Generate the ts model object's theta vector
+//' @description Creates the ts.model's theta vector
+//' @param desc A \code{vector<string>} that contains a list of the strings of each process.
+//' @return A \code{vec} with values initialized at 0 that span the space of parameters to be estimated.
+//' @details
+//' This function currently does NOT support ARMA models. 
+//' That is, there is no support for ARMA, AR, or MA.
+//' There is support for AR1, WN, DR, QN, and RW.
+//' @keywords internal
+//' @backref src/ts_model_cpp.cpp
+//' @backref src/ts_model_cpp.h
 // [[Rcpp::export]]
 arma::vec model_theta(std::vector<std::string> desc){
   unsigned int n = desc.size();
@@ -45,6 +66,17 @@ arma::vec model_theta(std::vector<std::string> desc){
   return arma::zeros<arma::vec>(m);
 }
 
+//' @title Generate the ts model object's process desc
+//' @description Creates the ts.model's process desc
+//' @param desc A \code{vector<string>} that contains a list of the strings of each process.
+//' @return A \code{vector<string>} with a list of descriptive values to label the estimate matrix with
+//' @details
+//' This function currently does NOT support ARMA models. 
+//' That is, there is no support for ARMA, AR, or MA.
+//' There is support for AR1, WN, DR, QN, and RW.
+//' @keywords internal
+//' @backref src/ts_model_cpp.cpp
+//' @backref src/ts_model_cpp.h
 // [[Rcpp::export]]
 std::vector<std::string> model_process_desc(std::vector<std::string> desc){
   unsigned int n = desc.size();

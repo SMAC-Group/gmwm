@@ -50,6 +50,13 @@
 using namespace arma;
 using namespace Rcpp;
 
+
+//' @title Optim loses NaN
+//' @description This function takes numbers that are very small and sets them to the minimal tolerance for C++.
+//' Doing this prevents NaN from entering the optim routine.
+//' @param theta A \code{vec} that contains estimated GMWM theta values (untransformed).
+//' @return A \code{vec} that contains safe theta values.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec code_zero(arma::vec theta){
   
@@ -86,8 +93,8 @@ arma::vec code_zero(arma::vec theta){
 //' @author JJB
 //' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 //' @keywords internal
-//' @examples
-//' # Coming soon
+//' @backref src/gmwm_logic.cpp
+//' @backref src/gmwm_logic.h
 // [[Rcpp::export]]
 arma::vec gmwm_engine(const arma::vec& theta,
                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
@@ -128,29 +135,12 @@ arma::vec gmwm_engine(const arma::vec& theta,
 //' @param omega A \code{mat} that represents the covariance matrix.
 //' @param scales A \code{vec} that contains the scales or taus (2^(1:J))
 //' @param starting A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).
-//' @return A \code{vec} that contains the parameter estimates from GMWM estimator.
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "imu" or "SSM", then
-//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-//' options are:
-//' \itemize{
-//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-//'   \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
-//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-//' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "imu" or type = "SSM" then
-//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
+//' @return A \code{field<mat>} that contains the parameter estimates from GMWM estimator.
 //' @author JJB
 //' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 //' @keywords internal
-//' @examples
-//' # Coming soon
+//' @backref src/gmwm_logic.cpp
+//' @backref src/gmwm_logic.h
 // [[Rcpp::export]]
 arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
@@ -242,30 +232,12 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 //' @param G An \code{int} that controls how many guesses at different parameters are made.
 //' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
 //' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
-//' @param inference A \code{bool} that indicates whether inference should be run on the supplied model.
 //' @return A \code{field<mat>} that contains a list of ever-changing estimates...
-//' @details
-//' The function estimates a variety of time series models. If type = "ARMA" then the parameter vector (param) should
-//' indicate the order of the AR process and of the MA process (i.e. param = c(AR,MA)). If type = "imu" or "SSM", then
-//' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
-//' options are:
-//' \itemize{
-//'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
-//'   \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
-//'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
-//'   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
-//'   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
-//'   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
-//' }
-//' If type = "ARMA", the function takes condition least squares as starting values; if type = "imu" or type = "SSM" then
-//' starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
-//' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-//' 
 //' @author JJB
 //' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 //' @keywords internal
-//' @examples
-//' # Coming soon
+//' @backref src/gmwm_logic.cpp
+//' @backref src/gmwm_logic.h
 // [[Rcpp::export]]
 arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, 
                                       arma::vec theta,
@@ -374,7 +346,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     arma::vec temp = objdesc(0);
     unsigned int p = temp(0);
     if(p != 0 && invert_check(arma::join_cols(arma::ones<arma::vec>(1), -theta.rows(0, p - 1))) == false){
-      cout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
+      std::cout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
     }
   } 
   
