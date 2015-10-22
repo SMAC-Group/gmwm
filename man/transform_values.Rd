@@ -21,4 +21,5 @@ A \code{vec} containing the transformed guesses.
 \description{
 Transform parameter guesses prior to estimating with GMWM
 }
+\keyword{internal}
 

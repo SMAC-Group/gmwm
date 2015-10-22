@@ -12,6 +12,7 @@ using namespace Rcpp;
 //' This function will return: \eqn{r^2 = Mod\left(z\right)^2 = x^2 + y^2}
 //' @examples
 //' Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec Mod_squared_cpp(const arma::cx_vec& x){
   return arma::square(arma::real(x)) + arma::square(arma::imag(x));
@@ -25,6 +26,7 @@ arma::vec Mod_squared_cpp(const arma::cx_vec& x){
 //' The modulus is defined as: \eqn{r = Mod(z) = \sqrt{(x^2 + y^2)}}
 //' @examples
 //' Mod_cpp(c(1+.5i, 2+1i, 5+9i))
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec Mod_cpp(const arma::cx_vec& x){
   return arma::sqrt(arma::square(arma::real(x)) + arma::square(arma::imag(x)));

@@ -23,6 +23,7 @@ using namespace Rcpp;
 //'  \item{Column 2}{Chi-squared Lower Bounds}
 //'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
+//' @keywords internal
 //' @examples
 //' x = rnorm(100)
 //' # Uses the internal MODWT function not associated with an S3 class.
@@ -60,6 +61,7 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //'  \item{Column 2}{Chi-squared Lower Bounds}
 //'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
+//' @keywords internal
 //' @examples
 //' x = rnorm(100)
 //' # Uses the internal MODWT function not associated with an S3 class.
@@ -99,6 +101,7 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double 
 //'  \item{Column 2}{Chi-squared Lower Bounds}
 //'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
+//' @keywords internal
 //' @details 
 //' This function can be expanded to allow for other confidence interval calculations.
 //' @examples
@@ -145,6 +148,7 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
 //' @param robust A \code{boolean} to determine the type of wave estimation.
 //' @param eff A \code{double} that indicates the efficiency.
 //' @return A \code{vec} that contains the wave variance.
+//' @keywords internal
 //' @examples
 //' set.seed(1337)
 //' x = rnorm(100)
@@ -190,6 +194,7 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 //'   \item{"low"}{Lower CI}
 //'   \item{"high"}{Upper CI}
 //' }
+//' @keywords internal
 //' @details 
 //' This function powers the wvar object. It is also extendable...
 //' @examples
@@ -215,6 +220,7 @@ arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt,
 //' @description Calculates the MODWT scales
 //' @param nb_level A \code{integer} that contains the level of decomposition J.
 //' @return A \code{vec} that contains 2^1, ... , 2^J
+//' @keywords internal
 //' @details 
 //' Used in wvar object.
 //' @examples

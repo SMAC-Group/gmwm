@@ -18,4 +18,5 @@ Emulate ggplot2 default color palette
 \author{
 John Colby
 }
+\keyword{internal}
 

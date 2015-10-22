@@ -22,4 +22,5 @@ field_to_matrix(modwt_cpp(x))
 \author{
 JJB
 }
+\keyword{internal}
 

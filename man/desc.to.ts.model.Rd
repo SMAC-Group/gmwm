@@ -25,4 +25,5 @@ desc.to.ts.model(c("AR1","WN"))
 \author{
 JJB
 }
+\keyword{internal}
 

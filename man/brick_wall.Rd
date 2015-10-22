@@ -28,4 +28,5 @@ Note: As a result, there are no NA's introduced and hence the na.omit is not nee
 x=rnorm(100)
 brick_wall(modwt_cpp(x, "haar", 4, boundary="periodic"), select_filter("haar"), "modwt")
 }
+\keyword{internal}
 

@@ -20,4 +20,5 @@ Generates a white noise process with variance parameter sigma.
 \examples{
 gen_wn(10, 1.5)
 }
+\keyword{internal}
 

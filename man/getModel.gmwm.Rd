@@ -15,4 +15,5 @@ A \code{string} containing the model
 \description{
 Get the model in a \code{gmwm} object
 }
+\keyword{internal}
 

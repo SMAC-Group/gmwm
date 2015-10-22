@@ -14,4 +14,5 @@
 \description{
 Prints the auto.imu function nicely.
 }
+\keyword{internal}
 

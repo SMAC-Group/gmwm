@@ -24,4 +24,5 @@ y=x+3
 fast_cov_cpp(y,x)
 }
 }
+\keyword{internal}
 

@@ -11,6 +11,7 @@ using namespace Rcpp;
 //' @param robust A \code{boolean} that triggers the use of the robust estimate.
 //' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
 //' @return A \code{field<mat>} containing the covariance matrix.
+//' @keywords internal
 //' @examples
 //' \dontrun{
 //' x=rnorm(100)
@@ -63,6 +64,7 @@ arma::field<arma::mat> compute_cov_cpp(arma::field<arma::vec> signal_modwt, unsi
 //' @param ci_hi A \code{vec} that contains the upper confidence interval points.
 //' @param ci_lo A \code{vec} that contains the lower confidence interval points.
 //' @return A diagonal matrix.
+//' @keywords internal
 //' @examples
 //' \dontrun{
 //' x=runif(100)

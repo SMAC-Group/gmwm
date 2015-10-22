@@ -339,6 +339,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @author JJB
+#' @keywords internal
 #' @export
 #' @examples
 #' 4*DR()+2*WN()
@@ -376,6 +377,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' }
 #' @author JJB
 #' @export
+#' @keywords internal
 #' @examples
 #' DR()+WN()
 #' AR1(phi=.3,sigma=.2)
@@ -404,6 +406,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #'  \item{desc}
 #'  \item{theta}
 #' }
+#' @keywords internal
 #' @author JJB
 #' @examples
 #' QN() + DR() + WN() + RW() + AR1() + ARMA(1,2)
@@ -434,6 +437,7 @@ print.ts.model = function(x, ...){
 #'  \item{theta}
 #' }
 #' @author JJB
+#' @keywords internal
 #' @examples
 #' desc.to.ts.model(c("AR1","WN"))
 desc.to.ts.model = function(desc){

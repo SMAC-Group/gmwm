@@ -22,4 +22,5 @@ The modulus is defined as: \eqn{r = Mod(z) = \sqrt{(x^2 + y^2)}}
 \examples{
 Mod_cpp(c(1+.5i, 2+1i, 5+9i))
 }
+\keyword{internal}
 

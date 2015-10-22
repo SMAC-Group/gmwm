@@ -27,4 +27,5 @@ summary(wvcov(decomp,wv,compute.v="diag"))
 \author{
 JJB
 }
+\keyword{internal}
 

@@ -18,6 +18,7 @@ using namespace Rcpp;
 //' @return wn A \code{vec} containing the white noise.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' gen_wn(10, 1.5)
 // [[Rcpp::export]]
@@ -39,6 +40,7 @@ arma::vec gen_wn(const unsigned int N, const double sigma2 = 1)
 //' @return gd A \code{vec} containing the drift.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' gen_dr(10, 8.2)
 // [[Rcpp::export]]
@@ -54,6 +56,7 @@ arma::vec gen_dr(const unsigned int N, const double slope = 5)
 //' @param N An \code{integer} for signal length.
 //' @param q2 A \code{double} that contains autocorrection.
 //' @return  A \code{vec} containing the QN process.
+//' @keywords internal
 //' @details 
 //' To generate the quantisation noise, we follow this recipe:
 //' First, we generate using a random uniform distribution:
@@ -101,6 +104,7 @@ arma::vec gen_qn(const unsigned int N, double q2 = .1)
 //' @return gm A \code{vec} containing the AR(1) process.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' gen_ar1(10, 5, 1.2)
 // [[Rcpp::export]]
@@ -124,6 +128,7 @@ arma::vec gen_ar1(const unsigned int N, const double phi = .3, const double sigm
 //' @return grw A \code{vec} containing the random walk without drift.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' gen_rw(10, 8.2)
 // [[Rcpp::export]]
@@ -148,6 +153,7 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
 //' @return A \code{vec} that contains the generated observations.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' gen_arma(100, c(.3,.5), c(.1), 1, 0)
 // [[Rcpp::export]]
@@ -261,6 +267,7 @@ arma::vec gen_arma(const unsigned int N,
 //' @return A \code{vec} that contains combined time series.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' # AR
 //' set.seed(1336)
@@ -360,6 +367,7 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
 //' @return A \code{mat} containing data for each decomposed and combined time series.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @keywords internal
 //' @examples
 //' # AR
 //' set.seed(1336)

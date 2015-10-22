@@ -12,4 +12,5 @@ do_polyroot_cpp(z)
 \description{
 Vroom Vroom
 }
+\keyword{internal}
 

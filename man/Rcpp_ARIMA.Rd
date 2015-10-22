@@ -17,4 +17,5 @@ A \code{vec} containing the CSS of the ARMA parameters.
 \description{
 Uses R's ARIMA function to obtain CSS values for starting condition
 }
+\keyword{internal}
 

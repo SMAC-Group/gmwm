@@ -9,6 +9,7 @@ using namespace Rcpp;
 //' @param data A \code{vec} of data.
 //' @param params A \code{vec} of the ARMA parameters
 //' @return A \code{vec} containing the CSS of the ARMA parameters.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec Rcpp_ARIMA(const arma::vec& data,
                      const arma::vec& params){

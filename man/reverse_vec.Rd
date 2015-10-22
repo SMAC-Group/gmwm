@@ -25,4 +25,5 @@ reverse_vec(x)
 \author{
 JJB
 }
+\keyword{internal}
 

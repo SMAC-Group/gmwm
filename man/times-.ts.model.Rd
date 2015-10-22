@@ -33,4 +33,5 @@ AR1(phi=.3,sigma=.2)*3
 \author{
 JJB
 }
+\keyword{internal}
 

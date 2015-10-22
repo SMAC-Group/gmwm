@@ -29,4 +29,5 @@ The innovations are generated from a normal distribution.
 \examples{
 gen_arma(100, c(.3,.5), c(.1), 1, 0)
 }
+\keyword{internal}
 

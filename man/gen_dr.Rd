@@ -20,4 +20,5 @@ Generates a drift sequence with a given slope.
 \examples{
 gen_dr(10, 8.2)
 }
+\keyword{internal}
 

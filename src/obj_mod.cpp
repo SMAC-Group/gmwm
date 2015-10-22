@@ -8,6 +8,7 @@ using namespace Rcpp;
 //' @param objdesc A \code{vec} at the desc point.
 //' @param cur_position An \code{integer} at the current position.
 //' @return A \code{field<vec>} containing the breakdown of the object.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::field<arma::vec> obj_extract(arma::vec theta,
                                    arma::vec objdesc,

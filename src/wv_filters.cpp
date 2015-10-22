@@ -12,6 +12,7 @@ using namespace Rcpp;
 //' By default, the inverse quadrature mirror is computed.
 //' @return A \code{vector} that contains either the forward QMF (evalute in order) or the inverse QMF (reverse order). 
 //' @author JJB
+//' @keywords internal
 //' @examples
 //' # Haar values
 //' g = rep(1/sqrt(2),2)
@@ -46,6 +47,7 @@ arma::vec qmf(arma::vec g, bool inverse = true) {
 //' @details
 //' This template can be used to increase the amount of filters available for selection.
 //' @author JJB
+//' @keywords internal
 //' @examples
 //' haar_filter()
 // [[Rcpp::export]]
@@ -81,6 +83,7 @@ arma::field<arma::vec> haar_filter() {
 //' @details 
 //' The package is oriented toward using only the haar filter. If the package extends at a later time, then the supporting infrastructure is there.
 //' @author JJB
+//' @keywords internal
 //' @examples
 //' select_filter("haar")
 // [[Rcpp::export]]

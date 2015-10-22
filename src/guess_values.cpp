@@ -28,6 +28,7 @@ using namespace Rcpp;
 //' @param sigma2_total A \code{double} that contains the sum of all WVs. 
 //' @param model_type A \code{string} that describes the model transformation.
 //' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+//' @keywords internal
 //' @examples
 //' #TBA
 // [[Rcpp::export]]
@@ -76,6 +77,7 @@ arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, s
 //' @param q An \code{unsigned int} that contains the amount of MA parameters to generate.
 //' @param sigma2_total A \code{double} that contains the sum of all WVs. 
 //' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+//' @keywords internal
 //' @examples
 //' #TBA
 // [[Rcpp::export]]
@@ -173,6 +175,7 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
 //' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
 //' @param B A \code{integer} that indicates how many random draws that should be performed.
 //' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+//' @keywords internal
 //' @examples
 //' #TBA
 // [[Rcpp::export]]

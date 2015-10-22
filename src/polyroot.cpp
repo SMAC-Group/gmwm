@@ -105,6 +105,7 @@ double R_pow_di_cpp(double x, int n)
 //' @title Root Finding C++
 //' @description Used to interface with Armadillo
 //' @param z A \code{cx_vec} (complex vector) that has 1 in the beginning (e.g. c(1,3i,-3i))
+//' @keywords internal
 // [[Rcpp::export]]
 arma::cx_vec do_polyroot_arma(const arma::cx_vec& z)
 {
@@ -160,6 +161,7 @@ arma::cx_vec do_polyroot_arma(const arma::cx_vec& z)
 //' @title Root Finding C++
 //' @description Vroom Vroom
 //' @param z A \code{vec<complex<double>} (complex vector) that has 1 in the beginning (e.g. c(1,3i,-3i))
+//' @keywords internal
 // [[Rcpp::export]]
 std::vector< std::complex<double> > do_polyroot_cpp(const std::vector< std::complex<double> >& z)
 {

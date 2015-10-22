@@ -375,6 +375,7 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
 //' @author JJB
 //' @examples
 //' #TBA
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat D_matrix(const arma::vec& theta, 
                    const std::vector<std::string>& desc,

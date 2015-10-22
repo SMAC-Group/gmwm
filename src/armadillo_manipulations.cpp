@@ -13,6 +13,7 @@ using namespace Rcpp;
 //' sort() will sort each column without respect to the rows. 
 //' Using sort_matrix will sort only 1 column and retain the other elements to be in the same row.
 //' @return The matrix sorted by values in the specified column.
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat sort_mat(arma::mat x, unsigned int col){
   
@@ -40,6 +41,7 @@ arma::mat sort_mat(arma::mat x, unsigned int col){
 //' @examples
 //' x = matrix(c(1,2,3,4), nrow = 2,byrow = TRUE)
 //' rev_col_subset(x, 1, 0)
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
   arma::mat A = arma::mat(x.n_rows, start-end+1);
@@ -62,6 +64,7 @@ arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
 //' @examples
 //' x = matrix(c(1,2,3,4), nrow=2,byrow=TRUE)
 //' rev_row_subset(x, 1, 0)
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end){
   arma::mat A = arma::mat(start-end+1, x.n_cols);
@@ -81,6 +84,7 @@ arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end){
 //' @examples
 //' x = 1:5
 //' reverse_vec(x)
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec reverse_vec(arma::vec x) {
    std::reverse(x.begin(), x.end());
@@ -95,6 +99,7 @@ arma::vec reverse_vec(arma::vec x) {
 //' @examples
 //' x=rnorm(100)
 //' field_to_matrix(modwt_cpp(x))
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat field_to_matrix(arma::field<arma::vec> x){
   unsigned int nx = x.n_elem;
@@ -119,6 +124,7 @@ arma::mat field_to_matrix(arma::field<arma::vec> x){
 //' @examples
 //' x=rnorm(100)
 //' field_to_matrix(modwt_cpp(x))
+//' @keywords internal
 // [[Rcpp::export]]
 double sum_field_vec(const arma::field<arma::vec>& x){
   unsigned int nelems = x.n_elem;

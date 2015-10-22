@@ -12,4 +12,5 @@ do_polyroot_arma(z)
 \description{
 Used to interface with Armadillo
 }
+\keyword{internal}
 

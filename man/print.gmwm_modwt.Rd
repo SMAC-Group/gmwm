@@ -25,4 +25,5 @@ print(modwt(x))
 \author{
 JJB
 }
+\keyword{internal}
 

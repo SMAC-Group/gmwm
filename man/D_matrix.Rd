@@ -32,4 +32,5 @@ Function returns the matrix effectively known as "D"
 \author{
 JJB
 }
+\keyword{internal}
 

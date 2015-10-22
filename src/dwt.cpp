@@ -108,6 +108,7 @@ arma::field<arma::vec> dwt_cpp(arma::vec x, std::string filter_name = "haar",
 //' @param nlevels An \code{integer} indicating the level of the decomposition.
 //' @param boundary A \code{string} indicating the type of boundary method to use. Either \code{boundary="periodic"} or \code{"reflection"}.
 //' @return y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
+//' @keywords internal
 //' @details
 //' Performs a level J decomposition of the time series using the pyramid algorithm.
 //' Use this implementation to supply custom parameters instead of modwt(x),
@@ -192,6 +193,7 @@ arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name = "haar",
 //' @param wave_filter A \code{field<vec>} containing filter information. Only "haar" is implemented.
 //' @param method A \code{string} to describe the mode. Choose between "modwt" and "dwt"
 //' @return A \code{field<vec>} with boundary modwt or dwt taken care of.
+//' @keywords internal
 //' @details 
 //' The vectors are truncated by removing the first n wavelet coefficients. 
 //' These vectors are then stored into the field that is returned.

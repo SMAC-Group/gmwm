@@ -27,4 +27,5 @@ wave_variance(signal_modwt_bw)
 
 wave_variance(signal_modwt_bw, robust = TRUE, eff = 0.6)
 }
+\keyword{internal}
 

@@ -21,4 +21,5 @@ Used in wvar object.
 \examples{
 scales_cpp(5)
 }
+\keyword{internal}
 

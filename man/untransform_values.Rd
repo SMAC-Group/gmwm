@@ -21,4 +21,5 @@ A \code{vec} containing the undone transformation of parameters.
 \description{
 Undo the previous transform of parameter guesses to obtain the GMWM estimates.
 }
+\keyword{internal}
 

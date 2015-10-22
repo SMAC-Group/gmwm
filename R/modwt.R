@@ -27,6 +27,7 @@ modwt = function(x) {
 #' @param ... further arguments passed to or from other methods.
 #' @return Prints the modwt matrix decomposition
 #' @author JJB
+#' @keywords internal
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
@@ -40,6 +41,7 @@ print.gmwm_modwt=function(x, ...){
 #' @description Unlists MODWT object and places it in matrix form
 #' @method summary gmwm_modwt
 #' @export
+#' @keywords internal
 #' @param object A \code{gmwm_modwt} object
 #' @param ... additional arguments affecting the summary produced.
 #' @return Prints the modwt matrix decomposition

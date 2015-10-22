@@ -57,6 +57,7 @@ wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
 #' @description Places the Asymptotic Covariance Matrix in print form.
 #' @method print wvcov
 #' @export
+#' @keywords internal
 #' @param x A \code{wvcov} object
 #' @param ...  further arguments passed to or from other methods
 #' @return Prints the modwt matrix decomposition
@@ -75,6 +76,7 @@ print.wvcov = function(x, ...){
 #' @description Prints the Wavelet Covariance Matrix
 #' @method summary wvcov
 #' @export
+#' @keywords internal
 #' @param object A \code{wvcov} object
 #' @param ...  additional arguments affecting the summary produced.
 #' @return Prints the modwt matrix decomposition

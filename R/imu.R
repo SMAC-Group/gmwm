@@ -335,6 +335,7 @@ plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @description Creates a graph of the wavelet variance for imu object.
 #' @method autoplot wvar.imu
 #' @export
+#' @keywords internal
 #' @param object A \code{wvar.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -412,6 +413,7 @@ autoplot.wvar.imu = function(object, CI = TRUE, background = 'white', transparen
 #' @description Plot each WV variance in a split graph
 #' @method autoplot imu6
 #' @export
+#' @keywords internal
 #' @param object A \code{wvar.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -770,6 +772,7 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @description Creates a graph of the automatic model selection result containing the empirical and theoretical wavelet variances. 
 #' @method autoplot auto.imu
 #' @export
+#' @keywords internal
 #' @param object A \code{auto.imu} object
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.

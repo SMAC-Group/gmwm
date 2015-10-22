@@ -4,6 +4,7 @@
 #' @param low_n A \code{doble} that indicates the last value of \code{ci.low}
 #' @param high_n A \code{dobule} that indicates the last value of \code{ci.high}
 #' @return A numeric vector containing 4 elements. The first two elements indicate legend.justification, the last two elements indicate legend.position (see \code{?theme}).
+#' @keywords internal
 placeLegend = function(wv_1, low_n, high_n){
   if(log10(wv_1) > ( log10(low_n) + log10(high_n) )/2 ){
     # legend should be placed in bottom left
@@ -26,6 +27,7 @@ placeLegend = function(wv_1, low_n, high_n){
 #' @title Frequent Graph Setting for Paper
 #' @description This function sets some parameters such as plot.margin.
 #' @return A ggplot2 panel containing the frequent graph setting for paper.
+#' @keywords internal
 paperSetting = function(){
   p = theme(axis.title.y=element_text(vjust=3.5), axis.title.x=element_text(vjust=-2.5), 
             plot.title = element_text(vjust=2.5), plot.margin=unit(c(0.7,0.1,0.7,0.7),"cm"))
@@ -36,6 +38,7 @@ paperSetting = function(){
 #' @param n An \code{integer} indicating how many colors user wants.
 #' @return A \code{vector} containing \code{n} colors
 #' @author John Colby
+#' @keywords internal
 ggColor <- function(n) {
   hues = seq(15, 375, length=n+1)
   rev(hcl(h=hues, l=70, c=100)[1:n])
@@ -44,6 +47,7 @@ ggColor <- function(n) {
 #' @title Get the model in a \code{gmwm} object
 #' @param object A \code{gmwm} object
 #' @return A \code{string} containing the model
+#' @keywords internal
 getModel.gmwm = function(object){
   if( !is(object, 'gmwm') ){
     stop('It must be a gmwm object')

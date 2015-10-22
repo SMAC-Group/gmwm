@@ -31,4 +31,5 @@ AR1(.9,.1) + WN(1) + RW(.3) + DR(.5) + QN(.9) + ARMA(c(.3,.1),c(.3,.2), .99)
 \author{
 JJB
 }
+\keyword{internal}
 

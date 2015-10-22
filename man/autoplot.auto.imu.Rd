@@ -74,4 +74,5 @@ autoplot(df, CI = F)
 autoplot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
 }
 }
+\keyword{internal}
 

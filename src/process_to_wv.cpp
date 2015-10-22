@@ -347,6 +347,7 @@ arma::vec theoretical_wv(const arma::vec& theta,
 //' tau = 2^(1:ntau)
 //' wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
 //' plot(tau, wv.theo, col = "red")
+//' @keywords internal
 // [[Rcpp::export]]
 arma::mat decomp_theoretical_wv(const arma::vec& theta, 
                                 const std::vector<std::string>& desc,

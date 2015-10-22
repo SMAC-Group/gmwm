@@ -25,4 +25,5 @@ summary(modwt(x))
 \author{
 JJB
 }
+\keyword{internal}
 

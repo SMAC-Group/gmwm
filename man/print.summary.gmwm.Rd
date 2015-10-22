@@ -30,4 +30,5 @@ summary(mod)
 \author{
 JJB
 }
+\keyword{internal}
 

@@ -221,6 +221,7 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
 #' @description This function is implemented with ggplot2.
 #' @method autoplot lts
 #' @export
+#' @keywords internal
 #' @param object A \code{lts} object
 #' @param to.unit A \code{string} indicating the unit which the data is converted to. The supported units are "ns"(nanosecond), "ms"(millisecond), "sec", "min", "hour", "day", "month", and "year".
 #' @param background A \code{string} that determines the graph background. It can be "grey" or "white".

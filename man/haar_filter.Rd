@@ -26,4 +26,5 @@ haar_filter()
 \author{
 JJB
 }
+\keyword{internal}
 

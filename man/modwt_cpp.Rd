@@ -34,4 +34,5 @@ modwt_cpp(x, "haar", 4, boundary="periodic")
 \author{
 JJB
 }
+\keyword{internal}
 

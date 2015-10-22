@@ -39,4 +39,5 @@ x=rnorm(100)
 decomp = modwt(x)
 wvar_cpp(decomp$data, robust = FALSE)
 }
+\keyword{internal}
 

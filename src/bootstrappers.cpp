@@ -292,6 +292,7 @@ arma::vec gmwm_sd_bootstrapper(const arma::vec&  theta,
 //' @param B An \code{int} indicating how many times the bootstrapper should be run.
 //' @param alpha A \code{double} indicating the amount of confidence for CI
 //' @return A \code{vec} that has the alpha/2.0 quantile and then the 1-alpha/2.0 quantile. 
+//' @keywords internal
 // [[Rcpp::export]]
 arma::vec boot_pval_gof(double obj, const arma::vec& obj_boot, unsigned int B = 1000, double alpha = 0.05){
   // Total number of objects in time series

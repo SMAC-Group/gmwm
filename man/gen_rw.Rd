@@ -20,4 +20,5 @@ Generates a random walk without drift.
 \examples{
 gen_rw(10, 8.2)
 }
+\keyword{internal}
 

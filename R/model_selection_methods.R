@@ -263,6 +263,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
 #' @param ... Additional parameters
 #' @method print rank.models
 #' @export
+#' @keywords internal
 print.rank.models = function(x, ...){
   summary.rank.models(x)
 }
@@ -275,6 +276,7 @@ print.rank.models = function(x, ...){
 #' @param ... Additional parameters
 #' @method print auto.imu
 #' @export
+#' @keywords internal
 print.auto.imu = function(x, ...){
   summary.auto.imu(x)
 }

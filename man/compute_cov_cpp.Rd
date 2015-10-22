@@ -31,4 +31,5 @@ decomp = modwt(x)
 V = compute_cov_cpp(decomp$data, decomp$nlevels, compute_v="diag", robust = TRUE, eff=0.6)
 }
 }
+\keyword{internal}
 

@@ -55,6 +55,7 @@ wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
 #' @description Displays the summary table of wavelet variance.
 #' @method print wvar
 #' @export
+#' @keywords internal
 #' @param x A \code{wvar} object.
 #' @param ... further arguments passed to or from other methods.
 #' @author JJB

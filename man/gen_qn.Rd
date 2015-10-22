@@ -38,4 +38,5 @@ Thus, we end up with:
 \examples{
 gen_qn(10, 5)
 }
+\keyword{internal}
 

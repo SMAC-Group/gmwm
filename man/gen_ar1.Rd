@@ -25,4 +25,5 @@ This needs to be extended to AR(p) see \code{arima.sim} and \code{filter}.
 \examples{
 gen_ar1(10, 5, 1.2)
 }
+\keyword{internal}
 

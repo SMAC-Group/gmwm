@@ -14,4 +14,5 @@
 \description{
 Prints the rank.models function nicely.
 }
+\keyword{internal}
 
