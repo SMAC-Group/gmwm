@@ -124,8 +124,8 @@ Lastly, we will be offering a source .tar that is able to be install offline - a
 install.packages(c("RcppArmadillo","ggplot2", "scales", "gridExtra","devtools"))
 
 # Local installation
-setwd(“path_to_file_GMWM_0.13.0.tar.gz”)
-install.packages(“GMWM", repos = NULL, type="source")
+setwd("path_to_file_GMWM_0.13.0.tar.gz")
+install.packages("GMWM", repos = NULL, type="source")
 ```
 
 # Licensing
