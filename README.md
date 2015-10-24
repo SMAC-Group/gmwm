@@ -120,7 +120,7 @@ If you have a compiler already installed, then continue on by installing the pac
 install.packages(c("RcppArmadillo","ggplot2","gridExtra","reshape2","devtools"))
 
 # Install the package from github
-devtools::install_github("SMAC-Group/imudata")
+devtools::install_github("SMAC-Group/gmwm")
 ```
 
 Lastly, we will be offering a source .tar that is able to be install offline - after being downloaded - on the [smac-group.com](http://www.smac-group.com) website.
