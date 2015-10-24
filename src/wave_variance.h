@@ -3,9 +3,9 @@
 
 arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2);
 
-arma::mat ci_eta3_robust(arma::vec y, arma::vec ci_low_classical, arma::vec ci_hi_classical, double alpha_ov_2, double eff);
+arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alpha_ov_2, double eff);
 
-arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y, 
+arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& wv, 
                             std::string type, double alpha_ov_2, bool robust, double eff);
  
 arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw,

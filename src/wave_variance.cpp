@@ -51,9 +51,8 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 
 //' @title Generate eta3 robust confidence interval
 //' @description Computes the eta3 robust CI
-//' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
-//' @param ci_low_classical A \code{vec} that contains the CI Low Classical
-//' @param ci_hi_classical A \code{vec} that contains the CI High Classical
+//' @param wv_robust A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
+//' @param wv_ci_class A \code{mat} that contains the CI mean, CI Lower, and CI Upper
 //' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
 //' @param eff A \code{double} that indicates the efficiency.
 //' @return A \code{matrix} with the structure:
@@ -62,6 +61,8 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //'  \item{Column 2}{Chi-squared Lower Bounds}
 //'  \item{Column 3}{Chi-squared Upper Bounds}
 //' }
+//' @details
+//' Within this function we are scaling the classical 
 //' @keywords internal
 //' @examples
 //' x = rnorm(100)
@@ -71,35 +72,38 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //' y = wave_variance(signal_modwt_bw, robust = TRUE,  eff = 0.6)
 //' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
-arma::mat ci_eta3_robust(arma::vec y, arma::vec ci_low_classical, arma::vec ci_hi_classical, double alpha_ov_2, double eff) {
-    
-    unsigned int num_elem = y.n_elem;
+arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alpha_ov_2, double eff) {
+    unsigned int num_elem = wv_robust.n_elem;
 
     arma::mat out(num_elem, 3);
     
     double q1 = R::qnorm(1-alpha_ov_2, 0.0, 1.0, true, false);
     
     double coef = ((-1.0*q1-q1) * sqrt(1.0/eff)) / (-1.0*q1-q1);
-    
+
     for(unsigned int i = 0; i<num_elem;i++){
       
-      double wv = y(i); // store WV for i-th case
+      double wv_ci = wv_ci_class(i,0); // store WV for i-th case
       
-      double lci = wv - ci_low_classical(i);
-      double uci = ci_hi_classical(i) - wv; 
+      
+      double lci = (wv_ci - wv_ci_class(i,1))/wv_ci; // lower classical ci scale
+      double uci = (wv_ci_class(i,2) - wv_ci)/wv_ci; // upper classical ci scale
+      
+      
+      double wv_ri = wv_robust(i); // store WV for i-th case
       
       // Avoid negative result
-      lci = wv - lci*coef;
+      lci = wv_ri - lci*coef*wv_ri;
       if(lci > 0){
         out(i,1) = lci;        
       }else{
-        out(i,1) = ci_low_classical(i)/2; // mean of (low_ci, 0) /2
+        out(i,1) = wv_ci_class(i,1)/2; // mean of (low_ci, 0) /2
       }
 
-      out(i,2) = wv + uci*coef;
+      out(i,2) = wv_ri + uci*coef*wv_ri;
     }
 
-    out.col(0) = y;
+    out.col(0) = wv_robust;
 
     return out;
 }
@@ -107,7 +111,7 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec ci_low_classical, arma::vec ci_h
 //' @title Generate a Confidence intervval for a Univariate Time Series
 //' @description Computes an estimate of the multiscale variance and a chi-squared confidence interval
 //' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
-//' @param y A \code{vec} that contains the wave variance.
+//' @param wv A \code{vec} that contains the wave variance.
 //' @param type A \code{String} indicating the confidence interval being calculated.
 //' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
 //' @param robust A \code{boolean} to determine the type of wave estimation.
@@ -130,10 +134,10 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec ci_low_classical, arma::vec ci_h
 //' y = wave_variance(signal_modwt_bw)
 //' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025)
 // [[Rcpp::export]]
-arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& y,
+arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& wv,
                             std::string type = "eta3", double alpha_ov_2 = 0.025, bool robust = false, double eff = 0.6){
     
-  unsigned int nb_level = y.n_elem;
+  unsigned int nb_level = wv.n_elem;
   arma::vec dims(nb_level);
   
   for(unsigned int i = 0; i < nb_level; i++){
@@ -146,15 +150,15 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
   if(type == "eta3"){
       
       if(!robust){
-        out = ci_eta3(y, dims, alpha_ov_2);  
+        out = ci_eta3(wv, dims, alpha_ov_2);  
       }else{
         // per the WV Robust change... 
         // We need to obtain the classical CI first, then modify it.
-        arma::vec y2 = wave_variance(signal_modwt_bw, false, eff); // Requires the next function....
-        arma::mat temp = ci_eta3(y2, dims, alpha_ov_2).cols(1,2);  // calculate the CI
-        arma::vec ci_low = temp.col(0);
-        arma::vec ci_high = temp.col(1);
-        out = ci_eta3_robust(y, ci_low, ci_high, alpha_ov_2, eff);
+        arma::vec wv_class = wave_variance(signal_modwt_bw, false, eff); // Requires the next function....
+        arma::mat wv_ci_class = ci_eta3(wv_class, dims, alpha_ov_2);  // calculate the CI
+    
+        // wv is the wave robust
+        out = ci_eta3_robust(wv, wv_ci_class, alpha_ov_2, eff);
       }
   }
   else{
