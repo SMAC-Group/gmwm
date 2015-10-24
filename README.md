@@ -88,7 +88,7 @@ summary(o)
 
 
 # Install Instructions (All platforms)
-To install the `gmwm` package, there are two options: CRAN (stable) or GitHub (Developmental).
+To install the `gmwm` package, there are three options: CRAN (stable), GitHub (Developmental), or SMAC (stable - offline).
 
 The installation process with CRAN is the simplest
 ```r
@@ -107,16 +107,6 @@ install.packages(c("RcppArmadillo","ggplot2","gridExtra","reshape2","devtools"))
 devtools::install_github("SMAC-Group/imudata")
 ```
 
-## Supplementary data package
-
-To test the package performance on real-world data that is *stationary* or work with some of the examples, you will need to download and install the `imudata` R package.
-
-To do so, please use the following installation method within the `gmwm` R package:
-
-```r
-gmwm::install_imudata()
-```
-
 Lastly, we will be offering a source .tar that is able to be install offline - after being downloaded - on the [smac-group.com](http://www.smac-group.com) website.
 
 ```r
@@ -127,6 +117,18 @@ install.packages(c("RcppArmadillo","ggplot2", "scales", "gridExtra","devtools"))
 setwd("path_to_file_GMWM_0.13.0.tar.gz")
 install.packages("GMWM", repos = NULL, type="source")
 ```
+
+## Supplementary data package
+
+To test the package performance on real-world data that is *stationary* or work with some of the examples, you will need to download and install the `imudata` R package.
+
+To do so, please use the following installation method within the `gmwm` R package:
+
+```r
+gmwm::install_imudata()
+```
+
+For more information about the `imudata` package, see the [repository](https://github.com/SMAC-Group/imudata).
 
 # Licensing
 The license this source code is released under is the Q public license. In some cases, the GPL license does apply. However, in the majority of the cases, the license in effect is the Q License as the computational code is heavily dependent on armadilllo, which has an MIT license that enables us to recast our code to the Q. See the LICENSE file for full text. Otherwise, please consult [TLDR Legal](https://tldrlegal.com/license/q-public-license-1.0-%28qpl-1.0%29) which will provide a synopsis of the restrictions placed upon the data and code. Please note, this does NOT excuse you from talking about licensing with a lawyer!
