@@ -1,7 +1,9 @@
 # `gmwm` R Package
 This repository holds the Generalized Method of Wavelet Moments (GMWM) Statistical Methods R package. The methods within this package are able to be used to estimate parameters of latent time series models within two different disciplines: Inertial Measurement Units for Engineers and State-Space Models for Statisticians.
 
-Example workflow:
+Below are examples of the capabilities of the `gmwm` package.
+
+To start, let's generate some data:
 ```r
 ## Data generation ##
 # Specify model
@@ -9,7 +11,11 @@ m = AR1(phi=.99,sigma2=.01) + WN(sigma2=1)
 
 # Generate Data
 d = gen.gts(m, 10000)
+```
 
+Once we have data, let's try to estimate it with specific (e.g. user supplied) and guessed (e.g. program generated) parameters.
+
+```r
 ## Estimation Modes ##
 
 # Use a specific initial starting value
@@ -17,7 +23,10 @@ o.specific = gmwm.imu(AR1(phi=.95,sigma2=.05) + WN(sigma2=.95), d)
 
 # Let the program guess a good starting value
 o.guess = gmwm.imu(AR1()+WN(), d)
+```
 
+To run inference or view the parameter estimates, we do:
+```r
 ## View Model Info ##
 
 # Standard summary
@@ -28,7 +37,10 @@ summary(o.specific, inference = T)
 
 # Add bootstrapping
 summary(o.specific, inference = T, bs.gof = T)
+```
 
+Alternatively, we can let the program try to figure out the best model for the data:
+```r
 ## Model selection ##
 
 # Separate Models - Compares 2*AR1() + WN(), 2*AR1(), AR1() + WN()
@@ -47,10 +59,43 @@ plot(ms.sep)
 summary(ms.sep)
 ```
 
-# Install Instructions (All platforms)
-To install the `gmwm` package, there are two options: CRAN or github.
+Last, but certainly not least, we can also approximate a contaminated sample with robust methodology:
+```r
+## Data generation ##
+# Specify model
+model = AR1(phi=.99,sigma2=.01) + WN(sigma2=1)
 
-Prior to installing with devtools, please make sure to have a compiler installed on your system that is compatible with R.
+# Generate Data
+data = gen.gts(model, N)
+
+# Contaminate Data
+cont.alpha = 0.01
+cont.num = round(N*cont.alpha)
+data$data[sample(1:N,cont.num),] = rnorm(cont.num)
+
+# Robust wavelet variance
+wv.robust = wvar(data, robust = T, eff = 0.6)
+
+# Plot the robust WV
+plot(wv.robust)
+
+# Run robust estimation
+o = gmwm.imu(model, data, robust = T, eff = 0.6)
+
+# Robust information
+summary(o)
+```
+
+
+# Install Instructions (All platforms)
+To install the `gmwm` package, there are two options: CRAN (stable) or GitHub (Developmental).
+
+The installation process with CRAN is the simplest
+```r
+install.packages("gmwm")
+```
+
+Prior to installing with `devtools`, please make sure to have a compiler installed on your system that is compatible with R.
 
 If you have a compiler already installed, then continue on by installing the package dependencies and finally the package itself by doing the following: 
 
