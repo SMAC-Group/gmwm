@@ -13,7 +13,23 @@ m = AR1(phi=.99,sigma2=.01) + WN(sigma2=1)
 d = gen.gts(m, 10000)
 ```
 
-Once we have data, let's try to estimate it with specific (e.g. user supplied) and guessed (e.g. program generated) parameters.
+Once we have data, we can see what the wavelet variance looks like for the data with the classical and robust wavelet variances.
+
+```r
+# Calculate the classical wavelet variance with the Haar filter
+wv.classical = wvar(d)
+
+# Plot the data
+plot(wv.classical)
+
+# Calculate robust wavelet variance
+wv.robust = wvar(d, robust = T, eff = 0.6)
+
+# Compare both versions
+compare.wvar(wv.classical, wv.robust)
+```
+
+Now, let's try to estimate it with specific (e.g. user supplied) and guessed (e.g. program generated) parameters.
 
 ```r
 ## Estimation Modes ##
