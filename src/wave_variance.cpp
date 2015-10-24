@@ -152,8 +152,8 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
         // We need to obtain the classical CI first, then modify it.
         arma::vec y2 = wave_variance(signal_modwt_bw, false, eff); // Requires the next function....
         arma::mat temp = ci_eta3(y2, dims, alpha_ov_2).cols(1,2);  // calculate the CI
-        arma::vec ci_low = temp.col(1);
-        arma::vec ci_high = temp.col(2);
+        arma::vec ci_low = temp.col(0);
+        arma::vec ci_high = temp.col(1);
         out = ci_eta3_robust(y, ci_low, ci_high, alpha_ov_2, eff);
       }
   }
