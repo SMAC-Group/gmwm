@@ -8,7 +8,7 @@ sigmaWN = phi
 
 for (i in 1:B){
 	set.seed(i)
-	xt = gen.ts(model, N)
+	xt = gen.gts(model, N)
 	mod1 = gmwm(AR1() + WN(), xt, model.type = "ssm")
 	mod2 = gmwm(model, xt, model.type = "ssm")
 	mod3 = gmwm(AR1() + WN(), xt, model.type = "ssm")

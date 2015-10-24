@@ -61,14 +61,14 @@ for(m in 1:length(mma)){
   for(i in 1:B){
     print(paste0("Starting iteration:", i))
     timing[i, 1] = system.time({
-      data = gen.ts(model, N)
+      data = gen.gts(model, N)
       if((m %% 2)){
-        data[round(runif(round(N*.1,0),1,N))] = rnorm(N*.1, 0, sd=10)
+        data$data[round(runif(round(N*.1,0),1,N))] = rnorm(N*.1, 0, sd=10)
       }
     })[3]  
     
     timing[i, 2] = system.time({
-      mle = arima(data,c(length(ar),0,length(ma)),include.mean=F)
+      mle = arima(data$data,c(length(ar),0,length(ma)),include.mean=F)
     })[3]  
     
     print("Calculating MLE")

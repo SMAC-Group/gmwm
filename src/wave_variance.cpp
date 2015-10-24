@@ -52,7 +52,8 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //' @title Generate eta3 robust confidence interval
 //' @description Computes the eta3 robust CI
 //' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
-//' @param dims A \code{String} indicating the confidence interval being calculated.
+//' @param ci_low_classical A \code{vec} that contains the CI Low Classical
+//' @param ci_hi_classical A \code{vec} that contains the CI High Classical
 //' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
 //' @param eff A \code{double} that indicates the efficiency.
 //' @return A \code{matrix} with the structure:
@@ -70,9 +71,9 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //' y = wave_variance(signal_modwt_bw, robust = TRUE,  eff = 0.6)
 //' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
-arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double eff) {
+arma::mat ci_eta3_robust(arma::vec y, arma::vec ci_low_classical, arma::vec ci_hi_classical, double alpha_ov_2, double eff) {
     
-    unsigned int num_elem = dims.n_elem;
+    unsigned int num_elem = y.n_elem;
 
     arma::mat out(num_elem, 3);
     
@@ -80,17 +81,21 @@ arma::mat ci_eta3_robust(arma::vec y, arma::vec dims, double alpha_ov_2, double 
     
     double coef = ((-1.0*q1-q1) * sqrt(1.0/eff)) / (-1.0*q1-q1);
     
-    double eff_mod = sqrt(sqrt(eff));
-    
     for(unsigned int i = 0; i<num_elem;i++){
       
       double wv = y(i); // store WV for i-th case
       
-      double eta3 = std::max(dims(i)/pow(2,i+1),1.0); 
-      double lci = eff_mod * eta3 * wv/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
-      double uci = eta3 * wv/(eff_mod*R::qchisq(alpha_ov_2, eta3, 1, 0)); // Upper CI
+      double lci = wv - ci_low_classical(i);
+      double uci = ci_hi_classical(i) - wv; 
       
-      out(i,1) = wv - lci*coef;
+      // Avoid negative result
+      lci = wv - lci*coef;
+      if(lci > 0){
+        out(i,1) = lci;        
+      }else{
+        out(i,1) = ci_low_classical(i)/2; // mean of (low_ci, 0) /2
+      }
+
       out(i,2) = wv + uci*coef;
     }
 
@@ -135,15 +140,21 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
     dims(i) = signal_modwt_bw(i).n_elem;
   }
 
-  arma::mat out(y.n_elem , 3);
+  arma::mat out(nb_level , 3);
 
   
   if(type == "eta3"){
-      if(robust){
-        out = ci_eta3_robust(y, dims, alpha_ov_2, eff);
-      }
-      else{
+      
+      if(!robust){
         out = ci_eta3(y, dims, alpha_ov_2);  
+      }else{
+        // per the WV Robust change... 
+        // We need to obtain the classical CI first, then modify it.
+        arma::vec y2 = wave_variance(signal_modwt_bw, false, eff); // Requires the next function....
+        arma::mat temp = ci_eta3(y2, dims, alpha_ov_2).cols(1,2);  // calculate the CI
+        arma::vec ci_low = temp.col(1);
+        arma::vec ci_high = temp.col(2);
+        out = ci_eta3_robust(y, ci_low, ci_high, alpha_ov_2, eff);
       }
   }
   else{
