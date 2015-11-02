@@ -4,12 +4,12 @@
 \alias{ci_eta3_robust}
 \title{Generate eta3 robust confidence interval}
 \usage{
-ci_eta3_robust(y, dims, alpha_ov_2, eff)
+ci_eta3_robust(wv_robust, wv_ci_class, alpha_ov_2, eff)
 }
 \arguments{
-\item{y}{A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.}
+\item{wv_robust}{A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.}
 
-\item{dims}{A \code{String} indicating the confidence interval being calculated.}
+\item{wv_ci_class}{A \code{mat} that contains the CI mean, CI Lower, and CI Upper}
 
 \item{alpha_ov_2}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
 
@@ -25,6 +25,9 @@ A \code{matrix} with the structure:
 }
 \description{
 Computes the eta3 robust CI
+}
+\details{
+Within this function we are scaling the classical
 }
 \examples{
 x = rnorm(100)

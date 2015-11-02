@@ -76,8 +76,8 @@ Just run your codes again.
 #1. Compare two objects
 N1 = 1000
 N2 = 2000
-data.ar = gen.ts(AR1(phi = .32, sigma2=.01), N1)
-data.arma = gen.ts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
+data.ar = gen.gts(AR1(phi = .32, sigma2=.01), N1)
+data.arma = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
 wvar1 = wvar(data.ar)
 wvar2 = wvar(data.arma, robust = T)
 compare.wvar(wvar1, wvar2)
@@ -89,10 +89,10 @@ N1 = 1000
 N2 = 2000
 N3 = 4000
 N4 = 3500
-data1 = gen.ts(AR1(phi = .32, sigma2=.01), N1)
-data2 = gen.ts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
-data3 = gen.ts(AR1(phi = .32, sigma2=1), N3)
-data4 = gen.ts(ARMA(ar=c(.8,.1), ma=c(.5), sigma2=1), N4)
+data1 = gen.gts(AR1(phi = .32, sigma2=.01), N1)
+data2 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
+data3 = gen.gts(AR1(phi = .32, sigma2=1), N3)
+data4 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.5), sigma2=1), N4)
 wvar1 = wvar(data1)
 #wvar1 = wvar(data1, robust = T)
 wvar2 = wvar(data2)

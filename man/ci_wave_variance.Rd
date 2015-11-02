@@ -4,13 +4,13 @@
 \alias{ci_wave_variance}
 \title{Generate a Confidence intervval for a Univariate Time Series}
 \usage{
-ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025,
+ci_wave_variance(signal_modwt_bw, wv, type = "eta3", alpha_ov_2 = 0.025,
   robust = FALSE, eff = 0.6)
 }
 \arguments{
 \item{signal_modwt_bw}{A \code{field<vec>} that contains the brick walled modwt or dwt decomposition}
 
-\item{y}{A \code{vec} that contains the wave variance.}
+\item{wv}{A \code{vec} that contains the wave variance.}
 
 \item{type}{A \code{String} indicating the confidence interval being calculated.}
 

@@ -5,20 +5,17 @@
 \alias{gmwm-package}
 \title{GMWM Package}
 \description{
-GMWM is a Time Series Package
+The gmwm package implements the theoretical framework for Generalized Method
+of Wavelet Moments (GMWM).
 }
 \details{
 \tabular{ll}{
 Package: \tab GMWM\cr
 Type: \tab Package\cr
 Version: \tab 0.13.0\cr
-Date: \tab 2015-10-15\cr
-License: \tab MIT + file LICENSE\cr
+Date: \tab 2015-11-01\cr
+License: \tab file LICENSE\cr
 }
-Some details should be added
-}
-\examples{
-# Fill in at a later time
 }
 \author{
 James Balamuta \email{balamut2@illinois.edu},
@@ -27,8 +24,5 @@ Roberto Molinari \email{roberto.molinari@unige.ch},
 Wenchao Yang \email{wyang40@illinois.edu}
 
 Stephane Guerrier \email{stephane@illinois.edu}
-}
-\seealso{
-\code{avar}
 }
 
