@@ -4,8 +4,8 @@ Title: Generalized Method of Wavelet Moments
 Version: 0.13.0
 Date: 2015-10-15
 Authors@R: c(
-    person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cre", "cph")),
-    person("Stephane", "Guerrier", , "stephane@illinois.edu", c("ctb", "cph")),
+    person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
+    person("Stephane", "Guerrier", , "stephane@illinois.edu", c("ctb","cre","cph")),
     person("Roberto", "Molinari", , "roberto.molinari@unige.ch", c("ctb", "cph")),
     person("Wenchao", "Yang", , "wyang40@illinois.edu", c("ctb"))
     )
