@@ -12,9 +12,9 @@ Authors@R: c(
 URL: https://github.com/SMAC-Group/gmwm
 BugReports: https://github.com/SMAC-Group/gmwm/issues
 Description: The gmwm package implements the theoretical framework for Generalized Method
-    of Wavelet Moments (GMWM). The package contains functions that allow a user
-    to...
+    of Wavelet Moments (GMWM). 
 License: file LICENSE
+Maintainer: Stephane Guerrier <stephane@illinois.edu>
 Depends: 
     ggplot2
 Imports: 
