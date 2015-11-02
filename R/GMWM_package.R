@@ -1,16 +1,16 @@
 #' GMWM Package
 #'
-#' GMWM is a Time Series Package
+#' The gmwm package implements the theoretical framework for Generalized Method
+#' of Wavelet Moments (GMWM).
 #' 
 #' @details 
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
 #' Version: \tab 0.13.0\cr
-#' Date: \tab 2015-10-15\cr
-#' License: \tab MIT + file LICENSE\cr
+#' Date: \tab 2015-11-01\cr
+#' License: \tab file LICENSE\cr
 #' }
-#' Some details should be added  
 #' 
 #' @author
 #' James Balamuta \email{balamut2@@illinois.edu},
@@ -26,7 +26,4 @@
 #' @importFrom devtools install_github
 #' @import ggplot2 grid scales reshape2 gridExtra
 #' @exportPattern ^[[:alpha:]]+
-#' @examples
-#' # Fill in at a later time
-#' @seealso \code{avar}
 NULL
