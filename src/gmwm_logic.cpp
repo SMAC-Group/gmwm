@@ -346,7 +346,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     arma::vec temp = objdesc(0);
     unsigned int p = temp(0);
     if(p != 0 && invert_check(arma::join_cols(arma::ones<arma::vec>(1), -theta.rows(0, p - 1))) == false){
-      std::cout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
+      Rcpp::Rcout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
     }
   } 
   

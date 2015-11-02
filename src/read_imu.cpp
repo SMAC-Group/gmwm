@@ -156,7 +156,7 @@ arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
   } 
   
   // display info to command window
-  std::cout << file_name <<  " contains " << (int)nEpochs << " epochs " << std::endl << "Reading ..." << std::endl;
+  Rcpp::Rcout << file_name <<  " contains " << (int)nEpochs << " epochs " << std::endl << "Reading ..." << std::endl;
     
    
   // -- Read time

@@ -298,7 +298,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Build matrix to store results
   arma::mat results(num_models, 4);
   
-  std::cout << "Processing model 1 out of " << num_models << std::endl;
+  Rcpp::Rcout << "Processing model 1 out of " << num_models << std::endl;
   
   // Obtain the largest models information
   arma::field<arma::mat> master = gmwm_master_cpp(data, 
@@ -375,7 +375,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
                 obj_value, alpha, compute_v, K, H, G, robust, eff);
   }else{
     
-    std::cout << "Bootstrapping the covariance matrix... Please stand by." << std::endl;
+    Rcpp::Rcout << "Bootstrapping the covariance matrix... Please stand by." << std::endl;
     V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false); // Bootstrapped V (largest model)
     
     // Calculate the model score according to model selection criteria paper
@@ -404,7 +404,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     
     if(full_model_index != count){
       countModels++;
-      std::cout << "Processing model " << countModels << " out of " << num_models << std::endl;
+      Rcpp::Rcout << "Processing model " << countModels << " out of " << num_models << std::endl;
       // Get the first model
       desc = *iter;
       
@@ -615,7 +615,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
   arma::field< arma::field<arma::field<arma::mat> > > h(V);
   
   for(unsigned int i = 0; i < V; i++){
-    std::cout << "Generating models for the " << i + 1 << " column in the data set " << std::endl << std::endl;
+    Rcpp::Rcout << "Generating models for the " << i + 1 << " column in the data set " << std::endl << std::endl;
     h(i) = model_select(data.col(i),
       models,
       full_model,
@@ -626,7 +626,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
       K, H, G, 
       robust, eff);
     
-    std::cout << std::endl;
+    Rcpp::Rcout << std::endl;
   }
   
   return h;
