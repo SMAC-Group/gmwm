@@ -1,7 +1,7 @@
 Package: gmwm
 Type: Package
-Title: Generalized Method of Wavelet Moments 
-Version: 0.13.0
+Title: Generalized Method of Wavelet Moments
+Version: 1.0.0
 Date: 2015-10-15
 Authors@R: c(
     person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
@@ -11,20 +11,26 @@ Authors@R: c(
     )
 URL: https://github.com/SMAC-Group/gmwm
 BugReports: https://github.com/SMAC-Group/gmwm/issues
-Description: The gmwm package implements the theoretical framework for Generalized Method
-    of Wavelet Moments (GMWM). 
+Description: The gmwm package implements the theoretical framework for
+    Generalized Method of Wavelet Moments (GMWM).
 License: file LICENSE
 Maintainer: Stephane Guerrier <stephane@illinois.edu>
-Depends: 
+Depends:
     ggplot2
-Imports: 
+Imports:
     Rcpp (>= 0.11.3),
     scales,
     grid,
     reshape2,
     gridExtra,
-    devtools
-LinkingTo: 
-    Rcpp, 
+    devtools,
+    utils,
+    stats,
+    methods,
+    graphics,
+    grDevices
+LinkingTo: Rcpp,
     RcppArmadillo
-Suggests: testthat
+Suggests:
+    testthat
+RoxygenNote: 5.0.0

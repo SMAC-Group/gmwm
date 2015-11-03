@@ -1,4 +1,5 @@
 #' @title Create an IMU Object
+#' @description Builds an IMU object that provides the program with gyroscope, accelerometer, and axis information per column in the dataset.
 #' @param object A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.
 #' @param gyroscope A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.
 #' @param accelerometer A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.

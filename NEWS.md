@@ -1,4 +1,4 @@
-# gmwm 0.13.0
+# gmwm 1.0.0
 
 This is the first general release of the Generalized Method of Wavelet Moments (GMWM) R package. The package is meant to act as a platform for studying wavelets and for using the GMWM estimator.
 

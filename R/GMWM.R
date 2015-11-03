@@ -1144,7 +1144,7 @@ compare.gmwm = function(..., background = 'white', split = TRUE, CI = TRUE, auto
         if (numObj == 2){
           wv.palette = c("#003C7D","#F47F24")
         }else{
-          #'Dark2'
+          # 'Dark2'
           Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
           modulus = numObj%/% 8
           remainder = numObj%% 8
@@ -1224,7 +1224,7 @@ compare.gmwm = function(..., background = 'white', split = TRUE, CI = TRUE, auto
         if (numObj == 2){
           wv.palette = c("#003C7D","#F47F24")
         }else{
-          #'Dark2'
+          # 'Dark2'
           Dark2 = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D", "#666666")
           modulus = numObj%/% 8
           remainder = numObj%% 8

@@ -7,8 +7,8 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.13.0\cr
-#' Date: \tab 2015-11-01\cr
+#' Version: \tab 1.0.0\cr
+#' Date: \tab 2015-11-02\cr
 #' License: \tab file LICENSE\cr
 #' }
 #' 
@@ -24,6 +24,11 @@
 #' @useDynLib gmwm
 #' @importFrom Rcpp evalCpp
 #' @importFrom devtools install_github
+#' @importFrom grDevices gray.colors hcl
+#' @importFrom graphics lines plot
+#' @importFrom methods is
+#' @importFrom stats arima predict
+#' @importFrom utils install.packages installed.packages tail
 #' @import ggplot2 grid scales reshape2 gridExtra
 #' @exportPattern ^[[:alpha:]]+
 NULL

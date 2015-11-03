@@ -35,6 +35,7 @@ paperSetting = function(){
 }
 
 #' @title Emulate ggplot2 default color palette
+#' @description Autogenerate a colors according to the ggplot selection mechanism. 
 #' @param n An \code{integer} indicating how many colors user wants.
 #' @return A \code{vector} containing \code{n} colors
 #' @author John Colby
@@ -45,6 +46,7 @@ ggColor <- function(n) {
 }
 
 #' @title Get the model in a \code{gmwm} object
+#' @description Extracts and formats the model string.
 #' @param object A \code{gmwm} object
 #' @return A \code{string} containing the model
 #' @keywords internal
