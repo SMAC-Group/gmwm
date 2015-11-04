@@ -6,7 +6,7 @@ This is the first submission of `gmwm`
 
 ## R CMD check results
 
-There were no ERRORs or WARNINGs in R 3.2.2 with --as-cran.
+There were no ERRORs or WARNINGs in R 3.2.2 with --as-cran or under win-devel.
 
 We did receive a note:
 

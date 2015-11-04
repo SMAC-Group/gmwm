@@ -1,7 +1,6 @@
-#' GMWM Package
+#' Generalized Method of Wavelet Moments (GMWM) Package
 #'
-#' The gmwm package implements the theoretical framework for Generalized Method
-#' of Wavelet Moments (GMWM).
+#' Generalized Method of Wavelet Moments (GMWM) is an estimation technique for the parameters of time series models. It uses the wavelet variance in a moment matching approach that makes it particularly suitable for the estimation of certain state-space models. Furthermore, there exists a robust implementation of GMWM, which allows the robust estimation of some state-space models and ARIMA models. Lastly, the package provides the ability to quickly generate time series data, perform different wavelet decompositions, and visualizations. 
 #' 
 #' @details 
 #' \tabular{ll}{
