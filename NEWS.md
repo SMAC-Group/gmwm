@@ -1,12 +1,12 @@
 # gmwm 1.0.0
 
-This is the first general release of the Generalized Method of Wavelet Moments (GMWM) R package. The package is meant to act as a platform for studying wavelets and for using the GMWM estimator.
+This is the first general release of the Generalized Method of Wavelet Moments (GMWM) R package. The package is meant to act as a platform for using the GMWM estimator.
 
 ## Highlights
 
-* High performing C++ routines to calculate wavelets, gmwm estimator, and more!
-* Inference and Model Selection for state-space models (SSM).
-* Straightforward model specification of latent time series processes via natural input.
+* High performing C++ routines to calculate wavelet variance, GMWM estimator, and more!
+* Inference and Model Selection for the GMWM estimator,.
+* Straightforward model specification of state-space model (or latent time series models) via natural inputs.
 * Two different modeling modes:
   * `imu` to model inertial measurement units.
   * `ssm` to model state-space models.
