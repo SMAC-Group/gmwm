@@ -14,7 +14,7 @@ This is the first general release of the Generalized Method of Wavelet Moments (
 
 ## Generalized Method of Wavelet Moments (GMWM) 
 
-* Efficient implementation of GMWM estimation techniques for latent time series.
+* Efficient implementation of GMWM estimation techniques for ARMA and state-space models.
 * Obtain results for time series with over two million observations in under 1.5 seconds!
 * Effortlessly obtain initial starting values with a new grid search algorithm or use your own. 
 * Switch between different weighting matrices (e.g. `approx`,`bootstrap`,`asymptotic`)
