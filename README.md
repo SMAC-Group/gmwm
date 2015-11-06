@@ -1,5 +1,5 @@
 # `gmwm` R Package
-This repository holds the Generalized Method of Wavelet Moments (GMWM) Statistical Methods R package. The methods within this package are able to be used to estimate parameters of latent time series models within two different disciplines: Inertial Measurement Units for Engineers and State-Space Models for Statisticians.
+This repository holds the Generalized Method of Wavelet Moments (GMWM) R package. This estimation technique uses the wavelet variance in a moment-matching spirt to estimate parameters of time series models such as ARMA or state-space models. A robust version of the GMWM is also implemented in this package toghether with a tailored made method for inertial sensors calibration which typically deals with very large sample sizes. 
 
 Below are examples of the capabilities of the `gmwm` package.
 
