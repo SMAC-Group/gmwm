@@ -34,3 +34,5 @@ To submit a new feature or change done yourself, do the following:
 1. Submit a pull request (e.g. PR).
 1. Discuss the pull request.
 1. Rinse'n'Repeat 4-5 until the change is accepted or clear it will not be merged in.
+
+Please note, any code that is contributed to the project effectively becomes the property of the stated licensors. By submitting code, you are agreeing to these terms.

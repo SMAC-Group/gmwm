@@ -2,7 +2,7 @@ Package: gmwm
 Type: Package
 Title: Generalized Method of Wavelet Moments
 Version: 1.0.0
-Date: 2015-11-02
+Date: 2015-11-06
 Authors@R: c(
     person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
     person("Stephane", "Guerrier", , "stephane@illinois.edu", c("ctb","cre","cph")),
@@ -12,7 +12,7 @@ Authors@R: c(
 URL: https://github.com/SMAC-Group/gmwm
 BugReports: https://github.com/SMAC-Group/gmwm/issues
 Description: Generalized Method of Wavelet Moments (GMWM) is an estimation technique for the parameters of time series models. It uses the wavelet variance in a moment matching approach that makes it particularly suitable for the estimation of certain state-space models. Furthermore, there exists a robust implementation of GMWM, which allows the robust estimation of some state-space models and ARIMA models. Lastly, the package provides the ability to quickly generate time series data, perform different wavelet decompositions, and visualizations. 
-License: file LICENSE
+License: CC BY-NC-SA 4.0
 Maintainer: Stephane Guerrier <stephane@illinois.edu>
 Depends:
     ggplot2
