@@ -7,9 +7,6 @@ This is the first general release of the Generalized Method of Wavelet Moments (
 * High performing C++ routines to calculate wavelet variance, GMWM estimator, and more!
 * Inference and Model Selection for the GMWM estimator,.
 * Straightforward model specification of state-space model (or latent time series models) via natural inputs.
-* Two different modeling modes:
-  * `imu` to model inertial measurement units.
-  * `ssm` to model state-space models.
 * Graphical features that enable the exploration of the Wavelet Variance and GMWM Estimation results.
 
 ## Generalized Method of Wavelet Moments (GMWM) 
