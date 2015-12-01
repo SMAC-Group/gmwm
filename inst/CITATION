@@ -1,0 +1,21 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package (version %s)", meta$Version)
+
+citHeader("To cite gmwm in publications use:")
+citEntry(entry = "Misc",
+         title = "gmwm: Generalized Method of Wavelet Moments",
+         author = c(person("James", "Balamuta"),
+                    person("Stephane", "Guerrier"),
+                    person("Roberto", "Molinari"),
+                    person("Wenchao", "Yang")),
+         year = year,  
+         howpublished = note,
+         note = "GitHub repository: \\url{https://github.com/SMAC-Group/GMWM}",
+         url = "https://cran.r-project.org/package=gmwm",
+         textVersion =
+           paste0("James Balamuta, Stephane Guerrier, Roberto Molinari,",
+                  "and Wenchao Yang (",
+                  year,
+                  "). gmwm: Generalized Method of Wavelet Moments. ",
+                  note, ". GitHub repository: https://github.com/SMAC-Group/GMWM.")
+)
