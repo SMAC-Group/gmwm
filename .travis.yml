@@ -1,3 +1,10 @@
 language: r
 warnings_are_errors: true
-sudo: false
+sudo: required
+r_packages:
+ - ggplot2
+ - devtools
+ - RcppArmadillo
+ - Rcpp
+ - scales
+ - roxygen2
