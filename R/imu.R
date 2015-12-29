@@ -599,7 +599,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
                         sensor = object$sensor, stringsAsFactors = F)
     
     p = p + 
-      geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show_guide = F)
+      geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
      # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
      #CI.color: a hexadecimal color value
   }
@@ -1082,7 +1082,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
                         sensor = object$sensor, stringsAsFactors = F)
     
     p = p + 
-      geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show_guide = F)
+      geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
     # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
     #CI.color: a hexadecimal color value
   }

@@ -848,7 +848,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   
   if(CI){
     p = p +
-      geom_ribbon(data = WV, mapping = aes(x = scale, y = NULL,ymin =low, ymax = high ), fill = CI.color, alpha = transparence, show_guide = T) +
+      geom_ribbon(data = WV, mapping = aes(x = scale, y = NULL,ymin =low, ymax = high ), fill = CI.color, alpha = transparence, show.legend = T) +
       #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
       guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
   }
@@ -984,7 +984,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
   
   if(CI){
     p = p +
-      geom_ribbon(data = temp, mapping = aes(ymin = low, ymax = high),fill = CI.color, show_guide = T,alpha = transparence) +
+      geom_ribbon(data = temp, mapping = aes(ymin = low, ymax = high),fill = CI.color, show.legend = T,alpha = transparence) +
       
       #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
       guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
@@ -1507,7 +1507,7 @@ autoplot.gmwmComp = function(object, breaks, levels, object.names, split = TRUE,
     object.CI$dataset = factor(object.CI$dataset, levels = object.names )
     
     p = p + 
-      geom_ribbon(data = object.CI, mapping = aes(x = scales, ymin = low, ymax = high, fill = dataset), alpha = transparence, show_guide = T)
+      geom_ribbon(data = object.CI, mapping = aes(x = scales, ymin = low, ymax = high, fill = dataset), alpha = transparence, show.legend = T)
     
     legend.fill = rep(NA, 2*length(CI.color))
     for(i in 1:length(legend.fill)){

@@ -69,7 +69,7 @@ Compare the estimates given by the classical and robust methods of calculating t
 }
 \note{
 Common error "Error in grid.Call(L_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  : polygon edge not found"
-Just run your codes again.
+Just run your code again or open R using the R GUI instead of RStudio.
 }
 \examples{
 \dontrun{

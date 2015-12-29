@@ -46,22 +46,22 @@ gts = function(data, freq = 1, unit = NULL, name = ""){
     ndata = nrow(data)
     colnames(data) = NULL
     
-    #check ncol
+    # Check ncol
     ncolumn = ncol(data)
-    if(!ncolumn==1){
+    if(ncolumn != 1){
       stop('data must have one column.')
     }
   } else {
     ndata = length(data)
   }
-  if (ndata == 0) {
+  
+  if(ndata == 0) {
     stop("Not a valid data object! Please supply a data set with one column that is in either a data.frame, matrix, or numeric object.")
   }
   
-  if(!is(freq,"numeric") || length(freq)!=1){
-    stop("freq must be numeric")
-  }
-  if(freq<=0) {stop('freq must be larger than 0.')}
+  if(!is(freq,"numeric") || length(freq) != 1){ stop("freq must be numeric") }
+  
+  if(freq <= 0) { stop('freq must be larger than 0.') }
   
   if(!is.null(unit)){
     if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){

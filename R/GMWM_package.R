@@ -21,8 +21,8 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.0\cr
-#' Date: \tab 2015-11-06\cr
+#' Version: \tab 1.0.1\cr
+#' Date: \tab 2015-12-28\cr
 #' License: \tab CC BY-NC-SA 4.0\cr
 #' }
 #' 
@@ -59,6 +59,7 @@
 #' @importFrom methods is
 #' @importFrom stats arima predict
 #' @importFrom utils install.packages installed.packages tail
-#' @import ggplot2 grid scales reshape2 gridExtra
+#' @importFrom scales trans_breaks trans_format math_format
+#' @import ggplot2 reshape2 gridExtra
 #' @exportPattern ^[[:alpha:]]+
 NULL
