@@ -15,7 +15,7 @@
 
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
-#' @param x A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object. 
+#' @param x A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
 #' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
@@ -29,19 +29,35 @@
 #'   \item{"alpha"}{p value used for CI}
 #' }
 #' @author JJB
+#' @rdname wvar
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' # Default
 #' wvar(x)
 #' # Robust
 #' wvar(x, robust = TRUE, eff=0.3)
 #' # 90% confidence interval
 #' wvar(x, alpha = 0.10)
+#' 
+#' # IMU Object
+#' \dontrun{
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+#' df = wvar.imu(test)
+#' }
+#' @export
 wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
   UseMethod("wvar")
 }
 
+#' @rdname wvar
+#' @export
 wvar.lts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
   warning('lts object is detected. This function can only operate on the combined process.')
   x = x$data[,ncol(x$data)]
@@ -49,11 +65,15 @@ wvar.lts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
   wvar.default(x, alpha, robust, eff)
 }
 
+#' @rdname wvar
+#' @export
 wvar.gts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
   x = x$data[,1]
   wvar.default(x, alpha, robust, eff)
 }
 
+#' @rdname wvar
+#' @export
 wvar.default = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
   nlevels =  floor(log2(length(x)))
   decomp = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = "haar", nlevels, boundary="periodic")
@@ -69,6 +89,95 @@ wvar.default = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
                        scales = scales), class = "wvar")
   invisible(out)
 }
+
+#' @rdname wvar
+#' @export
+wvar.imu = function(x, alpha = 0.05, robust = F, eff = 0.6){
+
+  ncols = sum(x$num.sensor)
+  
+  obj.list = vector("list", ncols)
+  for(i in 1:ncols){
+    obj.list[[i]] = wvar(x$data[, i], alpha = alpha, robust = robust, eff = eff)
+  }
+  
+  ##begin: generate the data frame
+  total.len = 0
+  each.len = numeric(ncols)
+  for (i in 1:ncols){
+    each.len[i] = length(obj.list[[i]]$variance)
+    total.len = total.len + each.len[i]
+  }
+  
+  #Initialize empty data frame with right number of rows
+  obj = data.frame(WV = numeric(total.len),
+                   scales = numeric(total.len),
+                   low = numeric(total.len),
+                   high = numeric(total.len),
+                   axis = 'AXIS',
+                   sensor = 'SENSOR', stringsAsFactors=FALSE)
+  
+  if(x$num.sensor[2] == 0){ ## only "Gyroscope"
+    #put data into data frame
+    t = 1
+    for (i in 1:ncols){
+      d = each.len[i]
+      
+      obj[t:(t+d-1),] = data.frame(WV = obj.list[[i]]$variance,
+                                   scales = obj.list[[i]]$scales,
+                                   low = obj.list[[i]]$ci_low,
+                                   high = obj.list[[i]]$ci_high,
+                                   axis = x$axis[i], 
+                                   sensor = "Gyroscope",
+                                   stringsAsFactors=FALSE)
+      t = t +d
+    }
+    
+  }else if(x$num.sensor[1] == 0){ #only "Accelerometer"
+    #put data into data frame
+    t = 1
+    for (i in 1:ncols){
+      d = each.len[i]
+      
+      obj[t:(t+d-1),] = data.frame(WV = obj.list[[i]]$variance,
+                                   scales = obj.list[[i]]$scales,
+                                   low = obj.list[[i]]$ci_low,
+                                   high = obj.list[[i]]$ci_high,
+                                   axis = x$axis[i], 
+                                   sensor = "Accelerometer",
+                                   stringsAsFactors=FALSE)
+      t = t +d
+    }
+    
+  }else{ # both "Gyroscope" and "Accelerometer"
+    #put data into data frame
+    t = 1
+    for (i in 1:ncols){
+      if(i <= length(x$axis)){
+        temp.axis = x$axis[i]
+        temp.sensor = "Gyroscope"
+      }else{ 
+        temp.axis = x$axis[i-length(x$axis)]
+        temp.sensor = "Accelerometer"
+      }
+      
+      d = each.len[i]
+      obj[t:(t+d-1),] = data.frame(WV = obj.list[[i]]$variance,
+                                   scales = obj.list[[i]]$scales,
+                                   low = obj.list[[i]]$ci_low,
+                                   high = obj.list[[i]]$ci_high,
+                                   axis = temp.axis, 
+                                   sensor = temp.sensor,
+                                   stringsAsFactors=FALSE)
+      t = t +d
+    }
+  }
+
+  
+  class(obj) = "wvar.imu"
+  return(obj)
+}
+
 
 #' @title Print Wavelet Variances
 #' @description Displays the summary table of wavelet variance.

@@ -2,12 +2,24 @@
 % Please edit documentation in R/wvar.R
 \name{wvar}
 \alias{wvar}
+\alias{wvar.default}
+\alias{wvar.gts}
+\alias{wvar.imu}
+\alias{wvar.lts}
 \title{Wavelet Variance}
 \usage{
 wvar(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+
+\method{wvar}{lts}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+
+\method{wvar}{gts}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+
+\method{wvar}{default}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+
+\method{wvar}{imu}(x, alpha = 0.05, robust = F, eff = 0.6)
 }
 \arguments{
-\item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object.}
+\item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object.}
 
 \item{alpha}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
 
@@ -31,13 +43,25 @@ Calculates the (MODWT) wavelet variance
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 # Default
 wvar(x)
 # Robust
 wvar(x, robust = TRUE, eff=0.3)
 # 90\% confidence interval
 wvar(x, alpha = 0.10)
+
+# IMU Object
+\dontrun{
+if(!require("imudata")){
+   install_imudata()
+   library("imudata")
+}
+
+data(imu6)
+test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+df = wvar.imu(test)
+}
 }
 \author{
 JJB
