@@ -24,8 +24,6 @@
 // We use reverse vec
 #include "armadillo_manipulations.h"
 
-using namespace Rcpp;
-
 /* --------------------- Start DWT and MODWT Functions --------------------- */
 
 
@@ -56,7 +54,7 @@ arma::field<arma::vec> dwt_cpp(arma::vec x, std::string filter_name = "haar",
     x.resize(2*temp_N);
     x.rows(temp_N, 2*temp_N-1) = rev_vec;
   }else{
-      stop("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
+      Rcpp::stop("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
   }
 
   unsigned int N = x.n_elem;
@@ -66,10 +64,10 @@ arma::field<arma::vec> dwt_cpp(arma::vec x, std::string filter_name = "haar",
   unsigned int tau = pow(2,J);
     
   if(double(N)/double(tau) != floor(double(N)/double(tau))){
-    stop("The supplied sample size ('x') must be divisible by 2^(nlevels). Either truncate or expand the number of samples.");
+    Rcpp::stop("The supplied sample size ('x') must be divisible by 2^(nlevels). Either truncate or expand the number of samples.");
   }
   if(tau > N){
-    stop("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
+    Rcpp::stop("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
   }
 
   arma::field<arma::vec> filter_info = select_filter(filter_name);
@@ -147,7 +145,7 @@ arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name = "haar",
     x.resize(2*temp_N);
     x.rows(temp_N, 2*temp_N-1) = rev_vec;
   }else{
-      stop("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
+    Rcpp::stop("The supplied 'boundary' argument is not supported! Choose either periodic or reflection."); 
   }
 
   unsigned int N = x.n_elem;
@@ -156,8 +154,7 @@ arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name = "haar",
   
   unsigned int tau = pow(2,J);
   
-  if(tau > N)
-    stop("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
+  if(tau > N) Rcpp::stop("The number of levels [ 2^(nlevels) ] exceeds sample size ('x'). Supply a lower number of levels.");
 
   arma::field<arma::vec> filter_info = select_filter(filter_name);
   
@@ -216,7 +213,7 @@ arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name = "haar",
 //' These vectors are then stored into the field that is returned.
 //' Note: As a result, there are no NA's introduced and hence the na.omit is not needed.
 //' @examples
-//' x=rnorm(100)
+//' x = rnorm(100)
 //' brick_wall(modwt_cpp(x, "haar", 4, boundary="periodic"), select_filter("haar"), "modwt")
 // [[Rcpp::export]]
 arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  arma::field<arma::vec> wave_filter, std::string method = "modwt") 

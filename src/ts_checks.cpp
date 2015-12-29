@@ -24,7 +24,6 @@
 
 // Complex tools
 #include "complex_tools.h"
-using namespace Rcpp;
 
 //' @title Obtain the smallest polynomial root
 //' @description Calculates all the roots of a polynomial and returns the root that is the smallest.

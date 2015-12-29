@@ -28,7 +28,6 @@
 // Bootstraps!
 #include "bootstrappers.h"
 
-using namespace Rcpp;
 
 //' @title Routing function for summary info
 //' @description Gets all the data for the summary.gmwm function.

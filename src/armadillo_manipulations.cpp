@@ -14,8 +14,6 @@
 #include <RcppArmadillo.h>
 #include "armadillo_manipulations.h"
 
-using namespace Rcpp;
-
 //' Sort Matrix by Column
 //' 
 //' Sorts a given matrix by a specific column while retain the elements in each row.

@@ -64,9 +64,6 @@
 //
 #include "bootstrappers.h"
 
-using namespace arma;
-using namespace Rcpp;
-
 
 //' @title Optim loses NaN
 //' @description This function takes numbers that are very small and sets them to the minimal tolerance for C++.

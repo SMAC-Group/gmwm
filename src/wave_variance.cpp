@@ -26,9 +26,6 @@
 // Uses robust components...
 #include "robust_components.h"
 
-using namespace Rcpp;
-
-
 //' @title Generate eta3 confidence interval
 //' @description Computes the eta3 CI
 //' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
@@ -179,7 +176,7 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
       }
   }
   else{
-      stop("The wave variance type supplied is not supported. Please use: eta3");
+    Rcpp::stop("The wave variance type supplied is not supported. Please use: eta3");
   }
 
   return out;

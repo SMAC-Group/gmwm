@@ -45,7 +45,6 @@
 #include <cmath> // Used for std::isfinite
 
 #include "polyroot.h"
-using namespace Rcpp;
 
 
 double myfmod_cpp(double x1, double x2)

@@ -21,8 +21,6 @@
 #include "process_to_wv.h"
 #include "rtoarmadillo.h"
 
-using namespace Rcpp;
-
 //' @title ARMA Adapter to ARMA to WV Process function
 //' @description Molds the data so that it works with the arma_to_wv function.
 //' @param theta A \code{vec} that contains all the parameter estimates.

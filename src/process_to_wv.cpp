@@ -24,8 +24,6 @@
 // Need square
 #include "inline_functions.h"
 
-using namespace Rcpp;
-
 /* ----------------------------- Start Process to WV Functions ------------------------------- */
 
 //' @title ARMA process to WV

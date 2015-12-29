@@ -19,7 +19,6 @@
 #include <RcppArmadillo.h>
 
 #include "additional_moments.h"
-using namespace Rcpp;
 
 /* ------------------------ START ADDITIONAL MOMENTS ------------------------ */
 

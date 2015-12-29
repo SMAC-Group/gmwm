@@ -22,8 +22,6 @@
 // Needed for COV bootstrap
 #include "bootstrappers.h"
 
-using namespace Rcpp;
-
 
 /* To whom it may concern....
  * 

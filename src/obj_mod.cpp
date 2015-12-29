@@ -17,7 +17,6 @@
 
 
 #include <RcppArmadillo.h>
-using namespace Rcpp;
 
 
 //' @title Extract Object

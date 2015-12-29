@@ -16,7 +16,6 @@
  */
 
 #include <RcppArmadillo.h>
-using namespace Rcpp;
  
 #include "ts_model_cpp.h"
 

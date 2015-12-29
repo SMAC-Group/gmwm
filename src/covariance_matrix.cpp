@@ -18,7 +18,6 @@
 #include <RcppArmadillo.h>
 #include "covariance_matrix.h"
 #include "rtoarmadillo.h"
-using namespace Rcpp;
 
 //' @title Computes the (MODWT) wavelet covariance matrix
 //' @description Calculates the (MODWT) wavelet covariance matrix

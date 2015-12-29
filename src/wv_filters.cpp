@@ -19,7 +19,6 @@
 #include "wv_filters.h"
 // We use reverse_vec
 #include "armadillo_manipulations.h"
-using namespace Rcpp;
 
 //' @title Quadrature Mirror Filter
 //' @description Calculate the series quadrature mirror filter (QMF). Requires a series of an even length.
@@ -111,7 +110,7 @@ arma::field<arma::vec> select_filter(std::string filter_name = "haar")
   if(filter_name == "haar"){  
       info = haar_filter();
   }else{
-      stop("Wave Filter is not supported! See ?select_filter for supported types."); 
+      Rcpp::stop("Wave Filter is not supported! See ?select_filter for supported types."); 
   }
   
   return info;

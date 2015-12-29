@@ -36,8 +36,6 @@
 // Include ARMAtoMA_cpp
 #include "rtoarmadillo.h"
 
-using namespace Rcpp;
-
 //' @title Randomly guess starting parameters for AR1
 //' @description Sets starting parameters for each of the given parameters. 
 //' @param draw_id An \code{unsigned int} that contains the draw principles.

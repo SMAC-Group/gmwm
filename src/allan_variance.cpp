@@ -19,10 +19,6 @@
 
 #include "allan_variance.h"
 
-using namespace Rcpp;
-
-
-
 /* ----------------------- Start Allan Variance Functions ------------------------ */
 
 //' @title Compute Tau-Overlap Allan Variance

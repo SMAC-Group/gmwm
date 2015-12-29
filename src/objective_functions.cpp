@@ -25,8 +25,6 @@
 // Uses the transform / untransform methods
 #include "transform_data.h"
 
-using namespace Rcpp;
-
 
 // Used Yannick's flattening technique on guessed starting values...
 double objFunStarting(const arma::vec& theta, 
@@ -104,16 +102,16 @@ arma::vec Rcpp_OptimStart(const arma::vec&  theta,
    Rcpp::Environment stats("package:stats"); 
    Rcpp::Function optim = stats["optim"];    
 
-   Rcpp::List Opt=optim(_["par"] = theta,
-                        _["fn"]  = Rcpp::InternalFunction(&objFunStarting),
-                        _["method"] = "CG",
-                        _["desc"] = desc,
-                        _["objdesc"] = objdesc,
-                        _["model_type"] = model_type,
-                        _["wv_empir"] = wv_empir,
-                        _["tau"] = tau);
+   Rcpp::List Opt=optim(Rcpp::_["par"] = theta,
+                        Rcpp::_["fn"]  = Rcpp::InternalFunction(&objFunStarting),
+                        Rcpp::_["method"] = "CG",
+                        Rcpp::_["desc"] = desc,
+                        Rcpp::_["objdesc"] = objdesc,
+                        Rcpp::_["model_type"] = model_type,
+                        Rcpp::_["wv_empir"] = wv_empir,
+                        Rcpp::_["tau"] = tau);
    
-   arma::vec out = as<arma::vec>(Opt[0]);
+   arma::vec out = Rcpp::as<arma::vec>(Opt[0]);
    
    return out;
 }
@@ -125,17 +123,17 @@ arma::vec Rcpp_Optim(const arma::vec&  theta,
    Rcpp::Environment stats("package:stats"); 
    Rcpp::Function optim = stats["optim"];    
 
-   Rcpp::List Opt=optim(_["par"] = theta,
-                        _["fn"]  = Rcpp::InternalFunction(&objFun),
-                        _["method"] = "CG",
-                        _["desc"] = desc,
-                        _["objdesc"] = objdesc,
-                        _["model_type"] = model_type,
-                        _["omega"] = omega,
-                        _["wv_empir"] = wv_empir,
-                        _["tau"] = tau);
+   Rcpp::List Opt=optim(Rcpp::_["par"] = theta,
+                        Rcpp::_["fn"]  = Rcpp::InternalFunction(&objFun),
+                        Rcpp::_["method"] = "CG",
+                        Rcpp::_["desc"] = desc,
+                        Rcpp::_["objdesc"] = objdesc,
+                        Rcpp::_["model_type"] = model_type,
+                        Rcpp::_["omega"] = omega,
+                        Rcpp::_["wv_empir"] = wv_empir,
+                        Rcpp::_["tau"] = tau);
    
-   arma::vec out = as<arma::vec>(Opt[0]); 
+   arma::vec out = Rcpp::as<arma::vec>(Opt[0]); 
    
    return out;
 }

@@ -19,8 +19,6 @@
 
 #include "arima_gmwm.h"
 
-using namespace Rcpp;
-
 //' @title Hook into R's ARIMA function
 //' @description Uses R's ARIMA function to obtain CSS values for starting condition
 //' @param data A \code{vec} of data.
@@ -40,12 +38,12 @@ arma::vec Rcpp_ARIMA(const arma::vec& data,
   aparams(1) = 0;
   aparams(2) = params(1);
   
-  Rcpp::List Opt= arima(_["x"] = data,
-                        _["order"] = aparams,
-                        _["include.mean"] = false,
-                        _["method"] = "CSS");
+  Rcpp::List Opt= arima(Rcpp::_["x"] = data,
+                        Rcpp::_["order"] = aparams,
+                        Rcpp::_["include.mean"] = false,
+                        Rcpp::_["method"] = "CSS");
   
-  arma::vec out = arma::join_cols(as<arma::vec>(Opt[0]), as<arma::vec>(Opt[1]));
+  arma::vec out = arma::join_cols(Rcpp::as<arma::vec>(Opt[0]), Rcpp::as<arma::vec>(Opt[1]));
   
   return out;
 }

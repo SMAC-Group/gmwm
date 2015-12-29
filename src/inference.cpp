@@ -27,8 +27,6 @@
 // Need for gmwm_engine in chisq test
 #include "gmwm_logic.h"
 
-using namespace Rcpp;
-
 //' @title Calculate the Psi matrix
 //' @description Computes the Psi matrix using supplied parameters
 //' @param A first derivative matrix

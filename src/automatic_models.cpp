@@ -36,8 +36,6 @@
 #include "ts_checks.h"
 
 //#include "automatic_models.h"
-using namespace Rcpp;
-
 
 // ---- START helper functions
 

@@ -59,8 +59,6 @@
 // Covariance matrix
 #include "covariance_matrix.h"
 
-using namespace Rcpp;
-
 //' @title Bootstrap for Matrix V
 //' @description Using the bootstrap approach, we simulate a model based on user supplied parameters, obtain the wavelet variance, and then V.
 //' @param theta A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters

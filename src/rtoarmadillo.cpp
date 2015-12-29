@@ -18,8 +18,6 @@
 #include "rtoarmadillo.h"
 #include "armadillo_manipulations.h"
 
-using namespace Rcpp;
-
 /* ----------------- R to Armadillo Functions ------------------ */
 
 // A special define is included in rtoarmadillo.h used in these functions...

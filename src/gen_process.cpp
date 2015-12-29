@@ -25,7 +25,6 @@
 // For invertibility check in ARMA
 #include "ts_checks.h"
 
-using namespace Rcpp;
 /* ------------------------------ Start Process Generation Functions ------------------------------ */
 
 //' @title Generate a white noise process

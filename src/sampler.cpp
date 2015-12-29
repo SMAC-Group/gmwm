@@ -23,7 +23,6 @@
 
 #include <RcppArmadillo.h>
 #include "sampler.h"
-using namespace Rcpp;
 
 
 arma::vec rsample(const arma::vec &x, const int size, const bool replace, arma::vec prob_ ) {

@@ -18,7 +18,6 @@
 #include <RcppArmadillo.h>
 
 #include "complex_tools.h"
-using namespace Rcpp;
 
 //' @title Absolute Value or Modulus of a Complex Number Squared.
 //' @description Computes the squared value of the Modulus.
