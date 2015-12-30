@@ -1,10 +1,12 @@
 language: r
-warnings_are_errors: true
 sudo: required
+warnings_are_errors: true
+
 r_packages:
  - ggplot2
  - devtools
  - RcppArmadillo
- - Rcpp
- - scales
- - roxygen2
+ - knitr
+
+#r_build_args: "--no-build-vignettes"
+#r_check_args: "--no-build-vignettes --as-cran"

@@ -1,12 +1,12 @@
 ---
 title: "Analytical Derivatives for Haar Wavelet Variance"
-author: "JJB "
+author: "JJB"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Analytical Derivatives for Haar Wavelet Variance}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 White Noise

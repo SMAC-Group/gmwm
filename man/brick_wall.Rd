@@ -25,7 +25,7 @@ These vectors are then stored into the field that is returned.
 Note: As a result, there are no NA's introduced and hence the na.omit is not needed.
 }
 \examples{
-x=rnorm(100)
+x = rnorm(100)
 brick_wall(modwt_cpp(x, "haar", 4, boundary="periodic"), select_filter("haar"), "modwt")
 }
 \keyword{internal}

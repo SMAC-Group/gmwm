@@ -1,0 +1,65 @@
+---
+title: "IMU Objects in the GMWM R Package"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{IMU Objects in the GMWM R Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+# Introduction
+Within this guide, we consider a real signal issued from a MEMS IMU. 
+
+
+# Installation
+To obtain the data, we must download and install the `imudata` package.
+
+```{r install_imu, message=FALSE}
+if(!require("imudata")){
+  install_imudata()
+  library("imudata")
+}
+```
+
+# Loading Data
+To load the data and display the first rows for each sensor we do:
+```{r imuData, message=FALSE}
+data(imu6)
+head(imu6)
+```
+
+To use the data within the modeling paradigm, we must first cast it as type imu:
+```{r imu_object}
+sensor = imu(imu6, 
+             gyroscope = 1:3,
+             accelerometer = 1:3, 
+             axis = c('x','y','z'))
+```
+
+
+# Wavelet Variance
+To plot the WV (and confidence intervals) for all gyroscopes and accelerometers, we can use the following function 
+
+```{r imuPlot separate}
+wv.imu = wvar(sensor)
+plot(wv.imu)
+```
+
+# Model Estimation
+Let us consider the Gyro on the axis X and, given the estimated WV from the plot, let us estimate a model which is the sum of three AR(1) processes:
+
+```{r imuModel}
+# Define model
+TS.mod.imu = 3*AR1()
+
+# Compute GMWM estimator
+model.imu = gmwm.imu(TS.mod.imu, data = imu6[,1])
+```
+**Note: The gmwm.imu function only is able to handle one sensor at a time.**
+
+To see the results of the estimation, we can use the summary function as well as visualize the fit of the implied WV to the estimated WV from Gyro X (as done in the simulation example).
+
+```{r imuModel summary}
+summary(model.imu)
+plot(model.imu)
+```

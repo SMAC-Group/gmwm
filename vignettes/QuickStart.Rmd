@@ -7,10 +7,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 ```{r setup, echo=FALSE}
   library("knitr")
-  read_chunk("FirstDemo.R")
-  opts_chunk$set(cache = T)
 ```
 
 # Intro
@@ -28,6 +27,7 @@ To start, the GMWM package needs to be installed. There are two options to insta
 The installation process with CRAN is the simplest and recommended as the version released is considered to be stable:
 
 ```{r inst_cran, eval = F}
+install.packages("gmwm")
 ```
 
 ## Development
@@ -37,6 +37,11 @@ For those who wish to be as up-to-date as possible with their `gmwm` install, we
 If you have a compiler already installed, then continue on by installing the package dependencies and finally the package itself by doing the following: 
 
 ```{r inst_github, eval = F}
+# Install dependencies
+install.packages(c("RcppArmadillo","ggplot2","gridExtra","reshape2","devtools"))
+
+# Install the package from github
+devtools::install_github("SMAC-Group/gmwm")
 ```
 
 # Using the `gmwm` package
@@ -46,6 +51,7 @@ If you have a compiler already installed, then continue on by installing the pac
 Once this is done, load the package as follows:
 
 ```{r library_include, message=FALSE}
+library(gmwm)
 ```
 
 Note that this will automatically install the package ggplot2.
@@ -55,13 +61,23 @@ Note that this will automatically install the package ggplot2.
 We can now start using the GMWM package and we will simulate a latent model composed of a White Noise (WN) and an Autoregressive model of order 1 (or AR(1) which is a reparametrization of a Gauss-Markov process). To do so, we do the following:
 
 ```{r gen_process}
+# Set seed for reproducibility
+set.seed(1)
+
+# Length of the time series
+n = 100000
+
+# Simulate AR(1) + WN
+xt = gen.gts(AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1),n)
 ```
 
 ## Compute Wavelet Variance
 
 We now compute the Wavelet Variance (WV) of the simulated process and plot it using the following commands:
 
-```{r wv }
+```{r wv}
+wv = wvar(xt)
+plot(wv)
 ```
 
 ## Model Process
@@ -69,16 +85,22 @@ We now compute the Wavelet Variance (WV) of the simulated process and plot it us
 Based on the plot, we could assume that the model is in fact an AR(1) + WN process for which we would like to estimate its parameters. We therefore specify the model we would like to estimate
 
 ```{r modelTS}
+TS.mod = AR1() + WN()
 ```
 
 and subsequently use it in the GMWM estimating function as follows
 
 ```{r GMWM}
+model = gmwm.imu(TS.mod, data = xt)
 ```
 
 The difference between the true and estimated parameters is given below:
 
 ```{r results}
+results = matrix(c(round(model$estimate,4), c(0.99,0.01,1)), 3, 2)
+dimnames(results)[[1]] = c("phi","sig2AR1","sig2WN")
+dimnames(results)[[2]] = c("Estim.","True")
+results
 ```
 
 ## Graphing
@@ -86,34 +108,5 @@ The difference between the true and estimated parameters is given below:
 It is also possible, as a visual measure of "goodness of fit" of the estimated model, to see the difference between the estimated WV and the one implied by the estimated parameters. To do so we simply do the following
 
 ```{r GMWMplot}
-```
-
-
-# Real Life Application
-Next, we consider a real signal issued from a MEMS IMU. To obtain the data, we must download and install the `imudata` package.
-
-```{r install_imu, message=FALSE}
-```
-
-To load the data and display the first rows for each sensor we do:
-```{r imuData, message=FALSE}
-```
-
-To use the data within the modeling paradigm, we must first cast it as type imu:
-```{r imu_object}
-```
-
-To plot the WV (and confidence intervals) for all gyroscopes and accelerometers, we can use the following function 
-
-```{r imuPlot separate}
-```
-
-Let us consider the Gyro on the axis X and, given the estimated WV from the plot, let us estimate a model which is the sum of three AR(1) processes:
-
-```{r imuModel}
-```
-
-To see the results of the estimation, we can use the summary function as well as visualize the fit of the implied WV to the estimated WV from Gyro X (as done in the simulation example).
-
-```{r imuModel summary}
+plot(model)
 ```
