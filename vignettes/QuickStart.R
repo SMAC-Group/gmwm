@@ -1,5 +1,21 @@
+## @knitr inst_cran
+install.packages("gmwm")
+
+## @knitr inst_github
+# Install dependencies
+install.packages(c("RcppArmadillo","ggplot2","gridExtra","reshape2","devtools"))
+
+# Install the package from github
+devtools::install_github("SMAC-Group/gmwm")
+
 ## @knitr library_include
-library(GMWM)
+library(gmwm)
+
+## @knitr install_imu
+if(!require("imudata")){
+  install_imudata()
+  library("imudata")
+}
 
 ## @knitr gen_process
 # Set seed for reproducibility
@@ -31,22 +47,29 @@ results
 plot(model)
 
 ## @knitr imuData
-data(imu)
-head(imu)
+data(imu6)
+head(imu6)
+
+## @knitr imu_object
+
+sensor = imu(imu6, 
+             gyroscope = 1:3,
+             accelerometer = 1:3, 
+             axis = c('x','y','z'))
 
 ## @knitr imuPlot separate
-wv.imu = imu2WV(imu)
+wv.imu = wvar(sensor)
 plot(wv.imu)
 
 ## @knitr imuPlot combined
-plot(wv.imu, separate=FALSE)
+#plot(wv.imu, separate=FALSE)
 
 ## @knitr imuModel
 # Define model
 TS.mod.imu = 3*AR1()
 
 # Compute GMWM estimator
-model.imu = gmwm(TS.mod.imu, data = imu[,1])
+model.imu = gmwm(TS.mod.imu, data = imu6[,1], model.type='imu')
 
 ## @knitr imuModel summary
 summary(model.imu)

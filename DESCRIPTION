@@ -21,9 +21,9 @@ Description: Generalized Method of Wavelet Moments (GMWM) is an estimation
     visualizations.
 License: CC BY-NC-SA 4.0
 Maintainer: Stephane Guerrier <stephane@illinois.edu>
-Depends:
+Depends: 
     ggplot2
-Imports:
+Imports: 
     Rcpp (>= 0.12.2),
     scales,
     grid,
@@ -37,6 +37,9 @@ Imports:
     grDevices
 LinkingTo: Rcpp,
     RcppArmadillo
-Suggests:
-    testthat
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
 RoxygenNote: 5.0.1
+VignetteBuilder: knitr
