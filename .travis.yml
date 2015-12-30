@@ -8,5 +8,5 @@ r_packages:
  - RcppArmadillo
  - knitr
 
-#r_build_args: "--no-build-vignettes"
-#r_check_args: "--no-build-vignettes --as-cran"
+r_build_args: "--no-build-vignettes"
+r_check_args: "--no-build-vignettes --as-cran"
