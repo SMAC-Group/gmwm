@@ -110,8 +110,7 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     stop('Index for accelerometer is out of bound.')
   }
 
-  ##check axis
-  ##if we have gyro and acce
+  # Check axis if we have gyro and acce
   if(!is.null(gyro) && !is.null(acce)){
     index = gyro
   }else{
@@ -120,8 +119,9 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
   
   #if axis is supplied, make sure it's good
   if(!is.null(axis)){
-    #duplicate elements are not allowed
-    if(any( count_models(axis)>1) ){
+    
+    # Duplicate elements are not allowed
+    if( anyDuplicated(axis) ){
       stop('axis cannot have duplicated elements.')
     }
     
@@ -132,7 +132,7 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     }
     
   }else{
-    #no axis is supplied. try to generate it automatically.
+    # No axis is supplied. try to generate it automatically.
     if(length(index) == 1) {
       axis = 'X'
     }else if (length(index) == 2) {
