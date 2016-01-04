@@ -69,7 +69,7 @@
 #' plot(df4)}
 imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
   
-  #check object
+  # Check object
   if(is.null(object) || !(is.numeric(object)||is.data.frame(object)||is.matrix(object)) ) {
     stop('Object must a numeric vector, data frame, or matrix.')
   }
@@ -83,41 +83,36 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
   }
   colnames(object) = NULL
   
-  #check gyro and acce
-  gyro = gyroscope;
-  acce = accelerometer;
+  # Check gyro and acce
+  gyro = gyroscope
+  acce = accelerometer
+  
+  ngyros = length(gyro)
+  nacces = length(acce)
   
   if(is.null(gyro) && is.null(acce)){
     stop('At lease one of parameters (gyroscope or accelerometer) must be not NULL.') 
   }else if(!is.null(gyro) && !is.null(acce)){
-    if(length(gyro) != length(acce)){
+    if(ngyros != nacces){
       stop('Object must have equal number of columns for gyroscope and accelerometer sensor.')
     }
   }
   
-  #if( (length(gyro) + length(acce)) != ncol(object)){
-  #  stop("The number of columns in object doesn't match your supplied indexes for gyroscope and accelerometer.")
-  #}
+  # Merge indices
+  index = c(gyro, acce)
   
-  if(!is.whole( c(gyro, acce)) ){
+  if(!is.whole(index)){
     stop('Paramater gyroscope and accelerometer must be a vector of integers.')
   }
   
-  if(any(gyro> ncol(object)) || any(gyro<1)  ){
+  if(any(gyro > ncol(object)) || any(gyro < 1)){
     stop('Index for gyroscope is out of bound.')
   }
-  if(any(acce> ncol(object)) || any(acce<1)){
+  if(any(acce > ncol(object)) || any(acce < 1)){
     stop('Index for accelerometer is out of bound.')
   }
 
-  # Check axis if we have gyro and acce
-  if(!is.null(gyro) && !is.null(acce)){
-    index = gyro
-  }else{
-    index = c(gyro, acce)
-  }
-  
-  #if axis is supplied, make sure it's good
+  # If the user supplies the axis, check input to make sure it is 'good'.
   if(!is.null(axis)){
     
     # Duplicate elements are not allowed
@@ -126,9 +121,13 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     }
     
     if(!is.null(gyro) && !is.null(acce)){  
-      if(length(axis) != length(index)){stop('When gyroscope and accelerometer are both not NULL, specify the axis only for one sensor.')}
+      if(2*length(axis) != length(index)){
+        stop('When gyroscope and accelerometer are both not NULL, specify the axis only for one sensor.')
+      }
     }else{
-      if(length(axis) != length(index)){stop('If only one parameter between gyroscope and accelerometer are not NULL, specify the axis for each column of data.')}
+      if(length(axis) != length(index)){
+        stop('If only one parameter between gyroscope and accelerometer are not NULL, specify the axis for each column of data.')
+      }
     }
     
   }else{
@@ -144,30 +143,10 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     }
   }
   
-  # final data manipulation
-  # duplicated codes but should be able to save some time for users
-  if(is.null(gyro)){
-    #gyro is null, but acce is not null
-    out = structure(list(data = object[,acce, drop = F],
-                         sensor = "Accelerometer",
-                         num.sensor = c(length(gyro), length(acce)),
+  out = structure(list(data = object[,index, drop = F],
+                         sensor = c(rep("Gyroscope",ngyros), rep("Accelerometer",nacces)),
+                         num.sensor = c(ngyros, nacces),
                          axis = axis), class = "imu")
-    
-  }else if(is.null(acce)){
-    #acce is null, but gyro is not null
-    out = structure(list(data = object[,gyro, drop = F],
-                         sensor = "Gyroscope",
-                         num.sensor = c(length(gyro), length(acce)),
-                         axis = axis), class = "imu")
-  }else{
-    object.gyro = object[,gyro, drop = F]
-    object.acce = object[,acce, drop = F]
-    
-    out = structure(list(data = cbind(object.gyro, object.acce),
-                         sensor = c("Gyroscope", "Accelerometer" ),
-                         num.sensor = c(length(gyro), length(acce)),
-                         axis = axis), class = "imu")
-  }
 
   invisible(out)
 }
