@@ -4,18 +4,21 @@
 \alias{autoplot.wvar.imu}
 \title{Plot the Wavelet Variances of IMU Object}
 \usage{
-\method{autoplot}{wvar.imu}(object, CI = TRUE, background = "white",
-  transparence = 0.1, line.color = NULL, line.type = NULL,
-  point.size = NULL, point.shape = NULL, CI.color = "#003C7D",
-  title = "Haar Wavelet Variance Representation", title.size = 15,
-  axis.label.size = 13, axis.tick.size = 11,
+\method{autoplot}{wvar.imu}(object, split = TRUE, CI = TRUE,
+  background = "white", transparence = 0.1, line.color = NULL,
+  line.type = NULL, point.size = NULL, point.shape = NULL,
+  CI.color = NULL, title = "Haar Wavelet Variance Representation",
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
   facet.label.size = 13, facet.label.background = "#003C7D33",
-  scales = "free_y", ...)
+  legend.title = "Axis", legend.key.size = 1.3, legend.title.size = 13,
+  legend.text.size = 13, scales = "free_y", ...)
 }
 \arguments{
 \item{object}{A \code{wvar.imu} object}
+
+\item{split}{A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE).}
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
 
@@ -49,6 +52,14 @@
 
 \item{facet.label.background}{A \code{string} that indicates the background color of the facet label.}
 
+\item{legend.title}{A \code{string} that indicates the title of legend. It is onlly used when \code{split = FALSE}.}
+
+\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend. It is onlly used when \code{split = FALSE}.}
+
+\item{legend.title.size}{An \code{integer} that indicates the size of title on legend. It is onlly used when \code{split = FALSE}.}
+
+\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend. It is onlly used when \code{split = FALSE}.}
+
 \item{scales}{Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.}
 
 \item{...}{Additional options.}
@@ -69,9 +80,16 @@ if(!require("imudata")){
 data(imu6)
 test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 df = wvar.imu(test)
-autoplot(df)
-autoplot(df, CI = F)
-autoplot(df, CI = T, line.color = c('black', 'black'), title.size = 18)
+
+## Plot in split way
+autoplot(df, split = T)
+autoplot(df, split = T, CI = F)
+autoplot(df, split = T, CI = T, line.color = c('black', 'black'), title.size = 18)
+
+## Plot in combined way
+autoplot(df, split = F)
+autoplot(df, split = F, line.color = c('black', 'green', 'red'), 
+         CI.color = c('black', 'green', 'red'))
 }
 }
 \keyword{internal}
