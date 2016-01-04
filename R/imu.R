@@ -157,7 +157,8 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
 #' @description Creates a graph of the wavelet variance for imu object.
 #' @method plot wvar.imu
 #' @export
-#' @param x A \code{wvar.imu} object
+#' @param x A \code{wvar.imu} object.
+#' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE).
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
@@ -174,6 +175,10 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param legend.title A \code{string} that indicates the title of legend. It is onlly used when \code{split = FALSE}.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. It is onlly used when \code{split = FALSE}.
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend. It is onlly used when \code{split = FALSE}.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend. It is onlly used when \code{split = FALSE}.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
 #' @param ... Additional options.
 #' @return A panel containing the graph of an IMU sensor.
@@ -187,26 +192,34 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
 #' data(imu6)
 #' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 #' df = wvar.imu(test)
-#' plot(df)
-#' plot(df, CI = F)
-#' plot(df, CI = T, line.color = c('black', 'black'), title.size = 18)
+#' 
+#' ## Plot in split way
+#' plot(df, split = T)
+#' plot(df, split = T, CI = F)
+#' plot(df, split = T, CI = T, line.color = c('black', 'black'), title.size = 18)
+#' 
+#' ## Plot in combined way
+#' plot(df, split = F)
+#' plot(df, split = F, line.color = c('black', 'green', 'red'), CI.color = c('black', 'green', 'red'))
 #' }
-plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+plot.wvar.imu = function(x, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
                          line.type = NULL, point.size = NULL, point.shape = NULL,
-                         CI.color = "#003C7D", title = "Haar Wavelet Variance Representation", title.size= 15, 
+                         CI.color = NULL, title = "Haar Wavelet Variance Representation", title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
                          axis.y.label = expression(paste("Wavelet Variance ", nu)), 
                          facet.label.size = 13, facet.label.background = "#003C7D33",
+                         legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
                          scales = "free_y",...){
   
-  autoplot.wvar.imu(x, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+  autoplot.wvar.imu(x, split = split, CI = CI, background = background, transparence = transparence, line.color = line.color, 
                     line.type = line.type, point.size = point.size, point.shape = point.shape,
                     CI.color = CI.color, title = title, title.size= title.size, 
                     axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                     axis.x.label = axis.x.label,
                     axis.y.label = axis.y.label, 
                     facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                    legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, legend.text.size = legend.text.size,
                     scales = scales)  
 }
 
@@ -217,6 +230,7 @@ plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @export
 #' @keywords internal
 #' @param object A \code{wvar.imu} object
+#' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE).
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
@@ -233,6 +247,10 @@ plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param legend.title A \code{string} that indicates the title of legend. It is onlly used when \code{split = FALSE}.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. It is onlly used when \code{split = FALSE}.
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend. It is onlly used when \code{split = FALSE}.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend. It is onlly used when \code{split = FALSE}.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
 #' @param ... Additional options.
 #' @return A panel containing the graph of an IMU sensor.
@@ -246,50 +264,64 @@ plot.wvar.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' data(imu6)
 #' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
 #' df = wvar.imu(test)
-#' autoplot(df)
-#' autoplot(df, CI = F)
-#' autoplot(df, CI = T, line.color = c('black', 'black'), title.size = 18)
+#' 
+#' ## Plot in split way
+#' autoplot(df, split = T)
+#' autoplot(df, split = T, CI = F)
+#' autoplot(df, split = T, CI = T, line.color = c('black', 'black'), title.size = 18)
+#' 
+#' ## Plot in combined way
+#' autoplot(df, split = F)
+#' autoplot(df, split = F, line.color = c('black', 'green', 'red'), 
+#'          CI.color = c('black', 'green', 'red'))
 #' }
-autoplot.wvar.imu = function(object, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
                              line.type = NULL, point.size = NULL, point.shape = NULL,
-                             CI.color = "#003C7D", title = "Haar Wavelet Variance Representation", title.size= 15, 
+                             CI.color = NULL, title = "Haar Wavelet Variance Representation", title.size= 15, 
                              axis.label.size = 13, axis.tick.size = 11, 
                              axis.x.label = expression(paste("Scale ", tau)),
                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
                              facet.label.size = 13, facet.label.background = "#003C7D33",
+                             legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
                              scales = "free_y",...){
-  
+
   if(!is(object, 'wvar.imu')){
     stop("This function can only operate on the wvar.imu object. Please use wvar.imu() to create it.")
   }
   
-  class(object) = 'imu6'
-  
-#   if (split){
-#     class(x) = "imu6"
-#     if(is.null(facet.label.background)){
-#       facet.label.background = alpha("#003C7D", transparence)
-#     }
-#   }else{
-#     class(x) = "imu2"
-#     if(is.null(facet.label.background)){
-#       facet.label.background = alpha("#003C7D", transparence)
-#     }
-#   }
-  
-  #call the graphical function
-  autoplot(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
-           line.type = line.type, point.size = point.size, point.shape = point.shape,
-           CI.color = CI.color, title = title, title.size= title.size, 
-           axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-           axis.x.label = axis.x.label,
-           axis.y.label = axis.y.label, 
-           facet.label.size = facet.label.size, facet.label.background = facet.label.background,
-           scales = scales)  
+  if (split){
+    if(is.null(CI.color)){
+      CI.color = "#003C7D"
+    }
+    
+    #call the graphical function
+    autoplot.imu6(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+             line.type = line.type, point.size = point.size, point.shape = point.shape,
+             CI.color = CI.color, title = title, title.size= title.size, 
+             axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+             axis.x.label = axis.x.label,
+             axis.y.label = axis.y.label, 
+             facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+             scales = scales)  
+    
+  }else{
+    
+    #call the graphical function
+    autoplot.imu2(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+             line.type = line.type, point.size = point.size, point.shape = point.shape,
+             CI.color = CI.color, title = title, title.size= title.size, 
+             axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+             axis.x.label = axis.x.label,
+             axis.y.label = axis.y.label, 
+             facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+             legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, legend.text.size = legend.text.size,
+             scales = scales)
+    
+  }
   
 }
 
-#' @title Plot imu object in split type: 6 graphs
+#' @title Plot the Wavelet Variances of IMU Object in Split Type
 #' @description Plot each WV variance in a split graph
 #' @method autoplot imu6
 #' @export
@@ -379,7 +411,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     #  legend.label = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," , 0.95)" )) )
     #}
     
-    #change the length to meet the requirement of ggplot2
+    # Change the length to meet the requirement of ggplot2
     if(length(line.color) == 2){
       line.color = c(line.color, line.color[2])
     }
@@ -465,7 +497,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     p = p + 
       geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
      # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-     #CI.color: a hexadecimal color value
+     # CI.color: a hexadecimal color value
   }
   
   if( background == 'white'){
@@ -498,94 +530,159 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
   p
 }
 
-# @title Plot in combined type: 2 graphs
-# @description Plot each WV variance in a split graph
-# @method autoplot imu2
-# @param object An \code{imu} object
-# @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
-# @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
-# @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
-# @param line.type A \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
-# @param title A \code{string} that indicates the title of the graph
-# @param title.size An \code{integer} that indicates the size of title.
-# @param axis.label.size An \code{integer} that indicates the size of label
-# @param axis.tick.size An \code{integer} that indicates the size of tick mark
-# @param axis.x.label A \code{string} that indicates the label on x axis
-# @param axis.y.label A \code{string} that indicates the label on y axis
-# @param facet.label.size An \code{integer} that indicates the size of facet label
-# @param legend.title A \code{string} that indicates the title of legend
-# @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend 
-# @param legend.title.size An \code{integer} that indicates the size of title on legend
-# @param legend.text.size An \code{integer} that indicates the size of key label on legend
-# @param facet.label.background A \code{string} that indicates the background color of the facet label
-# @param ... Additional options
-# @return A panel containing the split graphs of an IMU sensor.
-# @examples
-# \dontrun{
-# data(imu)
-# df = imu2WV(imu)
-# plot(df, split=FALSE)
-# }
-# autoplot.imu2 = function(object, CI = T, background = 'grey', transparence = 0.1, line.type = "solid",
-#                          title = "Haar Wavelet Variance Representation", title.size= 15, 
-#                          axis.label.size = 13, axis.tick.size = 11, 
-#                          axis.x.label = expression(paste("Scale ", tau)),
-#                          axis.y.label = expression(paste("Wavelet Variance ", nu)),
-#                          facet.label.size = 13,
-#                          legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, 
-#                          legend.text.size = 13, facet.label.background = alpha("#003C7D", transparence), ...){
-#   
-#   WV=scales=.x=NULL
-#   
-#   #rec-construct data frame
-#   obj = data.frame(WV = object$WV,
-#                    #value = object$value,
-#                    scales = object$scales,
-#                    low = object$low,
-#                    high = object$high,
-#                    axis = object$axis,
-#                    sensor = object$sensor)
-#   
-#   #construct the data frame to plot the line
-#   line_data_frame = subset(obj, variable == 'WV')
-#   
-#   p = ggplot() + geom_line(data = line_data_frame, mapping = aes(x = scales, y = value, color = axis), linetype = line.type) 
-#   
-#   if(CI){
-#     #construct the data frame to plot the confidence interval
-#     low_data_frame = subset(obj, variable == 'low')
-#     high_value = subset(obj, variable == 'high')$value
-#     CI_data_frame = data.frame(low_data_frame, high_value)
-#     
-#     p = p + geom_ribbon(data = CI_data_frame, mapping = aes(x = scales, ymin = value, ymax = high_value, group = Axis, fill = Axis), alpha = transparence)
-#   }
-#   
-#   if( background == 'white'){
-#     p = p + theme_bw() 
-#     p = p + theme(strip.background = element_rect(fill= facet.label.background) )
-#   }
-#   
-#   p = p + facet_grid(sensor~.) + 
-#     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-#                   labels = trans_format("log10", math_format(10^.x))) +
-#     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-#                   labels = trans_format("log10", math_format(10^.x))) +
-#     xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
-#     theme(
-#       plot.title = element_text(size=title.size),
-#       axis.title.y = element_text(size= axis.label.size),
-#       axis.text.y  = element_text(size= axis.tick.size),
-#       axis.title.x = element_text(size= axis.label.size),
-#       axis.text.x  = element_text(size= axis.tick.size),
-#       legend.key.size = unit(legend.key.size, "cm"),
-#       legend.text = element_text(size = legend.text.size),  
-#       legend.title = element_text(size = legend.title.size),
-#       strip.text = element_text(size = facet.label.size) ) + 
-#     scale_colour_hue(name = legend.title)
-#   
-#   p
-#   
-# }
+#' @title Plot the Wavelet Variances of IMU Object in Combined Type
+#' @description Plot each WV variance in a combined graph
+#' @method autoplot imu2
+#' @export
+#' @keywords internal
+#' @param object An \code{wvar.imu} object.
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of the line drawn (e.g. black, blue, red, etc.).
+#' @param line.type A \code{vector} of \code{string} that indicates the type of line (e.g. solid, dotted, etc.).
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines. 
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param CI.color A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param legend.title A \code{string} that indicates the title of legend.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. 
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
+#' @param ... Additional options
+#' @return A panel containing the combined graphs of an IMU sensor.
+autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.1, 
+                         line.color = NULL, line.type = NULL,
+                         point.size = NULL, point.shape = NULL, CI.color = NULL,
+                         title = "Haar Wavelet Variance Representation", title.size= 15, 
+                         axis.label.size = 13, axis.tick.size = 11, 
+                         axis.x.label = expression(paste("Scale ", tau)),
+                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                         facet.label.size = 13,
+                         legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, 
+                         legend.text.size = 13, facet.label.background = "#003C7D33", scales = "free_y", ...){
+   
+  value=low=high=WV=.x=NULL
+  
+  # S1: Checking statement (Reset it to default setting if user passes wrong values)
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Default setting is used.")
+    background = 'white'
+  }
+  
+  num.axis = length( unique(object$axis) )
+  if(CI){
+    params = c('line.color', 'line.type', 'point.size', 'point.shape', 'CI.color')
+    requireLength = c(num.axis, num.axis, num.axis, num.axis, num.axis)
+    default = list(NULL, NULL,  NULL, NULL, NULL)
+    nullIsFine = c(rep(T,5))
+  }else{
+    params = c('line.color', 'line.type', 'point.size', 'point.shape')
+    requireLength = c(num.axis, num.axis, num.axis, num.axis)
+    default = list(NULL, NULL,  NULL, NULL)
+    nullIsFine = c(rep(T,4))
+  }
+  
+  for (i in 1:length(params)){
+    one_param = params[i]
+    if( length(get(one_param))!=requireLength[i]){
+      isNull = is.null(get(one_param))
+      if(isNull && nullIsFine[i]){}else{
+        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
+                      'is supplied.','Default setting is used.'))
+      }
+      assign(one_param, default[[i]])
+    }
+  }
+  
+  # S2: Auto-select parameters, if not provided by users
+  if(is.null(line.color)){
+    line.color = ggColor(num.axis)
+  }
+  if(is.null(line.type)){
+    line.type = rep('solid', num.axis)
+  }
+  if(is.null(point.size)){
+    point.size = rep(0, num.axis)
+  }
+  if(is.null(point.shape)){
+    point.shape = rep(20, num.axis)
+  }
+  
+  ## Whether give user the right to modify the legend.label: Currently No
+  
+  if(CI){
+    if(is.null(CI.color)){
+      CI.color = ggColor(num.axis) # Change line.color will not automatically change CI.color
+    }
+  }
+  
+  # S2: Rearrange the data into a data frame which can be passed to next step
+  obj = data.frame(WV = object$WV,
+                     scales = object$scales,
+                     #low = object$low,
+                     #high = object$high,
+                     axis = object$axis,
+                     sensor = object$sensor, stringsAsFactors = F)
+  melt.obj = melt(obj, id.vars = c('scales', 'axis', 'sensor'))
+  
+  # S3: Generate the graph
+  p = ggplot() +
+    geom_line(data = melt.obj, mapping = aes(x = scales, y = value, linetype = axis, color = axis)) +
+    geom_point(data = melt.obj, mapping = aes(x = scales, y = value, size = axis, shape = axis, color = axis)  ) +
+    
+    scale_linetype_manual(name = legend.title, values = c(line.type)) +
+    scale_shape_manual(name = legend.title, values = c(point.shape))+
+    scale_size_manual(name = legend.title, values = c(point.size)) +
+    scale_color_manual(name = legend.title, values = c(line.color))
+  
+  if(CI){
+    #construct the data frame to plot CI
+    obj.CI = data.frame(scales = object$scales,
+                        low = object$low,
+                        high = object$high,
+                        axis = object$axis,
+                        sensor = object$sensor, stringsAsFactors = F)
+    
+    p = p + geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high, 
+                                                     group = axis, fill = axis), alpha = transparence) +
+      scale_fill_manual(name = legend.title, values = c(CI.color)) 
+  }
+  
+  if( background == 'white'){
+    p = p + theme_bw()
+  }
+  
+  p = p + facet_grid(sensor~., scales = scales) + theme(strip.background = element_rect(fill= facet.label.background) ) +
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    
+    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
+    
+    theme(
+      plot.title = element_text(size=title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      legend.key.size = unit(legend.key.size, "cm"),
+      legend.text = element_text(size = legend.text.size),  
+      legend.title = element_text(size = legend.title.size),
+      strip.text = element_text(size = facet.label.size) )
+ 
+  p
+  
+}
 
 
 #' @title Wrapper to Automatic Model Selection Results of IMU Object
