@@ -13,6 +13,3 @@ r_packages:
 
 before_script:
   Rscript -e "Rcpp::compileAttributes()"
-
-r_build_args: "--no-build-vignettes"
-r_check_args: "--no-build-vignettes --as-cran"
