@@ -78,7 +78,8 @@ model1 = gmwm.imu(3*AR1(),imu6[,2])
 model2 = gmwm.imu(2*AR1() + RW(),imu6[,2])
 compare.models(model1, model2)
 compare.models(model1, model2, display.model = F, point.size = c(4, 0, 0, 4, 4))
-compare.models(model1, model2, transparence = 0.2, line.color = c('black', 'grey', 'grey', 'blue', 'red'))
+compare.models(model1, model2, transparence = 0.2, 
+               line.color = c('black', 'grey', 'grey', 'blue', 'red'))
 }
 }
 \author{

@@ -1596,7 +1596,8 @@ autoplot.gmwmComp = function(object, breaks, levels, object.names, split = TRUE,
 #' model2 = gmwm.imu(2*AR1() + RW(),imu6[,2])
 #' compare.models(model1, model2)
 #' compare.models(model1, model2, display.model = F, point.size = c(4, 0, 0, 4, 4))
-#' compare.models(model1, model2, transparence = 0.2, line.color = c('black', 'grey', 'grey', 'blue', 'red'))
+#' compare.models(model1, model2, transparence = 0.2, 
+#'                line.color = c('black', 'grey', 'grey', 'blue', 'red'))
 #' }
 compare.models = function(..., display.model = T, background = 'white', transparence = 0.1, CI.color = "#003C7D",
                            line.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
@@ -1606,6 +1607,7 @@ compare.models = function(..., display.model = T, background = 'white', transpar
                            axis.x.label = expression(paste("Scale ", tau)),
                            axis.y.label = expression(paste("Wavelet Variance ", nu))){
   # TODO: remove dependency girdExtra
+  scales=value=variable=low=high=.x=NULL
   
   # S1: Checking statement (Reset it to default setting if user passes wrong values)
   if( !(background %in% c('grey','gray', 'white')) ){
@@ -1862,7 +1864,7 @@ compare.models = function(..., display.model = T, background = 'white', transpar
     scale_size_manual(values = c(point.size)) +
     scale_color_manual(values = c(line.color))
   
-  if( background == 'white' || bw){
+  if( background == 'white' ){
     p = p + theme_bw() 
   }
   
