@@ -1550,11 +1550,342 @@ autoplot.gmwmComp = function(object, breaks, levels, object.names, split = TRUE,
   p
 }
 
-
-
-
 #' @title Graphically Compare GMWM Models Constructed by the Same Data
 #' @description Creates a table of graphs to compare GMWM model fits.
+#' @param ... Several \code{gmwm} objects, and they must be constrcuted by the same data.
+#' @param display.model A \code{boolean} indicating whether the model should be displayed in the facet label.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of confidence interval.
+#' @param CI.color A \code{string} that indicates the color of the confidence interval (e.g. 'black', 'red', '#003C7D', etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines.
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines. 
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @author Wenchao
+#' @details 
+#' This function only works for \code{gmwm} objects which are constrcuted by same data, and 
+#' all \code{gmwm} objects must be constructed by classical method, or by robust methods
+#' with the same efficiency. That's because this function assumes each \code{gmwm} object has the same empirical wavelet variance (WV).
+#' This function will check whether this requirement is satisfied before plotting the graph.
+#' 
+#' The value of \code{line.type}, \code{line.color}, \code{point.size}, \code{point.size} must be a \code{vector}. Please follow this order:
+#' "Empirical WV, lower bound of CI, higher bound of CI, model1 implied WV, model2 implied WV, ...."
+#' 
+#' Please check examples for help.
+#' 
+#' If you meet the error "polygon edge not found", it is complaining that you don't have enough space to
+#' plot the graph. Adjust the plot window.
+#' @examples
+#' \dontrun{
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' 
+#' model1 = gmwm.imu(3*AR1(),imu6[,2])
+#' model2 = gmwm.imu(2*AR1() + RW(),imu6[,2])
+#' compare.models(model1, model2)
+#' compare.models(model1, model2, display.model = F, point.size = c(4, 0, 0, 4, 4))
+#' compare.models(model1, model2, transparence = 0.2, line.color = c('black', 'grey', 'grey', 'blue', 'red'))
+#' }
+compare.models = function(..., display.model = T, background = 'white', transparence = 0.1, CI.color = "#003C7D",
+                           line.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
+                           title = "Comparison of GMWM Models", title.size= 18, 
+                           axis.label.size = 16, axis.tick.size = 11, 
+                           facet.label.size = 13, facet.label.background = "#003C7D33",
+                           axis.x.label = expression(paste("Scale ", tau)),
+                           axis.y.label = expression(paste("Wavelet Variance ", nu))){
+  # TODO: remove dependency girdExtra
+  
+  # S1: Checking statement (Reset it to default setting if user passes wrong values)
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Set background to 'white'")
+    background = 'white'
+  }
+  
+  obj_list = list(...)
+  numObj = length(obj_list)
+  
+  if(numObj<1){
+    stop('At least one model must be supplied.')
+  }
+  
+  for(i in 1:numObj){
+    if( !is(obj_list[[i]], 'gmwm') ){
+      stop('Model you supplied was not gmwm object.')
+    }
+  }
+  
+  if(is.null(CI.color)){
+    CI.color = "#003C7D"
+  }
+  
+  if(numObj == 1){
+    #plot.gmwm will do the parameter checking
+    #other parameters are not listed here. But they cannot be passed to plot.gmww by '...'
+    warning('One object is supplied. You are actually calling plot.gmwm().')
+    plot.gmwm(x = obj_list[[1]], process.decomp = F, background = background, transparence = transparence, CI.color = CI.color, CI = T, bw = F, line.type = line.type,
+              line.color = line.color, point.size = point.size, point.shape = point.shape, title = title,
+              title.size = title.size, axis.label.size = axis.label.size, axis.tick.size = axis.tick.size,
+              axis.x.label = axis.x.label, axis.y.label = axis.y.label)
+    
+  }else{
+    
+    #check parameter
+    params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape')
+    requireLength = c(3+numObj, 3+numObj, 1, 3+numObj, 3+numObj)
+    default = list(NULL, NULL,  "#003C7D", NULL, NULL)
+    nullIsFine = c(rep(T,5))
+    for (i in 1:length(params)){
+      one_param = params[i]
+      if( length(get(one_param))!=requireLength[i]){
+        isNull = is.null(get(one_param))
+        if(isNull && nullIsFine[i]){}else{
+          warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
+                        'is supplied.','Default setting is used.'))
+        }
+        assign(one_param, default[[i]])
+      }
+    }
+    
+    
+    for (i in 1:(numObj-1) ){
+      #1. check expect.diff
+      if ( obj_list[[i]]$expect.diff != obj_list[[i+1]]$expect.diff ){
+        stop('This function can only operate on models constrcuted by the same data.') 
+      }
+      
+      if(!obj_list[[1]]$robust){
+        #2.1 classical case, make sure all other objects are classical
+        if(obj_list[[i+1]]$robust != F){
+          stop('Make sure your models are all classical, or they are all robust and with same efficiency.')
+        }
+      }else{
+        #2.2 robust case, make sure all other objects are robust and have same eff
+        if(obj_list[[i+1]]$robust != T || (obj_list[[i]]$eff != obj_list[[i+1]]$eff)){
+          stop('Make sure your models are all classical, or they are all robust and with same efficiency.')
+        }
+      }
+    }
+    
+    
+    object.names = as.character(substitute(...()))
+    if(display.model){
+      # melt function cannot deal with expression
+      object.names = sapply(obj_list, FUN = function(x){as.character( getModel.gmwm(x) ) } )
+    }
+    
+    # Problem: When object names are the same, function will not work
+    # Solution: Add space after object names
+    if ( any(table(object.names) > 1)  ){
+      process.label1 = rep(' ', numObj)
+      for(i in 1:numObj){
+        process.label1[i] = paste0(object.names[i], paste0(rep(' ',times = i), collapse = ''))
+      }
+      object.names = process.label1
+    }
+    
+    # S2: Auto-select parameters, if not provided by users
+    # in the order: WV low high z1 z2
+    if(is.null(line.type)){line.type = c('solid','dotted', 'dotted', rep('solid', numObj)) }
+    
+    if(is.null(line.color)){line.color = c( "#003C7D", "#003C7D", "#003C7D", ggColor(numObj) )  }
+    
+    #point.size will auto-decrease as the number of models increases
+    if(is.null(point.size)){
+      
+      if(numObj > 10){temp.point.size = 1
+      }else{
+        temp.point.size = 4.7-0.4*(numObj-1)}
+      
+      # wv.point.size = temp.point.size # for emp.wv
+      # theo.point.size = rep(temp.point.size, numObj) +0.1 # for imp.wv
+      point.size = c(temp.point.size, 0, 0, rep(temp.point.size, numObj))
+      
+    }
+    
+    if(is.null(point.shape)){point.shape = c(20, 46, 46, rep(1, numObj) ) }
+    
+    # S3: Rearrange the data into a data frame which can be passed to next step
+    total.len = 0
+    each.len = numeric(numObj)
+    
+    for (i in 1:numObj ){
+      for (j in 1:numObj){
+        each.len[i] = length(obj_list[[i]]$wv.empir)
+        total.len = total.len + each.len[i]
+      }
+    }
+    
+    nlen = nchar(numObj)
+    nom = sprintf(paste0("z%0",nlen,"d"),1:numObj)
+    
+    num.theo = numObj
+    theo_part = as.data.frame(matrix(NA, ncol = num.theo, nrow = total.len))
+    colnames(theo_part) = nom
+    
+    #Initialize empty data frame with right number of rows
+    obj = data.frame(WV = numeric(total.len),
+                     scales = numeric(total.len),
+                     low = numeric(total.len),
+                     high = numeric(total.len),
+                     dataset_h = 'XYZ', 
+                     dataset_v = 'XYZ',
+                     stringsAsFactors=FALSE)
+    
+    obj = cbind(obj, theo_part)
+    
+    #put data into data frame
+    t = 1
+    for (i in 1:numObj){
+      for(j in 1:numObj){
+        
+        ## Diagonal ========================
+        if(i == j){
+          #compare to itself
+          #set some values to NA
+          d = each.len[i]
+          z_col = nom[i]
+          
+          obj[t:(t+d-1), 'WV'] = obj_list[[i]]$wv.empir
+          obj[t:(t+d-1), 'scales'] = obj_list[[i]]$scales
+          obj[t:(t+d-1), 'low'] = obj_list[[i]]$ci.low
+          obj[t:(t+d-1), 'high'] = obj_list[[i]]$ci.high
+          obj[t:(t+d-1), 'dataset_h'] = object.names[i]
+          obj[t:(t+d-1), 'dataset_v'] = object.names[j]
+          obj[t:(t+d-1), z_col] = obj_list[[i]]$theo
+          
+          
+          #  obj[t:(t+d-1),] = data.frame(WV = obj_list[[i]]$wv.empir,
+          #                              scales = obj_list[[i]]$scales,
+          #                              low = obj_list[[i]]$ci.low,
+          #                              high = obj_list[[i]]$ci.high,
+          #                              #z_theo = obj_list[[i]]$theo,
+          #                              #z_theo_comp = NA,
+          #                              dataset_h = object.names[i],
+          #                              dataset_v = object.names[j], stringsAsFactors=FALSE)
+          
+          t = t +d
+          
+        }else if (i > j ){
+          ## lower triagular ======================== ?? 
+          
+          d = each.len[i]
+          #obj[t:(t+d-1),] = data.frame(WV = obj_list[[i]]$wv.empir,
+          #                             scales = obj_list[[i]]$scales,
+          #                             low = obj_list[[i]]$ci.low,
+          #                             high = obj_list[[i]]$ci.high,
+          #                             dataset_h = object.names[i],
+          #                             dataset_v = object.names[j], 
+          #                             # as.character( nom[i] ) = obj_list[[i]]$theo,
+          #                             # as.character( nom[j] ) = obj_list[[j]]$theo, 
+          #                             stringsAsFactors=FALSE)
+          
+          obj[t:(t+d-1), 'WV'] = obj_list[[i]]$wv.empir
+          obj[t:(t+d-1), 'scales'] = obj_list[[i]]$scales
+          obj[t:(t+d-1), 'low'] = obj_list[[i]]$ci.low
+          obj[t:(t+d-1), 'high'] = obj_list[[i]]$ci.high
+          obj[t:(t+d-1), 'dataset_h'] = object.names[i]
+          obj[t:(t+d-1), 'dataset_v'] = object.names[j]
+          
+          obj[t:(t+d-1), nom[i]] = obj_list[[i]]$theo
+          obj[t:(t+d-1), nom[j]] = obj_list[[j]]$theo
+          
+          t = t +d
+          
+        }else{
+          ## upper triagular ======================== ?? 
+          
+          d = each.len[i]
+          #obj[t:(t+d-1),] = data.frame(WV = NA,
+          #                             scales = obj_list[[i]]$scales,
+          #                             low = NA,
+          #                             high = NA,
+          #                             dataset_h = object.names[i],
+          #                             dataset_v = object.names[j], 
+          #                             # as.character( nom[i] ) = obj_list[[i]]$theo, 
+          #                             # as.character( nom[j] ) = obj_list[[j]]$theo, 
+          #                             stringsAsFactors=FALSE)
+          
+          obj[t:(t+d-1), 'WV'] = NA
+          obj[t:(t+d-1), 'scales'] = obj_list[[i]]$scales
+          obj[t:(t+d-1), 'low'] = NA
+          obj[t:(t+d-1), 'high'] = NA
+          obj[t:(t+d-1), 'dataset_h'] = object.names[i]
+          obj[t:(t+d-1), 'dataset_v'] = object.names[j]
+          
+          obj[t:(t+d-1), nom[i]] = obj_list[[i]]$theo
+          obj[t:(t+d-1), nom[j]] = obj_list[[j]]$theo
+          
+          t = t +d
+        }
+      } # end of j loop
+    }# end of i loop
+  
+  
+  # change the order of facet label
+  obj$dataset_h = factor(obj$dataset_h, levels = object.names )
+  obj$dataset_v = factor(obj$dataset_v, levels = object.names )
+  
+  object = melt(obj, id.vars = c('scales', 'dataset_v', 'dataset_h'))
+  
+  # S4: Generate the graph
+  ## CALL Graphical Functions
+  p = ggplot() + 
+    geom_line( data = object, mapping = aes(x = scales, y = value, color = variable, linetype = variable), na.rm = TRUE) + 
+    geom_point(data = object, mapping = aes(x = scales, y = value, color = variable, size = variable, shape = variable), na.rm=TRUE) +
+    
+    geom_ribbon(data = obj, mapping = aes(x = scales, ymin = low, ymax = high), fill = CI.color, alpha = transparence, na.rm = TRUE) +
+    
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) + 
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x)))
+  
+  #p = p +   scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks) +
+  #    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks)+
+  #    scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks) +
+  #   scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks)
+  
+  p = p + scale_linetype_manual(values = c(line.type)) +
+    scale_shape_manual(values = c(point.shape))+
+    scale_size_manual(values = c(point.size)) +
+    scale_color_manual(values = c(line.color))
+  
+  if( background == 'white' || bw){
+    p = p + theme_bw() 
+  }
+  
+  p = p + facet_grid(dataset_h~dataset_v, labeller = label_parsed) + 
+    theme(legend.position='none') + 
+    theme(strip.background = element_rect(fill= facet.label.background) )
+  
+  p = p +
+    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
+    theme(
+      plot.title = element_text(size= title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      strip.text = element_text(size = facet.label.size) )
+  
+  p
+  } # end else
+}
+
+#' @title Graphically Compare GMWM Models Constructed by the Same Data (Delete Later)
+#' @description Creates a table of graphs to compare GMWM model fits (Delete Later).
 #' @param ... Several \code{gmwm} objects, and they must be constrcuted by the same data.
 #' @param display.model A \code{boolean} indicating whether the model should be displayed in the facet label.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
@@ -1585,17 +1916,7 @@ autoplot.gmwmComp = function(object, breaks, levels, object.names, split = TRUE,
 #' 
 #' If you meet the error "polygon edge not found", it is complaining that you don't have enough space to
 #' plot the graph. Adjust the plot window.
-#' @examples
-#' \dontrun{
-#' library(GMWM)
-#' data(imu)
-#' model1 = gmwm.sensor(3*AR1(),imu[,2])
-#' model2 = gmwm.sensor(2*AR1() + RW(),imu[,2])
-#' compare.models(model1, model2)
-#' compare.models(model1, model2, display.model = F, point.size = c(4, 0, 4, 4))
-#' compare.models(model1, model2, transparence = 0.2, line.color = c('black', 'grey', 'blue', 'red'))
-#' }
-compare.models = function(..., display.model = T, background = 'white', transparence = 0.1, CI.color = "#003C7D",
+compare.models2 = function(..., display.model = T, background = 'white', transparence = 0.1, CI.color = "#003C7D",
                           line.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
                           title = "Comparison of GMWM Models", title.size= 18, 
                           axis.label.size = 16, axis.tick.size = 11, 
