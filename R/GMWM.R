@@ -113,13 +113,12 @@
 gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100){
   
   #check lts
-  if(is(data,'lts')){
-    warning('lts object is detected. This function can only operate on the combined process.')
-    data = data$data[ ,ncol(data$data)]
+  if(is.lts(data)){
+    data = data$data[ ,ncol(data)]
   }
   
   #check gts
-  if(is(data,'gts')){
+  if(is.gts(data)){
     data = data$data[,1]
   }
   
@@ -129,8 +128,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   }
   
   # Do we have a valid model?
-  if(!is(model, "ts.model")){
-    stop("model must be created from a ts.model object using a supported component (e.g. AR1(), AR(p), MA(q), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
+  if(!is.ts.model(model)){
+    stop("`model` must be created from a `ts.model` object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
   }
   
   # Information Required by GMWM:
@@ -277,8 +276,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
 #' updated.model.guided = update(bad.model, AR1()+AR1())
 update.gmwm = function(object, model, ...){
   # Do we have a valid model?
-  if(!is(model, "ts.model")){
-    stop("model must be created from a ts.model object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
+  if(!is.ts.model(model)){
+    stop("`model` must be created from a `ts.model` object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
   }
   
   # Information Required by GMWM:
