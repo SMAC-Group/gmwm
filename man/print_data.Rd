@@ -13,7 +13,7 @@
 
 \method{print}{gts}(x, obs = 10L, row.names = TRUE, ...)
 
-outf(x, obs = 10L, row.names = TRUE, ...)
+outf(x, obs = 10L, row.names = TRUE)
 }
 \arguments{
 \item{x}{A \code{gts}, \code{imu}, \code{lts} object.}
@@ -21,6 +21,8 @@ outf(x, obs = 10L, row.names = TRUE, ...)
 \item{obs}{A \code{integer} the specifies how many from the beginning and end of the data set to show.}
 
 \item{row.names}{A \code{boolean} that indicates whether row names should be displayed or surpressed.}
+
+\item{...}{Further arguments passed to or from other methods.}
 }
 \value{
 A \code{logical} value that indicates whether the object is of that class (TRUE) or not (FALSE).

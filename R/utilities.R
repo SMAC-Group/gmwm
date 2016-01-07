@@ -37,7 +37,7 @@ print.gts = function(x,
 }
 
 #' @rdname print_data
-outf = function(x, obs = 10L, row.names = TRUE, ...){
+outf = function(x, obs = 10L, row.names = TRUE){
   if(!is.numeric(obs)){ obs = 100L }
   if(!is.infinite(obs)){ obs = as.integer(obs) }
   
@@ -194,9 +194,9 @@ NROW.lts = function(x){ nrow.lts(x)}
 #' @details 
 #' To access information about \code{imu} properties use:
 #' \describe{
-#' \item{\code{"accel"}}{Returns the number of accelerometers}
-#' \item{\code{"gyro"}}{Returns the number of gyroscopes}
-#' \item{\code{"sensors"}}{Returns total number of sensors}
+#'  \item{\code{"accel"}}{Returns the number of accelerometers}
+#'  \item{\code{"gyro"}}{Returns the number of gyroscopes}
+#'  \item{\code{"sensors"}}{Returns total number of sensors}
 #' }
 #' @author JJB
 #' @export
@@ -270,11 +270,12 @@ tail.lts = function(x, n = 6L, ...){
 #' @details 
 #' To access information about \code{imu} properties use:
 #' \describe{
-#' \item{\code{"accel"}}{Returns whether accelerometers have been specified}
-#' \item{\code{"gyro"}}{Returns whether accelerometers have been specified}
-#' \item{\code{"sensors"}}{Returns}
+#'  \item{\code{"accel"}}{Returns whether accelerometers have been specified}
+#'  \item{\code{"gyro"}}{Returns whether accelerometers have been specified}
+#'  \item{\code{"sensors"}}{Returns whether there exists both types of sensors}
 #' }
 #' @author JJB
+#' @export
 has = function(x, type){
   UseMethod("has")
 }

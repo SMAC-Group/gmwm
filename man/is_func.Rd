@@ -5,6 +5,7 @@
 \alias{is.gts}
 \alias{is.imu}
 \alias{is.lts}
+\alias{is.ts.model}
 \alias{is.wvar}
 \title{Is GMWM Object}
 \usage{
@@ -17,6 +18,8 @@ is.lts(x)
 is.gmwm(x)
 
 is.wvar(x)
+
+is.ts.model(x)
 }
 \arguments{
 \item{x}{A \code{gts}, \code{imu}, \code{lts} object.}
