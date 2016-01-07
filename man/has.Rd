@@ -24,9 +24,9 @@ Used to access different properties of the
 \details{
 To access information about \code{imu} properties use:
 \describe{
-\item{\code{"accel"}}{Returns whether accelerometers have been specified}
-\item{\code{"gyro"}}{Returns whether accelerometers have been specified}
-\item{\code{"sensors"}}{Returns}
+ \item{\code{"accel"}}{Returns whether accelerometers have been specified}
+ \item{\code{"gyro"}}{Returns whether accelerometers have been specified}
+ \item{\code{"sensors"}}{Returns whether there exists both types of sensors}
 }
 }
 \section{Methods (by class)}{
