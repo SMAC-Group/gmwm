@@ -117,12 +117,12 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     
     # Duplicate elements are not allowed
     if( anyDuplicated(axis) ){
-      stop('axis cannot have duplicated elements.')
+      stop('`axis` cannot have duplicated elements.')
     }
     
     if(!is.null(gyro) && !is.null(acce)){  
       if(2*length(axis) != length(index)){
-        stop('When gyroscope and accelerometer are both not NULL, specify the axis only for one sensor.')
+        stop('When `gyroscope` and `accelerometer` are both not NULL, specify the axis only for one sensor.')
       }
     }else{
       if(length(axis) != length(index)){
@@ -133,11 +133,11 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
   }else{
     # No axis is supplied. try to generate it automatically.
     if(length(index) == 1) {
-      axis = 'X'
+      axis = c('X', 'Y', 'Z')
     }else if (length(index) == 2) {
       axis = c('X','Y')
     }else if (length(index) == 3) {
-      axis = c('X', 'Y', 'Z')
+      axis = 'X'
     }else{
       stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
     }

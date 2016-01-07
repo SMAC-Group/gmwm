@@ -94,7 +94,7 @@ wvar.default = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
 #' @export
 wvar.imu = function(x, alpha = 0.05, robust = F, eff = 0.6){
 
-  ncols = sum(x$num.sensor)
+  ncols = ncol(x)
   
   obj.list = vector("list", ncols)
   for(i in 1:ncols){
