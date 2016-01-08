@@ -60,7 +60,7 @@
 #' @importFrom stats arima predict ts as.ts
 #' @importFrom utils install.packages installed.packages tail head
 #' @importFrom scales trans_breaks trans_format math_format
-#' @importFrom grid textGrob gpar unit
+#' @importFrom grid textGrob gpar
 #' @import ggplot2 reshape2 gridExtra
 #' @exportPattern ^[[:alpha:]]+
 NULL
