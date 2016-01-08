@@ -15,6 +15,19 @@ install_imudata(type = "ONL", loc = NULL)
 Downloads and Install the IMU Data Package to use with the GMWM Package
 }
 \details{
-To obtain the IMU Package
+The IMU Data Package contains data from real life IMUs and is approximately a
+ 13.8 MB download.
+}
+\examples{
+\dontrun{
+# Online install
+install_imudata()
+
+# Local install
+install_imudata("LOCAL","C:/Users/James/Documents/gmwm_x.y.z.tar.gz")
+}
+}
+\author{
+JJB
 }
 

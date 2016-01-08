@@ -53,12 +53,11 @@
 #' @docType package
 #' @useDynLib gmwm
 #' @importFrom Rcpp evalCpp
-#' @importFrom devtools install_github
 #' @importFrom grDevices gray.colors hcl
 #' @importFrom graphics lines plot
 #' @importFrom methods is
 #' @importFrom stats arima predict ts as.ts
-#' @importFrom utils install.packages installed.packages tail head
+#' @importFrom utils install.packages download.file unzip tail head
 #' @importFrom scales trans_breaks trans_format math_format
 #' @importFrom grid textGrob gpar
 #' @import ggplot2 reshape2 gridExtra
