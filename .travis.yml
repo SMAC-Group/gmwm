@@ -10,4 +10,5 @@ r_packages:
  - grid
 
 before_script:
+ - Rscript -e "devtools::install_github('SMAC-Group/imudata')"
  - Rscript -e "Rcpp::compileAttributes()"
