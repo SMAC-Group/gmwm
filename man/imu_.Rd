@@ -4,12 +4,10 @@
 \alias{imu_}
 \title{Internal IMU Object Construction}
 \usage{
-imu_(object, index, ngyros, nacces, axis)
+imu_(object, ngyros, nacces, axis)
 }
 \arguments{
 \item{object}{A \code{matrix} with dimensions N x length(index)}
-
-\item{index}{A \code{vector} containing index of gyroscopes then accelerometers}
 
 \item{ngyros}{A \code{integer} containing the number of gyroscopes}
 
