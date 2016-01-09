@@ -9,8 +9,6 @@ r_packages:
  - gridExtra
  - grid
 
-before_install:
- - sudo apt-get install -y curl libcurl3 
-
 before_script:
- -  Rscript -e "Rcpp::compileAttributes()"
+ - Rscript -e "getOption('download.file.method'); capabilities('libcurl'); nzchar(Sys.which('wget')[1]); nzchar(Sys.which('curl')[1]);"
+ - Rscript -e "Rcpp::compileAttributes()"
