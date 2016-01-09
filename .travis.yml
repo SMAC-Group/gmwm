@@ -10,7 +10,7 @@ r_packages:
  - grid
 
 before_install:
- - sudo apt-get install -y libcurl-dev
+ - sudo apt-get install -y curl libcurl3 
 
 before_script:
  -  Rscript -e "Rcpp::compileAttributes()"
