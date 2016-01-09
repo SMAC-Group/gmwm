@@ -12,12 +12,12 @@ install_(user, pkg.name)
 \item{pkg.name}{A \code{string} that contains the repository name}
 }
 \description{
-Downloads an R package from github via the zip archive option,
+Downloads an R package from GitHub via the zip archive option,
 unzips the repository, builds the R package source, and 
 install the package
 }
 \details{
-This is a lightweight standalone method to download and install packages.
+This is a lightweight standalone method to download and install R packages from GitHub.
 It is much safer to use devtools, though, it is one additional "download".
 }
 \examples{

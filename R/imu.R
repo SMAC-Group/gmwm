@@ -111,7 +111,7 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
   if(any(acce > ncol(object)) || any(acce < 1)){
     stop('Index for accelerometer is out of bound.')
   }
-
+  
   # If the user supplies the axis, check input to make sure it is 'good'.
   if(!is.null(axis)){
     
@@ -143,14 +143,63 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     }
   }
   
-  out = structure(list(data = object[,index, drop = F],
-                         sensor = c(rep("Gyroscope",ngyros), rep("Accelerometer",nacces)),
-                         num.sensor = c(ngyros, nacces),
-                         axis = axis), class = "imu")
-
-  invisible(out)
+  invisible(imu_(object[,index, drop = F], ngyros, nacces, axis))
 }
 
+#' @title Internal IMU Object Construction
+#' @description Internal quick build for imu object.
+#' @param object  A \code{matrix} with dimensions N x length(index)
+#' @param ngyros  A \code{integer} containing the number of gyroscopes
+#' @param naccess A \code{integer} containing the number of accelerometers
+#' @param axis    A \code{vector} unique representation of elements e.g. x,y,z or x,y or x.
+#' @return An \code{imu} object class.
+#' @keywords internal
+imu_ = function(object, ngyros, nacces, axis){
+  invisible(structure(list(data = object,
+                           sensor = c(rep("Gyroscope",ngyros > 0), rep("Accelerometer",nacces > 0)),
+                           num.sensor = c(ngyros, nacces),
+                           axis = axis), class = "imu"))
+}
+
+#' @title Read an IMU Binary File into R
+#' 
+#' @description 
+#' Process binary files within the 
+#' 
+#' @param file A \code{string} containing file names or paths.
+#' @param type A \code{string} that contains a supported IMU type given below.
+#' @details
+#' Currently supports the following IMUs:
+#' \itemize{
+#' \item IMAR
+#' \item LN200
+#' \item LN200IG
+#' \item IXSEA
+#' \item NAVCHIP_INT
+#' \item NAVCHIP_FLT
+#' }
+#' 
+#' We hope to soon be able to support delimited files.
+#' @return An \code{imu} object that contains 3 gyroscopes and 3 accelerometers in that order.
+#' @references
+#' Thanks goes to Philipp Clausen of Labo TOPO, EPFL, Switzerland, topo.epfl.ch, Tel:+41(0)21 693 27 55
+#' for providing a matlab function that reads in IMUs.
+#' This function is a heavily modified port of MATLAB code into Armadillo/C++.
+#' @examples
+#' \dontrun{
+#' # Relative
+#' setwd("F:/")
+#' 
+#' a = read.imu(file = "Documents/James/short_test_data.imu", type = "IXSEA")
+#' 
+#' # Fixed path
+#' b = read.imu(file = "F:/Desktop/short_test_data.imu", type = "IXSEA")
+#' }
+read.imu = function(file, type){
+  d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
+  
+  invisible(imu_(d[[1]][,-1], 3, 3, c('x','y','z')))
+}
 
 
 #' @title Wrapper Function to Plot the Wavelet Variances of IMU Object
@@ -284,7 +333,7 @@ autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'whit
                              facet.label.size = 13, facet.label.background = "#003C7D33",
                              legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
                              scales = "free_y",...){
-
+  
   if(!is(object, 'wvar.imu')){
     stop("This function can only operate on the wvar.imu object. Please use wvar.imu() to create it.")
   }
@@ -296,26 +345,26 @@ autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'whit
     
     #call the graphical function
     autoplot.imu6(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
-             line.type = line.type, point.size = point.size, point.shape = point.shape,
-             CI.color = CI.color, title = title, title.size= title.size, 
-             axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-             axis.x.label = axis.x.label,
-             axis.y.label = axis.y.label, 
-             facet.label.size = facet.label.size, facet.label.background = facet.label.background,
-             scales = scales)  
+                  line.type = line.type, point.size = point.size, point.shape = point.shape,
+                  CI.color = CI.color, title = title, title.size= title.size, 
+                  axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                  axis.x.label = axis.x.label,
+                  axis.y.label = axis.y.label, 
+                  facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                  scales = scales)  
     
   }else{
     
     #call the graphical function
     autoplot.imu2(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
-             line.type = line.type, point.size = point.size, point.shape = point.shape,
-             CI.color = CI.color, title = title, title.size= title.size, 
-             axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-             axis.x.label = axis.x.label,
-             axis.y.label = axis.y.label, 
-             facet.label.size = facet.label.size, facet.label.background = facet.label.background,
-             legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, legend.text.size = legend.text.size,
-             scales = scales)
+                  line.type = line.type, point.size = point.size, point.shape = point.shape,
+                  CI.color = CI.color, title = title, title.size= title.size, 
+                  axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                  axis.x.label = axis.x.label,
+                  axis.y.label = axis.y.label, 
+                  facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                  legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, legend.text.size = legend.text.size,
+                  scales = scales)
     
   }
   
@@ -419,7 +468,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     if(length(line.type) == 2){
       line.type = c(line.type, line.type[2])
     }
-     
+    
     if(length(point.size) == 2){
       point.size = c(point.size, point.size[2])
     }
@@ -480,11 +529,11 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     scale_shape_manual(values = c(point.shape))+
     scale_size_manual(values = c(point.size)) +
     scale_color_manual(values = c(line.color))
-    
-    #scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
-    #scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
-    #scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
-    #scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
+  
+  #scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
+  #scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
+  #scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
+  #scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
   
   if(CI){
     #construct the data frame to plot CI
@@ -496,8 +545,8 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     
     p = p + 
       geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
-     # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-     # CI.color: a hexadecimal color value
+    # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
+    # CI.color: a hexadecimal color value
   }
   
   if( background == 'white'){
@@ -569,7 +618,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
                          facet.label.size = 13,
                          legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, 
                          legend.text.size = 13, facet.label.background = "#003C7D33", scales = "free_y", ...){
-   
+  
   value=low=high=WV=.x=NULL
   
   # S1: Checking statement (Reset it to default setting if user passes wrong values)
@@ -627,11 +676,11 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
   
   # S2: Rearrange the data into a data frame which can be passed to next step
   obj = data.frame(WV = object$WV,
-                     scales = object$scales,
-                     #low = object$low,
-                     #high = object$high,
-                     axis = object$axis,
-                     sensor = object$sensor, stringsAsFactors = F)
+                   scales = object$scales,
+                   #low = object$low,
+                   #high = object$high,
+                   axis = object$axis,
+                   sensor = object$sensor, stringsAsFactors = F)
   melt.obj = melt(obj, id.vars = c('scales', 'axis', 'sensor'))
   
   # S3: Generate the graph
@@ -679,7 +728,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
       legend.text = element_text(size = legend.text.size),  
       legend.title = element_text(size = legend.title.size),
       strip.text = element_text(size = facet.label.size) )
- 
+  
   p
   
 }
@@ -733,13 +782,13 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
                          scales = "free_y",...){
   
   autoplot.auto.imu(x, CI = CI, background = background, transparence = transparence, line.color = line.color, 
-  line.type = line.type, point.size = point.size, point.shape = point.shape,
-  CI.color = CI.color, title = title, title.size= title.size, 
-  axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-  axis.x.label = axis.x.label,
-  axis.y.label = axis.y.label, 
-  facet.label.size = facet.label.size, facet.label.background = facet.label.background,
-  scales = scales)
+                    line.type = line.type, point.size = point.size, point.shape = point.shape,
+                    CI.color = CI.color, title = title, title.size= title.size, 
+                    axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                    axis.x.label = axis.x.label,
+                    axis.y.label = axis.y.label, 
+                    facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                    scales = scales)
   
   
 }
@@ -854,8 +903,8 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
   for(i in 1:ncols){
     obj.list[[i]] = object[[i]][[2]]
     
-  ######---------------------#######
-  #obj.list[[i]]$scales = obj.list[[i]]$scales/100
+    ######---------------------#######
+    #obj.list[[i]]$scales = obj.list[[i]]$scales/100
   }
   
   ##begin: generate the data frame

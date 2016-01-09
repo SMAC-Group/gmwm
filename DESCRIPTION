@@ -29,7 +29,6 @@ Imports:
     grid,
     reshape2,
     gridExtra,
-    devtools,
     utils,
     stats,
     methods,
@@ -40,6 +39,7 @@ LinkingTo: Rcpp,
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    imudata
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr

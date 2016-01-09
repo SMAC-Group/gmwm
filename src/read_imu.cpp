@@ -94,8 +94,9 @@ imu_info get_imu_info(std::string imu_type){
   return imu;
 }
 
-//' Read an IMU Binary File into R
+//' @title Read an IMU Binary File into R
 //' 
+//' @description
 //' The function will take a file location in addition to the type of sensor it
 //' came from and read the data into R.
 //' 
@@ -132,6 +133,7 @@ imu_info get_imu_info(std::string imu_type){
 //' \dontrun{
 //' read_imu(file_path = "F:/Desktop/short_test_data.imu", imu_type = "IXSEA")
 //' }
+//' @keywords internal
 // [[Rcpp::export]]
 arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
   

@@ -32,9 +32,15 @@ install.packages("gmwm")
 
 ## Development
 
-For those who wish to be as up-to-date as possible with their `gmwm` install, we also offer the ability to obtain the development version of the package. Since it is a development version, you will need to ensure that your system has a compiler that is compatible with R. **Note CRAN provides binary files of the package so there was no need to compile the package.**
+For those who wish to be as up-to-date as possible with their `gmwm` install, we also offer the ability to obtain the development version of the package. Since it is a development version, you will need to ensure that your system has a compiler that is compatible with R. 
 
-If you have a compiler already installed, then continue on by installing the package dependencies and finally the package itself by doing the following: 
+For help on obtaining a compiler consult:
+
+* [OS X](http://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-os-x/)
+
+**Note CRAN provides binary files of the package so there is no need to compile the stable version of the package.**
+
+Once you have compiler installed, then continue on by installing the package dependencies and finally the package itself by doing the following: 
 
 ```{r inst_github, eval = F}
 # Install dependencies

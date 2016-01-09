@@ -117,11 +117,11 @@ x = imu(vals,
 2. Load in an IMU binary file
 ```{r eval = F}
 # Option 1: Relative Directory
-setwd("C:/Users/Documents")
-x = read.imu("James/imu_data.imu", type = "IXSEA")
+setwd("C:/Users/James")
+x = read.imu("Documents/imu_data.imu", type = "IXSEA")
 
 # Option 2: Fixed Directory
-x = read.imu("C:/Users/Documents/James/imu_data.imu", type = "IXSEA")
+x = read.imu("C:/Users/James/Documents/imu_data.imu", type = "IXSEA")
 ```
 
 The binary file reader currently supports the binary record format accepted by well known commercial software from Applanix (PosProc - developed by Bruno Scherzinger) or Novatel/Waypoint (IExplorer). This format is aptly described as a seven column layout where the first column of the data contains time data, columns 2-4 contain gyroscope values and columns 5-7 contain accelerometer values for axes X, Y, and Z. On load, appropriate scaling factors are applied to the data. This input format is valid for the following IMUs:
