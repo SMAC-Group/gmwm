@@ -16,6 +16,7 @@ To obtain the data, we must download and install the `imudata` package.
 
 ```{r install_imu, message=FALSE}
 if(!require("imudata")){
+  library("gmwm")
   install_imudata()
   library("imudata")
 }
