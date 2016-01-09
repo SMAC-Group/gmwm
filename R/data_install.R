@@ -68,34 +68,29 @@ install_imudata = function(type="ONL",loc=NULL){
 #' }
 install_ <- function (user,pkg.name) {
   # Step 1: Create a temp file
+  tdir = tempdir()
+  temp = file.path(tdir,paste0(pkg.name,".zip"))
   
-  temp = file.path(tempdir(),paste0(pkg.name,".zip"))
-  
+  # Step 2: Download into temp file
   dl.file(paste0("https://github.com/",user,"/",pkg.name,"/archive/master.zip"),
                 destfile = temp, mode = "wb")
   
-  # Step 2: Extract
+  # Step 3: Extract
   extract_to = tempfile()
   unzip(temp,exdir=extract_to)
   
-  # Step 3: Store working directory & switch to temp
-  ac = getwd()
-  setwd(extract_to)
-  
   # Step 4: Rename extract folder to just be package name.
-  file.rename(paste0(pkg.name,"-master"), pkg.name)
-  
+  file.rename(file.path(extract_to,paste0(pkg.name,"-master")), file.path(extract_to,pkg.name))
+
   # Step 5: Build the .tar.gz source
-  system(paste0(file.path(R.home("bin"), "R")," CMD build ",pkg.name))
+  system(paste0('"',file.path(R.home("bin"), "R"),'" CMD build "', file.path(extract_to,pkg.name),'"'))
   
   # Step 6: Install the package from source
-  install.packages(pkg.name,repos=NULL,type="source")
+  install.packages(file.path(extract_to,pkg.name),repos=NULL,type="source")
   
-  # Step 7: Restore working directory
-  setwd(ac)
-  
-  # Step 8: Unlink / delete on quit.
+  # Step 7: Unlink / delete on quit.
   on.exit(unlink(extract_to), add = TRUE)
+  on.exit(unlink(tdir),add = TRUE)
 }
 
 #' @title Better file downloader
