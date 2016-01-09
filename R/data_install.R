@@ -71,8 +71,8 @@ install_ <- function (user,pkg.name) {
   
   temp = file.path(tempdir(),paste0(pkg.name,".zip"))
   
-  download.file(paste0("https://github.com/",user,"/",pkg.name,"/archive/master.zip"),
-                destfile = temp, mode = "wb",method="libcurl")
+  download.file(paste0("http://github.com/",user,"/",pkg.name,"/archive/master.zip"),
+                destfile = temp, mode = "wb")
   
   # Step 2: Extract
   extract_to = tempfile()
