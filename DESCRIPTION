@@ -34,12 +34,14 @@ Imports:
     methods,
     graphics,
     grDevices
-LinkingTo: Rcpp,
+LinkingTo: 
+    Rcpp,
     RcppArmadillo
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
+Enhances:
     imudata
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
