@@ -68,7 +68,10 @@ install_imudata = function(type="ONL",loc=NULL){
 #' }
 install_ <- function (user,pkg.name) {
   # Step 1: Create a temp file
+  
   temp = file.path(tempdir(),paste0(pkg.name,".zip"))
+  
+  setInternet2(TRUE) # knitr fix for https
   download.file(paste0("https://github.com/",user,"/",pkg.name,"/archive/master.zip"),
                 destfile = temp, mode = "wb")
   

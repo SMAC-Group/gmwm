@@ -10,13 +10,18 @@ vignette: >
 # Introduction
 Within this guide, we consider a real signal issued from a MEMS IMU. 
 
+# Load the `gmwm` package
+First, make sure to load the `gmwm` package into R.
+
+```{r load_gmwm}
+library("gmwm")
+```
 
 # Installation
 To obtain the data, we must download and install the `imudata` package.
 
 ```{r install_imu, message=FALSE}
 if(!require("imudata")){
-  library("gmwm")
   install_imudata()
   library("imudata")
 }
