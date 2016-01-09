@@ -71,7 +71,7 @@ install_ <- function (user,pkg.name) {
   
   temp = file.path(tempdir(),paste0(pkg.name,".zip"))
   
-  download.file(paste0("https://github.com/",user,"/",pkg.name,"/archive/master.zip"),
+  dl.file(paste0("https://github.com/",user,"/",pkg.name,"/archive/master.zip"),
                 destfile = temp, mode = "wb")
   
   # Step 2: Extract
@@ -96,4 +96,38 @@ install_ <- function (user,pkg.name) {
   
   # Step 8: Unlink / delete on quit.
   on.exit(unlink(extract_to), add = TRUE)
+}
+
+#' @title Better file downloader
+#' @description Replaces download.file's auto detect mechanism
+#' @param url A \code{string} that contains a url
+#' @param ... Additional parameters to be passed to \code{\link[utils]{download.file}}
+#' @return A downloaded file...
+#' @details 
+#' See \url{https://support.rstudio.com/hc/en-us/articles/206827897-Secure-Package-Downloads-for-R}
+#' for information on downloading via HTTPS. Also, read through the changes in \code{\link[utils]{download.file}}.
+#' @seealso \code{\link[utils]{download.file}}
+#' @keywords internal
+dl.file = function(url, ...){
+  if(grepl('^http:', url)){
+    download.file(url, ...)
+  }else{ 
+    if(Sys.info()[['sysname']] != "Windows") {
+      
+      if(capabilities("libcurl")){         # Shipped lib
+        method = "libcurl"
+      }else if(nzchar(Sys.which("curl"))){ # Curl lib
+        method = "curl"
+      }else if(nzchar(Sys.which("wget"))){ # Historical, last resort
+        method = "wget"
+      }else{
+        stop("Unable to download over HTTPS.\nPlease install `curl` or `wget` on your system.")
+      }# end if
+      
+    }else{
+      method = "auto"
+    } # Let windows choose, since package requires >= 3.2, wininet will be automatically selected
+    
+    download.file(url, method = method, ...)
+  }
 }
