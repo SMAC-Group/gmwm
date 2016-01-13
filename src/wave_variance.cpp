@@ -223,12 +223,48 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 
 //' @title Computes the (MODWT) wavelet variance
 //' @description Calculates the (MODWT) wavelet variance
-//' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
+//' @param signal_modwt_bw A \code{field<vec>} that contains the modwt decomposition after it has been brick walled.
 //' @param robust A \code{boolean} that triggers the use of the robust estimate.
 //' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
 //' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 //' @param ci_type A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"
-//' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
+//' @return A \code{mat} with the structure:
+//' \itemize{
+//'   \item{"variance"}{Wavelet Variance}
+//'   \item{"low"}{Lower CI}
+//'   \item{"high"}{Upper CI}
+//' }
+//' @keywords internal
+//' @details 
+//' This function does the heavy lifting with the signal_modwt_bw
+//' @examples
+//' x=rnorm(100)
+//' decomp = modwt(x)
+//' wvar_cpp(decomp$data, robust = FALSE)
+// [[Rcpp::export]]
+arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt_bw, 
+                   bool robust, double eff, double alpha, 
+                   std::string ci_type) {
+  double alpha_ov_2 = alpha/2.0;
+
+  // Wavelet Variance
+  arma::vec y = wave_variance(signal_modwt_bw, robust, eff);
+  
+  // Confidence Interval
+  return ci_wave_variance(signal_modwt_bw, y, ci_type, alpha_ov_2, robust, eff);
+}
+
+
+
+//' @title Computes the (MODWT) wavelet variance
+//' @description Calculates the (MODWT) wavelet variance
+//' @param signal     A \code{vec} that contains the data.
+//' @param robust     A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff        A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @param alpha      A \code{double} that indicates the \eqn{\left(1-p\right)\times \alpha}{(1-p)*alpha} confidence level 
+//' @param ci_type    A \code{string} indicating the confidence interval being calculated. Valid value: "eta3"
+//' @param strWavelet A \code{string} indicating the type of wave filter to be applied. Must be "haar"
+//' @param decomp     A \code{string} indicating whether to use "modwt" or "dwt" decomp
 //' @return A \code{mat} with the structure:
 //' \itemize{
 //'   \item{"variance"}{Wavelet Variance}
@@ -240,22 +276,23 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 //' This function powers the wvar object. It is also extendable...
 //' @examples
 //' x=rnorm(100)
-//' decomp = modwt(x)
-//' wvar_cpp(decomp$data, robust = FALSE)
+//' modwt_wvar_cpp(x, robust=false, eff=0.6, alpha = 0.05, ci_type="eta3", strWavelet="haar")
 // [[Rcpp::export]]
-arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt,
-                   bool robust=false, double eff=0.6, double alpha = 0.05, 
-                   std::string ci_type="eta3", std::string strWavelet="haar") {
-  double alpha_ov_2 = alpha/2.0;
-  // MODWT transform
-  arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, select_filter(strWavelet), "modwt");
+arma::mat modwt_wvar_cpp(const arma::vec& signal, unsigned int nlevels, bool robust, double eff, double alpha, 
+                         std::string ci_type, std::string strWavelet, std::string decomp) {
   
-  // Wavelet Variance
-  arma::vec y = wave_variance(signal_modwt_bw, robust, eff);
+  // signal_modwt
+  arma::field<arma::vec> signal_modwt_bw;
+  if(decomp == "modwt"){
+    signal_modwt_bw = modwt_cpp(signal, strWavelet, nlevels, "periodic", true);
+  }else{
+    signal_modwt_bw = dwt_cpp(signal, strWavelet, nlevels, "periodic", true);
+  }
   
-  // Confidence Interval
-  return ci_wave_variance(signal_modwt_bw, y, ci_type, alpha_ov_2, robust, eff);
+  return wvar_cpp(signal_modwt_bw,robust, eff, alpha, ci_type);
 }
+
+
 
 //' @title Computes the MODWT scales
 //' @description Calculates the MODWT scales

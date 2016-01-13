@@ -15,12 +15,13 @@
 
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
-#' @param x A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
+#' @param x      A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
+#' @param type   A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
-#' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
-#' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param eff    A \code{double} that indicates the efficiency as it relates to an MLE.
+#' @param alpha  A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 #' @return A \code{list} with the structure:
-#' \itemize{
+#' \describe{
 #'   \item{"variance"}{Wavelet Variance},
 #'   \item{"ci_low"}{Lower CI}
 #'   \item{"ci_high"}{Upper CI}
@@ -52,13 +53,13 @@
 #' df = wvar.imu(test)
 #' }
 #' @export
-wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
+wvar = function(x, type = "modwt", alpha = 0.05, robust = FALSE, eff = 0.6) {
   UseMethod("wvar")
 }
 
 #' @rdname wvar
 #' @export
-wvar.lts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.lts = function(x, type = "modwt", alpha = 0.05, robust = FALSE, eff = 0.6){
   warning('lts object is detected. This function can only operate on the combined process.')
   x = x$data[,ncol(x$data)]
   
@@ -67,18 +68,16 @@ wvar.lts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
 
 #' @rdname wvar
 #' @export
-wvar.gts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.gts = function(x, type="modwt", alpha = 0.05, robust = FALSE, eff = 0.6){
   x = x$data[,1]
   wvar.default(x, alpha, robust, eff)
 }
 
 #' @rdname wvar
 #' @export
-wvar.default = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.default = function(x, type = "modwt", alpha = 0.05, robust = FALSE, eff = 0.6){
   nlevels =  floor(log2(length(x)))
-  decomp = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = "haar", nlevels, boundary="periodic")
-  
-  out = .Call('gmwm_wvar_cpp', PACKAGE = 'gmwm', decomp, robust, eff, alpha, "eta3", "haar")
+  out = .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm', x, nlevels, robust, eff, alpha, "eta3", "haar", type)
   scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   out = structure(list(variance = out[,1],
                        ci_low = out[,2], 

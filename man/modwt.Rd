@@ -4,22 +4,29 @@
 \alias{modwt}
 \title{Maximum Overlap Discrete Wavelet Transform}
 \usage{
-modwt(x)
+modwt(x, nlevels = floor(log2(length(x))), filter = "haar",
+  boundary = "periodic", bw = TRUE)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1.}
+
+\item{nlevels}{A \code{integer} indicating the \eqn{J} levels of decomposition.}
+
+\item{filter}{A \code{string} indicating the filter name}
+
+\item{boundary}{A \code{string} indicating whether the filter is: \code{"periodic"} or \code{"reflection"}.}
+
+\item{bw}{A \code{boolean} indicating whether to remove (TRUE) or keep (FALSE) boundary wavelet coefficients}
 }
 \value{
-y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
+y       A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 }
 \description{
 Calculation of the coefficients for the discrete wavelet transformation
 }
 \details{
 Performs a level \eqn{J} decomposition of the time series using the pyramid algorithm.
-\eqn{J} is determined by \eqn{floor\left(log_2 \left(length\left(x\right)\right)\right)}{floor(log2(length(x)))}
-This function was designed to minimize the amount of work a user performs. 
-If you need more complex computations, see \code{\link{modwt_cpp}}.
+The default \eqn{J} is determined by \eqn{floor\left(log_2 \left(length\left(x\right)\right)\right)}{floor(log2(length(x)))}
 }
 \examples{
 set.seed(999)

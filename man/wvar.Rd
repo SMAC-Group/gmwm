@@ -8,18 +8,23 @@
 \alias{wvar.lts}
 \title{Wavelet Variance}
 \usage{
-wvar(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+wvar(x, type = "modwt", alpha = 0.05, robust = FALSE, eff = 0.6)
 
-\method{wvar}{lts}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{lts}(x, type = "modwt", alpha = 0.05, robust = FALSE,
+  eff = 0.6)
 
-\method{wvar}{gts}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{gts}(x, type = "modwt", alpha = 0.05, robust = FALSE,
+  eff = 0.6)
 
-\method{wvar}{default}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{default}(x, type = "modwt", alpha = 0.05, robust = FALSE,
+  eff = 0.6)
 
 \method{wvar}{imu}(x, alpha = 0.05, robust = F, eff = 0.6)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object.}
+
+\item{type}{A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition}
 
 \item{alpha}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
 
@@ -29,7 +34,7 @@ wvar(x, alpha = 0.05, robust = FALSE, eff = 0.6)
 }
 \value{
 A \code{list} with the structure:
-\itemize{
+\describe{
   \item{"variance"}{Wavelet Variance},
   \item{"ci_low"}{Lower CI}
   \item{"ci_high"}{Upper CI}
