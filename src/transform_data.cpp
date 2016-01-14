@@ -152,7 +152,7 @@ arma::vec transform_values(const arma::vec& theta,
     std::string element_type = desc[i];
     
     // AR 1
-    if(element_type == "AR1" ){
+    if(element_type == "AR1" || element_type == "GM"){
       
       // Apply model specific parameter transformation
       if(model_type == "imu"){
@@ -245,7 +245,7 @@ arma::colvec untransform_values(const arma::vec& theta,
       
       std::string element_type = desc[i];
       // AR 1
-  	  if(element_type == "AR1"){
+  	  if(element_type == "AR1" || element_type == "GM"){
         if(model_type == "imu"){
           result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
         }else{ // ssm

@@ -18,7 +18,7 @@
 #' @param phi A \code{double} value for the \eqn{\phi}{phi} of an AR1 process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "AR1","SIGMA2"}
 #'  \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma^2}{sigma^2}}
 #'  \item{plength}{Number of Parameters}
@@ -29,7 +29,7 @@
 #' @author JJB
 #' @examples
 #' AR1()
-#' AR1(phi=.32, sigma=1.3)
+#' AR1(phi=.32, sigma2=1.3)
 AR1 = function(phi = NULL, sigma2 = 1) {
   starting = FALSE;
   if(is.null(phi)){
@@ -49,13 +49,49 @@ AR1 = function(phi = NULL, sigma2 = 1) {
   invisible(out)
 }
 
+#' @title Create a Gauss-Markov (GM) Process
+#' @description Setups the necessary backend for the GM process.
+#' @param beta A \code{double} value for the \eqn{\beta}{beta} of an GM process.
+#' @param sigma2_gm A \code{double} value for the variance, \eqn{\sigma ^2_{gm}}{sigma^2[gm]}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{Used in summary: "BETA","SIGMA2"}
+#'  \item{theta}{\eqn{\beta}{beta}, \eqn{\sigma ^2_{gm}}{sigma^2[gm]}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"GM"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' GM()
+#' GM(beta=.32, sigma2_gm=1.3)
+GM = function(beta = NULL, sigma2_gm = 1) {
+  starting = FALSE;
+  if(is.null(beta)){
+    beta = 0;
+    sigma2_gm = 1;
+    starting = TRUE;
+  }
+  if(length(beta) != 1 & length(sigma2_gm) != 1){
+    stop("Bad GM model submitted. Must be double values for two parameters.")
+  }
+  out = structure(list(process.desc = c("BETA","SIGMA2_GM"),
+                       theta = c(beta,sigma2_gm),
+                       plength = 2,
+                       desc = "GM",
+                       obj.desc = list(c(1,1)),
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
 
 #' @title Create an Autoregressive P [AR(P)] Process
 #' @description Setups the necessary backend for the AR(P) process.
 #' @param phi A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
 #'  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
 #'  \item{plength}{Number of Parameters}
@@ -97,7 +133,7 @@ AR = function(phi = NULL, sigma2 = 1) {
 #' @param theta A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
 #'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
 #'  \item{plength}{Number of Parameters}
@@ -139,7 +175,7 @@ MA = function(theta = NULL, sigma2 = 1) {
 #' @description Sets up the necessary backend for the QN process.
 #' @param q2 A \code{double} value for the \eqn{Q^2}{Q^2} of a QN process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "QN"}
 #'  \item{theta}{\eqn{Q^2}{Q^2}}
 #'  \item{plength}{Number of Parameters}
@@ -173,7 +209,7 @@ QN = function(q2 = NULL) {
 #' @description Sets up the necessary backend for the WN process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "WN"}
 #'  \item{theta}{\eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
@@ -207,7 +243,7 @@ WN = function(sigma2 = NULL) {
 #' @description Sets up the necessary backend for the RW process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "RW"}
 #'  \item{theta}{\eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
@@ -241,7 +277,7 @@ RW = function(sigma2 = NULL) {
 #' @description Sets up the necessary backend for the DR process.
 #' @param slope A \code{double} value for the slope of a DR process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{Used in summary: "DR"}
 #'  \item{theta}{slope}
 #'  \item{plength}{Number of Parameters}
@@ -277,7 +313,7 @@ DR = function(slope = NULL) {
 #' @param ma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
 #' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
 #'  \item{theta}{\eqn{\sigma}{sigma}}
 #'  \item{plength}{Number of Parameters}
@@ -345,7 +381,7 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
 #' @param x A \code{numeric} value
 #' @param y A \code{ts.model} object
 #' @return An S3 object with called ts.model with the following structure:
-#' \itemize{
+#' \describe{
 #'  \item{process.desc}{y desc replicated x times}
 #'  \item{theta}{y theta replicated x times}
 #'  \item{plength}{Number of Parameters}

@@ -15,7 +15,7 @@ ARMA(ar = 1, ma = 1, sigma2 = 1)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
  \item{theta}{\eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}

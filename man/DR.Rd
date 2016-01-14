@@ -11,7 +11,7 @@ DR(slope = NULL)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{Used in summary: "DR"}
  \item{theta}{slope}
  \item{plength}{Number of Parameters}

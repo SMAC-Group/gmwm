@@ -17,28 +17,51 @@
 #' @title GMWM for Sensors, ARMA, SSM, and Robust
 #' @description GMM object
 #' @export
-#' @param model A \code{ts.model} object containing one of the allowed models.
-#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
+#' @param model      A \code{ts.model} object containing one of the allowed models.
+#' @param data       A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
 #' @param model.type A \code{string} containing the type of GMWM needed e.g. sensor or SSM
-#' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
-#' @param augmented A \code{boolean} indicating whether to add additional moments (e.g. mean for drift and variance for all other components).
-#' @param alpha A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
-#' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
-#' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
-#' @param G An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.
-#' @param K An \code{integer} that controls how many times the bootstrapping procedure will be initiated.
-#' @param H An \code{integer} that indicates how many different samples the bootstrap will be collect.
-#' @param seed A \code{integer} that controls the reproducibility of the auto model selection phase.
-#' @return A \code{gmwm} object that contains:
-#' \itemize{
-#'  \item{}
-#'  \item{}
-#'  \item{}
+#' @param compute.v  A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
+#' @param alpha      A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
+#' @param robust     A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
+#' @param eff        A \code{double} between 0 and 1 that indicates the efficiency.
+#' @param G          An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.
+#' @param K          An \code{integer} that controls how many times the bootstrapping procedure will be initiated.
+#' @param H          An \code{integer} that indicates how many different samples the bootstrap will be collect.
+#' @param seed       A \code{integer} that controls the reproducibility of the auto model selection phase.
+#' @param freq       A \code{double} that indicates the time between frequency.
+#' @return A \code{gmwm} object with the structure: 
+#' \describe{
+#'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
+#'  \item{init.guess}{Initial Starting Values given to the Optimization Algorithm}
+#'  \item{wv.empir}{The data's empirical wavelet variance}
+#'  \item{ci.low}{Lower Confidence Interval}
+#'  \item{ci.high}{Upper Confidence Interval}
+#'  \item{orgV}{Original V matrix}
+#'  \item{V}{Updated V matrix (if bootstrapped)}
+#'  \item{omega}{The V matrix inversed}
+#'  \item{obj.fun}{Value of the objective function at Estimated Parameter Values}
+#'  \item{theo}{Summed Theoretical Wavelet Variance}
+#'  \item{decomp.theo}{Decomposed Theoretical Wavelet Variance by Process}
+#'  \item{scales}{Scales of the GMWM Object}
+#'  \item{robust}{Indicates if parameter estimation was done under robust or classical}
+#'  \item{eff}{Level of efficiency of robust estimation}
+#'  \item{model.type}{Models being guessed}
+#'  \item{compute.v}{Type of V matrix computation}
+#'  \item{augmented}{Indicates moments have been augmented}
+#'  \item{alpha}{Alpha level used to generate confidence intervals}
+#'  \item{expect.diff}{Mean of the First Difference of the Signal}
+#'  \item{N}{Length of the Signal}
+#'  \item{G}{Number of Guesses Performed}
+#'  \item{H}{Number of Bootstrap replications}
+#'  \item{K}{Number of V matrix bootstraps}
+#'  \item{model}{\code{ts.model} supplied to gmwm}
+#'  \item{model.hat}{A new value of \code{ts.model} object supplied to gmwm}
+#'  \item{starting}{Indicates whether the procedure used the initial guessing approach}
+#'  \item{seed}{Randomization seed used to generate the guessing values}
+#'  \item{freq}{Frequency of data}
 #' }
 #' @details
 #' This function is under work. Some of the features are active. Others... Not so much. 
-#' What is NOT active:
-#' 1. Augmented GMWM (additional moments)
 #' 
 #' The V matrix is calculated by:
 #' \eqn{diag\left[ {{{\left( {Hi - Lo} \right)}^2}} \right]}{diag[(Hi-Lo)^2]}.
@@ -65,7 +88,7 @@
 #' The function estimates a variety of time series models. If type = "imu" or "SSM", then
 #' parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
 #' options are:
-#' \itemize{
+#' \describe{
 #'   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
 #'   \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
 #'   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
@@ -110,21 +133,25 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE, robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100){
+gmwm = function(model, data, model.type="ssm", compute.v="auto", 
+                robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
+                freq = 1){
   
-  #check lts
-  if(is.lts(data)){
-    data = data$data[ ,ncol(data)]
-  }
-  
-  #check gts
+
+  # Check data object
   if(is.gts(data)){
+    freq = data$freq
     data = data$data[,1]
-  }
-  
-  # Are we receiving one column of data?
-  if( (class(data) == "data.frame" && ncol(data) > 1) || ( class(data) == "matrix" && ncol(data) > 1 ) ){
-    stop("The function can only operate on one column of data")
+  }else if((is.imu(data) || is.data.frame(data) || is.matrix(data)) && ncol(data) > 1){
+    if(ncol(data) > 1){
+      stop("`gmwm` and `gmwm.imu` can only process one signal at a time.")
+    }
+    if(is.imu(data)){
+      freq = data$freq
+      data = data$data
+    }
+  }else if(is.lts(data)){
+    data = data$data[ ,ncol(data)]
   }
   
   # Do we have a valid model?
@@ -161,9 +188,15 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   # Information used in summary.gmwm:
   summary.desc = model$desc
   
+  num.models = count_models(desc)
+  
   # Identifiability issues
-  if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
+  if(any(num.models[c("DR","QN","RW","WN")]  >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
+  }
+  
+  if(num.models["GM"]> 0 & num.models["AR1"] > 0){
+    stop("Please either use `GM()` or `AR1()` model components. Do not mix them.")
   }
   
   # Model type issues
@@ -173,39 +206,54 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
   
   # Verify Scales and Parameter Space
   nlevels =  floor(log2(length(data)))
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
-  if(np > length(scales)){
+  if(np > nlevels){
     stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need at least the same number of scales as parameters to estimate.")
   }
   
   if(robust){
     np = np+1
-    if(np > length(scales)){
-      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we  at least need the same number of scales as parameters to estimate.")
+    if(np > nlevels){
+      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we at least need the same number of scales as parameters to estimate.")
     }
   }
 
   
-  # Auto setting
-
   # Compute fast covariance if large sample, otherwise, bootstrap.
   if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "diag")){
     compute.v = "fast"
   }
   
-
   theta = model$theta
+  
+  # Convert from GM to AR1
+  if(!starting && any(model$desc == "GM")){
+    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+    theta[idx,] = gm_to_ar1(theta[idx,], freq)
+  }
+  
 
   out = .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = alpha, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff)
-  #colnames(out) = model$desc
-  
+
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
+  colnames(estimate) = "Estimates" 
+  
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
+  colnames(init.guess) = "Starting" 
+  
+  # Convert from AR1 to GM
+  if(any(model$desc == "GM")){
+    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+    estimate[idx,] = ar1_to_gm(estimate[idx,],freq)
+    init.guess[idx,] = ar1_to_gm(init.guess[idx,],freq)
+  }
+  
+  # Wrap this into the C++ Lib
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   # Create a new model object.
   model.hat = model
@@ -231,7 +279,6 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
                        eff = eff,
                        model.type = model.type,
                        compute.v = compute.v,
-                       augmented = augmented,
                        alpha = alpha,
                        expect.diff = out[[8]],
                        N = N,
@@ -241,21 +288,47 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto", augmented=FALSE
                        model = model,
                        model.hat = model.hat,
                        starting = model$starting,
-                       seed = seed), class = "gmwm")
+                       seed = seed,
+                       freq = freq), class = "gmwm")
   invisible(out)
 }
 
 #' @title Update GMWM object for sensor, ARMA, SSM, and Robust
 #' @description GMM object
 #' @export
-#' @param object A \code{gmwm} object.
-#' @param model A \code{ts.model} object containing one of the allowed models
-#' @param ... Additional parameters (not used)
-#' @return A \code{gmwm} object that contains:
-#' \itemize{
-#'  \item{}
-#'  \item{}
-#'  \item{}
+#' @param object  A \code{gmwm} object.
+#' @param model   A \code{ts.model} object containing one of the allowed models
+#' @param ...     Additional parameters (not used)
+#' @return A \code{gmwm} object with the structure: 
+#' \describe{
+#'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
+#'  \item{init.guess}{Initial Starting Values given to the Optimization Algorithm}
+#'  \item{wv.empir}{The data's empirical wavelet variance}
+#'  \item{ci.low}{Lower Confidence Interval}
+#'  \item{ci.high}{Upper Confidence Interval}
+#'  \item{orgV}{Original V matrix}
+#'  \item{V}{Updated V matrix (if bootstrapped)}
+#'  \item{omega}{The V matrix inversed}
+#'  \item{obj.fun}{Value of the objective function at Estimated Parameter Values}
+#'  \item{theo}{Summed Theoretical Wavelet Variance}
+#'  \item{decomp.theo}{Decomposed Theoretical Wavelet Variance by Process}
+#'  \item{scales}{Scales of the GMWM Object}
+#'  \item{robust}{Indicates if parameter estimation was done under robust or classical}
+#'  \item{eff}{Level of efficiency of robust estimation}
+#'  \item{model.type}{Models being guessed}
+#'  \item{compute.v}{Type of V matrix computation}
+#'  \item{augmented}{Indicates moments have been augmented}
+#'  \item{alpha}{Alpha level used to generate confidence intervals}
+#'  \item{expect.diff}{Mean of the First Difference of the Signal}
+#'  \item{N}{Length of the Signal}
+#'  \item{G}{Number of Guesses Performed}
+#'  \item{H}{Number of Bootstrap replications}
+#'  \item{K}{Number of V matrix bootstraps}
+#'  \item{model}{\code{ts.model} supplied to gmwm}
+#'  \item{model.hat}{A new value of \code{ts.model} object supplied to gmwm}
+#'  \item{starting}{Indicates whether the procedure used the initial guessing approach}
+#'  \item{seed}{Randomization seed used to generate the guessing values}
+#'  \item{freq}{Frequency of data}
 #' }
 #' @details
 #' This function is under work. Some of the features are active. Others... Not so much. 
@@ -290,19 +363,23 @@ update.gmwm = function(object, model, ...){
   # Information used in summary.gmwm:
   summary.desc = model$desc
   
-  models.active = count_models(desc)
+  num.models = count_models(desc)
   
   # Set seed for reproducibility
   
   set.seed(object$seed)
   
   # Identifiability issues
-  if(any( models.active[c("DR","QN","RW","WN")] >1)){
+  if(any( num.models[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
   }
   
+  if(num.models["GM"]> 0 & num.models["AR1"] > 0){
+    stop("Please either use `GM()` or `AR1()` model components. Do not mix them.")
+  }
+  
   # ID error:
-  if( sum(models.active) == 1 & models.active["ARMA"] == 1 & model$starting){
+  if( sum(num.models) == 1 & num.models["ARMA"] == 1 & model$starting){
     warning("ARMA starting guesses using update.gmwm are NOT based on CSS but an alternative algorithm.")
   }
   
@@ -315,6 +392,12 @@ update.gmwm = function(object, model, ...){
     if(np > length(object$scales)){
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need one additional scale since robust requires the amount of parameters + 1 to estimate.")
     }
+  }
+  
+  # Convert from GM to AR1
+  if(!model$starting && any(model$desc == "GM")){
+    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+    model$theta[idx,] = gm_to_ar1(model$theta[idx,], object$freq)
   }
   
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
@@ -342,6 +425,13 @@ update.gmwm = function(object, model, ...){
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   
+  # Convert from AR1 to GM
+  if(any(model$desc == "GM")){
+    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+    estimate[idx,] = ar1_to_gm(estimate[idx,], object$freq)
+    init.guess[idx,] = ar1_to_gm(init.guess[idx,], object$freq)
+  }
+  
   object$estimate = estimate
   object$init.guess = init.guess
   
@@ -355,19 +445,51 @@ update.gmwm = function(object, model, ...){
 }
 
 
-#' @title GMWM for (Robust) sensor
+#' @title GMWM for (Robust) Sensor
 #' @description GMM object
-#' @param model A \code{ts.model} object containing one of the allowed models.
-#' @param data A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
+#' @param model     A \code{ts.model} object containing one of the allowed models.
+#' @param data      A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
 #' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
-#' @param robust A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
-#' @param eff A \code{double} between 0 and 1 that indicates the efficiency.
-#' @param ... other arguments passed to the main gmwm function
-#' @return A \code{gmwm} object that contains:
-#' \itemize{
-#'  \item{}
-#'  \item{}
-#'  \item{}
+#' @param robust    A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
+#' @param eff       A \code{double} between 0 and 1 that indicates the efficiency.
+#' @param ...       Other arguments passed to the main \code{\link[gmwm]{gmwm}} function
+#' @return A \code{gmwm} object with the structure: 
+#' \describe{
+#'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
+#'  \item{init.guess}{Initial Starting Values given to the Optimization Algorithm}
+#'  \item{wv.empir}{The data's empirical wavelet variance}
+#'  \item{ci.low}{Lower Confidence Interval}
+#'  \item{ci.high}{Upper Confidence Interval}
+#'  \item{orgV}{Original V matrix}
+#'  \item{V}{Updated V matrix (if bootstrapped)}
+#'  \item{omega}{The V matrix inversed}
+#'  \item{obj.fun}{Value of the objective function at Estimated Parameter Values}
+#'  \item{theo}{Summed Theoretical Wavelet Variance}
+#'  \item{decomp.theo}{Decomposed Theoretical Wavelet Variance by Process}
+#'  \item{scales}{Scales of the GMWM Object}
+#'  \item{robust}{Indicates if parameter estimation was done under robust or classical}
+#'  \item{eff}{Level of efficiency of robust estimation}
+#'  \item{model.type}{Models being guessed}
+#'  \item{compute.v}{Type of V matrix computation}
+#'  \item{augmented}{Indicates moments have been augmented}
+#'  \item{alpha}{Alpha level used to generate confidence intervals}
+#'  \item{expect.diff}{Mean of the First Difference of the Signal}
+#'  \item{N}{Length of the Signal}
+#'  \item{G}{Number of Guesses Performed}
+#'  \item{H}{Number of Bootstrap replications}
+#'  \item{K}{Number of V matrix bootstraps}
+#'  \item{model}{\code{ts.model} supplied to gmwm}
+#'  \item{model.hat}{A new value of \code{ts.model} object supplied to gmwm}
+#'  \item{starting}{Indicates whether the procedure used the initial guessing approach}
+#'  \item{seed}{Randomization seed used to generate the guessing values}
+#'  \item{freq}{Frequency of data}
+#' }
+#' @examples 
+#' \dontrun{
+#' # Example data generation
+#' data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000)
+#' results = gmwm.imu(GM(),data)
+#' inference = summary(results)
 #' }
 gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
   
@@ -384,21 +506,48 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
   x
 }
 
+#' @title Print gmwm object
+#' @description Displays information about GMWM object
+#' @method print gmwm
+#' @export
+#' @keywords internal
+#' @param x   A \code{GMWM} object
+#' @param ... Other arguments passed to specific methods
+#' @return Text output via print
+#' @author JJB
+#' @examples
+#' \dontrun{
+#' # AR
+#' set.seed(1336)
+#' n = 200
+#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
+#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+#' print(mod)
+#' }
+print.gmwm = function(x, ...){
+  cat("Model Information: \n")
+  print(x$estimate)
+
+  cat("\n* The initial values of the parameters used in the minimization of the GMWM objective function were ", 
+      {if(x$starting) paste0("generated by the program underneath seed: ",x$seed,".") else "given by YOU!"},"\n\n")
+}
+
+
 #' @title Summary of GMWM object
 #' @description Displays summary information about GMWM object
 #' @method summary gmwm
 #' @export
-#' @param object A \code{GMWM} object
-#' @param inference A value containing either: NULL (auto), TRUE, or FALSE
-#' @param bs.gof A value containing either: NULL (auto), TRUE, FALSE
-#' @param bs.gof.p.ci A value containing either: NULL (auto), TRUE, FALSE
+#' @param object       A \code{GMWM} object
+#' @param inference    A value containing either: NULL (auto), TRUE, or FALSE
+#' @param bs.gof       A value containing either: NULL (auto), TRUE, FALSE
+#' @param bs.gof.p.ci  A value containing either: NULL (auto), TRUE, FALSE
 #' @param bs.theta.est A value containing either: NULL (auto), TRUE, FALSE
-#' @param bs.ci A value containing either: NULL (auto), TRUE, FALSE
-#' @param B An \code{int} that indicates how many bootstraps should be performed.
-#' @param ... other arguments passed to specific methods
+#' @param bs.ci        A value containing either: NULL (auto), TRUE, FALSE
+#' @param B            An \code{int} that indicates how many bootstraps should be performed.
+#' @param ...          Other arguments passed to specific methods
 #' @return A \code{summary.gmwm} object with:
-#' \itemize{
-#'  \item{estimates}{Estimated Theta Values}
+#' \describe{
+#'  \item{estimate}{Estimated Theta Values}
 #'  \item{testinfo}{Goodness of Fit Information}
 #'  \item{inference}{Inference performed? T/F}
 #'  \item{bs.gof}{Bootstrap GOF? T/F}
@@ -429,7 +578,6 @@ summary.gmwm = function(object, inference = NULL,
   set.seed(object$seed+5)
   
   out = object$estimate
-  colnames(out) = c("Estimates") 
   
   N = object$N
   
@@ -465,6 +613,13 @@ summary.gmwm = function(object, inference = NULL,
   }
   
   if(inference){
+    
+    # Convert from GM to AR1
+    if(any(object$model$desc == "GM")){
+      idx = object$model$process.desc %in% c("BETA","SIGMA2_GM")
+      object$estimate[idx,] = gm_to_ar1(object$estimate[idx,], object$freq)
+    }
+    
     mm = .Call('gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
                                                     object$model$desc, object$model$obj.desc,
                                                     object$model.type, 
@@ -475,6 +630,12 @@ summary.gmwm = function(object, inference = NULL,
                                                     inference, F, # fullV is always false. Need same logic updates.
                                                     bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci,
                                                     B)
+    # Convert back from AR1 to GM
+    if(any(object$model$process.desc == "BETA")){
+      idx = object$model$process.desc %in% c("BETA","SIGMA2_GM")
+      object$estimate[idx,] = ar1_to_gm(object$estimate[idx,], object$freq)
+    }
+    
   }else{
     mm = vector('list',3)
     mm[1:3] = NA
@@ -486,7 +647,7 @@ summary.gmwm = function(object, inference = NULL,
     colnames(out) = c(out.coln, "CI Low", "CI High", "SE")
   }
   
-  x = structure(list(estimates=out, 
+  x = structure(list(estimate=out, 
                      testinfo=mm[[2]],
                      inference = inference, 
                      bs.gof = bs.gof,
@@ -496,7 +657,8 @@ summary.gmwm = function(object, inference = NULL,
                      starting = object$starting,
                      seed = object$seed,
                      obj.fun = object$obj.fun,
-                     N = N), class = "summary.gmwm")
+                     N = N,
+                     freq = object$freq), class = "summary.gmwm")
     
   x
 }
@@ -506,8 +668,8 @@ summary.gmwm = function(object, inference = NULL,
 #' @method print summary.gmwm
 #' @export
 #' @keywords internal
-#' @param x A \code{GMWM} object
-#' @param ... other arguments passed to specific methods
+#' @param x   A \code{GMWM} object
+#' @param ... Other arguments passed to specific methods
 #' @return Text output via print
 #' @author JJB
 #' @examples
@@ -522,7 +684,7 @@ summary.gmwm = function(object, inference = NULL,
 print.summary.gmwm = function(x, ...){
   
   cat("Model Information: \n")
-  print(x$estimates)
+  print(x$estimate)
   if(x$bs.theta.est){
     cat("\n> The parameter estimates shown are bootstrapped! To use these results, please save the summary object.")
   }
@@ -551,7 +713,6 @@ print.summary.gmwm = function(x, ...){
   if(x$bs.gof || x$bs.theta.est)
    cat(paste0("\nTo replicate the results, use seed: ",x$seed, "\n"))
 }
-
 
 #' @title Predict future points in the time series using the solution of the Generalized Method of Wavelet Moments
 #' @description Creates a prediction using the estimated values of GMWM through the ARIMA function within R.

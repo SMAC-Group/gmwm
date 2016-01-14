@@ -13,7 +13,7 @@ MA(theta = NULL, sigma2 = 1)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
  \item{plength}{Number of Parameters}

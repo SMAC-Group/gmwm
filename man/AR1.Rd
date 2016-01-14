@@ -13,7 +13,7 @@ AR1(phi = NULL, sigma2 = 1)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{Used in summary: "AR1","SIGMA2"}
  \item{theta}{\eqn{\phi}{phi}, \eqn{\sigma^2}{sigma^2}}
  \item{plength}{Number of Parameters}
@@ -27,7 +27,7 @@ Setups the necessary backend for the AR1 process.
 }
 \examples{
 AR1()
-AR1(phi=.32, sigma=1.3)
+AR1(phi=.32, sigma2=1.3)
 }
 \author{
 JJB

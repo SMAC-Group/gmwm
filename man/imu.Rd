@@ -4,7 +4,8 @@
 \alias{imu}
 \title{Create an IMU Object}
 \usage{
-imu(object, gyroscope = NULL, accelerometer = NULL, axis = NULL)
+imu(object, gyroscope = NULL, accelerometer = NULL, axis = NULL,
+  freq = NULL)
 }
 \arguments{
 \item{object}{A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.}
@@ -14,14 +15,17 @@ imu(object, gyroscope = NULL, accelerometer = NULL, axis = NULL)
 \item{accelerometer}{A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.}
 
 \item{axis}{A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.}
+
+\item{freq}{An \code{integer} that provides the frequency for the data.}
 }
 \value{
 An \code{imu} object in the following structure:
-\itemize{
-  \item{data:} {A \code{matirx} that contains gyroscope and accelerometer data.}
-  \item{sensor:} {A \code{vector} that indicates whether data contains gyroscope sensor, accelerometer sensor, or both.}
-  \item{num.sensor:} {A \code{vector} that indicates how many columns of data are for gyroscope sensor and accelerometer sensor.}
-  \item{axis:} {axis value such as 'X', 'Y', 'Z'.}
+\describe{
+  \item{data}{A \code{matirx} that contains gyroscope and accelerometer data.}
+  \item{sensor}{A \code{vector} that indicates whether data contains gyroscope sensor, accelerometer sensor, or both.}
+  \item{num.sensor}{A \code{vector} that indicates how many columns of data are for gyroscope sensor and accelerometer sensor.}
+  \item{axis}{Axis value such as 'X', 'Y', 'Z'.}
+  \item{freq}{Observations per second.}
 }
 }
 \description{

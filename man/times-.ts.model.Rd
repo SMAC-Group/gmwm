@@ -13,7 +13,7 @@
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{y desc replicated x times}
  \item{theta}{y theta replicated x times}
  \item{plength}{Number of Parameters}

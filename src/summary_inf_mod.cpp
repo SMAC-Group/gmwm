@@ -116,7 +116,7 @@ arma::field<arma::mat> get_summary(arma::vec theta,
       arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
       ci = theta_ci(theta, A, V, omega, alpha);
     }
-    
+
     if(bs_gof){
       gof = bootstrap_gof_test(obj_value, bs_obj_values, alpha, bs_gof_p_ci); 
     }else{

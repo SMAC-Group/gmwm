@@ -4,7 +4,8 @@
 \alias{output.format}
 \title{Formats the rank.models (auto.imu) object}
 \usage{
-output.format(out, model.names, scales, N, alpha, robust, eff, B, G, seed)
+output.format(out, model.names, scales, N, alpha, robust, eff, B, G, seed,
+  freq = 1)
 }
 \arguments{
 \item{out}{A \code{list} containing the model matrix}
@@ -26,6 +27,8 @@ output.format(out, model.names, scales, N, alpha, robust, eff, B, G, seed)
 \item{G}{A \code{int} to indicate how many guesses should be performed during the grid search}
 
 \item{seed}{A \code{seed} to recreate the same GMWM estimator results.}
+
+\item{freq}{A \code{double} that represents the frequency between observations.}
 }
 \value{
 An updated matrix in the ith position of the list.

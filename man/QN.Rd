@@ -11,7 +11,7 @@ QN(q2 = NULL)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{Used in summary: "QN"}
  \item{theta}{\eqn{Q^2}{Q^2}}
  \item{plength}{Number of Parameters}

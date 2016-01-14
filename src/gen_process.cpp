@@ -298,8 +298,11 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
       // Need to add ARMA generation
       
       double theta_value = theta(i_theta);
+      
+      std::string element_type = desc[i];
+      
   	  // AR 1
-  	  if(desc[i] == "AR1"){
+  	  if(element_type == "AR1" || element_type == "GM"){
   	    
   	    // First value is phi, increment for sigma2
   	    ++i_theta;
@@ -310,7 +313,7 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    // Compute theoretical WV
   	    x += gen_ar1(N, theta_value, sig2);
   	  }
-      else if(desc[i] == "ARMA"){
+      else if(element_type == "ARMA"){
         // Unpackage ARMA model parameter
         arma::vec model_params = objdesc(i);
         
@@ -349,15 +352,15 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
         x += gen_arma(N, ar, ma, sig2, 0);
       }
       // DR
-  	  else if(desc[i] == "DR"){
+  	  else if(element_type == "DR"){
   	    x += gen_dr(N, theta_value);
   	  }
       // QN
-  	  else if(desc[i] == "QN"){
+  	  else if(element_type == "QN"){
   	    x += gen_qn(N, theta_value);
   	  }
       // RW
-  	  else if(desc[i] == "RW"){
+  	  else if(element_type == "RW"){
   	    x += gen_rw(N, theta_value);
   	  }
   	  // WN
@@ -396,8 +399,10 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
   
   for(unsigned int i = 0; i < num_desc; i++){
     double theta_value = theta(i_theta);
+    std::string element_type = desc[i];
+    
     // AR 1
-    if(desc[i] == "AR1"){
+    if(element_type == "AR1" || element_type == "GM"){
       
       // First value is phi, increment for sigma2
       ++i_theta;
@@ -411,7 +416,7 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       x.col(num_desc) += x.col(i);
       
     }
-    else if(desc[i] == "ARMA"){
+    else if(element_type == "ARMA"){
       // Unpackage ARMA model parameter
       arma::vec model_params = objdesc(i);
       
@@ -451,18 +456,18 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       x.col(num_desc) += x.col(i);
     }
     // DR
-    else if(desc[i] == "DR"){
+    else if(element_type == "DR"){
       x.col(i) = gen_dr(N, theta_value);
       x.col(num_desc) += x.col(i);
 
     }
     // QN
-    else if(desc[i] == "QN"){
+    else if(element_type == "QN"){
       x.col(i) = gen_qn(N, theta_value);
       x.col(num_desc) += x.col(i);
     }
     // RW
-    else if(desc[i] == "RW"){
+    else if(element_type == "RW"){
       x.col(i) = gen_rw(N, theta_value);
       x.col(num_desc) += x.col(i);
     }

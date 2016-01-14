@@ -11,7 +11,7 @@ WN(sigma2 = NULL)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{Used in summary: "WN"}
  \item{theta}{\eqn{\sigma}{sigma}}
  \item{plength}{Number of Parameters}
