@@ -17,7 +17,6 @@ Unlists vectors in a field and places them into a matrix
 }
 \examples{
 x=rnorm(100)
-field_to_matrix(modwt_cpp(x))
 }
 \author{
 JJB

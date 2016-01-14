@@ -13,63 +13,59 @@
 # You should have received a copy of the Attribution-NonCommercial-ShareAlike 4.0 International 
 # (CC BY-NC-SA 4.0) along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
 
-#' @title Maximum Overlap Discrete Wavelet Transform
+#' @title Discrete Wavelet Transform
 #' @description 
 #' Calculation of the coefficients for the discrete wavelet transformation
-#' @param x        A \code{vector} with dimensions N x 1. 
-#' @param nlevels  A \code{integer} indicating the \eqn{J} levels of decomposition.
-#' @param filter   A \code{string} indicating the filter name
-#' @param boundary A \code{string} indicating whether the filter is: \code{"periodic"} or \code{"reflection"}.
-#' @param bw       A \code{boolean} indicating whether to remove (TRUE) or keep (FALSE) boundary wavelet coefficients
-#' @return y       A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
+#' @inheritParams modwt
+#' @return y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 #' @details
 #' Performs a level \eqn{J} decomposition of the time series using the pyramid algorithm.
 #' The default \eqn{J} is determined by \eqn{floor\left(log_2 \left(length\left(x\right)\right)\right)}{floor(log2(length(x)))}
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
-#' modwt(x)
-modwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary="periodic", bw = TRUE) {
-  out = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = filter, nlevels, boundary = boundary, brickwall = bw)
+#' x = rnorm(2^8)
+#' dwt(x)
+dwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary="periodic", bw = TRUE) {
+  out = .Call('gmwm_dwt_cpp', PACKAGE = 'gmwm', x, filter_name = filter, nlevels, boundary = boundary, brickwall = bw)
   names(out) = paste0("S",1:nlevels)
-  mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class="modwt")
+  mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class="dwt")
   out
 }
 
-#' @title Print Maximum Overlap Discrete Wavelet Transform
+#' @title Print Discrete Wavelet Transform
 #' @description
 #' Prints the results of the modwt list
-#' @method print modwt
+#' @method print dwt
 #' @export
-#' @param x A \code{modwt} object
+#' @param x A \code{dwt} object
 #' @param ... further arguments passed to or from other methods.
-#' @return Prints the modwt decomposition
+#' @return Prints the dwt decomposition
 #' @author JJB
 #' @keywords internal
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
-#' print(modwt(x))
-print.modwt=function(x, ...){
+#' x = rnorm(2^8)
+#' print(dwt(x))
+print.dwt=function(x, ...){
   x
 }
 
-#' @title Summary Maximum Overlap Discrete Wavelet Transform
-#' @description Unlists MODWT object and places it in matrix form
-#' @method summary modwt
+#' @title Summary Discrete Wavelet Transform
+#' @description Unlists DWT object and places it in matrix form
+#' @method summary dwt
 #' @export
 #' @keywords internal
-#' @param object A \code{modwt} object
+#' @param object A \code{dwt} object
 #' @param ... additional arguments affecting the summary produced.
-#' @return Prints the modwt matrix decomposition
+#' @return Prints the dwt matrix decomposition
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
-#' summary(modwt(x))
-summary.modwt=function(object, ...){
-  cat("Results of the MODWT containing ",attr(object,"J")," scales\n")
+#' x = rnorm(2^8)
+#' summary(dwt(x))
+summary.dwt=function(object, ...){
+  cat("Results of the DWT containing ",attr(object,"J")," scales\n")
   cat("These values are", if(!attr(object,"brick.wall")){" >NOT<"}," brick walled\n")
-  print.modwt(object)
+  print.dwt(object)
 }

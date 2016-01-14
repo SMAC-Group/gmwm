@@ -32,10 +32,9 @@ Within this function we are scaling the classical
 \examples{
 x = rnorm(100)
 # Uses the internal MODWT function not associated with an S3 class.
-decomp = modwt_cpp(x, "haar", 4, boundary="periodic")
-signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
-y = wave_variance(signal_modwt_bw, robust = TRUE,  eff = 0.6)
-ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
+decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
+ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 }
 \keyword{internal}
 

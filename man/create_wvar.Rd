@@ -2,7 +2,7 @@
 % Please edit documentation in R/wvar.R
 \name{create_wvar}
 \alias{create_wvar}
-\title{Wavelet Variance}
+\title{Create a Wvar object}
 \usage{
 create_wvar(obj, decomp, robust, eff, alpha, scales)
 }
@@ -16,6 +16,8 @@ create_wvar(obj, decomp, robust, eff, alpha, scales)
 \item{eff}{A \code{double} that indicates the efficiency as it relates to an MLE.}
 
 \item{alpha}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
+
+\item{scales}{A \code{vec} that contains the amount of decomposition done at each level.}
 }
 \value{
 A \code{list} with the structure:
@@ -29,6 +31,7 @@ A \code{list} with the structure:
 }
 }
 \description{
-Calculates the (MODWT) wavelet variance
+Structures elements into a WVar object
 }
+\keyword{internal}
 

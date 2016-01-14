@@ -18,9 +18,10 @@
 //' 
 //' Sorts a given matrix by a specific column while retain the elements in each row.
 //' 
-//' @param x A \code{matrix} to sort
+//' @param x   A \code{matrix} to sort
 //' @param col A \code{int} that indicates the column the matrix should sort by.
-//' @details The functional difference between armadillo's sort() and sort_mat() is straight forward.
+//' @details 
+//' The functional difference between armadillo's sort() and sort_mat() is straight forward.
 //' sort() will sort each column without respect to the rows. 
 //' Using sort_matrix will sort only 1 column and retain the other elements to be in the same row.
 //' @return The matrix sorted by values in the specified column.
@@ -39,11 +40,11 @@ arma::mat sort_mat(arma::mat x, unsigned int col){
 }
 
 //' @title Reverse Subset Column
-//' @description Subsets the column by going from high indices to low (the reverse of the supported practice)
-//' @usage rev_col_subset(x, start, end)
-//' @param x A \code{matrix} of dimensions M x N
+//' @description 
+//' Subsets the column by going from high indices to low (the reverse of the supported practice)
+//' @param x     A \code{matrix} of dimensions M x N
 //' @param start A \code{unsigned int} that indicates the starting column.
-//' @param end A \code{unsigned int} that indicates the ending column.
+//' @param end   A \code{unsigned int} that indicates the ending column.
 //' @return x A \code{matrix} with matrix rows displayed in reverse order
 //' @details Consider a vector x=[[1,2],[3,4]].
 //' By setting \code{start=1} and \code{end=0}, the function would output x=[[2,1],[4,1]].
@@ -64,10 +65,9 @@ arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end){
 
 //' @title Reverse Subset Row
 //' @description Subsets the row by going from high indices to low (the reverse of the supported practice)
-//' @usage rev_row_subset(x, start, end)
-//' @param x A \code{matrix} of dimensions M x N
-//' @param start A \code{unsigned int} that indicates the starting row.
-//' @param end A \code{unsigned int} that indicates the ending row.
+//' @param x      A \code{matrix} of dimensions M x N
+//' @param start  A \code{unsigned int} that indicates the starting row.
+//' @param end    A \code{unsigned int} that indicates the ending row.
 //' @return x A \code{matrix} with matrix rows displayed in reversed order
 //' @details Consider a vector x=[[1,2],[3,4]], the function would output x=[[3,4],[1,2]].
 //' Start and end must be valid C++ matrix locations. (e.g. matrix rows start at 0 and not 1)
@@ -109,7 +109,6 @@ arma::vec reverse_vec(arma::vec x) {
 //' @author JJB
 //' @examples
 //' x=rnorm(100)
-//' field_to_matrix(modwt_cpp(x))
 //' @keywords internal
 // [[Rcpp::export]]
 arma::mat field_to_matrix(arma::field<arma::vec> x){
@@ -134,7 +133,6 @@ arma::mat field_to_matrix(arma::field<arma::vec> x){
 //' @author JJB
 //' @examples
 //' x=rnorm(100)
-//' field_to_matrix(modwt_cpp(x))
 //' @keywords internal
 // [[Rcpp::export]]
 double sum_field_vec(const arma::field<arma::vec>& x){

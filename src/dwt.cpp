@@ -224,7 +224,7 @@ arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name,
 //' Note: As a result, there are no NA's introduced and hence the na.omit is not needed.
 //' @examples
 //' x = rnorm(100)
-//' me = modwt_cpp(x,filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = FALSE)
+//' me = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = FALSE)
 //' brick_wall(me, select_filter("haar"), "modwt")
 // [[Rcpp::export]]
 arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,  

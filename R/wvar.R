@@ -160,13 +160,14 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
 }
 
 
-#' @title Wavelet Variance
-#' @description Calculates the (MODWT) wavelet variance
+#' @title Create a Wvar object
+#' @description Structures elements into a WVar object
 #' @param obj    A \code{matrix} with dimensions N x 3, that contains the wavelet variance, low ci, hi ci.
 #' @param decomp A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff    A \code{double} that indicates the efficiency as it relates to an MLE.
 #' @param alpha  A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param scales A \code{vec} that contains the amount of decomposition done at each level.
 #' @return A \code{list} with the structure:
 #' \describe{
 #'   \item{"variance"}{Wavelet Variance},
@@ -176,6 +177,7 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
 #'   \item{"eff"}{Efficiency level for Robust}
 #'   \item{"alpha"}{p value used for CI}
 #' }
+#' @keywords internal
 create_wvar = function(obj, decomp, robust, eff, alpha, scales){
   structure(list(variance = obj[,1],
                        ci_low = obj[,2], 

@@ -26,7 +26,7 @@ Note: As a result, there are no NA's introduced and hence the na.omit is not nee
 }
 \examples{
 x = rnorm(100)
-me = modwt_cpp(x,filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = FALSE)
+me = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = FALSE)
 brick_wall(me, select_filter("haar"), "modwt")
 }
 \keyword{internal}

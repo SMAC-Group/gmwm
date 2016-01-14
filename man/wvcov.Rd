@@ -4,7 +4,7 @@
 \alias{wvcov}
 \title{Calculate the Asymptotic Covariance Matrix}
 \usage{
-wvcov(signal.modwt, signal.wvar, compute.v="diag")
+wvcov(signal.modwt, signal.wvar, compute.v = "diag")
 }
 \arguments{
 \item{signal.modwt}{A \code{modwt} object that contains the modwt decomposition.}
@@ -15,7 +15,7 @@ wvcov(signal.modwt, signal.wvar, compute.v="diag")
 }
 \value{
 A \code{list} with the structure:
-\itemize{
+\describe{
   \item{"V"}{Covariance Matrix}
   \item{"V.r"}{Covariance Matrix}
   \item{"nlevels"}{Level of decomposition J}
@@ -31,7 +31,7 @@ Places the Asymptotic Covariance Matrix in print form.
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 decomp = modwt(x)
 wv = wvar(x)
 out = wvcov(decomp, wv, compute.v="diag")

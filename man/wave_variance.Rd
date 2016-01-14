@@ -22,10 +22,10 @@ Computes an estimate of the wave variance
 \examples{
 set.seed(1337)
 x = rnorm(100)
-signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
-wave_variance(signal_modwt_bw)
+decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+wave_variance(decomp)
 
-wave_variance(signal_modwt_bw, robust = TRUE, eff = 0.6)
+wave_variance(decomp, robust = TRUE, eff = 0.6)
 }
 \keyword{internal}
 
