@@ -13,6 +13,38 @@
 # You should have received a copy of the Attribution-NonCommercial-ShareAlike 4.0 International 
 # (CC BY-NC-SA 4.0) along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
 
+#' @title Brickwall functionality for MO/DWT
+#' @description 
+#' Removes boundary coefficients
+#' @param x        A \code{modwt} or \code{dwt} object that has not yet been brick walled
+#' @return y       A \code{modwt} or \code{dwt} object that has been brick walled
+#' @author JJB
+#' @examples
+#' set.seed(999)
+#' x = rnorm(100)
+#' o = modwt(x, bw = FALSE)
+#' 
+#' x = rnorm(2^8)
+#' j = dwt(x, bw = FALSE)
+#' brickwall(j)
+brickwall = function(signal.decomp){
+  if(!is(signal.decomp,"modwt") || !is(signal.decomp,"dwt")){
+    stop("`signal.decomp` must be from the either the `modwt()` or `dwt()` function.")
+  }
+  if(attr(signal.decomp,"brick.wall")){
+    stop("The decomposition has already been decomposed.")
+  }
+  
+  obj = .Call('gmwm_brick_wall', PACKAGE = 'gmwm', signal.decomp, select_filter("haar"), method)
+  
+  mostattributes(obj) = attributes(signal.decomp)
+  attr(signal.decomp,"brick.wall") = T
+  
+  obj
+}
+
+
+
 #' @title Maximum Overlap Discrete Wavelet Transform
 #' @description 
 #' Calculation of the coefficients for the discrete wavelet transformation
