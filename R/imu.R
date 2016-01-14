@@ -135,18 +135,19 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq
   }else{
     # No axis is supplied. try to generate it automatically.
     if(length(index) == 1) {
-      axis = c('X', 'Y', 'Z')
+      axis = 'X'
     }else if (length(index) == 2) {
       axis = c('X','Y')
     }else if (length(index) == 3) {
-      axis = 'X'
+      axis =  c('X', 'Y', 'Z')
     }else{
       stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
     }
   }
   
   if(is.null(freq)){
-    freq = 1
+    freq = 100
+    warning("`freq` has not been specified. \n Setting `imu` object's frequency to 100. \n Please recreate the object if the frequency is incorrect.")
   }
   
   invisible(create_imu(object[,index, drop = F], ngyros, nacces, axis, freq))

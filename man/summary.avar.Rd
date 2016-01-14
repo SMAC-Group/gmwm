@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{A \code{avar} object.}
 
-\item{...}{additional arguments affecting the summary produced.}
+\item{...}{Additional arguments affecting the summary produced.}
 }
 \value{
 Summary table

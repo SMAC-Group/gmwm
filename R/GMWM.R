@@ -148,7 +148,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
     }
     if(is.imu(data)){
       freq = data$freq
-      data = data$data
+      data = as.numeric(data$data)
     }
   }else if(is.lts(data)){
     data = data$data[ ,ncol(data)]

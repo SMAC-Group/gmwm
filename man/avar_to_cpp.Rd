@@ -46,4 +46,5 @@ JJB
 \references{
 Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
 }
+\keyword{internal}
 
