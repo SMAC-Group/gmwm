@@ -7,10 +7,10 @@
 brickwall(signal.decomp)
 }
 \arguments{
-\item{x}{A \code{modwt} or \code{dwt} object that has not yet been brick walled}
+\item{signal.decomp}{A \code{modwt} or \code{dwt} object that has not yet been brick walled}
 }
 \value{
-y       A \code{modwt} or \code{dwt} object that has been brick walled
+A \code{modwt} or \code{dwt} object that has been brick walled
 }
 \description{
 Removes boundary coefficients

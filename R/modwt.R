@@ -16,26 +16,27 @@
 #' @title Brickwall functionality for MO/DWT
 #' @description 
 #' Removes boundary coefficients
-#' @param x        A \code{modwt} or \code{dwt} object that has not yet been brick walled
-#' @return y       A \code{modwt} or \code{dwt} object that has been brick walled
+#' @param signal.decomp  A \code{modwt} or \code{dwt} object that has not yet been brick walled
+#' @return A \code{modwt} or \code{dwt} object that has been brick walled
 #' @author JJB
 #' @examples
 #' set.seed(999)
 #' x = rnorm(100)
 #' o = modwt(x, bw = FALSE)
+#' brickwall(o)
 #' 
 #' x = rnorm(2^8)
 #' j = dwt(x, bw = FALSE)
 #' brickwall(j)
 brickwall = function(signal.decomp){
-  if(!is(signal.decomp,"modwt") || !is(signal.decomp,"dwt")){
+  if(!(is(signal.decomp,"modwt") || is(signal.decomp,"dwt"))){
     stop("`signal.decomp` must be from the either the `modwt()` or `dwt()` function.")
   }
   if(attr(signal.decomp,"brick.wall")){
     stop("The decomposition has already been decomposed.")
   }
   
-  obj = .Call('gmwm_brick_wall', PACKAGE = 'gmwm', signal.decomp, select_filter("haar"), method)
+  obj = .Call('gmwm_brick_wall', PACKAGE = 'gmwm', signal.decomp, select_filter("haar"), class(signal.decomp))
   
   mostattributes(obj) = attributes(signal.decomp)
   attr(signal.decomp,"brick.wall") = T
