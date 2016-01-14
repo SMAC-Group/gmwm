@@ -4,14 +4,14 @@
 \alias{rank.models}
 \title{Automatically select appropriate model for a set of models}
 \usage{
-rank.models(data, models = list(AR1() + WN(), AR1()), nested = F,
-  bootstrap = F, model.type = "ssm", alpha = 0.05, robust = F,
-  eff = 0.6, B = 50, G = 1e+05, seed = 1337)
+rank.models(data, ..., nested = F, bootstrap = F, model.type = "ssm",
+  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+05,
+  seed = 1337)
 }
 \arguments{
 \item{data}{A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.}
 
-\item{models}{A list of \code{ts.model} objects.}
+\item{...}{Different \code{ts.model}s to be compared.}
 
 \item{nested}{A \code{bool} that indicates whether the ts.model objects are nested within a large object given within the list. If not, the a full model will be created.}
 
@@ -38,6 +38,16 @@ A \code{rank.models} object.
 Runs through a model selection algorithm to determine the best model in a given set
 }
 \details{
-The models MUST be nested within each other. If the models are not nested, the algorithm creates the "common denominator" model.
+The models MUST be nested within each other. 
+If the models are not nested, the algorithm creates the "common denominator" model.
+
+To supply the models, enter them as:
+AR1()+WN(), AR1(), 3*AR1()
+
+Any parameter that you wish to use must then be specified.
+e.g. to specify nested, you must use nested = T. Otherwise, it the function will stop.
+
+Due to the structure of \code{rank.models}, you cannot mix and match \code{AR1()} and \code{GM()} objects.
+So you must enter either AR1() or GM() objects.
 }
 

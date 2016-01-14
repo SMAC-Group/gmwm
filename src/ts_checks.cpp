@@ -73,6 +73,7 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
   
   // We want to see the only the following objects with these initial values
   w["AR1"]=0;
+  w["GM"]=0;
   w["ARMA"]=0;
   w["DR"]=0;		
   w["RW"]=0;		
@@ -104,7 +105,7 @@ arma::vec order_AR1s(arma::vec theta, const std::vector<std::string>& desc, cons
   for(unsigned int i = 0; i < desc.size(); i++){
     std::string element_type = desc[i];
     
-    if(element_type == "AR1"){
+    if(element_type == "AR1" || element_type == "GM"){
       // Is this the first AR1 element in the stack?
       if(AR1_old_loc != -1){
         

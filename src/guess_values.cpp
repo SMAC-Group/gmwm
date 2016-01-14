@@ -231,7 +231,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
     for(unsigned int i = 0; i < num_desc; i++){
       std::string element_type = desc[i];
       
-      if(element_type == "AR1"){
+      if(element_type == "AR1" || element_type == "GM"){
         temp_theta.rows(i_theta, i_theta + 1) = ar1_draw(AR1_counter, prev_phi, sigma2_total, model_type);
         prev_phi = temp_theta(i_theta);
         i_theta++; // needed to account for two parameters (e.g. phi + sigma2). Second shift at end.

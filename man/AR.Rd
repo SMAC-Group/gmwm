@@ -13,7 +13,7 @@ AR(phi = NULL, sigma2 = 1)
 }
 \value{
 An S3 object with called ts.model with the following structure:
-\itemize{
+\describe{
  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
  \item{plength}{Number of Parameters}

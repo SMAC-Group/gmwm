@@ -15,16 +15,18 @@
 
 #' @title Create an IMU Object
 #' @description Builds an IMU object that provides the program with gyroscope, accelerometer, and axis information per column in the dataset.
-#' @param object A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.
-#' @param gyroscope A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.
+#' @param object        A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.
+#' @param gyroscope     A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.
 #' @param accelerometer A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.
-#' @param axis A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.
+#' @param axis          A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.
+#' @param freq          An \code{integer} that provides the frequency for the data.
 #' @return An \code{imu} object in the following structure:
-#' \itemize{
-#'   \item{data:} {A \code{matirx} that contains gyroscope and accelerometer data.}
-#'   \item{sensor:} {A \code{vector} that indicates whether data contains gyroscope sensor, accelerometer sensor, or both.}
-#'   \item{num.sensor:} {A \code{vector} that indicates how many columns of data are for gyroscope sensor and accelerometer sensor.}
-#'   \item{axis:} {axis value such as 'X', 'Y', 'Z'.}
+#' \describe{
+#'   \item{data}{A \code{matirx} that contains gyroscope and accelerometer data.}
+#'   \item{sensor}{A \code{vector} that indicates whether data contains gyroscope sensor, accelerometer sensor, or both.}
+#'   \item{num.sensor}{A \code{vector} that indicates how many columns of data are for gyroscope sensor and accelerometer sensor.}
+#'   \item{axis}{Axis value such as 'X', 'Y', 'Z'.}
+#'   \item{freq}{Observations per second.}
 #' }
 #' @details 
 #' \code{object} can be a numeric vector, matrix or data frame.
@@ -67,7 +69,7 @@
 #' test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
 #' df4 = wvar.imu(test4)
 #' plot(df4)}
-imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
+imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq = NULL){
   
   # Check object
   if(is.null(object) || !(is.numeric(object)||is.data.frame(object)||is.matrix(object)) ) {
@@ -143,7 +145,11 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
     }
   }
   
-  invisible(imu_(object[,index, drop = F], ngyros, nacces, axis))
+  if(is.null(freq)){
+    freq = 1
+  }
+  
+  invisible(create_imu(object[,index, drop = F], ngyros, nacces, axis, freq))
 }
 
 #' @title Internal IMU Object Construction
@@ -152,13 +158,15 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL){
 #' @param ngyros  A \code{integer} containing the number of gyroscopes
 #' @param naccess A \code{integer} containing the number of accelerometers
 #' @param axis    A \code{vector} unique representation of elements e.g. x,y,z or x,y or x.
+#' @param freq    An \code{integer} that provides the frequency for the data.
 #' @return An \code{imu} object class.
 #' @keywords internal
-imu_ = function(object, ngyros, nacces, axis){
+create_imu = function(object, ngyros, nacces, axis, freq){
   invisible(structure(list(data = object,
                            sensor = c(rep("Gyroscope",ngyros > 0), rep("Accelerometer",nacces > 0)),
                            num.sensor = c(ngyros, nacces),
-                           axis = axis), class = "imu"))
+                           axis = axis,
+                           freq = freq), class = "imu"))
 }
 
 #' @title Read an IMU Binary File into R
@@ -198,7 +206,7 @@ imu_ = function(object, ngyros, nacces, axis){
 read.imu = function(file, type){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  invisible(imu_(d[[1]][,-1], 3, 3, c('x','y','z')))
+  invisible(create_imu(d[[1]][,-1], 3, 3, c('x','y','z'), d[[2]][1]))
 }
 
 

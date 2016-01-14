@@ -287,7 +287,7 @@ arma::vec theoretical_wv(const arma::vec& theta,
     std::string element_type = desc[i];
     
     // AR 1
-    if(element_type == "AR1"){
+    if(element_type == "AR1" || element_type == "GM"){
 
       ++i_theta;
       double sig2 = theta(i_theta);
@@ -381,7 +381,7 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
     std::string element_type = desc[i];
     
     // AR 1
-    if(element_type == "AR1"){
+    if(element_type == "AR1" || element_type == "GM"){
 
       ++i_theta;
       double sig2 = theta(i_theta);

@@ -19,6 +19,7 @@ Removes boundary coefficients
 set.seed(999)
 x = rnorm(100)
 o = modwt(x, bw = FALSE)
+brickwall(o)
 
 x = rnorm(2^8)
 j = dwt(x, bw = FALSE)

@@ -22,12 +22,12 @@
 
 \item{B}{An \code{int} that indicates how many bootstraps should be performed.}
 
-\item{...}{other arguments passed to specific methods}
+\item{...}{Other arguments passed to specific methods}
 }
 \value{
 A \code{summary.gmwm} object with:
-\itemize{
- \item{estimates}{Estimated Theta Values}
+\describe{
+ \item{estimate}{Estimated Theta Values}
  \item{testinfo}{Goodness of Fit Information}
  \item{inference}{Inference performed? T/F}
  \item{bs.gof}{Bootstrap GOF? T/F}
