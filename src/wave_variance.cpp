@@ -276,7 +276,7 @@ arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt_bw,
 //' This function powers the wvar object. It is also extendable...
 //' @examples
 //' x=rnorm(100)
-//' modwt_wvar_cpp(x, robust=false, eff=0.6, alpha = 0.05, ci_type="eta3", strWavelet="haar")
+//' modwt_wvar_cpp(x, nlevels=4, robust=FALSE, eff=0.6, alpha = 0.05, ci_type="eta3", strWavelet="haar", decomp="modwt")
 // [[Rcpp::export]]
 arma::mat modwt_wvar_cpp(const arma::vec& signal, unsigned int nlevels, bool robust, double eff, double alpha, 
                          std::string ci_type, std::string strWavelet, std::string decomp) {
@@ -288,11 +288,49 @@ arma::mat modwt_wvar_cpp(const arma::vec& signal, unsigned int nlevels, bool rob
   }else{
     signal_modwt_bw = dwt_cpp(signal, strWavelet, nlevels, "periodic", true);
   }
+
+  arma::mat o = wvar_cpp(signal_modwt_bw,robust, eff, alpha, ci_type);
   
-  return wvar_cpp(signal_modwt_bw,robust, eff, alpha, ci_type);
+  return o;
 }
 
 
+//' @title Computes the MO/DWT wavelet variance for multiple processes
+//' @description Calculates the MO/DWT wavelet variance
+//' @param signal     A \code{matrix} that contains the same number of observations per dataset
+//' @param robust     A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff        A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @param alpha      A \code{double} that indicates the \eqn{\left(1-p\right)\times \alpha}{(1-p)*alpha} confidence level 
+//' @param ci_type    A \code{string} indicating the confidence interval being calculated. Valid value: "eta3"
+//' @param strWavelet A \code{string} indicating the type of wave filter to be applied. Must be "haar"
+//' @param decomp     A \code{string} indicating whether to use "modwt" or "dwt" decomp
+//' @return A \code{field<mat>} with the structure:
+//' \itemize{
+//'   \item{"variance"}{Wavelet Variance}
+//'   \item{"low"}{Lower CI}
+//'   \item{"high"}{Upper CI}
+//' }
+//' @keywords internal
+//' @details 
+//' This function processes the decomposition of multiple signals quickly
+//' @examples
+//' x=rnorm(100)
+//' modwt_wvar_cpp(x, nlevels=4, robust=FALSE, eff=0.6, alpha = 0.05, ci_type="eta3", strWavelet="haar", decomp="modwt")
+// [[Rcpp::export]]
+arma::field<arma::mat> batch_modwt_wvar_cpp(const arma::mat& signal, unsigned int nlevels, bool robust, double eff, double alpha, 
+                                          std::string ci_type, std::string strWavelet, std::string decomp) {
+  
+  unsigned int num = signal.n_cols;
+  // signal_modwt
+  arma::field<arma::mat> wvars(num);
+  for(unsigned int i = 0; i < num; i++){
+    wvars(i) = modwt_wvar_cpp(signal.col(i), nlevels, robust, eff, alpha, 
+                              ci_type, strWavelet, decomp);
+    
+  }
+  
+  return wvars;
+}
 
 //' @title Computes the MODWT scales
 //' @description Calculates the MODWT scales
