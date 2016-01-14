@@ -85,8 +85,7 @@ arma::mat cov_bootstrapper(const arma::vec&  theta,
     arma::vec x = gen_model(N, theta, desc, objdesc);
     
     // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, haar_filter(), "modwt");
+    arma::field<arma::vec> signal_modwt_bw = modwt_cpp(x, "haar", nb_level, "periodic", true);
     
     // Obtain WV
     arma::vec wv_x = wave_variance(signal_modwt_bw, robust, eff);
@@ -135,11 +134,8 @@ arma::mat optimism_bootstrapper(const arma::vec&  theta,
     // Generate x_t ~ F_theta
     arma::vec x = gen_model(N, theta, desc, objdesc);
     
-    // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    
     // Obtain WV and confidence intervals
-    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    arma::mat wvar = modwt_wvar_cpp(x, nb_level, robust, eff, alpha, "eta3", "haar");
     
     // Obtain the Omega matrix (CI HI, CI LO)
     arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
@@ -199,11 +195,8 @@ arma::field<arma::mat> opt_n_gof_bootstrapper(const arma::vec&  theta,
     // Generate x_t ~ F_theta
     arma::vec x = gen_model(N, theta, desc, objdesc);
     
-    // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    
     // Obtain WV and confidence intervals
-    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    arma::mat wvar = modwt_wvar_cpp(x, nb_level, robust, eff, alpha, "eta3", "haar");
     
     // Obtain the Omega matrix (CI HI, CI LO)
     arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
@@ -279,11 +272,8 @@ arma::vec gmwm_sd_bootstrapper(const arma::vec&  theta,
     // Generate x_t ~ F_theta
     arma::vec x = gen_model(N, theta, desc, objdesc);
     
-    // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    
     // Obtain WV and confidence intervals
-    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    arma::mat wvar = modwt_wvar_cpp(x, nb_level, robust, eff, alpha, "eta3", "haar");
     
     // Obtain the Omega matrix (CI HI, CI LO)
     arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
@@ -372,11 +362,8 @@ arma::field<arma::mat> gmwm_param_bootstrapper(const arma::vec&  theta,
     // Generate x_t ~ F_theta
     arma::vec x = gen_model(N, theta, desc, objdesc);
     
-    // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    
     // Obtain WV and confidence intervals
-    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    arma::mat wvar = modwt_wvar_cpp(x, nb_level, robust, eff, alpha, "eta3", "haar");
     
     // Obtain the Omega matrix (CI HI, CI LO)
     arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));
@@ -435,11 +422,8 @@ arma::field<arma::mat> all_bootstrapper(const arma::vec&  theta,
     // Generate x_t ~ F_theta
     arma::vec x = gen_model(N, theta, desc, objdesc);
     
-    // MODWT transform
-    arma::field<arma::vec> signal_modwt = modwt_cpp(x, "haar", nb_level, "periodic");
-    
     // Obtain WV and confidence intervals
-    arma::mat wvar = wvar_cpp(signal_modwt, robust, eff, alpha, "eta3", "haar");
+    arma::mat wvar = modwt_wvar_cpp(x, nb_level, robust, eff, alpha, "eta3", "haar");
     
     // Obtain the Omega matrix (CI HI, CI LO)
     arma::mat omega = arma::inv(fast_cov_cpp(wvar.col(2), wvar.col(1)));

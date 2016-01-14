@@ -28,9 +28,17 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
 arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw,
                         bool robust, double eff);
 
-arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt, 
-                   bool robust, double eff, double alpha, 
-                   std::string ci_type, std::string strWavelet);
+arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt_bw,
+                     bool robust=false, double eff=0.6, double alpha = 0.05, 
+                     std::string ci_type="eta3");
+
+arma::mat modwt_wvar_cpp(const arma::vec& signal, unsigned int nlevels = 4,
+                         bool robust=false, double eff=0.6, double alpha = 0.05, 
+                         std::string ci_type="eta3", std::string strWavelet="haar", std::string decomp="modwt");
+
+arma::field<arma::mat> batch_modwt_wvar_cpp(const arma::mat& signal, unsigned int nlevels = 4,
+                                            bool robust=false, double eff=0.6, double alpha = 0.05, 
+                                            std::string ci_type="eta3", std::string strWavelet="haar", std::string decomp="modwt");
 
 arma::vec scales_cpp(unsigned int nb_level);
 

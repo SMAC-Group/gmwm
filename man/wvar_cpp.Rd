@@ -4,11 +4,10 @@
 \alias{wvar_cpp}
 \title{Computes the (MODWT) wavelet variance}
 \usage{
-wvar_cpp(signal_modwt, robust = FALSE, eff = 0.6, alpha = 0.05,
-  ci_type = "eta3", strWavelet = "haar")
+wvar_cpp(signal_modwt_bw, robust, eff, alpha, ci_type)
 }
 \arguments{
-\item{signal_modwt}{A \code{field<vec>} that contains the modwt decomposition.}
+\item{signal_modwt_bw}{A \code{field<vec>} that contains the modwt decomposition after it has been brick walled.}
 
 \item{robust}{A \code{boolean} that triggers the use of the robust estimate.}
 
@@ -17,8 +16,6 @@ wvar_cpp(signal_modwt, robust = FALSE, eff = 0.6, alpha = 0.05,
 \item{alpha}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
 
 \item{ci_type}{A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"}
-
-\item{strWavelet}{A \code{String} indicating the type of wave filter to be applied. Must be "haar"}
 }
 \value{
 A \code{mat} with the structure:
@@ -32,12 +29,12 @@ A \code{mat} with the structure:
 Calculates the (MODWT) wavelet variance
 }
 \details{
-This function powers the wvar object. It is also extendable...
+This function does the heavy lifting with the signal_modwt_bw
 }
 \examples{
-x=rnorm(100)
-decomp = modwt(x)
-wvar_cpp(decomp$data, robust = FALSE)
+x = rnorm(100)
+decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+wvar_cpp(decomp, robust=FALSE, eff=0.6, alpha = 0.05, ci_type="eta3")
 }
 \keyword{internal}
 

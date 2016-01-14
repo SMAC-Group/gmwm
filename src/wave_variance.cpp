@@ -28,8 +28,8 @@
 
 //' @title Generate eta3 confidence interval
 //' @description Computes the eta3 CI
-//' @param y A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
-//' @param dims A \code{String} indicating the confidence interval being calculated.
+//' @param y          A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
+//' @param dims       A \code{String} indicating the confidence interval being calculated.
 //' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 //' @return A \code{matrix} with the structure:
 //' \itemize{
@@ -41,10 +41,9 @@
 //' @examples
 //' x = rnorm(100)
 //' # Uses the internal MODWT function not associated with an S3 class.
-//' decomp = modwt_cpp(x, "haar", 4, "periodic")
-//' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
-//' y = wave_variance(signal_modwt_bw)
-//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025)
+//' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+//' y = wave_variance(decomp)
+//' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025)
 // [[Rcpp::export]]
 arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
     
@@ -65,10 +64,10 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 
 //' @title Generate eta3 robust confidence interval
 //' @description Computes the eta3 robust CI
-//' @param wv_robust A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
+//' @param wv_robust   A \code{vec} that computes the brickwalled modwt dot product of each wavelet coefficient divided by their length.
 //' @param wv_ci_class A \code{mat} that contains the CI mean, CI Lower, and CI Upper
-//' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
-//' @param eff A \code{double} that indicates the efficiency.
+//' @param alpha_ov_2  A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level
+//' @param eff         A \code{double} that indicates the efficiency.
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Robust Wavelet Variance}
@@ -81,10 +80,9 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //' @examples
 //' x = rnorm(100)
 //' # Uses the internal MODWT function not associated with an S3 class.
-//' decomp = modwt_cpp(x, "haar", 4, boundary="periodic")
-//' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
-//' y = wave_variance(signal_modwt_bw, robust = TRUE,  eff = 0.6)
-//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
+//' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+//' y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
+//' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
 arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alpha_ov_2, double eff) {
     unsigned int num_elem = wv_robust.n_elem;
@@ -125,11 +123,11 @@ arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alph
 //' @title Generate a Confidence intervval for a Univariate Time Series
 //' @description Computes an estimate of the multiscale variance and a chi-squared confidence interval
 //' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
-//' @param wv A \code{vec} that contains the wave variance.
-//' @param type A \code{String} indicating the confidence interval being calculated.
-//' @param alpha_ov_2 A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
-//' @param robust A \code{boolean} to determine the type of wave estimation.
-//' @param eff A \code{double} that indicates the efficiency.
+//' @param wv              A \code{vec} that contains the wave variance.
+//' @param type            A \code{String} indicating the confidence interval being calculated.
+//' @param alpha_ov_2      A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level.
+//' @param robust          A \code{boolean} to determine the type of wave estimation.
+//' @param eff             A \code{double} that indicates the efficiency.
 //' @return A \code{matrix} with the structure:
 //' \itemize{
 //'  \item{Column 1}{Wavelet Variance}
@@ -143,10 +141,9 @@ arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alph
 //' set.seed(1337)
 //' x = rnorm(100)
 //' # Uses the internal MODWT function not associated with an S3 class.
-//' decomp = modwt_cpp(x, "haar", 4, boundary="periodic")
-//' signal_modwt_bw = brick_wall(decomp, select_filter("haar"), "modwt")
-//' y = wave_variance(signal_modwt_bw)
-//' ci_wave_variance(signal_modwt_bw, y, type = "eta3", alpha_ov_2 = 0.025)
+//' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+//' y = wave_variance(decomp)
+//' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025)
 // [[Rcpp::export]]
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& wv,
                             std::string type = "eta3", double alpha_ov_2 = 0.025, bool robust = false, double eff = 0.6){
@@ -186,17 +183,17 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
 //' @title Generate a Wave Variance for a Univariate Time Series
 //' @description Computes an estimate of the wave variance
 //' @param signal_modwt_bw A \code{field<vec>} that contains the brick walled modwt or dwt decomposition
-//' @param robust A \code{boolean} to determine the type of wave estimation.
-//' @param eff A \code{double} that indicates the efficiency.
+//' @param robust          A \code{boolean} to determine the type of wave estimation.
+//' @param eff             A \code{double} that indicates the efficiency.
 //' @return A \code{vec} that contains the wave variance.
 //' @keywords internal
 //' @examples
 //' set.seed(1337)
 //' x = rnorm(100)
-//' signal_modwt_bw = brick_wall(modwt_cpp(x), haar_filter())
-//' wave_variance(signal_modwt_bw)
+//' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+//' wave_variance(decomp)
 //' 
-//' wave_variance(signal_modwt_bw, robust = TRUE, eff = 0.6)
+//' wave_variance(decomp, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
 arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robust = false, double eff = 0.6){
   
@@ -223,12 +220,48 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 
 //' @title Computes the (MODWT) wavelet variance
 //' @description Calculates the (MODWT) wavelet variance
-//' @param signal_modwt A \code{field<vec>} that contains the modwt decomposition.
-//' @param robust A \code{boolean} that triggers the use of the robust estimate.
-//' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
-//' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
-//' @param ci_type A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"
-//' @param strWavelet A \code{String} indicating the type of wave filter to be applied. Must be "haar"
+//' @param signal_modwt_bw  A \code{field<vec>} that contains the modwt decomposition after it has been brick walled.
+//' @param robust           A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff              A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @param alpha            A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+//' @param ci_type          A \code{String} indicating the confidence interval being calculated. Valid value: "eta3"
+//' @return A \code{mat} with the structure:
+//' \itemize{
+//'   \item{"variance"}{Wavelet Variance}
+//'   \item{"low"}{Lower CI}
+//'   \item{"high"}{Upper CI}
+//' }
+//' @keywords internal
+//' @details 
+//' This function does the heavy lifting with the signal_modwt_bw
+//' @examples
+//' x = rnorm(100)
+//' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
+//' wvar_cpp(decomp, robust=FALSE, eff=0.6, alpha = 0.05, ci_type="eta3")
+// [[Rcpp::export]]
+arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt_bw, 
+                   bool robust, double eff, double alpha, 
+                   std::string ci_type) {
+  double alpha_ov_2 = alpha/2.0;
+
+  // Wavelet Variance
+  arma::vec y = wave_variance(signal_modwt_bw, robust, eff);
+  
+  // Confidence Interval
+  return ci_wave_variance(signal_modwt_bw, y, ci_type, alpha_ov_2, robust, eff);
+}
+
+
+
+//' @title Computes the (MODWT) wavelet variance
+//' @description Calculates the (MODWT) wavelet variance
+//' @param signal     A \code{vec} that contains the data.
+//' @param robust     A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff        A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @param alpha      A \code{double} that indicates the \eqn{\left(1-p\right)\times \alpha}{(1-p)*alpha} confidence level 
+//' @param ci_type    A \code{string} indicating the confidence interval being calculated. Valid value: "eta3"
+//' @param strWavelet A \code{string} indicating the type of wave filter to be applied. Must be "haar"
+//' @param decomp     A \code{string} indicating whether to use "modwt" or "dwt" decomp
 //' @return A \code{mat} with the structure:
 //' \itemize{
 //'   \item{"variance"}{Wavelet Variance}
@@ -240,26 +273,68 @@ arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robu
 //' This function powers the wvar object. It is also extendable...
 //' @examples
 //' x=rnorm(100)
-//' decomp = modwt(x)
-//' wvar_cpp(decomp$data, robust = FALSE)
+//' modwt_wvar_cpp(x, nlevels=4, robust=FALSE, eff=0.6, alpha = 0.05,
+//'                ci_type="eta3", strWavelet="haar", decomp="modwt")
 // [[Rcpp::export]]
-arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt,
-                   bool robust=false, double eff=0.6, double alpha = 0.05, 
-                   std::string ci_type="eta3", std::string strWavelet="haar") {
-  double alpha_ov_2 = alpha/2.0;
-  // MODWT transform
-  arma::field<arma::vec> signal_modwt_bw = brick_wall(signal_modwt, select_filter(strWavelet), "modwt");
+arma::mat modwt_wvar_cpp(const arma::vec& signal, unsigned int nlevels, bool robust, double eff, double alpha, 
+                         std::string ci_type, std::string strWavelet, std::string decomp) {
   
-  // Wavelet Variance
-  arma::vec y = wave_variance(signal_modwt_bw, robust, eff);
+  // signal_modwt
+  arma::field<arma::vec> signal_modwt_bw;
+  if(decomp == "modwt"){
+    signal_modwt_bw = modwt_cpp(signal, strWavelet, nlevels, "periodic", true);
+  }else{
+    signal_modwt_bw = dwt_cpp(signal, strWavelet, nlevels, "periodic", true);
+  }
+
+  arma::mat o = wvar_cpp(signal_modwt_bw,robust, eff, alpha, ci_type);
   
-  // Confidence Interval
-  return ci_wave_variance(signal_modwt_bw, y, ci_type, alpha_ov_2, robust, eff);
+  return o;
+}
+
+
+//' @title Computes the MO/DWT wavelet variance for multiple processes
+//' @description Calculates the MO/DWT wavelet variance
+//' @param signal     A \code{matrix} that contains the same number of observations per dataset
+//' @param robust     A \code{boolean} that triggers the use of the robust estimate.
+//' @param eff        A \code{double} that indicates the efficiency as it relates to an MLE.
+//' @param alpha      A \code{double} that indicates the \eqn{\left(1-p\right)\times \alpha}{(1-p)*alpha} confidence level 
+//' @param ci_type    A \code{string} indicating the confidence interval being calculated. Valid value: "eta3"
+//' @param strWavelet A \code{string} indicating the type of wave filter to be applied. Must be "haar"
+//' @param decomp     A \code{string} indicating whether to use "modwt" or "dwt" decomp
+//' @return A \code{field<mat>} with the structure:
+//' \itemize{
+//'   \item{"variance"}{Wavelet Variance}
+//'   \item{"low"}{Lower CI}
+//'   \item{"high"}{Upper CI}
+//' }
+//' @keywords internal
+//' @details 
+//' This function processes the decomposition of multiple signals quickly
+//' @examples
+//' x = cbind(rnorm(100),rnorm(100))
+//' batch_modwt_wvar_cpp(x, nlevels=4, robust=FALSE, eff=0.6, 
+//'                      alpha = 0.05, ci_type="eta3", strWavelet="haar", 
+//'                      decomp="modwt")
+// [[Rcpp::export]]
+arma::field<arma::mat> batch_modwt_wvar_cpp(const arma::mat& signal, unsigned int nlevels, bool robust, double eff, double alpha, 
+                                          std::string ci_type, std::string strWavelet, std::string decomp) {
+  
+  unsigned int num = signal.n_cols;
+  // signal_modwt
+  arma::field<arma::mat> wvars(num);
+  for(unsigned int i = 0; i < num; i++){
+    wvars(i) = modwt_wvar_cpp(signal.col(i), nlevels, robust, eff, alpha, 
+                              ci_type, strWavelet, decomp);
+    
+  }
+  
+  return wvars;
 }
 
 //' @title Computes the MODWT scales
 //' @description Calculates the MODWT scales
-//' @param nb_level A \code{integer} that contains the level of decomposition J.
+//' @param nb_level  A \code{integer} that contains the level of decomposition J.
 //' @return A \code{vec} that contains 2^1, ... , 2^J
 //' @keywords internal
 //' @details 

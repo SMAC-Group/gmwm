@@ -4,16 +4,18 @@
 \alias{modwt_cpp}
 \title{Maximum Overlap Discrete Wavelet Transform}
 \usage{
-modwt_cpp(x, filter_name, nlevels, boundary)
+modwt_cpp(x, filter_name, nlevels, boundary, brickwall)
 }
 \arguments{
-\item{x}{A \code{vector} with dimensions N x 1.}
+\item{x}{A \code{vector} with dimensions \eqn{N\times 1}{N x 1}.}
 
 \item{filter_name}{A \code{string} indicating the filter.}
 
-\item{nlevels}{An \code{integer} indicating the level of the decomposition.}
+\item{nlevels}{An \code{integer}, \eqn{J}, indicating the level of the decomposition.}
 
 \item{boundary}{A \code{string} indicating the type of boundary method to use. Either \code{boundary="periodic"} or \code{"reflection"}.}
+
+\item{brickwall}{A \code{bool} indicating whether the a brick wall procedure should be applied to the coefficients.}
 }
 \value{
 y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
@@ -29,7 +31,7 @@ which serves as a wrapper function.
 \examples{
 set.seed(999)
 x = rnorm(100)
-modwt_cpp(x, "haar", 4, boundary="periodic")
+modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
 }
 \author{
 JJB

@@ -15,12 +15,11 @@
 
 #' @title Calculate the Asymptotic Covariance Matrix
 #' @description Places the Asymptotic Covariance Matrix in print form.
-#' @usage wvcov(signal.modwt, signal.wvar, compute.v="diag")
 #' @param signal.modwt A \code{modwt} object that contains the modwt decomposition.
-#' @param signal.wvar A \code{wvar} object that contains the wavelet variance.
-#' @param compute.v A \code{string} that indicates the type of covariance matrix to compute. Supports: "diag"
+#' @param signal.wvar  A \code{wvar} object that contains the wavelet variance.
+#' @param compute.v    A \code{string} that indicates the type of covariance matrix to compute. Supports: "diag"
 #' @return A \code{list} with the structure:
-#' \itemize{
+#' \describe{
 #'   \item{"V"}{Covariance Matrix}
 #'   \item{"V.r"}{Covariance Matrix}
 #'   \item{"nlevels"}{Level of decomposition J}
@@ -33,7 +32,7 @@
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' decomp = modwt(x)
 #' wv = wvar(x)
 #' out = wvcov(decomp, wv, compute.v="diag")
@@ -44,18 +43,18 @@
 #' out = wvcov(decomp, wv, compute.v="diag")
 wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
   
-  if(!is(signal.modwt,"gmwm_modwt")){
+  if(!is(signal.modwt,"modwt")){
     stop("Need to supply a gmwm_modwt object as the first parameter.")
   }
   
-  if(!is(signal.wvar,"wvar")){
+  if(!is.wvar(signal.wvar)){
     stop("Need to supply a wvar object as the second parameter.")
   }
   
-  out = .Call('gmwm_compute_cov_cpp', PACKAGE = 'gmwm', signal.modwt$data, signal.modwt$nlevels, compute.v, signal.wvar$robust, signal.wvar$eff)
+  out = .Call('gmwm_compute_cov_cpp', PACKAGE = 'gmwm', signal.modwt, attr(signal.modwt,"J"), compute.v, signal.wvar$robust, signal.wvar$eff)
   out = structure(list(V=out[[1]],
                        V.robust=out[[2]], 
-                       nlevels=signal.modwt$nlevels, 
+                       nlevels=attr(signal.modwt,"J"), 
                        compute.v = compute.v, 
                        robust = signal.wvar$robust, 
                        eff = signal.wvar$eff, 
@@ -73,13 +72,13 @@ wvcov = function(signal.modwt, signal.wvar, compute.v="diag"){
 #' @method print wvcov
 #' @export
 #' @keywords internal
-#' @param x A \code{wvcov} object
-#' @param ...  further arguments passed to or from other methods
+#' @param x    A \code{wvcov} object
+#' @param ...  Further arguments passed to or from other methods
 #' @return Prints the modwt matrix decomposition
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' decomp = modwt(x)
 #' wv = wvar(x)
 #' print(wvcov(decomp,wv,compute.v="diag"))
@@ -93,12 +92,12 @@ print.wvcov = function(x, ...){
 #' @export
 #' @keywords internal
 #' @param object A \code{wvcov} object
-#' @param ...  additional arguments affecting the summary produced.
+#' @param ...    Additional arguments affecting the summary produced.
 #' @return Prints the modwt matrix decomposition
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' decomp = modwt(x)
 #' wv = wvar(x)
 #' summary(wvcov(decomp,wv,compute.v="diag"))

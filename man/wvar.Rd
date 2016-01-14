@@ -8,18 +8,27 @@
 \alias{wvar.lts}
 \title{Wavelet Variance}
 \usage{
-wvar(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+wvar(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE,
+  eff = 0.6)
 
-\method{wvar}{lts}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{lts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = FALSE, eff = 0.6)
 
-\method{wvar}{gts}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{gts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = FALSE, eff = 0.6)
 
-\method{wvar}{default}(x, alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{default}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = FALSE, eff = 0.6)
 
-\method{wvar}{imu}(x, alpha = 0.05, robust = F, eff = 0.6)
+\method{wvar}{imu}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = F, eff = 0.6)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object.}
+
+\item{decomp}{A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.}
+
+\item{nlevels}{An \code{integer} that indicates the level of decomposition. It must be less than or equal to floor(log2(length(x))).}
 
 \item{alpha}{A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level}
 
@@ -29,7 +38,7 @@ wvar(x, alpha = 0.05, robust = FALSE, eff = 0.6)
 }
 \value{
 A \code{list} with the structure:
-\itemize{
+\describe{
   \item{"variance"}{Wavelet Variance},
   \item{"ci_low"}{Lower CI}
   \item{"ci_high"}{Upper CI}
@@ -40,6 +49,9 @@ A \code{list} with the structure:
 }
 \description{
 Calculates the (MODWT) wavelet variance
+}
+\details{
+If `nlevels` is not specified, it is set to floor(log2(length(x)))
 }
 \examples{
 set.seed(999)

@@ -279,10 +279,10 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   arma::vec guessed_theta = theta;
   
   // MODWT decomp
-  arma::field<arma::vec> modwt_decomp = modwt_cpp(data, "haar", nlevels, "periodic");
+  arma::field<arma::vec> modwt_decomp = modwt_cpp(data, "haar", nlevels, "periodic", true);
   
   // Obtain WV and confidence intervals
-  arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, alpha, "eta3", "haar");
+  arma::mat wvar = wvar_cpp(modwt_decomp, robust, eff, alpha, "eta3");
   
   // Extract
   arma::vec wv_empir = wvar.col(0);

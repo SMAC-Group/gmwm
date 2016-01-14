@@ -15,12 +15,14 @@
 
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
-#' @param x A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
-#' @param robust A \code{boolean} that triggers the use of the robust estimate.
-#' @param eff A \code{double} that indicates the efficiency as it relates to an MLE.
-#' @param alpha A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param x       A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
+#' @param decomp  A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.
+#' @param nlevels An \code{integer} that indicates the level of decomposition. It must be less than or equal to floor(log2(length(x))).
+#' @param robust  A \code{boolean} that triggers the use of the robust estimate.
+#' @param eff     A \code{double} that indicates the efficiency as it relates to an MLE.
+#' @param alpha   A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 #' @return A \code{list} with the structure:
-#' \itemize{
+#' \describe{
 #'   \item{"variance"}{Wavelet Variance},
 #'   \item{"ci_low"}{Lower CI}
 #'   \item{"ci_high"}{Upper CI}
@@ -28,6 +30,8 @@
 #'   \item{"eff"}{Efficiency level for Robust}
 #'   \item{"alpha"}{p value used for CI}
 #' }
+#' @details 
+#' If `nlevels` is not specified, it is set to floor(log2(length(x)))
 #' @author JJB
 #' @rdname wvar
 #' @examples
@@ -52,132 +56,138 @@
 #' df = wvar.imu(test)
 #' }
 #' @export
-wvar = function(x, alpha = 0.05, robust = FALSE, eff = 0.6) {
+wvar = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6) {
   UseMethod("wvar")
 }
 
 #' @rdname wvar
 #' @export
-wvar.lts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
-  warning('lts object is detected. This function can only operate on the combined process.')
+wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
+  warning('`lts` object is detected. This function can only operate on the combined process.')
   x = x$data[,ncol(x$data)]
   
-  wvar.default(x, alpha, robust, eff)
+  wvar.default(x, decomp, nlevels = NULL, alpha, robust, eff)
 }
 
 #' @rdname wvar
 #' @export
-wvar.gts = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
   x = x$data[,1]
-  wvar.default(x, alpha, robust, eff)
+  wvar.default(x, decomp, nlevels = NULL, alpha, robust, eff)
 }
 
 #' @rdname wvar
 #' @export
-wvar.default = function(x, alpha = 0.05, robust = FALSE, eff = 0.6){
-  nlevels =  floor(log2(length(x)))
-  decomp = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = "haar", nlevels, boundary="periodic")
+wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
+  if(is.null(x)){
+    stop("`x` must contain a value")
+  }else if((is.data.frame(x) || is.matrix(x))){
+    if(ncol(x) > 1) stop("There must be only one column of data supplied.")
+  }
   
-  out = .Call('gmwm_wvar_cpp', PACKAGE = 'gmwm', decomp, robust, eff, alpha, "eta3", "haar")
+  mlevels = floor(log2(length(x)))
+  
+  if(is.null(nlevels)){
+    nlevels = mlevels
+  }
+  if(nlevels > mlevels){
+    stop("`nlevels` must be less than or equal to ", mlevels,", which is the max number of levels.")
+  }
+
+  obj =  .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
+               signal=x, nlevels=nlevels, robust=robust, eff=eff, alpha=alpha, 
+               ci_type="eta3", strWavelet="haar", decomp = decomp)
+
   scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
-  out = structure(list(variance = out[,1],
-                       ci_low = out[,2], 
-                       ci_high = out[,3], 
-                       robust = robust, 
-                       eff = eff,
-                       alpha = alpha,
-                       scales = scales), class = "wvar")
-  invisible(out)
+
+  create_wvar(obj, decomp, robust, eff, alpha, scales)
 }
 
 #' @rdname wvar
 #' @export
-wvar.imu = function(x, alpha = 0.05, robust = F, eff = 0.6){
+wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6){
 
-  ncols = ncol(x)
-  
-  obj.list = vector("list", ncols)
-  for(i in 1:ncols){
-    obj.list[[i]] = wvar(x$data[, i], alpha = alpha, robust = robust, eff = eff)
+  if(!is.imu(x)){
+    stop("`wvar.imu()` requires an IMU Object")
   }
   
-  ##begin: generate the data frame
-  total.len = 0
-  each.len = numeric(ncols)
-  for (i in 1:ncols){
-    each.len[i] = length(obj.list[[i]]$variance)
-    total.len = total.len + each.len[i]
-  }
+  mlevels = floor(log2(nrow(x)))
   
-  #Initialize empty data frame with right number of rows
+  if(is.null(nlevels)){
+    nlevels = mlevels
+  }
+  if(nlevels > mlevels){
+    stop("`nlevels` must be less than ", mlevels,", which is the max number of levels.")
+  }
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
+  
+  obj.list = .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
+                   x$data, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
+
+  total.len = nlevels*ncol(x)
+  
+  # Initialize empty data frame with right number of rows
   obj = data.frame(WV = numeric(total.len),
                    scales = numeric(total.len),
                    low = numeric(total.len),
                    high = numeric(total.len),
-                   axis = 'AXIS',
-                   sensor = 'SENSOR', stringsAsFactors=FALSE)
+                   axis = character(total.len),
+                   sensor = character(total.len), stringsAsFactors=FALSE)
   
-  if(x$num.sensor[2] == 0){ ## only "Gyroscope"
-    #put data into data frame
-    t = 1
-    for (i in 1:ncols){
-      d = each.len[i]
-      
-      obj[t:(t+d-1),] = data.frame(WV = obj.list[[i]]$variance,
-                                   scales = obj.list[[i]]$scales,
-                                   low = obj.list[[i]]$ci_low,
-                                   high = obj.list[[i]]$ci_high,
-                                   axis = x$axis[i], 
-                                   sensor = "Gyroscope",
-                                   stringsAsFactors=FALSE)
-      t = t +d
-    }
-    
-  }else if(x$num.sensor[1] == 0){ #only "Accelerometer"
-    #put data into data frame
-    t = 1
-    for (i in 1:ncols){
-      d = each.len[i]
-      
-      obj[t:(t+d-1),] = data.frame(WV = obj.list[[i]]$variance,
-                                   scales = obj.list[[i]]$scales,
-                                   low = obj.list[[i]]$ci_low,
-                                   high = obj.list[[i]]$ci_high,
-                                   axis = x$axis[i], 
-                                   sensor = "Accelerometer",
-                                   stringsAsFactors=FALSE)
-      t = t +d
-    }
-    
-  }else{ # both "Gyroscope" and "Accelerometer"
-    #put data into data frame
-    t = 1
-    for (i in 1:ncols){
-      if(i <= length(x$axis)){
-        temp.axis = x$axis[i]
-        temp.sensor = "Gyroscope"
-      }else{ 
-        temp.axis = x$axis[i-length(x$axis)]
-        temp.sensor = "Accelerometer"
-      }
-      
-      d = each.len[i]
-      obj[t:(t+d-1),] = data.frame(WV = obj.list[[i]]$variance,
-                                   scales = obj.list[[i]]$scales,
-                                   low = obj.list[[i]]$ci_low,
-                                   high = obj.list[[i]]$ci_high,
-                                   axis = temp.axis, 
-                                   sensor = temp.sensor,
-                                   stringsAsFactors=FALSE)
-      t = t +d
-    }
-  }
+  # Axis length
+  naxis = length(x$axis)
+  
+  # Put data into data frame
+  t = 1
+  for (i in 1:ncol(x)){
+    # Cast for Analytical IMU Results
+    obj.list[[i]] = create_wvar(obj.list[[i]], decomp, robust, eff, alpha, scales)
 
+    # Cast for Graphing IMU Results
+    obj[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
+                                       scales = scales,
+                                       low = obj.list[[i]]$ci_low,
+                                       high = obj.list[[i]]$ci_high,
+                                       axis = x$axis[(i-1)%%naxis+1], 
+                                       sensor = if(i <= x$num.sensor[1]){"Accelerometer"}else{"Gyroscope"},
+                                       stringsAsFactors=FALSE)
+    t = t + nlevels
+  }
   
-  class(obj) = "wvar.imu"
-  return(obj)
+  out = structure(list(dataobj=obj.list, plotobj=obj), class="wvar.imu")
+  
+  out
 }
 
+
+#' @title Create a Wvar object
+#' @description Structures elements into a WVar object
+#' @param obj    A \code{matrix} with dimensions N x 3, that contains the wavelet variance, low ci, hi ci.
+#' @param decomp A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition
+#' @param robust A \code{boolean} that triggers the use of the robust estimate.
+#' @param eff    A \code{double} that indicates the efficiency as it relates to an MLE.
+#' @param alpha  A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param scales A \code{vec} that contains the amount of decomposition done at each level.
+#' @return A \code{list} with the structure:
+#' \describe{
+#'   \item{"variance"}{Wavelet Variance},
+#'   \item{"ci_low"}{Lower CI}
+#'   \item{"ci_high"}{Upper CI}
+#'   \item{"robust"}{Robust active}
+#'   \item{"eff"}{Efficiency level for Robust}
+#'   \item{"alpha"}{p value used for CI}
+#' }
+#' @keywords internal
+create_wvar = function(obj, decomp, robust, eff, alpha, scales){
+  structure(list(variance = obj[,1],
+                       ci_low = obj[,2], 
+                       ci_high = obj[,3], 
+                       robust = robust, 
+                       eff = eff,
+                       alpha = alpha,
+                       scales = scales,
+                       decomp = decomp), class = "wvar")
+}
 
 #' @title Print Wavelet Variances
 #' @description Displays the summary table of wavelet variance.
@@ -293,6 +303,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
                          legend.title = '',  legend.label =  NULL,
                          legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
+  
   .x=low=high=trans_breaks=trans_format=math_format=value=variable=NULL
   
   if( !(background %in% c('grey','gray', 'white')) ){
@@ -578,7 +589,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
   obj_list = list(...)
   numObj = length(obj_list)
   
-  #check parameter
+  # check parameter
   params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape', 'legend.label')
   requireLength = c(2, numObj, numObj, numObj, numObj, numObj)
   default = list(c('solid','dotted'), NULL,  NULL, rep(5, numObj), rep(20, numObj), NULL)

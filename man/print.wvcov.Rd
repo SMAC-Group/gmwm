@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{A \code{wvcov} object}
 
-\item{...}{further arguments passed to or from other methods}
+\item{...}{Further arguments passed to or from other methods}
 }
 \value{
 Prints the modwt matrix decomposition
@@ -19,7 +19,7 @@ Places the Asymptotic Covariance Matrix in print form.
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 decomp = modwt(x)
 wv = wvar(x)
 print(wvcov(decomp,wv,compute.v="diag"))

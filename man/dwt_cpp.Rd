@@ -4,7 +4,7 @@
 \alias{dwt_cpp}
 \title{Discrete Wavelet Transform}
 \usage{
-dwt_cpp(x, filter_name, nlevels, boundary)
+dwt_cpp(x, filter_name, nlevels, boundary, brickwall)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions \eqn{N\times 1}{N x 1}.}
@@ -14,6 +14,8 @@ dwt_cpp(x, filter_name, nlevels, boundary)
 \item{nlevels}{An \code{integer}, \eqn{J}, indicating the level of the decomposition.}
 
 \item{boundary}{A \code{string} indicating the type of boundary method to use. Either \code{boundary="periodic"} or \code{"reflection"}.}
+
+\item{brickwall}{A \code{bool} indicating whether the a brick wall procedure should be applied to the coefficients.}
 }
 \value{
 y A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
@@ -27,9 +29,10 @@ Performs a level J decomposition of the time series using the pyramid algorithm
 \examples{
 set.seed(999)
 x = rnorm(2^8)
-dwt_cpp(x, "haar", 4, boundary="periodic")
+dwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
 }
 \author{
 JJB
 }
+\keyword{internal}
 

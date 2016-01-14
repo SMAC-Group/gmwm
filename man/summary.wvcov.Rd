@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{A \code{wvcov} object}
 
-\item{...}{additional arguments affecting the summary produced.}
+\item{...}{Additional arguments affecting the summary produced.}
 }
 \value{
 Prints the modwt matrix decomposition
@@ -19,7 +19,7 @@ Prints the Wavelet Covariance Matrix
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 decomp = modwt(x)
 wv = wvar(x)
 summary(wvcov(decomp,wv,compute.v="diag"))

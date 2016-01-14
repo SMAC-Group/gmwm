@@ -4,7 +4,7 @@
 \alias{brick_wall}
 \title{Removal of Boundary Wavelet Coefficients}
 \usage{
-brick_wall(x, wave_filter, method = "modwt")
+brick_wall(x, wave_filter, method)
 }
 \arguments{
 \item{x}{A \code{field<vec>} that contains the nlevel decomposition using either modwt or dwt.}
@@ -26,7 +26,8 @@ Note: As a result, there are no NA's introduced and hence the na.omit is not nee
 }
 \examples{
 x = rnorm(100)
-brick_wall(modwt_cpp(x, "haar", 4, boundary="periodic"), select_filter("haar"), "modwt")
+me = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = FALSE)
+brick_wall(me, select_filter("haar"), "modwt")
 }
 \keyword{internal}
 

@@ -334,9 +334,12 @@ autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'whit
                              legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
                              scales = "free_y",...){
   
-  if(!is(object, 'wvar.imu')){
+  if(!inherits(object, 'wvar.imu')){
     stop("This function can only operate on the wvar.imu object. Please use wvar.imu() to create it.")
   }
+  
+  # Handle new wvar.imu data structure
+  object=object$plotobj 
   
   if (split){
     if(is.null(CI.color)){
