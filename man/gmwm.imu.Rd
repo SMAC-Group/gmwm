@@ -56,9 +56,11 @@ A \code{gmwm} object with the structure:
 GMM object
 }
 \examples{
+\dontrun{
 # Example data generation
 data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000)
 results = gmwm.imu(GM(),data)
 inference = summary(results)
+}
 }
 

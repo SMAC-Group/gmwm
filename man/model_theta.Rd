@@ -18,7 +18,7 @@ Creates the ts.model's theta vector
 \details{
 This function currently does NOT support ARMA models. 
 That is, there is no support for ARMA, AR, or MA.
-There is support for AR1, WN, DR, QN, and RW.
+There is support for AR1, GM, WN, DR, QN, and RW.
 }
 \keyword{internal}
 

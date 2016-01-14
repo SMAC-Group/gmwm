@@ -225,6 +225,13 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   }
   
   theta = model$theta
+  
+  # Convert from GM to AR1
+  if(!starting && any(model$desc == "GM")){
+    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+    theta[idx,] = gm_to_ar1(theta[idx,], freq)
+  }
+  
 
   out = .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = alpha, compute_v = compute.v, K = K, H = H, G = G,
@@ -356,14 +363,14 @@ update.gmwm = function(object, model, ...){
   # Information used in summary.gmwm:
   summary.desc = model$desc
   
-  models.active = count_models(desc)
+  num.models = count_models(desc)
   
   # Set seed for reproducibility
   
   set.seed(object$seed)
   
   # Identifiability issues
-  if(any( models.active[c("DR","QN","RW","WN")] >1)){
+  if(any( num.models[c("DR","QN","RW","WN")] >1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
   }
   
@@ -372,7 +379,7 @@ update.gmwm = function(object, model, ...){
   }
   
   # ID error:
-  if( sum(models.active) == 1 & models.active["ARMA"] == 1 & model$starting){
+  if( sum(num.models) == 1 & num.models["ARMA"] == 1 & model$starting){
     warning("ARMA starting guesses using update.gmwm are NOT based on CSS but an alternative algorithm.")
   }
   
@@ -385,6 +392,12 @@ update.gmwm = function(object, model, ...){
     if(np > length(object$scales)){
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need one additional scale since robust requires the amount of parameters + 1 to estimate.")
     }
+  }
+  
+  # Convert from GM to AR1
+  if(!model$starting && any(model$desc == "GM")){
+    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+    model$theta[idx,] = gm_to_ar1(model$theta[idx,], object$freq)
   }
   
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
@@ -472,10 +485,12 @@ update.gmwm = function(object, model, ...){
 #'  \item{freq}{Frequency of data}
 #' }
 #' @examples 
+#' \dontrun{
 #' # Example data generation
 #' data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000)
 #' results = gmwm.imu(GM(),data)
 #' inference = summary(results)
+#' }
 gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
   
   x = gmwm(model = model, 

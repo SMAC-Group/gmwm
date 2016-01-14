@@ -97,7 +97,7 @@ arma::vec gm_to_ar1(arma::vec theta, double freq){
 //' @details
 //' This function currently does NOT support ARMA models. 
 //' That is, there is no support for ARMA, AR, or MA.
-//' There is support for AR1, WN, DR, QN, and RW.
+//' There is support for AR1, GM, WN, DR, QN, and RW.
 //' @keywords internal
 //' @backref src/ts_model_cpp.cpp
 //' @backref src/ts_model_cpp.h
@@ -129,7 +129,7 @@ arma::field<arma::vec> model_objdesc(std::vector<std::string> desc){
 //' @details
 //' This function currently does NOT support ARMA models. 
 //' That is, there is no support for ARMA, AR, or MA.
-//' There is support for AR1, WN, DR, QN, and RW.
+//' There is support for AR1, GM, WN, DR, QN, and RW.
 //' @keywords internal
 //' @backref src/ts_model_cpp.cpp
 //' @backref src/ts_model_cpp.h
@@ -157,7 +157,7 @@ arma::vec model_theta(std::vector<std::string> desc){
 //' @details
 //' This function currently does NOT support ARMA models. 
 //' That is, there is no support for ARMA, AR, or MA.
-//' There is support for AR1, WN, DR, QN, and RW.
+//' There is support for AR1, GM, WN, DR, QN, and RW.
 //' @keywords internal
 //' @backref src/ts_model_cpp.cpp
 //' @backref src/ts_model_cpp.h
