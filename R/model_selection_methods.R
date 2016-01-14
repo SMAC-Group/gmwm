@@ -92,13 +92,16 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
   
   model.hat$starting = F  
   
-  model.hat$theta = as.numeric(estimate)
   
-  if(any(model$desc == "GM")){
-    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+  if(any(model.hat$desc == "GM")){
+    idx = model.hat$process.desc %in% c("BETA","SIGMA2_GM")
     estimate[idx,] = ar1_to_gm(estimate[idx,],freq)
     init.guess[idx,] = ar1_to_gm(init.guess[idx,],freq)
   }
+  
+  model.hat$theta = as.numeric(estimate)
+  model.ts$theta = as.numeric(init.guess)
+  
   
   # Release model
   out[[2]] = structure(list(estimate = estimate,
@@ -310,7 +313,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   model.names = build_model_set(m, full.str) 
   
   # Get basic data info
-  N = nrow(data.in)
+  N = nrow(data)
   nlevels =  floor(log2(N))
   scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
@@ -321,7 +324,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   a.gyro = 0
   a.acc = 0
   
-  for(i in 1:ncol(data.in)){
+  for(i in 1:ncol(data)){
     obj = out[[i]]
     obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, data$freq)
     
