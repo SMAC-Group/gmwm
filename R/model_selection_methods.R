@@ -258,11 +258,11 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' @details 
 #' The \code{auto.imu} object stores two important features for each signal:
 #' \itemize{
-#' \item{[1]}{A matrix containing model output}
-#' \item{[2]}{The best \code{gmwm} object.}
+#' \item{[[1]]}{A matrix containing model output}
+#' \item{[[2]]}{The best \code{gmwm} object.}
 #' }
 #' To access it for each signal use:
-#' \code{object[[i]][1]} or \code{object[[i]][2]}, where \eqn{i} denotes the signal.  
+#' \code{object[[i]][[1]]} or \code{object[[i]][[2]]}, where \eqn{i} denotes the signal.  
 #' @author JJB
 #' @examples 
 #' \dontrun{
@@ -277,6 +277,12 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
 #' 
 #' m = auto.imu(test1)
+#' 
+#' # Process 1's model table
+#' m[[1]][[1]]
+#' 
+#' # Process 1's best fitting gmwm object
+#' m[[1]][[2]]
 #' 
 #' }
 auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){

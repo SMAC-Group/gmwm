@@ -20,12 +20,12 @@
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
 #' @return A \code{gts} object with the structure:
-#' \itemize{
-#'   \item{x:} {A \code{matirx} that contains x-axis values used to plot}
-#'   \item{data:} {A \code{matrix} that contains data for combined processes}
-#'   \item{freq:} {Numeric representation of frequency}
-#'   \item{unit:} {String representation of the unit}
-#'   \item{name:} {Name of the dataset}
+#' \describe{
+#'   \item{x}{A \code{matirx} that contains x-axis values used to plot}
+#'   \item{data}{A \code{matrix} that contains data for combined processes}
+#'   \item{freq}{Numeric representation of frequency}
+#'   \item{unit}{String representation of the unit}
+#'   \item{name}{Name of the dataset}
 #' }
 #' @author JJB, Wenchao
 #' @examples
@@ -92,28 +92,37 @@ gts = function(data, freq = 1, unit = NULL, name = ""){
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
 #' @return A \code{gts} object with the structure:
-#' \itemize{
-#'   \item{x:} {A \code{matirx} that contains x-axis values to plot}
-#'   \item{data:} {A \code{matrix} that contains data for combined processes}
-#'   \item{freq:} {Numeric representation of frequency}
-#'   \item{unit:} {String representation of the unit}
-#'   \item{name:} {Name of the Dataset}
+#' \describe{
+#'   \item{x}{A \code{matirx} that contains x-axis values to plot}
+#'   \item{data}{A \code{matrix} that contains data for combined processes}
+#'   \item{freq}{Numeric representation of frequency}
+#'   \item{unit}{String representation of the unit}
+#'   \item{name}{Name of the Dataset}
 #' }
 #' @details
 #' This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2 =1) + WN(sigma2 = 1)) or a \code{gmwm} object.
 #' @examples
-#' # AR
+#' # Set seed for reproducibility
 #' set.seed(1336)
-#' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' gen.gts(model)
+#' 
+#' n = 10000
+#' 
+#' # AR1 + WN
+#' model = AR1(phi = .5, sigma2 = .1) + WN(sigma2=1)
+#' gen.gts(model, n)
+#' 
+#' set.seed(1336)
+#' # GM + WN
+#' model = GM(beta = 0.06931472, sigma2_gm = 0.1333333) + WN(sigma2=1)
+#' gen.gts(model, n, freq = 10)
 gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   
   # Do we have a valid model?
-  if(!(is(model, "ts.model") || is(model, "gmwm"))){
+  if(!(is.ts.model(model) || is.gmwm(model))){
     stop("model must be created from a ts.model or gmwm object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
   }
   
-  if(is(model,"gmwm")){
+  if(is.gmwm(model)){
     model = model$model.hat
   }
   
@@ -130,7 +139,7 @@ gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   
   #x = seq(from = 0, to = N-1, length.out = N)
   #x = x/freq
-  x = 0:(N-1)
+  x = seq.int(0,(N-1))
   
   # Information Required by GMWM:
   desc = model$desc
@@ -143,7 +152,15 @@ gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   }
   
   if(!model$starting){
+
     theta = model$theta
+    
+    # Convert from AR1 to GM
+    if(any(model$desc == "GM")){
+      idx = model$process.desc %in% c("BETA","SIGMA2_GM")
+      theta[idx] = ar1_to_gm(theta[idx],freq)
+    }
+    
     out = .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, obj)
   }else{
     stop("Need to supply initial values within the ts.model object.")
@@ -151,7 +168,7 @@ gen.gts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
   
   out = structure(list(
     x = as.matrix(x),
-    data = as.matrix(out),
+    data = out,
     name = name, 
     freq = freq, 
     unit = unit), class = 'gts' )

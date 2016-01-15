@@ -36,11 +36,11 @@ Runs through a model selection algorithm to determine the best model
 \details{
 The \code{auto.imu} object stores two important features for each signal:
 \itemize{
-\item{[1]}{A matrix containing model output}
-\item{[2]}{The best \code{gmwm} object.}
+\item{[[1]]}{A matrix containing model output}
+\item{[[2]]}{The best \code{gmwm} object.}
 }
 To access it for each signal use:
-\code{object[[i]][1]} or \code{object[[i]][2]}, where \eqn{i} denotes the signal.
+\code{object[[i]][[1]]} or \code{object[[i]][[2]]}, where \eqn{i} denotes the signal.
 }
 \examples{
 \dontrun{
@@ -55,6 +55,12 @@ data(imu6)
 test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
 
 m = auto.imu(test1)
+
+# Process 1's model table
+m[[1]][[1]]
+
+# Process 1's best fitting gmwm object
+m[[1]][[2]]
 
 }
 }

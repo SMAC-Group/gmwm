@@ -62,6 +62,16 @@ AR1 = function(phi = NULL, sigma2 = 1) {
 #'  \item{obj.desc}{Depth of Parameters e.g. list(1,1)}
 #'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
+#' @details 
+#' When supplying values for \eqn{\beta}{beta} and \eqn{\sigma ^2_{gm}}{sigma^2[gm]},
+#' these parameters should be of a GM process and NOT of an AR1. That is,
+#' do not supply AR1 parameters such as \eqn{\phi}{phi}, \eqn{\sigma^2}{sigma^2}.
+#' 
+#' Internally, GM parameters are converted to AR1 using the `freq` 
+#' supplied when creating data objects (\link[gmwm]{imu}, \link[gmwm]{gts})
+#' or specifying a `freq` parameter in \link[gmwm]{gmwm} or \link[gmwm]{gmwm.imu}.
+#' 
+#' The `freq` of a data object takes precedence over the `freq` set when modeling.
 #' @author JJB
 #' @examples
 #' GM()

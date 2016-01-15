@@ -17,12 +17,12 @@ gts(data, freq = 1, unit = NULL, name = "")
 }
 \value{
 A \code{gts} object with the structure:
-\itemize{
-  \item{x:} {A \code{matirx} that contains x-axis values used to plot}
-  \item{data:} {A \code{matrix} that contains data for combined processes}
-  \item{freq:} {Numeric representation of frequency}
-  \item{unit:} {String representation of the unit}
-  \item{name:} {Name of the dataset}
+\describe{
+  \item{x}{A \code{matirx} that contains x-axis values used to plot}
+  \item{data}{A \code{matrix} that contains data for combined processes}
+  \item{freq}{Numeric representation of frequency}
+  \item{unit}{String representation of the unit}
+  \item{name}{Name of the dataset}
 }
 }
 \description{

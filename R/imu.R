@@ -50,25 +50,26 @@
 #' 
 #' data(imu6)
 #' 
-#' # Example 1
-#' test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+#' # Example 1 - Only Gyros
+#' test1 = imu(imu6, gyroscope = 1:3, freq = 100)
 #' df1 = wvar.imu(test1)
 #' plot(df1)
 #' 
-#' # Example 2
-#' test2 = imu(imu6, gyroscope = 1:2, accelerometer = NULL, axis = c('X', 'Y'))
+#' # Example 2 - One gyro and one accelerometer
+#' test2 = imu(imu6, gyroscope = 1, accelerometer = 4, freq = 100)
 #' df2 = wvar.imu(test2)
 #' plot(df2)
 #' 
-#' # Example 3
-#' test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' # Example 3 - 3 gyros and 3 accelerometers
+#' test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
 #' df3 = wvar.imu(test3)
 #' plot(df3)
 #' 
-#' # Example 4
-#' test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
+#' # Example 4 - Custom axis
+#' test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('A', 'B'), freq = 100)
 #' df4 = wvar.imu(test4)
-#' plot(df4)}
+#' plot(df4)
+#' }
 imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq = NULL){
   
   # Check object
@@ -133,21 +134,21 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq
     }
     
   }else{
+    # Guess number of sensors
+    naxis = if(ngyros > 0 && nacces > 0) nacces else nacces + ngyros
+    
     # No axis is supplied. try to generate it automatically.
-    if(length(index) == 1) {
-      axis = 'X'
-    }else if (length(index) == 2) {
-      axis = c('X','Y')
-    }else if (length(index) == 3) {
-      axis =  c('X', 'Y', 'Z')
-    }else{
-      stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
-    }
+    axis = switch(as.character(naxis),
+                  '1' = 'X',
+                  '2' = c('X','Y'),
+                  '3' = c('X','Y','Z'),
+                  stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
+                  )
   }
   
   if(is.null(freq)){
     freq = 100
-    warning("`freq` has not been specified. \n Setting `imu` object's frequency to 100. \n Please recreate the object if the frequency is incorrect.")
+    warning("`freq` has not been specified. Setting `imu` object's frequency to 100. \n Please recreate the object if the frequency is incorrect.")
   }
   
   invisible(create_imu(object[,index, drop = F], ngyros, nacces, axis, freq))

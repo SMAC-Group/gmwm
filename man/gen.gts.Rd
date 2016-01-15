@@ -19,12 +19,12 @@ gen.gts(model, N = 1000, freq = 1, unit = NULL, name = "")
 }
 \value{
 A \code{gts} object with the structure:
-\itemize{
-  \item{x:} {A \code{matirx} that contains x-axis values to plot}
-  \item{data:} {A \code{matrix} that contains data for combined processes}
-  \item{freq:} {Numeric representation of frequency}
-  \item{unit:} {String representation of the unit}
-  \item{name:} {Name of the Dataset}
+\describe{
+  \item{x}{A \code{matirx} that contains x-axis values to plot}
+  \item{data}{A \code{matrix} that contains data for combined processes}
+  \item{freq}{Numeric representation of frequency}
+  \item{unit}{String representation of the unit}
+  \item{name}{Name of the Dataset}
 }
 }
 \description{
@@ -34,9 +34,18 @@ Create a \code{gts} object based on a supplied time series model.
 This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2 =1) + WN(sigma2 = 1)) or a \code{gmwm} object.
 }
 \examples{
-# AR
+# Set seed for reproducibility
 set.seed(1336)
-model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-gen.gts(model)
+
+n = 10000
+
+# AR1 + WN
+model = AR1(phi = .5, sigma2 = .1) + WN(sigma2=1)
+gen.gts(model, n)
+
+set.seed(1336)
+# GM + WN
+model = GM(beta = 0.06931472, sigma2_gm = 0.1333333) + WN(sigma2=1)
+gen.gts(model, n, freq = 10)
 }
 
