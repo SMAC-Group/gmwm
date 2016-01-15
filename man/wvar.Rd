@@ -11,15 +11,14 @@
 wvar(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE,
   eff = 0.6)
 
-\method{wvar}{lts}(x, decomp = "modwt", nlevels = floor(log2(nrow(x))),
-  alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{lts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = FALSE, eff = 0.6)
 
-\method{wvar}{gts}(x, decomp = "modwt", nlevels = floor(log2(nrow(x))),
-  alpha = 0.05, robust = FALSE, eff = 0.6)
+\method{wvar}{gts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = FALSE, eff = 0.6)
 
-\method{wvar}{default}(x, decomp = "modwt",
-  nlevels = floor(log2(length(x))), alpha = 0.05, robust = FALSE,
-  eff = 0.6)
+\method{wvar}{default}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
+  robust = FALSE, eff = 0.6)
 
 \method{wvar}{imu}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
   robust = F, eff = 0.6)

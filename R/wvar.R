@@ -62,7 +62,7 @@ wvar = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALS
 
 #' @rdname wvar
 #' @export
-wvar.lts = function(x, decomp = "modwt", nlevels = floor(log2(nrow(x))), alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
   warning('`lts` object is detected. This function can only operate on the combined process.')
   x = x$data[,ncol(x$data)]
   
@@ -71,14 +71,14 @@ wvar.lts = function(x, decomp = "modwt", nlevels = floor(log2(nrow(x))), alpha =
 
 #' @rdname wvar
 #' @export
-wvar.gts = function(x, decomp="modwt", nlevels = floor(log2(nrow(x))), alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
   x = x$data[,1]
   wvar.default(x, decomp, nlevels, alpha, robust, eff)
 }
 
 #' @rdname wvar
 #' @export
-wvar.default = function(x, decomp = "modwt", nlevels = floor(log2(length(x))), alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
   if(is.null(x)){
     stop("`x` must contain a value")
   }else if((is.data.frame(x) || is.matrix(x))){
@@ -86,7 +86,7 @@ wvar.default = function(x, decomp = "modwt", nlevels = floor(log2(length(x))), a
   }
   
   if(is.null(nlevels)){
-    nlevels =  floor(log2(length(x)))
+    nlevels = floor(log2(length(x)))
   }
 
   obj =  .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
