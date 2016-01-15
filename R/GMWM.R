@@ -142,7 +142,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   if(is.gts(data)){
     freq = data$freq
     data = data$data[,1]
-  }else if((is.imu(data) || is.data.frame(data) || is.matrix(data)) && ncol(data) > 1){
+  }else if((is.imu(data) || is.data.frame(data) || is.matrix(data))){
     if(ncol(data) > 1){
       stop("`gmwm` and `gmwm.imu` can only process one signal at a time.")
     }
@@ -453,6 +453,11 @@ update.gmwm = function(object, model, ...){
 #' @param robust    A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
 #' @param eff       A \code{double} between 0 and 1 that indicates the efficiency.
 #' @param ...       Other arguments passed to the main \code{\link[gmwm]{gmwm}} function
+#' @details 
+#' This version of the \code{\link[gmwm]{gmwm}} function has customized settings ideal for modeling with an IMU object.
+#' If you seek to model with an Gauss Markov, \code{\link[gmwm]{GM}}, object. Please note results depend on the
+#' \code{freq} specified in the data construction step within the \code{\link[gmwm]{imu}}. If you wish for results to be 
+#' stable but lose the ability to interpret with respect to \code{freq}, then use \code{\link[gmwm]{AR1}} terms.
 #' @return A \code{gmwm} object with the structure: 
 #' \describe{
 #'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
@@ -487,9 +492,14 @@ update.gmwm = function(object, model, ...){
 #' @examples 
 #' \dontrun{
 #' # Example data generation
-#' data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000)
+#' data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000, freq = 5)
 #' results = gmwm.imu(GM(),data)
 #' inference = summary(results)
+#' 
+#' # Example with IMU Data
+#' 
+#' 
+#' 
 #' }
 gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
   

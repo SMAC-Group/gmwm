@@ -55,12 +55,23 @@ A \code{gmwm} object with the structure:
 \description{
 GMM object
 }
+\details{
+This version of the \code{\link[gmwm]{gmwm}} function has customized settings ideal for modeling with an IMU object.
+If you seek to model with an Gauss Markov, \code{\link[gmwm]{GM}}, object. Please note results depend on the
+\code{freq} specified in the data construction step within the \code{\link[gmwm]{imu}}. If you wish for results to be 
+stable but lose the ability to interpret with respect to \code{freq}, then use \code{\link[gmwm]{AR1}} terms.
+}
 \examples{
 \dontrun{
 # Example data generation
-data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000)
+data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000, freq = 5)
 results = gmwm.imu(GM(),data)
 inference = summary(results)
+
+# Example with IMU Data
+
+
+
 }
 }
 

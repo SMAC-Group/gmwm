@@ -52,25 +52,26 @@ if(!require("imudata")){
 
 data(imu6)
 
-# Example 1
-test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+# Example 1 - Only Gyros
+test1 = imu(imu6, gyroscope = 1:3, freq = 100)
 df1 = wvar.imu(test1)
 plot(df1)
 
-# Example 2
-test2 = imu(imu6, gyroscope = 1:2, accelerometer = NULL, axis = c('X', 'Y'))
+# Example 2 - One gyro and one accelerometer
+test2 = imu(imu6, gyroscope = 1, accelerometer = 4, freq = 100)
 df2 = wvar.imu(test2)
 plot(df2)
 
-# Example 3
-test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+# Example 3 - 3 gyros and 3 accelerometers
+test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
 df3 = wvar.imu(test3)
 plot(df3)
 
-# Example 4
-test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('X', 'Y'))
+# Example 4 - Custom axis
+test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('A', 'B'), freq = 100)
 df4 = wvar.imu(test4)
-plot(df4)}
+plot(df4)
+}
 }
 \author{
 JJB, Wenchao
