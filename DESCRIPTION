@@ -42,7 +42,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-Enhances:
     imudata
+Additional_repositories: http://smac-group.com/datarepo
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
