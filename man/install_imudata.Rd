@@ -24,7 +24,7 @@ The IMU Data Package contains data from real life IMUs and is approximately a
 install_imudata()
 
 # Local install
-install_imudata("LOCAL","C:/Users/James/Documents/gmwm_x.y.z.tar.gz")
+install_imudata("LOCAL","C:/Users/James/Documents/imudata_x.y.z.tar.gz")
 }
 }
 \author{

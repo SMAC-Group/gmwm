@@ -27,3 +27,11 @@
   tip = c(tip,"Please note, the optimization algorithm is a work in progress!")
   packageStartupMessage(paste(strwrap(tip), collapse = "\n"))
 }
+
+
+.onLoad <- function(libname, pkgname) {
+  repos = getOption("repos")
+  repos["SMAC"]="http://smac-group.com/datarepo"
+  options(repos = repos)
+  invisible(repos)
+}
