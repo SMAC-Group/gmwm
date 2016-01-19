@@ -6,6 +6,7 @@
 #' # Launch the modeling UI
 #' webui()
 #' }
+#' @export
 webui = function(){
   appDir = system.file("webui", package = "gmwm")
   if(!nzchar(appDir)){
