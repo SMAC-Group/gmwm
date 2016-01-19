@@ -42,6 +42,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
+    shiny,
     imudata
 Additional_repositories: http://smac-group.com/datarepo
 RoxygenNote: 5.0.1
