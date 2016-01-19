@@ -42,6 +42,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
+    shiny
 Enhances:
     imudata
 RoxygenNote: 5.0.1
