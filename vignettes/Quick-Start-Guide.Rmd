@@ -45,7 +45,7 @@ Once you have compiler installed, then continue on by installing the package dep
 
 ```{r inst_github, eval = F}
 # Install dependencies
-install.packages(c("RcppArmadillo","ggplot2","gridExtra","reshape2","devtools"))
+install.packages(c("RcppArmadillo","ggplot2","reshape2","devtools"))
 
 # Install the package from github
 devtools::install_github("SMAC-Group/gmwm")

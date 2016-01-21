@@ -29,7 +29,6 @@ Imports:
     scales,
     grid,
     reshape2,
-    gridExtra,
     utils,
     stats,
     methods,
