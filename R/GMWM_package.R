@@ -60,6 +60,6 @@
 #' @importFrom utils install.packages tail head
 #' @importFrom scales trans_breaks trans_format math_format
 #' @importFrom grid textGrob gpar
-#' @import ggplot2 reshape2 gridExtra
+#' @import ggplot2 reshape2
 #' @exportPattern ^[[:alpha:]]+
 NULL

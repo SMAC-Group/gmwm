@@ -119,7 +119,7 @@ If you have a compiler already installed, then continue on by installing the pac
 
 ```r
 # Install dependencies
-install.packages(c("RcppArmadillo","ggplot2","gridExtra","reshape2","devtools"))
+install.packages(c("RcppArmadillo","ggplot2","reshape2","devtools"))
 
 # Install the package from github
 devtools::install_github("SMAC-Group/gmwm")
@@ -129,7 +129,7 @@ Lastly, we will be offering a source .tar that is able to be install offline - a
 
 ```r
 # Install the dependencies
-install.packages(c("RcppArmadillo","ggplot2", "scales", "gridExtra","devtools"))
+install.packages(c("RcppArmadillo","ggplot2","scales","devtools"))
 
 # Local installation
 setwd("path_to_file_GMWM_0.13.0.tar.gz")

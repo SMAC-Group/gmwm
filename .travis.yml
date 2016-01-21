@@ -6,7 +6,6 @@ r_packages:
  - ggplot2
  - RcppArmadillo
  - knitr
- - gridExtra
  - grid
 
 before_script:
