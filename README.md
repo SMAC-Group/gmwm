@@ -105,34 +105,78 @@ summary(o)
 ```
 
 
-# Install Instructions (All platforms)
-To install the `gmwm` package, there are three options: CRAN (stable), GitHub (Developmental), or SMAC (stable - offline).
+# Install Instructions
+To install the `gmwm` package, there are three options: CRAN (Stable), GitHub (Developmental), or SMAC (stable - offline).
 
+## Recommended R Interface
+
+We firmly recommend that any users of this package use the [RStudio IDE](https://www.rstudio.com/products/rstudio/download/) over the default R GUI.
+
+
+## Installing the package through CRAN (Stable)
 The installation process with CRAN is the simplest
+
 ```r
 install.packages("gmwm")
 ```
 
-Prior to installing with `devtools`, please make sure to have a compiler installed on your system that is compatible with R.
+Installing the package this way gives you access to stable features. Furthermore, the installation itself does not require a compiler or preinstalling any dependencies. However, we are limited to updating the package on CRAN to once every month. Thus, there may be some lag between when features are developed and when they are available on this version.
 
-If you have a compiler already installed, then continue on by installing the package dependencies and finally the package itself by doing the following: 
+## Installing the package through GitHub (Developmental)
+
+For users who are interested in having the latest and greatest developments withing wavelets or GMWM methodology, this option is ideal. Though, there is considerably more work that a user must do to have a stable version of the package. **The setup to obtain the development version is platform dependent.**
+
+Specifically, one **must** have a compiler installed on your system that is compatible with R.
+
+For help on obtaining a compiler consult:
+
+* [OS X](http://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-os-x/)
+* [Windows](https://cran.r-project.org/bin/windows/Rtools/)
+
+Depending on your operating system, further requirements exist such as:
+
+**OS X**
+
+Some user report the need to use X11 to suppress shared library errors. To install X11, visit [xquartz.org](http://www.xquartz.org/)
+
+**Linux**
+
+Both curl and libxml are required.
+
+For **Debian** systems, enter the following in terminal:
+
+```bash
+sudo apt-get install curl libcurl3 libcurl3-dev libxml2 libxml2-dev
+```
+
+For **RHEL** systems, enter the following in terminal:
+
+```bash
+sudo yum install curl curl-devel libxml2 libxml2-dev
+```
+
+**All Systems**
+
+With the system dependency taken care of, we continue on by installing the R specific package dependencies and finally the package itself by doing the following in an R session: 
 
 ```r
 # Install dependencies
-install.packages(c("RcppArmadillo","ggplot2","reshape2","devtools"))
+install.packages(c("RcppArmadillo","ggplot2","reshape2","devtools","knitr","rmarkdown"))
 
 # Install the package from github
 devtools::install_github("SMAC-Group/gmwm")
 ```
 
+## Installing the package from SMAC-Group.com (Stable - offline)
+
 Lastly, we will be offering a source .tar that is able to be install offline - after being downloaded - on the [smac-group.com](http://www.smac-group.com) website.
 
 ```r
 # Install the dependencies
-install.packages(c("RcppArmadillo","ggplot2","scales","devtools"))
+install.packages(c("RcppArmadillo","ggplot2","scales","devtools","knitr","rmarkdown"))
 
 # Local installation
-setwd("path_to_file_GMWM_0.13.0.tar.gz")
+setwd("path_to_file_GMWM_1.0.1.tar.gz")
 install.packages("GMWM", repos = NULL, type="source")
 ```
 

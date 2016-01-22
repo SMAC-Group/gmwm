@@ -54,12 +54,12 @@ wv.imu = wvar(sensor)
 
 To plot the WV (and confidence intervals) for all gyroscopes and accelerometers, we can use the following function 
 
-```{r imuPlot, fig.width=7, fig.height=4}
+```{r imuPlot, fig.width=7, fig.height=4.25}
 plot(wv.imu)
 ```
 
 To plot the WV for each sensor type together, we can use the following:
-```{r imu_plot_split, fig.width=7, fig.height=4}
+```{r imu_plot_split, fig.width=7, fig.height=4.25}
 plot(wv.imu, split = F)
 ```
 
@@ -80,7 +80,7 @@ model.imu = gmwm.imu(TS.mod.imu, data = imu6[,1])
 
 To see the results of the estimation, we can use the summary function as well as visualize the fit of the implied WV to the estimated WV from Gyro X (as done in the simulation example).
 
-```{r imu_model_summary, fig.width=7, fig.height=4}
+```{r imu_model_summary, fig.width=7, fig.height=4.25}
 summary(model.imu)
 plot(model.imu)
 ```
