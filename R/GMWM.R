@@ -289,7 +289,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
                        model.hat = model.hat,
                        starting = model$starting,
                        seed = seed,
-                       freq = freq), class = "gmwm")
+                       freq = freq,
+                       dr.slope = out[[13]]), class = "gmwm")
   invisible(out)
 }
 
@@ -403,14 +404,13 @@ update.gmwm = function(object, model, ...){
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
                   model$theta,
                   desc, obj, 
-                  object$model.type, object$N, object$expect.diff, 
+                  object$model.type, object$N, object$expect.diff, object$dr.slope,
                   object$orgV, object$scales, object$wv.empir,
                   model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 
                   object$robust, object$eff)
 
-  print(out)
   estimate = out[[1]]
   
   model.hat = model
