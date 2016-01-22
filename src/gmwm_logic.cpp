@@ -158,7 +158,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
 // [[Rcpp::export]]
 arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
-                                      std::string model_type, unsigned int N, double expect_diff, 
+                                      std::string model_type, unsigned int N, double expect_diff, double ranged, 
                                       arma::mat orgV, arma::vec scales, arma::vec wv_empir,
                                       bool starting, 
                                       std::string compute_v, unsigned int K, unsigned int H,
@@ -180,7 +180,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   // Do we need to run a guessing algorithm?
   if(starting){
 
-    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
+    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, ranged, G);
     
     guessed_theta = theta;
   }
@@ -316,6 +316,9 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   // Calculate the values of the Scales 
   arma::vec scales = scales_cpp(nlevels);
   
+  // Min-Max / N
+  double ranged = dr_slope(data);
+  
   // Guess starting values for the theta parameters
   if(starting){
     if(desc[0] == "ARMA" && desc.size() == 1){
@@ -324,7 +327,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
       starting = false;
       
     }else{     
-      theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, G);
+      theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, ranged, G);
     }
     
     guessed_theta = theta;
@@ -376,12 +379,15 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   arma::vec obj_value(1);
   obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
   
+  arma::vec dr_s(1);
+  dr_s(0) = ranged;
+  
   // Decomposition of the WV.
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
 
   // Export information back
-  arma::field<arma::mat> out(12);
+  arma::field<arma::mat> out(13);
   out(0) = theta;
   out(1) = guessed_theta;
   out(2) = wv_empir;
@@ -394,6 +400,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   out(9) = decomp_theo;
   out(10) = obj_value;
   out(11) = omega;
+  out(12) = dr_s;
   return out;
 }
 
