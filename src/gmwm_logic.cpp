@@ -327,7 +327,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
       starting = false;
       
     }else{     
-      theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, ranged, G);
+      theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wvar, scales, ranged, G);
     }
     
     guessed_theta = theta;

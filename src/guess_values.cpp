@@ -44,21 +44,21 @@
 
 // What estimator dominates the other? 
 // see sim file for formula
-bool qn_wn_dom_val(const arma::vec& init_scales, const arma::vec& init_wv){
+// [[Rcpp::export]]
+std::string dom_process(double first_wv, double ci_low, double ci_high){
   
-  // White Noise Formula
-  double wn = .5 * exp(.5*arma::sum(arma::log(sqrt(2.0 * init_wv)) + .5*arma::log(init_scales)));
+  arma::vec s(2);
+  double logof2 = log(2);
+  s(0) = log(ci_high/first_wv)/logof2 /2.0;
+  s(1) = log(ci_low/first_wv)/logof2 /2.0;
   
-  // QN Formula
-  double qn = 1/12 * exp( .5 *arma::sum(arma::log(sqrt(2.0 * init_wv)) + arma::log(init_scales)));
-  
-  // WN Sum greater than QN Sum?
-  if(square(arma::sum((init_wv - qn_to_wv(wn,init_scales)))) >
-     square(arma::sum((init_wv - wn_to_wv(qn,init_scales))))){
-    return 1;
+  if(arma::max(s) < -.5){
+    return "QN";
+  }else if(arma::min(s) > -.5){
+    return "AR1";
   }
   
-  return 0;
+  return "WN";
 }
 
 // Obtain the drift slope from data
@@ -78,7 +78,7 @@ double draw_rw(double sigma2_total, int N){
 }
 
 double draw_qn_dom(double sigma2_total){
-  return R::runif(sigma2_total/4.0, sigma2_total/2.0);
+  return R::runif(sigma2_total/8.0, sigma2_total/3.0);
 }
 
 // sigma^2 /2 * 1/(10^5), sigma^2/2 * 2/100
@@ -117,12 +117,11 @@ arma::vec draw_ar1(double sigma2_total){
   return temp; 
 }
 
-arma::vec draw_ar1_memory(double sigma2_total, double last_phi){
-  
+arma::vec draw_ar1_memory_add(double sigma2_total, double last_phi){
   arma::vec temp(2);
   
   // Draw for phi
-  temp(0) = R::runif(std::max(0.3,last_phi), 0.99999999);
+  temp(0) = R::runif(std::max(0.95,last_phi), 0.999995);
   
   // 1 - phi^2
   double val = (1-square(temp(0)));
@@ -131,6 +130,45 @@ arma::vec draw_ar1_memory(double sigma2_total, double last_phi){
   temp(1) = R::runif(0.00001*sigma2_total*val, sigma2_total*val/50.0);
   
   return temp;
+}
+
+arma::vec draw_ar1_memory(double sigma2_total, double last_phi){
+  
+  arma::vec temp(2);
+  
+  // Draw for phi
+  temp(0) = R::runif(std::max(0.9,last_phi), 0.999995);
+  
+  // 1 - phi^2
+  double val = (1-square(temp(0)));
+  
+  // (sigma^2/ 10^5 * (1-phi^2)), 2*(sigma^2 * (1-phi^2))/100
+  temp(1) = R::runif(0.0, 0.01*sigma2_total*val );
+    
+ //   R::runif(0.00001*sigma2_total*val, sigma2_total*val/50.0);
+  
+
+  return temp;
+}
+
+//[[Rcpp::export]]
+arma::vec draw_ar1_memory_large(double sigma2_total, double last_phi){
+  // Draw from triangle distributions for phi
+  double Y = (1.0 - std::sqrt(1.0-3.0 * R::runif(0.0, 1.0/3.0)));
+  
+  arma::vec temp(2);
+  
+  // Draw for phi
+  temp(0) = (.999995 - last_phi)*(1-Y) + last_phi;
+  
+  // 1 - phi^2
+  double val = (1-square(temp(0)));
+  
+  // (sigma^2/2 * (1-phi^2)), (sigma^2 * (1-phi^2))
+  temp(1) = R::runif(0.0, 0.01*sigma2_total*val );
+ // R::runif(0.5*sigma2_total*val, sigma2_total*val);
+  
+  return temp; 
 }
 
 
@@ -153,10 +191,12 @@ arma::vec draw_ar1_memory(double sigma2_total, double last_phi){
 // [[Rcpp::export]]
 arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
                         std::string model_type, unsigned int num_param, double expect_diff, unsigned int N,
-                        const arma::vec& wv_empir, const arma::vec& tau, double ranged, unsigned int G){
+                        const arma::mat& wv, const arma::vec& tau, double ranged, unsigned int G){
   
   // Obtain the sum of variances for sigma^2_total.
-  double sigma2_total = arma::sum(wv_empir);
+  
+  arma::vec wv_empirical = wv.col(0);
+  double sigma2_total = arma::sum(wv_empirical);
   
   arma::vec starting_theta = arma::zeros<arma::vec>(num_param);
   arma::vec temp_theta = arma::zeros<arma::vec>(num_param);
@@ -164,6 +204,10 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
   double min_obj_value = std::numeric_limits<double>::max();
   
   std::map<std::string, int> models = count_models(desc);
+  
+  // Check for domination between AR1, QN, and WN
+  // wv(1), ci_high, ci_low
+  std::string dom_value = dom_process(wv(0,0), wv(1,1), wv(1,2));
   
   // Expand the models count to set up bools
   int AR1 = models["AR1"] + models["GM"];
@@ -178,18 +222,17 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
   
   bool only_wn = WN && !(AR1 > 0 || ARMA > 0 || RW || DR || QN); 
   
-  // bool only_qn_wn = QN && WN && !(AR1 > 0 || ARMA > 0 || RW || DR); 
+  bool dom_wn = dom_value == "WN";
   
-  // Check first four scales
-  bool dom_qn_wn = qn_wn_dom_val(tau.rows(0,3), wv_empir.rows(0,3));
-  
+  bool dom_qn = dom_value == "QN";
+
   unsigned int num_desc = desc.size();
   
   // Generate B guesses of model parameters
   for(unsigned int g = 0; g < G; g++){
     unsigned int i_theta = 0;
     double last_phi = 0;
-    int AR1_counter = 0;
+    int AR1_counter = dom_wn || (dom_qn &&  R::runif(0.0,1.0) < .75 );
     
     // Generate parameters for the model
     for(unsigned int i = 0; i < num_desc; i++){
@@ -197,8 +240,14 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       
       if(element_type == "AR1" || element_type == "GM"){
         
+        AR1_counter++;
+        
+        Rcpp::Rcout << "AR1 Counter " << AR1_counter << std::endl;
+        
         // k*AR1 case
-        if(AR1_counter != 0 || WN){
+        if( AR1_counter >= 3){
+          temp_theta.rows(i_theta, i_theta + 1) = draw_ar1_memory_large(sigma2_total, last_phi);
+        }else if(AR1_counter == 2){
           temp_theta.rows(i_theta, i_theta + 1) = draw_ar1_memory(sigma2_total, last_phi);
         }else{ // AR1 without WN 
           temp_theta.rows(i_theta, i_theta + 1) = draw_ar1(sigma2_total);
@@ -209,7 +258,6 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
         // Increment i_theta position for 1 parameter (phi)
         // Second shift at end. (sigma2)
         i_theta++;
-        AR1_counter++;
         
       } else if(element_type == "ARMA"){
         
@@ -231,7 +279,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       
       }else if(element_type == "QN"){
         
-        if(only_qn || dom_qn_wn){
+        if(only_qn || dom_qn){
           temp_theta(i_theta) = draw_qn_dom(sigma2_total);
         }else{
           temp_theta(i_theta) = draw_qn_weak(sigma2_total);
@@ -243,7 +291,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       
       }else{ // WN
         
-        if(only_wn || dom_qn_wn == 0){
+        if(only_wn || dom_wn){
           temp_theta(i_theta) = draw_wn_dom(sigma2_total);
         }else{
           temp_theta(i_theta) = draw_wn_weak(sigma2_total);
@@ -260,7 +308,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
     arma::vec tvalues = transform_values(temp_theta, desc, objdesc, model_type);
     
     // Get objective function value
-    double obj = objFunStarting(tvalues, desc, objdesc, model_type, wv_empir, tau);
+    double obj = objFunStarting(tvalues, desc, objdesc, model_type, wv_empirical, tau);
     
     // Big or small vs. current?
     if(min_obj_value > obj){
@@ -268,6 +316,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       starting_theta = temp_theta;
     } //end if
     
+    Rcpp::Rcout << "Temp Theta is: " << temp_theta << std::endl << "Starting Theta is: " << starting_theta << std::endl << "Obj Value: " << obj << " vs. Min " << min_obj_value << std::endl; 
 
   } // end for
   

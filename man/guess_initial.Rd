@@ -4,8 +4,8 @@
 \alias{guess_initial}
 \title{Randomly guess a starting parameter}
 \usage{
-guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir,
-  tau, ranged, G)
+guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv, tau,
+  ranged, G)
 }
 \arguments{
 \item{desc}{A \code{vector<string>} that contains the model's components.}
@@ -20,11 +20,11 @@ guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir,
 
 \item{N}{A \code{integer} that contains the number of observations in the data.}
 
-\item{wv_empir}{A \code{vec} that contains the empirical wavelet variance.}
-
 \item{tau}{A \code{vec} that contains the scales. (e.g. 2^(1:J))}
 
 \item{G}{A \code{integer} that indicates how many random draws that should be performed.}
+
+\item{wv_empir}{A \code{vec} that contains the empirical wavelet variance.}
 
 \item{double}{A \code{double} that contains the drift slope given by \eqn{\frac{max-min}{N}}{(Max-Min)/N}}
 }
