@@ -209,22 +209,24 @@ arma::vec transform_values(const arma::vec& theta,
         // Increment count by q
         i_theta += q;
         
-
+        
       }// end else
       
-    }// end if
+    }
     
+    // Here we log scale the SIGMA2, RW, or QN terms
+    // We are unable to identify whether a drift has a negative trend due to covariance matrix.
+    // Hence, we've switched from identity to log(abs()) transform.
     if(element_type != "DR" ){
       // Take care of SIGMA2 term
       starting(i_theta) = log(theta(i_theta));
-      
-    }else{
-      starting(i_theta) = theta(i_theta);
-    } // we assume that drift in this case is identity
+    }else{ // Handles DR term
+      starting(i_theta) = log(fabs(theta(i_theta)));
+    } 
     
     ++i_theta;
   } // end for
-
+  
   return starting;
 }
 
@@ -237,80 +239,77 @@ arma::vec transform_values(const arma::vec& theta,
 // [[Rcpp::export]]
 arma::colvec untransform_values(const arma::vec& theta, 
                                 const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type){
-    arma::colvec result  = arma::zeros<arma::colvec>(theta.n_elem);
-    unsigned int i_theta = 0;
-    unsigned int num_desc = desc.size();
-
-    for(unsigned int i = 0; i < num_desc; i++){
-      
-      std::string element_type = desc[i];
-      // AR 1
-  	  if(element_type == "AR1" || element_type == "GM"){
-        if(model_type == "imu"){
-          result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
-        }else{ // ssm
-          result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
-        }
-  	    ++i_theta;
-  	  }
-      else if(element_type == "ARMA" ) {
-        
-        // Obtain the ARMA Model information
-        arma::vec arma_params = objdesc(i);
-        
-        // Get the count of parameter values
-        unsigned int p = arma_params(0); // AR(P)
-        unsigned int q = arma_params(1); // MA(Q)
-        
-
-        // Determine transformation to apply
-        if(model_type == "imu"){
-          // All parameters but sigma
-          unsigned int param_est = i_theta + p + q;
-          
-          // Use the invs pseudo logit function R => (0 <= x <= 1) 
-          result.rows(i_theta, param_est - 1) = pseudo_logit_inv(theta.rows(i_theta, param_est - 1));
-          
-          // Increment index
-          i_theta = param_est;
-
-        }else{ 
-            // SSM Case
-            
-            // Two different transformations.
-            if(p == 1){
-              result(i_theta) = pseudo_logit_inv(theta(i_theta));
-            }
-            else if(p > 1){
-              result.rows(i_theta, i_theta + p - 1) = logit2_inv(theta.rows(i_theta, i_theta + p - 1));
-            }
-            
-            // Increment count by p
-            i_theta += p;
-            
-            // Two different transformations.
-            if(q == 1){
-              result(i_theta) = pseudo_logit_inv(theta(i_theta));
-            }else if(q > 1){
-              result.rows(i_theta, i_theta + q - 1) = logit2_inv(theta.rows(i_theta, i_theta + q - 1));
-            }
-            
-            // Increment count by q
-            i_theta += q;
-          }// end else
-          
-      } // end if
-
-      if(element_type != "DR" ){
-        // Take care of SIGMA2 term or other term...
-        result(i_theta) = exp(theta(i_theta));
-        
-      }else{
-        result(i_theta) = theta(i_theta);
-      } // we assume that drift in this case is identity
-      
+  arma::colvec result  = arma::zeros<arma::colvec>(theta.n_elem);
+  unsigned int i_theta = 0;
+  unsigned int num_desc = desc.size();
+  
+  for(unsigned int i = 0; i < num_desc; i++){
+    
+    std::string element_type = desc[i];
+    // AR 1
+    if(element_type == "AR1" || element_type == "GM"){
+      if(model_type == "imu"){
+        result(i_theta) = arma::as_scalar(logit_inv(theta.row(i_theta)));
+      }else{ // ssm
+        result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
+      }
       ++i_theta;
+    } else if(element_type == "ARMA" ) {
+      
+      // Obtain the ARMA Model information
+      arma::vec arma_params = objdesc(i);
+      
+      // Get the count of parameter values
+      unsigned int p = arma_params(0); // AR(P)
+      unsigned int q = arma_params(1); // MA(Q)
+      
+      
+      // Determine transformation to apply
+      if(model_type == "imu"){
+        // All parameters but sigma
+        unsigned int param_est = i_theta + p + q;
+        
+        // Use the invs pseudo logit function R => (0 <= x <= 1) 
+        result.rows(i_theta, param_est - 1) = pseudo_logit_inv(theta.rows(i_theta, param_est - 1));
+        
+        // Increment index
+        i_theta = param_est;
+        
+      }else{ 
+        // SSM Case
+        
+        // Two different transformations.
+        if(p == 1){
+          result(i_theta) = pseudo_logit_inv(theta(i_theta));
+        }
+        else if(p > 1){
+          result.rows(i_theta, i_theta + p - 1) = logit2_inv(theta.rows(i_theta, i_theta + p - 1));
+        }
+        
+        // Increment count by p
+        i_theta += p;
+        
+        // Two different transformations.
+        if(q == 1){
+          result(i_theta) = pseudo_logit_inv(theta(i_theta));
+        }else if(q > 1){
+          result.rows(i_theta, i_theta + q - 1) = logit2_inv(theta.rows(i_theta, i_theta + q - 1));
+        }
+        
+        // Increment count by q
+        i_theta += q;
+      }// end else
+      
+      // end ARMA case 
+    } 
+    
+    // The remaining terms should be SIGMA2, RW, DR, WN, or QN
+    // Thus, they are inversed with exp(theta)
+    result(i_theta) = exp(theta(i_theta));
+    
+    
+    ++i_theta;
   }  
-
+  
   return result;
 }
