@@ -4,22 +4,26 @@
 \alias{gts}
 \title{Create a GMWM TS Object based on data}
 \usage{
-gts(data, freq = 1, unit = NULL, name = "")
+gts(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL)
 }
 \arguments{
-\item{data}{A one column \code{matrix}, \code{data.frame}, or a numeric \code{vector}.}
+\item{data}{A one-column \code{matrix}, \code{data.frame}, or a numeric \code{vector}.}
+
+\item{start}{A \code{numeric} that provides the time of the first observation.}
+
+\item{end}{A \code{numeric} that provides the time of the last observation.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
 \item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
 
-\item{name}{A \code{string} that provides an identifier to the data. Default value is an empty string.}
+\item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
 }
 \value{
-A \code{gts} object with the structure:
+A \code{gts} object with the following attributes:
 \describe{
-  \item{x}{A \code{matirx} that contains x-axis values used to plot}
-  \item{data}{A \code{matrix} that contains data for combined processes}
+  \item{start}{The time of the first observation}
+  \item{end}{The time of the last observation}
   \item{freq}{Numeric representation of frequency}
   \item{unit}{String representation of the unit}
   \item{name}{Name of the dataset}
@@ -29,11 +33,14 @@ A \code{gts} object with the structure:
 Setups a time series oriented object that works well with graphing and summary utilities
 }
 \examples{
-m = data.frame(rnorm(5))
-gts(m)
+m = data.frame(rnorm(50))
+x = gts(m, unit = 'sec', name = 'example')
+x
+plot(x)
 
-x = gen.gts(WN(sigma2=1), 50)$data
-x = gts(x)
+x = gen.gts(WN(sigma2=1), 50)
+x = gts(x, freq = 100, unit = 'sec')
+plot(x)
 }
 \author{
 JJB, Wenchao

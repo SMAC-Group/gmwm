@@ -15,9 +15,9 @@ unitConversion(x, from.unit, to.unit)
 }
 \value{
 A \code{list} with the following structure:
-\itemize{
- \item{x:} {Data.}
- \item{converted:} {A \code{boolean} indicating whether conversion is made.}
+\describe{
+ \item{x}{Data}
+ \item{converted}{A \code{boolean} indicating whether conversion is made}
 }
 }
 \description{
