@@ -242,8 +242,6 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
         
         AR1_counter++;
         
-        Rcpp::Rcout << "AR1 Counter " << AR1_counter << std::endl;
-        
         // k*AR1 case
         if( AR1_counter >= 3){
           temp_theta.rows(i_theta, i_theta + 1) = draw_ar1_memory_large(sigma2_total, last_phi);
@@ -316,8 +314,6 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       starting_theta = temp_theta;
     } //end if
     
-    Rcpp::Rcout << "Temp Theta is: " << temp_theta << std::endl << "Starting Theta is: " << starting_theta << std::endl << "Obj Value: " << obj << " vs. Min " << min_obj_value << std::endl; 
-
   } // end for
   
   return starting_theta;
