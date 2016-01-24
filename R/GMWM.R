@@ -405,7 +405,7 @@ update.gmwm = function(object, model, ...){
                   model$theta,
                   desc, obj, 
                   object$model.type, object$N, object$expect.diff, object$dr.slope,
-                  object$orgV, object$scales, object$wv.empir,
+                  object$orgV, object$scales, cbind(object$wv.empir,object$ci.low,object$ci.high), # needed WV info
                   model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 

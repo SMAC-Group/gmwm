@@ -159,7 +159,7 @@ arma::vec gmwm_engine(const arma::vec& theta,
 arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
                                       std::string model_type, unsigned int N, double expect_diff, double ranged, 
-                                      arma::mat orgV, arma::vec scales, arma::vec wv_empir,
+                                      const arma::mat& orgV, const arma::vec& scales, const arma::mat& wv,
                                       bool starting, 
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
@@ -177,10 +177,12 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
   // Diagonal Omega Matrix
   arma::mat omega = arma::inv(diagmat(V));
   
+  arma::vec wv_empir = wv.col(0);
+  
   // Do we need to run a guessing algorithm?
   if(starting){
 
-    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv_empir, scales, ranged, G);
+    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wv, scales, ranged, G);
     
     guessed_theta = theta;
   }

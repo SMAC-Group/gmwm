@@ -882,8 +882,8 @@ gmwm_engine <- function(theta, desc, objdesc, model_type, wv_empir, omega, scale
 #' @keywords internal
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
-gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff) {
-    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff)
+gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff) {
+    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff)
 }
 
 #' @title Master Wrapper for the GMWM Estimator

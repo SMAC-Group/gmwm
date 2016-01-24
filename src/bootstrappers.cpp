@@ -434,8 +434,9 @@ arma::field<arma::mat> all_bootstrapper(const arma::vec&  theta,
     double expect_diff = mean_diff(x);
 
     double ranged = dr_slope(x);
-    
-    arma::vec theta_star = guess_initial(desc, objdesc, model_type, p, expect_diff, N, wv_empir, scales, ranged, 10000);
+  
+    // updated for WV obj pull
+    arma::vec theta_star = guess_initial(desc, objdesc, model_type, p, expect_diff, N, wvar, scales, ranged, 10000);
     
 
     // Obtain the GMWM estimator's estimates. (WV_EMPIR)

@@ -722,8 +722,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gmwm_update_cpp
-arma::field<arma::mat> gmwm_update_cpp(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int N, double expect_diff, double ranged, arma::mat orgV, arma::vec scales, arma::vec wv_empir, bool starting, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
-RcppExport SEXP gmwm_gmwm_update_cpp(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP expect_diffSEXP, SEXP rangedSEXP, SEXP orgVSEXP, SEXP scalesSEXP, SEXP wv_empirSEXP, SEXP startingSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
+arma::field<arma::mat> gmwm_update_cpp(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int N, double expect_diff, double ranged, const arma::mat& orgV, const arma::vec& scales, const arma::mat& wv, bool starting, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
+RcppExport SEXP gmwm_gmwm_update_cpp(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP expect_diffSEXP, SEXP rangedSEXP, SEXP orgVSEXP, SEXP scalesSEXP, SEXP wvSEXP, SEXP startingSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -734,9 +734,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP);
     Rcpp::traits::input_parameter< double >::type expect_diff(expect_diffSEXP);
     Rcpp::traits::input_parameter< double >::type ranged(rangedSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type orgV(orgVSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type scales(scalesSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type wv_empir(wv_empirSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type orgV(orgVSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type scales(scalesSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type wv(wvSEXP);
     Rcpp::traits::input_parameter< bool >::type starting(startingSEXP);
     Rcpp::traits::input_parameter< std::string >::type compute_v(compute_vSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type K(KSEXP);
@@ -744,7 +744,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type G(GSEXP);
     Rcpp::traits::input_parameter< bool >::type robust(robustSEXP);
     Rcpp::traits::input_parameter< double >::type eff(effSEXP);
-    __result = Rcpp::wrap(gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff));
+    __result = Rcpp::wrap(gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff));
     return __result;
 END_RCPP
 }
