@@ -4,28 +4,35 @@
 \alias{gen.lts}
 \title{Generate Latent Time Series Object Based on Model}
 \usage{
-gen.lts(model, N = 1000, freq = 1, unit = NULL, name = "")
+gen.lts(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL,
+  name = NULL, process = NULL)
 }
 \arguments{
 \item{model}{A \code{ts.model} or \code{gmwm} object containing one of the allowed models.}
 
 \item{N}{An \code{interger} indicating the amount of observations generated in this function.}
 
+\item{start}{A \code{numeric} that provides the time of the first observation.}
+
+\item{end}{A \code{numeric} that provides the time of the last observation.}
+
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
 \item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
 
-\item{name}{A \code{string} that provides an identifier to the data. Default value is an empty string.}
+\item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
+
+\item{process}{A \code{vector} that contains model names of decomposed and combined processes.}
 }
 \value{
-A \code{lts} object with the structure:
-\itemize{
-  \item{x:} {A \code{matirx} that contains x-axis values to plot}
-  \item{process:} {A \code{vector} that contains model names of decomposed and combined processes}
-  \item{data:} {A \code{matrix} that contains data for decomposed and combined processes}
-  \item{freq:} {Numeric representation of frequency}
-  \item{unit:} {String representation of the Unit}
-  \item{name:} {Name of the Dataset}
+A \code{lts} object with the following attributes:
+\describe{
+  \item{start}{The time of the first observation}
+  \item{end}{The time of the last observation}
+  \item{freq}{Numeric representation of frequency}
+  \item{unit}{String representation of the unit}
+  \item{name}{Name of the dataset}
+  \item{process}{A \code{vector} that contains model names of decomposed and combined processes}
 }
 }
 \description{
@@ -38,7 +45,8 @@ This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2
 # AR
 set.seed(1336)
 model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-gen.lts(model)
+test = gen.lts(model)
+plot(test)
 }
 \author{
 JJB, Wenchao

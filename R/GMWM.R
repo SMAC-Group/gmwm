@@ -140,8 +140,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
 
   # Check data object
   if(is.gts(data)){
-    freq = data$freq
-    data = data$data[,1]
+    freq = attr(data, 'freq')
+    data = data[,1]
   }else if((is.imu(data) || is.data.frame(data) || is.matrix(data))){
     if(ncol(data) > 1){
       stop("`gmwm` and `gmwm.imu` can only process one signal at a time.")
