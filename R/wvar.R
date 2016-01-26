@@ -144,7 +144,7 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
                                        low = obj.list[[i]]$ci_low,
                                        high = obj.list[[i]]$ci_high,
                                        axis = x$axis[(i-1)%%naxis+1], 
-                                       sensor = if(i <= x$num.sensor[1]){"Accelerometer"}else{"Gyroscope"},
+                                       sensor = if(i <= x$num.sensor[1]){"Gyroscope"}else{"Accelerometer"},
                                        stringsAsFactors=FALSE)
     t = t + nlevels
   }

@@ -208,7 +208,7 @@ create_imu = function(object, ngyros, nacces, axis, freq){
 read.imu = function(file, type){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  invisible(create_imu(d[[1]][,-1], 3, 3, c('x','y','z'), d[[2]][1]))
+  invisible(create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1]))
 }
 
 
