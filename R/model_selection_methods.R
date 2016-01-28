@@ -274,7 +274,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' data(imu6)
 #' 
 #' # Example 1
-#' test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+#' test1 = imu(imu6, gyros = 1:3, accels = NULL, axis = c('X', 'Y', 'Z'), freq = 100)
 #' 
 #' m = auto.imu(test1)
 #' 
@@ -298,9 +298,9 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   }
   
   # Extract data for IMU Injection
-  sensors = data$sensor
-  num.sensor = data$num.sensor
-  axis = data$axis
+  sensors = attr(data, 'sensor')
+  num.sensor = attr(data, 'num.sensor')
+  axis = attr(data, 'axis')
 
   # Set seed for reproducible results
   # Need to figure out a way to do set same seed on each model generation.
@@ -311,7 +311,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data$data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
   
   # Handle post processing
   
@@ -330,9 +330,10 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   a.gyro = 0
   a.acc = 0
   
+  freq = attr(data, 'freq')
   for(i in 1:ncol(data)){
     obj = out[[i]]
-    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, data$freq)
+    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, freq)
     
     obj.gmwm = obj[[2]]
     if(a.acc != n.acc){
