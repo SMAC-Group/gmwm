@@ -114,10 +114,13 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
   if(nlevels > mlevels){
     stop("`nlevels` must be less than ", mlevels,", which is the max number of levels.")
   }
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
+  
+  # freq conversion
+  x.freq = attr(x, 'freq')
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/x.freq
   
   obj.list = .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
-                   x$data, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
+                   x, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
 
   total.len = nlevels*ncol(x)
   
@@ -130,7 +133,8 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
                    sensor = character(total.len), stringsAsFactors=FALSE)
   
   # Axis length
-  naxis = length(x$axis)
+  x.axis = attr(x, 'axis')
+  naxis = length(x.axis)
   
   # Put data into data frame
   t = 1
@@ -139,12 +143,13 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
     obj.list[[i]] = create_wvar(obj.list[[i]], decomp, robust, eff, alpha, scales)
 
     # Cast for Graphing IMU Results
+    x.num.sensor = attr(x, 'num.sensor')
     obj[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
                                        scales = scales,
                                        low = obj.list[[i]]$ci_low,
                                        high = obj.list[[i]]$ci_high,
-                                       axis = x$axis[(i-1)%%naxis+1], 
-                                       sensor = if(i <= x$num.sensor[1]){"Accelerometer"}else{"Gyroscope"},
+                                       axis = x.axis[(i-1)%%naxis+1], 
+                                       sensor = if(i <= x.num.sensor[1]){"Gyroscope"}else{"Accelerometer"},
                                        stringsAsFactors=FALSE)
     t = t + nlevels
   }

@@ -78,7 +78,7 @@ if(!require("imudata")){
 }
 
 data(imu6)
-test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+test = imu(imu6, gyros = 1:3, accels = 4:6, freq = 100)
 df = wvar.imu(test)
 
 ## Plot in split way
