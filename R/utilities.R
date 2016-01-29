@@ -129,9 +129,9 @@ value = function(x, type){
 #' @export
 value.imu = function(x, type){
   switch(type,
-         accel   = x$num.sensor[1],
-         gyro    = x$num.sensor[2],
-         sensors = sum(x$num.sensor),
+         accel   = attr(x, 'num.sensor')[1],
+         gyro    = attr(x, 'num.sensor')[2],
+         sensors = sum(attr(x, 'num.sensor')),
          stop("The `type` specified is not an available slot")
   ) 
 }
@@ -161,9 +161,9 @@ has = function(x, type){
 #' @export
 has.imu = function(x, type){
   switch(type,
-         accel   = x$num.sensor[1] > 0,
-         gyro    = x$num.sensor[2] > 0,
-         sensors = x$num.sensor[1] > 0 & x$num.sensor[2] > 0,
+         accel   = attr(x, 'num.sensor')[1] > 0,
+         gyro    = attr(x, 'num.sensor')[2] > 0,
+         sensors = attr(x, 'num.sensor')[1] > 0 & attr(x, 'num.sensor')[2] > 0,
          stop("The `type` specified is not an available slot")
   ) 
 }

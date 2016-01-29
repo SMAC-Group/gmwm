@@ -197,18 +197,17 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
   freq = 1
   
   if(is.gts(data)){
-    freq = data$freq
-    data = data$data
+    freq = attr(data, 'freq')
+    
   }else if(is.data.frame(data) || is.matrix(data) || is.imu(data)){
     if(ncol(data) > 1){
       stop("`rank.models()` is not supported for multiple columns.")
     }
     if(is.imu(data)){
-      freq = data$freq
-      data = data$data
+      freq = attr(data, 'freq')
     }
   }else if(is.lts(data)){
-    data = data$data[,ncol(data$data)]
+    data = data[,ncol(data)]
   }
   
   if(nested == F){
