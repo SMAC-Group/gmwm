@@ -83,9 +83,6 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
   else if ( is.null(start) ){
     start = end - (ndata - 1)/freq}
   
-  if (start > end){
-    stop("'start' cannot be after 'end'")}
-  
   # 4. requirement for 'unit'
   if(!is.null(unit)){
     if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
@@ -105,7 +102,7 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
                 name = name, 
                 class = c("gts","matrix"))
   
-  invisible(out)
+  out
 }
 
 
@@ -174,9 +171,6 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
   else if ( is.null(start) ){
     start = end - (N - 1)/freq}
   
-  if (start > end){
-    stop("'start' cannot be after 'end'")}
-  
   # 4. 'unit'
   if(!is.null(unit)){
     if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
@@ -219,7 +213,7 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
                   name = name, 
                   class = c("gts","matrix"))
   
-  invisible(out)
+  out
   
 }
 
