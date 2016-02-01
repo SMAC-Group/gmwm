@@ -44,7 +44,7 @@
 
 // What estimator dominates the other? 
 // see sim file for formula
-// [[Rcpp::export]]
+// not used anymore. see
 std::string dom_process(double first_wv, double ci_low, double ci_high){
   
   arma::vec s(2);
@@ -151,7 +151,6 @@ arma::vec draw_ar1_memory(double sigma2_total, double last_phi){
   return temp;
 }
 
-//[[Rcpp::export]]
 arma::vec draw_ar1_memory_large(double sigma2_total, double last_phi){
   // Draw from triangle distributions for phi
   double Y = (1.0 - std::sqrt(1.0-3.0 * R::runif(0.0, 1.0/3.0)));
@@ -196,6 +195,13 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
   // Obtain the sum of variances for sigma^2_total.
   
   arma::vec wv_empirical = wv.col(0);
+  
+  if(model_type=="ssm"){
+    return guess_initial_old(desc, objdesc,
+                   model_type, num_param, expect_diff, N,
+                   wv_empirical, tau, G);
+  }  
+  
   double sigma2_total = arma::sum(wv_empirical);
   
   arma::vec starting_theta = arma::zeros<arma::vec>(num_param);
@@ -488,7 +494,7 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
 //' @examples
 //' #TBA
 // [[Rcpp::export]]
-arma::vec guess_initial2(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
+arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc,
                         std::string model_type, unsigned int num_param, double expect_diff, unsigned int N,
                         const arma::vec& wv_empir, const arma::vec& tau, unsigned int B){
   

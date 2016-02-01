@@ -771,31 +771,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// dom_process
-std::string dom_process(double first_wv, double ci_low, double ci_high);
-RcppExport SEXP gmwm_dom_process(SEXP first_wvSEXP, SEXP ci_lowSEXP, SEXP ci_highSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< double >::type first_wv(first_wvSEXP);
-    Rcpp::traits::input_parameter< double >::type ci_low(ci_lowSEXP);
-    Rcpp::traits::input_parameter< double >::type ci_high(ci_highSEXP);
-    __result = Rcpp::wrap(dom_process(first_wv, ci_low, ci_high));
-    return __result;
-END_RCPP
-}
-// draw_ar1_memory_large
-arma::vec draw_ar1_memory_large(double sigma2_total, double last_phi);
-RcppExport SEXP gmwm_draw_ar1_memory_large(SEXP sigma2_totalSEXP, SEXP last_phiSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< double >::type sigma2_total(sigma2_totalSEXP);
-    Rcpp::traits::input_parameter< double >::type last_phi(last_phiSEXP);
-    __result = Rcpp::wrap(draw_ar1_memory_large(sigma2_total, last_phi));
-    return __result;
-END_RCPP
-}
 // guess_initial
 arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::mat& wv, const arma::vec& tau, double ranged, unsigned int G);
 RcppExport SEXP gmwm_guess_initial(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wvSEXP, SEXP tauSEXP, SEXP rangedSEXP, SEXP GSEXP) {
@@ -843,9 +818,9 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// guess_initial2
-arma::vec guess_initial2(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::vec& wv_empir, const arma::vec& tau, unsigned int B);
-RcppExport SEXP gmwm_guess_initial2(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP BSEXP) {
+// guess_initial_old
+arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::vec& wv_empir, const arma::vec& tau, unsigned int B);
+RcppExport SEXP gmwm_guess_initial_old(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -858,7 +833,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
-    __result = Rcpp::wrap(guess_initial2(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B));
+    __result = Rcpp::wrap(guess_initial_old(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B));
     return __result;
 END_RCPP
 }

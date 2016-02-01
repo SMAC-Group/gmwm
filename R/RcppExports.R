@@ -911,14 +911,6 @@ gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, al
     .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
 }
 
-dom_process <- function(first_wv, ci_low, ci_high) {
-    .Call('gmwm_dom_process', PACKAGE = 'gmwm', first_wv, ci_low, ci_high)
-}
-
-draw_ar1_memory_large <- function(sigma2_total, last_phi) {
-    .Call('gmwm_draw_ar1_memory_large', PACKAGE = 'gmwm', sigma2_total, last_phi)
-}
-
 #' @title Randomly guess a starting parameter
 #' @description Sets starting parameters for each of the given parameters. 
 #' @param desc A \code{vector<string>} that contains the model's components.
@@ -981,8 +973,8 @@ arma_draws <- function(p, q, sigma2_total) {
 #' @keywords internal
 #' @examples
 #' #TBA
-guess_initial2 <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
-    .Call('gmwm_guess_initial2', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+guess_initial_old <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
+    .Call('gmwm_guess_initial_old', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
 }
 
 #' @title Indirect Inference for ARMA

@@ -57,7 +57,7 @@
 #' @importFrom graphics lines plot
 #' @importFrom methods is
 #' @importFrom stats arima predict ts as.ts
-#' @importFrom utils install.packages tail head
+#' @importFrom utils install.packages tail head packageDescription compareVersion
 #' @importFrom scales trans_breaks trans_format math_format
 #' @importFrom grid textGrob gpar
 #' @import ggplot2 reshape2
