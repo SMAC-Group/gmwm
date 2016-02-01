@@ -142,16 +142,18 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   if(is.gts(data)){
     freq = attr(data, 'freq')
     data = data[,1]
+    
+  }else if(is.lts(data)){
+    freq = attr(data, 'freq')
+    data = data[ ,ncol(data)]
+    
   }else if((is.imu(data) || is.data.frame(data) || is.matrix(data))){
     if(ncol(data) > 1){
       stop("`gmwm` and `gmwm.imu` can only process one signal at a time.")
     }
     if(is.imu(data)){
-      freq = data$freq
-      data = as.numeric(data$data)
+      freq = attr(data, 'freq')
     }
-  }else if(is.lts(data)){
-    data = data$data[ ,ncol(data)]
   }
   
   # Do we have a valid model?
@@ -870,6 +872,9 @@ autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', C
     }
   }
   
+  #freq converstion
+  object$scales = object$scales/object$freq
+  
   ## call
   if(process.decomp){
     # plot individually
@@ -1272,6 +1277,13 @@ compare.gmwm = function(..., background = 'white', split = TRUE, CI = TRUE, auto
   object.names = as.character(substitute(...()))
   if(any( count_models(object.names) >1 )){
     stop('Duplicated objects are detected.')
+  }
+  
+  # freq conversion
+  if (numObj >=2){
+    for(i in 1:numObj){
+      obj_list[[i]]$scales = obj_list[[i]]$scales/obj_list[[i]]$freq
+    } 
   }
   
   if (numObj == 0){
@@ -1812,6 +1824,10 @@ compare.models = function(..., display.model = T, background = 'white', transpar
               axis.x.label = axis.x.label, axis.y.label = axis.y.label)
     
   }else{
+    # freq conversion
+    for(i in 1:numObj){
+      obj_list[[i]]$scales = obj_list[[i]]$scales/obj_list[[i]]$freq
+    } 
     
     #check parameter
     params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape')
