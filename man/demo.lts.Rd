@@ -39,7 +39,8 @@ model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
 demo.lts(model)
 
 # Modify the graph aesthetics
-demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
+demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), 
+         point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
 }
 \author{
 Wenchao

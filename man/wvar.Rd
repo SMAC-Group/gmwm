@@ -8,24 +8,25 @@
 \alias{wvar.lts}
 \title{Wavelet Variance}
 \usage{
-wvar(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE,
-  eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL)
+wvar(x, ...)
 
 \method{wvar}{lts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6, to.unit = NULL)
+  robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
 \method{wvar}{gts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6, to.unit = NULL)
+  robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
 \method{wvar}{default}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
   robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL,
-  to.unit = NULL)
+  to.unit = NULL, ...)
 
 \method{wvar}{imu}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = F, eff = 0.6, to.unit = NULL)
+  robust = F, eff = 0.6, to.unit = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object.}
+
+\item{...}{Further arguments passed to or from other methods.}
 
 \item{decomp}{A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.}
 
@@ -37,11 +38,11 @@ wvar(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE,
 
 \item{eff}{A \code{double} that indicates the efficiency as it relates to an MLE.}
 
+\item{to.unit}{A \code{string} indicating the unit which the data is converted to.}
+
 \item{freq}{A \code{numeric} that provides the rate of samples.}
 
 \item{from.unit}{A \code{string} indicating the unit which the data is converted from.}
-
-\item{to.unit}{A \code{string} indicating the unit which the data is converted to.}
 }
 \value{
 A \code{list} with the structure:

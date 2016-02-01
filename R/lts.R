@@ -459,7 +459,8 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 #' demo.lts(model)
 #' 
 #' # Modify the graph aesthetics
-#' demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
+#' demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), 
+#'          point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
 demo.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL, ...){
    
   object = gen.lts(model = model, N = N, start = start, end = end, freq = freq, unit = unit, name = name, process = process)

@@ -6,20 +6,22 @@
 \alias{update.lts}
 \title{Update Object Attribute}
 \usage{
-\method{update}{lts}(x, type, new, keep.start = T)
+\method{update}{lts}(object, type, new, keep.start = T, ...)
 
-\method{update}{gts}(x, type, new, keep.start = T)
+\method{update}{gts}(object, type, new, keep.start = T, ...)
 
-\method{update}{imu}(x, type, new)
+\method{update}{imu}(object, type, new, ...)
 }
 \arguments{
-\item{x}{A \code{lts}, \code{gts} or \code{imu} object}
+\item{object}{A \code{lts}, \code{gts} or \code{imu} object}
 
 \item{type}{A \code{string} that contains the attribute to be updated}
 
 \item{new}{The updated value for the attribute}
 
 \item{keep.start}{A \code{boolean} value that indicates whether 'start' or 'end' should remain the same when 'freq' is updated}
+
+\item{...}{Further arguments passed to or from other methods.}
 }
 \value{
 An object with the updated attribute.

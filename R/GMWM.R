@@ -135,7 +135,7 @@
 #'                 data, model.type="ssm")
 gmwm = function(model, data, model.type="ssm", compute.v="auto", 
                 robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
-                freq = 1){
+                freq = NULL){
   
 
   # Check data object
@@ -154,6 +154,11 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
     if(is.imu(data)){
       freq = attr(data, 'freq')
     }
+  }
+  
+  if(is.null(freq)){
+    freq = 1
+    warning("'freq' is set to 1 by default.")
   }
   
   # Do we have a valid model?

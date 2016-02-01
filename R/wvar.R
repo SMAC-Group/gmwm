@@ -24,6 +24,7 @@
 #' @param freq      A \code{numeric} that provides the rate of samples.
 #' @param from.unit A \code{string} indicating the unit which the data is converted from.
 #' @param to.unit   A \code{string} indicating the unit which the data is converted to.
+#' @param ... Further arguments passed to or from other methods.
 #' @return A \code{list} with the structure:
 #' \describe{
 #'   \item{"variance"}{Wavelet Variance}
@@ -60,13 +61,13 @@
 #' df = wvar.imu(test)
 #' }
 #' @export
-wvar = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL) {
+wvar = function(x, ...) {
   UseMethod("wvar")
 }
 
 #' @rdname wvar
 #' @export
-wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL){
+wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
   warning('`lts` object is detected. This function can only operate on the combined process.')
   freq = attr(x, 'freq')
   unit = attr(x, 'unit')
@@ -77,7 +78,7 @@ wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
 
 #' @rdname wvar
 #' @export
-wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL){
+wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
   freq = attr(x, 'freq')
   unit = attr(x, 'unit')
   x = x[,1]
@@ -87,7 +88,7 @@ wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FA
 
 #' @rdname wvar
 #' @export
-wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL){
+wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL, ...){
   if(is.null(x)){
     stop("`x` must contain a value")
   }else if((is.data.frame(x) || is.matrix(x))){
@@ -142,7 +143,7 @@ wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robus
 
 #' @rdname wvar
 #' @export
-wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6, to.unit = NULL){
+wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6, to.unit = NULL, ...){
 
   if(!is.imu(x)){
     stop("`wvar.imu()` requires an IMU Object")
