@@ -928,6 +928,9 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
   num.sensor = object[[1]][[2]]$num.sensor
   ncols = sum(num.sensor)
   
+  #what is freq
+  freq = object[[1]][[2]]$freq
+  
   #what is axis
   if(num.sensor[1] == 0 || num.sensor[2] == 0){##only "Accelerometer"/only "Gyroscope"
     axis = rep(0, ncols)
@@ -975,7 +978,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     for (i in 1:ncols){
       d = each.len[i]
       
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
                                    emp = obj.list[[i]]$wv.empir,
                                    low = obj.list[[i]]$ci.low,
                                    high = obj.list[[i]]$ci.high,
@@ -992,7 +995,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     for (i in 1:ncols){
       d = each.len[i]
       
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
                                    emp = obj.list[[i]]$wv.empir,
                                    low = obj.list[[i]]$ci.low,
                                    high = obj.list[[i]]$ci.high,
@@ -1016,7 +1019,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
       }
       
       d = each.len[i]
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
                                    emp = obj.list[[i]]$wv.empir,
                                    low = obj.list[[i]]$ci.low,
                                    high = obj.list[[i]]$ci.high,

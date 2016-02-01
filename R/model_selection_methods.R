@@ -151,6 +151,7 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' @param B          A \code{integer} that contains the amount of bootstrap replications
 #' @param G          A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @param seed       A \code{integer} that is used to set a seed for reproducibility.
+#' @param freq       A \code{double} that represents the frequency between observations.
 #' @details 
 #' The models MUST be nested within each other. 
 #' If the models are not nested, the algorithm creates the "common denominator" model.
@@ -165,14 +166,14 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
 rank.models = function(data, ..., nested = F, bootstrap = F, 
-                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
+                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, freq = 1, seed = 1337){
   
   set.seed(seed)
+  
+  models = list(...)
   numObj = length(models)
   desc = vector("list", numObj) 
   
-  models = list(...)
-
   gmterm = FALSE
   
   for(i in 1:numObj){
@@ -193,8 +194,6 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
     
     desc[[i]] = mod$desc
   }
-  
-  freq = 1
   
   if(is.gts(data)){
     freq = attr(data, 'freq')
