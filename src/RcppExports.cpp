@@ -818,6 +818,25 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// guess_initial_old
+arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::vec& wv_empir, const arma::vec& tau, unsigned int B);
+RcppExport SEXP gmwm_guess_initial_old(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP);
+    Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type num_param(num_paramSEXP);
+    Rcpp::traits::input_parameter< double >::type expect_diff(expect_diffSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type wv_empir(wv_empirSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    __result = Rcpp::wrap(guess_initial_old(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B));
+    return __result;
+END_RCPP
+}
 // idf_arma
 arma::vec idf_arma(const arma::vec& ar, const arma::vec& ma, const double sigma2, unsigned int N, bool robust, double eff, unsigned int H);
 RcppExport SEXP gmwm_idf_arma(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP) {
