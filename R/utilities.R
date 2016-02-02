@@ -46,7 +46,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
     rn = c(seq_len(obs), seq.int(to=nrow(x), length.out=obs))
     print_dashes = TRUE
   } else {
-    print_lines = x
+    print_lines = head(x,nrow(x))
     rn = seq_len(nrow(x))
     print_dashes = FALSE
   }

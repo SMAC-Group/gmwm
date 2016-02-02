@@ -30,7 +30,7 @@
 #' gts3 = update(gts1, 'name', 'test2')
 #' attr(gts3, 'name')
 update.lts = function(object, type, new, keep.start = T, ...){
-  if(! type%in%c('start', 'end', 'freq', 'unit', 'name', 'process') ){
+  if(! (type%in%c('start', 'end', 'freq', 'unit', 'name', 'process')) ){
     stop("For lts object, you can only update 'start', 'end', 'freq', 'unit', 'name' and 'process'.")
   }
   update_obj(object, type, new, keep.start)
@@ -39,7 +39,7 @@ update.lts = function(object, type, new, keep.start = T, ...){
 #' @rdname update.lts
 #' @export
 update.gts = function(object, type, new, keep.start = T, ...){
-  if(! type%in%c('start', 'end', 'freq', 'unit', 'name') ){
+  if(! (type%in%c('start', 'end', 'freq', 'unit', 'name')) ){
     stop("For gts object, you can only update 'start', 'end', 'freq', 'unit' and 'name'.")
   }
   update_obj(object, type, new, keep.start)
@@ -48,7 +48,7 @@ update.gts = function(object, type, new, keep.start = T, ...){
 #' @rdname update.lts
 #' @export
 update.imu = function(object, type, new, ...){
-  if(! type%in%c('axis', 'freq', 'unit', 'name') ){
+  if(! (type%in%c('axis', 'freq', 'unit', 'name')) ){
     stop("For imu object, you can only update 'axis', 'freq', 'unit', 'name'.")
   }
   update_obj(object, type, new)
@@ -95,7 +95,7 @@ update_obj = function(object, type, new, keep.start = T){
     }
     
   }else if(type == 'unit'){
-    if(!new %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
+    if(!(new %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year'))){
       stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
     }
     
