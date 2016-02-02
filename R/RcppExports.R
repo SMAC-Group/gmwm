@@ -921,6 +921,23 @@ gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, al
 #' @param N A \code{integer} that contains the number of observations in the data.
 #' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
 #' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+#' @param B A \code{integer} that indicates how many random draws that should be performed.
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @keywords internal
+#' @examples
+#' #TBA
+NULL
+
+#' @title Randomly guess a starting parameter
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param desc A \code{vector<string>} that contains the model's components.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @param model_type A \code{string} that indicates whether it is an SSM or sensor.
+#' @param num_param An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
+#' @param N A \code{integer} that contains the number of observations in the data.
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
 #' @param double A \code{double} that contains the drift slope given by \eqn{\frac{max-min}{N}}{(Max-Min)/N}
 #' @param G A \code{integer} that indicates how many random draws that should be performed.
 #' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
@@ -956,25 +973,6 @@ ar1_draw <- function(draw_id, last_phi, sigma2_total, model_type) {
 #' #TBA
 arma_draws <- function(p, q, sigma2_total) {
     .Call('gmwm_arma_draws', PACKAGE = 'gmwm', p, q, sigma2_total)
-}
-
-#' @title Randomly guess a starting parameter
-#' @description Sets starting parameters for each of the given parameters. 
-#' @param desc A \code{vector<string>} that contains the model's components.
-#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
-#' @param model_type A \code{string} that indicates whether it is an SSM or sensor.
-#' @param num_param An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
-#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
-#' @param N A \code{integer} that contains the number of observations in the data.
-#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
-#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
-#' @param B A \code{integer} that indicates how many random draws that should be performed.
-#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
-#' @keywords internal
-#' @examples
-#' #TBA
-guess_initial_old <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
-    .Call('gmwm_guess_initial_old', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
 }
 
 #' @title Indirect Inference for ARMA
