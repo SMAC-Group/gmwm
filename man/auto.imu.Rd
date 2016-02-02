@@ -52,7 +52,7 @@ library("imudata")
 data(imu6)
 
 # Example 1
-test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+test1 = imu(imu6, gyros = 1:3, accels = NULL, axis = c('X', 'Y', 'Z'), freq = 100)
 
 m = auto.imu(test1)
 

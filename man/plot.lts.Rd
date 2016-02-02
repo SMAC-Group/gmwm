@@ -8,8 +8,8 @@
   scales = "free", line.type = NULL, line.color = NULL,
   point.size = NULL, point.shape = NULL, title = NULL, title.size = 15,
   axis.label.size = 13, axis.tick.size = 11, axis.x.label = NULL,
-  axis.y.label = NULL, facet.label.size = 13, ncol = 1, nrow = NULL,
-  ...)
+  axis.y.label = NULL, facet.label.size = 13,
+  facet.label.background = "#003C7D33", ncol = 1, nrow = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{lts} object}
@@ -42,6 +42,8 @@
 
 \item{facet.label.size}{An \code{integer} that indicates the size of facet label.}
 
+\item{facet.label.background}{A \code{string} that indicates the background color of the facet label.}
+
 \item{ncol}{An \code{integer} that indicates number of columns.}
 
 \item{nrow}{An \code{integer} that indicates number of rows.}
@@ -49,15 +51,18 @@
 \item{...}{other arguments passed to specific methods.}
 }
 \value{
-A ggplot2 panel containing the graph of latent time series.
+A \code{ggplot2} panel containing the graph of latent time series.
 }
 \description{
-This function is implemented with ggplot2.
+Plots the graph of latent time series using \code{ggplot2}
 }
 \examples{
 model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-res = gen.lts(model)
+res = gen.lts(model, N = 100)
 plot(res)
+
+# Modify the graph aesthetics
+plot(res, line.color = c('blue', 'green', 'black'), point.size = c(1,1,1))
 }
 \author{
 Wenchao

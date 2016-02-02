@@ -4,28 +4,33 @@
 \alias{lts}
 \title{Generate Latent Time Series Object Based on Data}
 \usage{
-lts(data, freq = 1, unit = NULL, name = "", process = NULL)
+lts(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL,
+  process = NULL)
 }
 \arguments{
 \item{data}{A multiple-column \code{matrix} or \code{data.frame}. It must contain at least 2 columns. The last column must equal to the sum of all previous columns.}
+
+\item{start}{A \code{numeric} that provides the time of the first observation.}
+
+\item{end}{A \code{numeric} that provides the time of the last observation.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
 \item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
 
-\item{name}{A \code{string} that provides an identifier to the data. Default value is an empty string.}
+\item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
 
 \item{process}{A \code{vector} that contains model names of decomposed and combined processes.}
 }
 \value{
-A \code{lts} object with the structure:
-\itemize{
-  \item{x:} {A \code{matirx} that contains x-axis values to plot}
-  \item{process:} {A \code{vector} that contains model names of decomposed and combined processes}
-  \item{data:} {A \code{matrix} that contains data for decomposed and combined processes}
-  \item{freq:} {Numeric representation of frequency}
-  \item{unit:} {String representation of the unit}
-  \item{name:} {Name of the dataset}
+A \code{lts} object with the following attributes:
+\describe{
+  \item{start}{The time of the first observation}
+  \item{end}{The time of the last observation}
+  \item{freq}{Numeric representation of frequency}
+  \item{unit}{String representation of the unit}
+  \item{name}{Name of the dataset}
+  \item{process}{A \code{vector} that contains model names of decomposed and combined processes}
 }
 }
 \description{
@@ -34,8 +39,8 @@ Create a \code{lts} object based on a supplied matrix or data frame.
 \examples{
 model1 = AR1(phi = .99, sigma = 1) 
 model2 = WN(sigma2=1)
-col1 = gen.gts(model1, N = 1000)$data
-col2 = gen.gts(model2, N = 1000)$data
+col1 = gen.gts(model1, N = 1000)
+col2 = gen.gts(model2, N = 1000)
 testMat = cbind(col1, col2, col1+col2)
 testLts = lts(testMat, unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 plot(testLts)

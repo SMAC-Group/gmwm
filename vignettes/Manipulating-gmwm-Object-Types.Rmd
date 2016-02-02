@@ -104,13 +104,13 @@ vals = cbind(rnorm(N),
 
 # Basic
 x = imu(vals,
-        gyroscope = 1:2, 
-        accelerometer = 3:4)
+        gyros = 1:2, 
+        accels = 3:4)
 
 # Advanced
 x = imu(vals,
-        gyroscope = 1:2, 
-        accelerometer = 3:4,
+        gyros = 1:2, 
+        accels = 3:4,
         axis = c("A","B"), 
         freq = 5, unit = "sec", name = "Example 3 Data")
 ```
