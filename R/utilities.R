@@ -1,3 +1,60 @@
+# Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+#
+# This file is part of GMWM R Methods Package
+#
+# The `gmwm` R package is free software: you can redistribute it and/or modify it
+# under the terms of the Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+# included within the packages source as the LICENSE file.
+#
+# The `gmwm` R package is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# You should have received a copy of the Attribution-NonCommercial-ShareAlike 4.0 International 
+# (CC BY-NC-SA 4.0) along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
+
+
+#' Latest Version of Package on CRAN
+#' 
+#' Determines the version number on cran via obtaining the packages page
+#' 
+#' @param pkg         Name of Package
+#' @param cran_url    URL to CRAN Packages
+#' @return A \code{vector} of \code{string}s that contain:
+#' \itemize{
+#' \item the verison of the package on cran
+#' \item release date of the package on cran
+#' }
+#' @examples 
+#' library(gmwm)
+#' packageVersion("gmwm")
+#' packageVersionCRAN("gmwm")
+#' 
+#' @author JJB
+packageVersionCRAN = function(pkg, cran_url="http://cran.r-project.org/web/packages/")
+{
+  
+  cran_pkg_loc = paste0(cran_url,pkg)
+  
+  suppressWarnings( conn <- try( url(cran_pkg_loc) , silent=TRUE ) )
+  
+  if ( all( class(conn) != "try-error") ) {
+    suppressWarnings( cran_pkg_page <- try( readLines(conn) , silent=TRUE ) )
+    close(conn)
+  } else {
+    return(NULL)
+  }
+  
+  version_line = cran_pkg_page[grep("Version:",cran_pkg_page)+1]
+  version_num_cran = gsub("<(td|\\/td)>","",version_line)
+  
+  publish_line = cran_pkg_page[grep("Published:",cran_pkg_page)+1]
+  publish_date_cran = gsub("<(td|\\/td)>","",publish_line)
+  
+  c(version_num_cran,publish_date_cran)  
+}
+
+
 #' @title Print GMWM Data Object
 #' @description 
 #' Pretty formatting for \code{gts}, \code{imu}, and \code{lts} objects.

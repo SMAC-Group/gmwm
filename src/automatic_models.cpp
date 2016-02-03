@@ -334,6 +334,13 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Define WV Empirical
   arma::vec wv_empir = master(2);
   
+  // Create WV Matrix
+  
+  arma::mat wv(wv_empir.n_elem,3);
+  wv.col(0) = wv_empir;
+  wv.col(1) = master(3);
+  wv.col(2) = master(4);
+  
   // Get the original "FAST" matrix
   arma::mat orgV = master(6); // Original V
   
@@ -352,10 +359,12 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Calculate the values of the Scales 
   arma::vec scales = scales_cpp(floor(log2(N)));
   
+  double dr_slope = arma::as_scalar(master(12));
+  
   // ------------------------------------
   
   // Store output from default GMWM object
-  arma::field<arma::mat> mod_output(12);
+  arma::field<arma::mat> mod_output(13);
   mod_output(0) = theta;
   mod_output(1) = master(1);
   mod_output(2) = wv_empir;
@@ -368,7 +377,9 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   mod_output(9) = master(9);
   mod_output(10) = obj_value;
   mod_output(11) = omega;
+  mod_output(12) = dr_slope;
   
+    
   // ------------------------------------
   
   // Here we set up specifics that are used not in a specific mode.
@@ -429,8 +440,8 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
       
       // Run the update version of the GMWM
       arma::field<arma::mat> update = gmwm_update_cpp(theta, desc, objdesc, model_type, 
-                                                      N, expect_diff, 
-                                                      orgV, scales, wv_empir,
+                                                      N, expect_diff, dr_slope,
+                                                      orgV, scales, wv,
                                                       true, //starting
                                                       "fast", 
                                                       K,H,G, 

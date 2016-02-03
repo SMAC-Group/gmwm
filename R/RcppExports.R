@@ -882,8 +882,8 @@ gmwm_engine <- function(theta, desc, objdesc, model_type, wv_empir, omega, scale
 #' @keywords internal
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
-gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff) {
-    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff)
+gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff) {
+    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff)
 }
 
 #' @title Master Wrapper for the GMWM Estimator
@@ -909,6 +909,26 @@ gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, or
 #' @backref src/gmwm_logic.h
 gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff) {
     .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
+}
+
+#' @title Randomly guess a starting parameter
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param desc A \code{vector<string>} that contains the model's components.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @param model_type A \code{string} that indicates whether it is an SSM or sensor.
+#' @param num_param An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
+#' @param N A \code{integer} that contains the number of observations in the data.
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+#' @param double A \code{double} that contains the drift slope given by \eqn{\frac{max-min}{N}}{(Max-Min)/N}
+#' @param G A \code{integer} that indicates how many random draws that should be performed.
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @keywords internal
+#' @examples
+#' #TBA
+guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G) {
+    .Call('gmwm_guess_initial', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G)
 }
 
 #' @title Randomly guess starting parameters for AR1
@@ -953,8 +973,8 @@ arma_draws <- function(p, q, sigma2_total) {
 #' @keywords internal
 #' @examples
 #' #TBA
-guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
-    .Call('gmwm_guess_initial', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+guess_initial_old <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
+    .Call('gmwm_guess_initial_old', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
 }
 
 #' @title Indirect Inference for ARMA

@@ -180,7 +180,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   # Input guessing
   if((is.null(G) & starting) || !is.whole(G)){
     if(N > 10000){
-      G = 1000
+      G = 10000
     }else{
       G = 20000
     }
@@ -296,7 +296,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
                        model.hat = model.hat,
                        starting = model$starting,
                        seed = seed,
-                       freq = freq), class = "gmwm")
+                       freq = freq,
+                       dr.slope = out[[13]]), class = "gmwm")
   invisible(out)
 }
 
@@ -410,14 +411,13 @@ update.gmwm = function(object, model, ...){
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
                   model$theta,
                   desc, obj, 
-                  object$model.type, object$N, object$expect.diff, 
-                  object$orgV, object$scales, object$wv.empir,
+                  object$model.type, object$N, object$expect.diff, object$dr.slope,
+                  object$orgV, object$scales, cbind(object$wv.empir,object$ci.low,object$ci.high), # needed WV info
                   model$starting, 
                   object$compute.v, object$K, object$H,
                   object$G, 
                   object$robust, object$eff)
 
-  print(out)
   estimate = out[[1]]
   
   model.hat = model

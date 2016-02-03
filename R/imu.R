@@ -240,7 +240,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 read.imu = function(file, type, unit = NULL, name = NULL){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  create_imu(d[[1]][,-1], 3, 3, c('x','y','z'), d[[2]][1], unit = unit, name = name)
+  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1], unit = unit, name = name)
 }
 
 

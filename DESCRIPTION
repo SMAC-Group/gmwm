@@ -1,8 +1,8 @@
 Package: gmwm
 Type: Package
 Title: Generalized Method of Wavelet Moments
-Version: 1.0.1
-Date: 2015-12-28
+Version: 2.0.0
+Date: 2016-01-31
 Authors@R: c(
     person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
     person("Stephane", "Guerrier", , "stephane@illinois.edu", c("ctb","cre","cph")),
