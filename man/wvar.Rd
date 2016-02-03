@@ -8,23 +8,25 @@
 \alias{wvar.lts}
 \title{Wavelet Variance}
 \usage{
-wvar(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE,
-  eff = 0.6)
+wvar(x, ...)
 
 \method{wvar}{lts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6)
+  robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
 \method{wvar}{gts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6)
+  robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
 \method{wvar}{default}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6)
+  robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL,
+  to.unit = NULL, ...)
 
 \method{wvar}{imu}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = F, eff = 0.6)
+  robust = F, eff = 0.6, to.unit = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object.}
+
+\item{...}{Further arguments passed to or from other methods.}
 
 \item{decomp}{A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.}
 
@@ -35,16 +37,23 @@ wvar(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE,
 \item{robust}{A \code{boolean} that triggers the use of the robust estimate.}
 
 \item{eff}{A \code{double} that indicates the efficiency as it relates to an MLE.}
+
+\item{to.unit}{A \code{string} indicating the unit which the data is converted to.}
+
+\item{freq}{A \code{numeric} that provides the rate of samples.}
+
+\item{from.unit}{A \code{string} indicating the unit which the data is converted from.}
 }
 \value{
 A \code{list} with the structure:
 \describe{
-  \item{"variance"}{Wavelet Variance},
+  \item{"variance"}{Wavelet Variance}
   \item{"ci_low"}{Lower CI}
   \item{"ci_high"}{Upper CI}
   \item{"robust"}{Robust active}
   \item{"eff"}{Efficiency level for Robust}
   \item{"alpha"}{p value used for CI}
+  \item{"unit"}{String representation of the unit}
 }
 }
 \description{
@@ -71,7 +80,7 @@ if(!require("imudata")){
 }
 
 data(imu6)
-test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+test = imu(imu6, gyros = 1:3, accels = 4:6, freq = 100)
 df = wvar.imu(test)
 }
 }

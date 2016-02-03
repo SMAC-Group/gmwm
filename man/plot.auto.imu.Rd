@@ -67,7 +67,7 @@ if(!require("imudata")){
 }
 
 data(imu6)
-test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
 df = auto.imu(test)
 plot(df)
 plot(df, CI = F)

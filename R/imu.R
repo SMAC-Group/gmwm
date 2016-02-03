@@ -15,28 +15,31 @@
 
 #' @title Create an IMU Object
 #' @description Builds an IMU object that provides the program with gyroscope, accelerometer, and axis information per column in the dataset.
-#' @param object        A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.
-#' @param gyroscope     A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.
-#' @param accelerometer A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.
-#' @param axis          A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.
-#' @param freq          An \code{integer} that provides the frequency for the data.
-#' @return An \code{imu} object in the following structure:
+#' @param data A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.
+#' @param gyros A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.
+#' @param accels A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.
+#' @param axis A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.
+#' @param freq An \code{integer} that provides the frequency for the data.
+#' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
+#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
+#' @return An \code{imu} object in the following attributes:
 #' \describe{
-#'   \item{data}{A \code{matirx} that contains gyroscope and accelerometer data.}
 #'   \item{sensor}{A \code{vector} that indicates whether data contains gyroscope sensor, accelerometer sensor, or both.}
 #'   \item{num.sensor}{A \code{vector} that indicates how many columns of data are for gyroscope sensor and accelerometer sensor.}
 #'   \item{axis}{Axis value such as 'X', 'Y', 'Z'.}
 #'   \item{freq}{Observations per second.}
+#'   \item{unit}{String representation of the unit.}
+#'   \item{name}{Name of the dataset.}
 #' }
 #' @details 
-#' \code{object} can be a numeric vector, matrix or data frame.
+#' \code{data} can be a numeric vector, matrix or data frame.
 #' 
-#' \code{gyroscope} and \code{accelerometer} cannot be \code{NULL} at the same time, but it will be fine if one of them is \code{NULL}.
-#' Also, in order to plot the graph, the length of \code{gyroscope} and \code{accelerometer} are restricted to be equal.
+#' \code{gyros} and \code{accels} cannot be \code{NULL} at the same time, but it will be fine if one of them is \code{NULL}.
+#' Also, in order to plot the graph, the length of \code{gyros} and \code{accels} are restricted to be equal.
 #' 
-#' In \code{axis}, duplicate elements are not alowed. If one of parameters between \code{gyroscope} and \code{accelerometer}
+#' In \code{axis}, duplicate elements are not alowed. If one of parameters between \code{gyros} and \code{accels}
 #' is \code{NULL}, specify the axis for each column of data. Check example 1 for help. If both of them are not \code{NULL}, specify the
-#' \code{axis} only for one parameter (\code{gyroscope} or \code{accelerometer}). Check example 2 for help.
+#' \code{axis} only for one parameter (\code{gyros} or \code{accels}). Check example 3 for help.
 #' 
 #' \code{axis} will be automatically generated if there are less than or equal to 3 axises.
 #' 
@@ -50,54 +53,54 @@
 #' 
 #' data(imu6)
 #' 
-#' # Example 1 - Only Gyros
-#' test1 = imu(imu6, gyroscope = 1:3, freq = 100)
+#' # Example 1 - Only gyros
+#' test1 = imu(imu6, gyros = 1:3, axis = c('X', 'Y', 'Z'), freq = 100)
 #' df1 = wvar.imu(test1)
 #' plot(df1)
 #' 
 #' # Example 2 - One gyro and one accelerometer
-#' test2 = imu(imu6, gyroscope = 1, accelerometer = 4, freq = 100)
+#' test2 = imu(imu6, gyros = 1, accels = 4, freq = 100)
 #' df2 = wvar.imu(test2)
 #' plot(df2)
 #' 
 #' # Example 3 - 3 gyros and 3 accelerometers
-#' test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+#' test3 = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
 #' df3 = wvar.imu(test3)
 #' plot(df3)
 #' 
 #' # Example 4 - Custom axis
-#' test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('A', 'B'), freq = 100)
+#' test4 = imu(imu6, gyros = 1:2, accels = 4:5, axis = c('A', 'B'), freq = 100)
 #' df4 = wvar.imu(test4)
 #' plot(df4)
 #' }
-imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq = NULL){
+imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit = NULL, name = NULL){
   
-  # Check object
-  if(is.null(object) || !(is.numeric(object)||is.data.frame(object)||is.matrix(object)) ) {
-    stop('Object must a numeric vector, data frame, or matrix.')
+  # 1. Check object
+  if(is.null(data) || !(is.numeric(data)||is.data.frame(data)||is.matrix(data)) ) {
+    stop('Data must a numeric vector, data frame, or matrix.')
   }
   
-  if(is.numeric(object)){
-    object = as.matrix(object)
+  if(is.numeric(data)){
+    data = as.matrix(data)
   }
   
-  if(is.data.frame(object)){
-    object = as.matrix(object)
+  if(is.data.frame(data)){
+    data = as.matrix(data)
   }
-  colnames(object) = NULL
+  colnames(data) = NULL
   
-  # Check gyro and acce
-  gyro = gyroscope
-  acce = accelerometer
+  # 2. Check gyro and acce
+  gyro = gyros
+  acce = accels
   
   ngyros = length(gyro)
   nacces = length(acce)
   
   if(is.null(gyro) && is.null(acce)){
-    stop('At lease one of parameters (gyroscope or accelerometer) must be not NULL.') 
+    stop("At lease one of parameters ('gyros' or 'accels') must be not NULL.") 
   }else if(!is.null(gyro) && !is.null(acce)){
     if(ngyros != nacces){
-      stop('Object must have equal number of columns for gyroscope and accelerometer sensor.')
+      stop('Data must have equal number of columns for gyroscope and accelerometer sensor.')
     }
   }
   
@@ -105,17 +108,17 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq
   index = c(gyro, acce)
   
   if(!is.whole(index)){
-    stop('Paramater gyroscope and accelerometer must be a vector of integers.')
+    stop("Paramater 'gyros' and 'accels' must be vectors of integers.")
   }
   
-  if(any(gyro > ncol(object)) || any(gyro < 1)){
+  if(any(gyro > ncol(data)) || any(gyro < 1)){
     stop('Index for gyroscope is out of bound.')
   }
-  if(any(acce > ncol(object)) || any(acce < 1)){
+  if(any(acce > ncol(data)) || any(acce < 1)){
     stop('Index for accelerometer is out of bound.')
   }
   
-  # If the user supplies the axis, check input to make sure it is 'good'.
+  # 3. Check 'axis': if the user supplies the axis, check input to make sure it is 'good'.
   if(!is.null(axis)){
     
     # Duplicate elements are not allowed
@@ -125,11 +128,11 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq
     
     if(!is.null(gyro) && !is.null(acce)){  
       if(2*length(axis) != length(index)){
-        stop('When `gyroscope` and `accelerometer` are both not NULL, specify the axis only for one sensor.')
+        stop('When `gyros` and `accels` are both not NULL, specify the axis only for one sensor.')
       }
     }else{
       if(length(axis) != length(index)){
-        stop('If only one parameter between gyroscope and accelerometer are not NULL, specify the axis for each column of data.')
+        stop("If only one parameter between 'gyros' and 'accels' are not NULL, specify the axis for each column of data.")
       }
     }
     
@@ -146,29 +149,56 @@ imu = function(object, gyroscope = NULL, accelerometer = NULL, axis = NULL, freq
                   )
   }
   
+  # 4. Check freq
   if(is.null(freq)){
     freq = 100
-    warning("`freq` has not been specified. Setting `imu` object's frequency to 100. \n Please recreate the object if the frequency is incorrect.")
+    warning("`freq` has not been specified. Setting `imu` data's frequency to 100. \n Please recreate the object if the frequency is incorrect.")
+  }
+  if(!is(freq,"numeric") || length(freq) != 1){ stop("'freq' must be one numeric number.") }
+  if(freq <= 0) { stop("'freq' must be larger than 0.") }
+  
+  # 5. do not need 'start' and 'end'
+  
+  # 6. unit = NULL
+  if(!is.null(unit)){
+    if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
+      stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
+    }
   }
   
-  invisible(create_imu(object[,index, drop = F], ngyros, nacces, axis, freq))
+  create_imu(data[,index, drop = F], ngyros, nacces, axis, freq, unit = unit, name = name)
 }
 
 #' @title Internal IMU Object Construction
 #' @description Internal quick build for imu object.
-#' @param object  A \code{matrix} with dimensions N x length(index)
-#' @param ngyros  A \code{integer} containing the number of gyroscopes
-#' @param naccess A \code{integer} containing the number of accelerometers
-#' @param axis    A \code{vector} unique representation of elements e.g. x,y,z or x,y or x.
-#' @param freq    An \code{integer} that provides the frequency for the data.
+#' @param data A \code{matrix} with dimensions N x length(index)
+#' @param ngyros An \code{integer} containing the number of gyroscopes
+#' @param naccess An \code{integer} containing the number of accelerometers
+#' @param axis A \code{vector} unique representation of elements e.g. x,y,z or x,y or x.
+#' @param freq An \code{integer} that provides the frequency for the data.
+#' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
+#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
 #' @return An \code{imu} object class.
 #' @keywords internal
-create_imu = function(object, ngyros, nacces, axis, freq){
-  invisible(structure(list(data = object,
-                           sensor = c(rep("Gyroscope",ngyros > 0), rep("Accelerometer",nacces > 0)),
-                           num.sensor = c(ngyros, nacces),
-                           axis = axis,
-                           freq = freq), class = "imu"))
+create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL){
+  
+  if(ngyros>0 && nacces>0){
+    colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis), paste( rep('Accel.', times = nacces), axis))
+  }else if (ngyros > 0){
+    colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis))
+  }else{
+    colnames(data) = c(paste(rep('Accel.', times = nacces), axis))
+  }
+   
+  out = structure(data, 
+                  sensor = c(rep("Gyroscope",ngyros > 0), rep("Accelerometer",nacces > 0)),
+                  num.sensor = c(ngyros, nacces),
+                  axis = axis,
+                  freq = freq,
+                  unit = unit,
+                  name = name, 
+                  class = c("imu","matrix"))
+
 }
 
 #' @title Read an IMU Binary File into R
@@ -178,6 +208,8 @@ create_imu = function(object, ngyros, nacces, axis, freq){
 #' 
 #' @param file A \code{string} containing file names or paths.
 #' @param type A \code{string} that contains a supported IMU type given below.
+#' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
+#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
 #' @details
 #' Currently supports the following IMUs:
 #' \itemize{
@@ -205,10 +237,10 @@ create_imu = function(object, ngyros, nacces, axis, freq){
 #' # Fixed path
 #' b = read.imu(file = "F:/Desktop/short_test_data.imu", type = "IXSEA")
 #' }
-read.imu = function(file, type){
+read.imu = function(file, type, unit = NULL, name = NULL){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  invisible(create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1]))
+  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1], unit = unit, name = name)
 }
 
 
@@ -249,7 +281,7 @@ read.imu = function(file, type){
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, freq = 100)
 #' df = wvar.imu(test)
 #' 
 #' ## Plot in split way
@@ -321,7 +353,7 @@ plot.wvar.imu = function(x, split = TRUE, CI = TRUE, background = 'white', trans
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, freq = 100)
 #' df = wvar.imu(test)
 #' 
 #' ## Plot in split way
@@ -779,7 +811,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
 #' df = auto.imu(test)
 #' plot(df)
 #' plot(df, CI = F)
@@ -840,7 +872,7 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'))
 #' df = auto.imu(test)
 #' autoplot(df)
 #' autoplot(df, CI = F)
@@ -896,6 +928,9 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
   num.sensor = object[[1]][[2]]$num.sensor
   ncols = sum(num.sensor)
   
+  #what is freq
+  freq = object[[1]][[2]]$freq
+  
   #what is axis
   if(num.sensor[1] == 0 || num.sensor[2] == 0){##only "Accelerometer"/only "Gyroscope"
     axis = rep(0, ncols)
@@ -943,7 +978,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     for (i in 1:ncols){
       d = each.len[i]
       
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
                                    emp = obj.list[[i]]$wv.empir,
                                    low = obj.list[[i]]$ci.low,
                                    high = obj.list[[i]]$ci.high,
@@ -960,7 +995,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     for (i in 1:ncols){
       d = each.len[i]
       
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
                                    emp = obj.list[[i]]$wv.empir,
                                    low = obj.list[[i]]$ci.low,
                                    high = obj.list[[i]]$ci.high,
@@ -984,7 +1019,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
       }
       
       d = each.len[i]
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales,
+      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
                                    emp = obj.list[[i]]$wv.empir,
                                    low = obj.list[[i]]$ci.low,
                                    high = obj.list[[i]]$ci.high,

@@ -151,6 +151,7 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' @param B          A \code{integer} that contains the amount of bootstrap replications
 #' @param G          A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @param seed       A \code{integer} that is used to set a seed for reproducibility.
+#' @param freq       A \code{double} that represents the frequency between observations.
 #' @details 
 #' The models MUST be nested within each other. 
 #' If the models are not nested, the algorithm creates the "common denominator" model.
@@ -165,14 +166,14 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
 rank.models = function(data, ..., nested = F, bootstrap = F, 
-                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
+                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, freq = 1, seed = 1337){
   
   set.seed(seed)
+  
+  models = list(...)
   numObj = length(models)
   desc = vector("list", numObj) 
   
-  models = list(...)
-
   gmterm = FALSE
   
   for(i in 1:numObj){
@@ -194,21 +195,18 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
     desc[[i]] = mod$desc
   }
   
-  freq = 1
-  
   if(is.gts(data)){
-    freq = data$freq
-    data = data$data
+    freq = attr(data, 'freq')
+    
   }else if(is.data.frame(data) || is.matrix(data) || is.imu(data)){
     if(ncol(data) > 1){
       stop("`rank.models()` is not supported for multiple columns.")
     }
     if(is.imu(data)){
-      freq = data$freq
-      data = data$data
+      freq = attr(data, 'freq')
     }
   }else if(is.lts(data)){
-    data = data$data[,ncol(data$data)]
+    data = data[,ncol(data)]
   }
   
   if(nested == F){
@@ -274,7 +272,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' data(imu6)
 #' 
 #' # Example 1
-#' test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+#' test1 = imu(imu6, gyros = 1:3, accels = NULL, axis = c('X', 'Y', 'Z'), freq = 100)
 #' 
 #' m = auto.imu(test1)
 #' 
@@ -298,9 +296,9 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   }
   
   # Extract data for IMU Injection
-  sensors = data$sensor
-  num.sensor = data$num.sensor
-  axis = data$axis
+  sensors = attr(data, 'sensor')
+  num.sensor = attr(data, 'num.sensor')
+  axis = attr(data, 'axis')
 
   # Set seed for reproducible results
   # Need to figure out a way to do set same seed on each model generation.
@@ -311,7 +309,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data$data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
   
   # Handle post processing
   
@@ -330,9 +328,10 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   a.gyro = 0
   a.acc = 0
   
+  freq = attr(data, 'freq')
   for(i in 1:ncol(data)){
     obj = out[[i]]
-    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, data$freq)
+    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, freq)
     
     obj.gmwm = obj[[2]]
     if(a.acc != n.acc){

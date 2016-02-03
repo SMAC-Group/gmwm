@@ -103,7 +103,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
     rn = c(seq_len(obs), seq.int(to=nrow(x), length.out=obs))
     print_dashes = TRUE
   } else {
-    print_lines = x$data
+    print_lines = head(x,nrow(x))
     rn = seq_len(nrow(x))
     print_dashes = FALSE
   }
@@ -113,7 +113,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
   }else{
     rownames(print_lines) = rep("", nrow(print_lines))
   }
-  if(is.null(names(x$data))){
+  if(is.null(colnames(x))){
     colnames(print_lines) = rep("NA", ncol(print_lines))
   }
   if(print_dashes) {
@@ -121,7 +121,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
     rownames(print_lines) = format(rownames(print_lines),justify="right")
   }
   
-  print(print_lines,right=TRUE,quote=FALSE)
+  print.default(print_lines,right=TRUE,quote=FALSE)
   return(invisible())
 }
 
@@ -160,85 +160,6 @@ is.wvar = function(x){ inherits(x, "wvar") }
 is.ts.model = function(x){ inherits(x, "ts.model") }
 
 
-#' @title Dimensions of GMWM Objects
-#' @description 
-#' Returns the dimensions of a 
-#' \code{gts}, \code{imu}, or \code{lts} object.
-#' @param x  A \code{gts}, \code{imu}, \code{lts} object.
-#' @return 
-#' A \code{vector} with two elements.
-#' 
-#' The first element contains the number of rows. 
-#' The second element contains the number of columns.
-#' @author JJB
-#' @rdname dim_func
-#' @export
-dim.gts = function(x){ dim(x$data) }
-
-#' @rdname dim_func
-#' @export
-dim.imu = function(x){ dim(x$data) }
-
-#' @rdname dim_func
-#' @export
-dim.lts = function(x){ dim(x$data) }
-
-#' @title The Number of Rows/Columns of a GMWM Object
-#' @description 
-#' Returns either the number of rows or columns of a 
-#' \code{gts}, \code{imu}, or \code{lts} object.
-#' @param x  A \code{gts}, \code{imu}, \code{lts} object.
-#' @return 
-#' An \code{\link[base]{integer}} of length 1 or \code{\link[base]{NULL}}
-#' @author JJB
-#' @rdname nvals_func
-#' @export
-ncol.gts = function(x){ ncol(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NCOL.gts = function(x){ ncol.gts(x)}
-
-#' @rdname nvals_func
-#' @export
-nrow.gts = function(x){ nrow(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NROW.gts = function(x){ nrow.gts(x)}
-
-#' @rdname nvals_func
-#' @export
-ncol.imu = function(x){ ncol(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NCOL.imu = function(x){ ncol.imu(x) }
-
-#' @rdname nvals_func
-#' @export
-nrow.imu = function(x){ nrow(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NROW.imu = function(x){ nrow.imu(x)}
-
-#' @rdname nvals_func
-#' @export
-ncol.lts = function(x){ ncol(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NCOL.lts = function(x){ ncol.lts(x) }
-
-#' @rdname nvals_func
-#' @export
-nrow.lts = function(x){ nrow(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NROW.lts = function(x){ nrow.lts(x)}
-
 #' @title Obtain the value of an object's properties
 #' @description 
 #' Used to access different properties of the
@@ -264,56 +185,12 @@ value = function(x, type){
 #' @describeIn value Access \code{imu} object properties
 #' @export
 value.imu = function(x, type){
-    switch(type,
-           accel   = x$num.sensor[1],
-           gyro    = x$num.sensor[2],
-           sensors = sum(x$num.sensor),
-           stop("The `type` specified is not an available slot")
-    ) 
-}
-
-
-#' @title Return the First or Last Part of a GMWM Object
-#' @description Returns the first or last \eqn{n} observations of a \code{gts}, \code{imu}, or \code{lts} object.
-#' @param x   A \code{gts}, \code{imu}, or \code{lts} object.
-#' @param n   A \code{integer} indicating how many observations should be displayed
-#' @param ... Arguments to be passed to or from other methods.
-#' @return The method will return a matrix with \eqn{n} observations.
-#' @author JJB
-#' @rdname head_tail
-#' @export
-head.imu = function(x, n = 6L, ...){
-  head(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-tail.imu = function(x, n = 6L, ...){
-  tail(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-head.gts = function(x, n = 6L, ...){
-  head(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-tail.gts = function(x, n = 6L, ...){
-  tail(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-head.lts = function(x, n = 6L, ...){
-  head(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-tail.lts = function(x, n = 6L, ...){
-  tail(x$data, n)
+  switch(type,
+         accel   = attr(x, 'num.sensor')[1],
+         gyro    = attr(x, 'num.sensor')[2],
+         sensors = sum(attr(x, 'num.sensor')),
+         stop("The `type` specified is not an available slot")
+  ) 
 }
 
 #' @title Obtain the value of an object's properties
@@ -341,9 +218,9 @@ has = function(x, type){
 #' @export
 has.imu = function(x, type){
   switch(type,
-         accel   = x$num.sensor[1] > 0,
-         gyro    = x$num.sensor[2] > 0,
-         sensors = x$num.sensor[1] > 0 & x$num.sensor[2] > 0,
+         accel   = attr(x, 'num.sensor')[1] > 0,
+         gyro    = attr(x, 'num.sensor')[2] > 0,
+         sensors = attr(x, 'num.sensor')[1] > 0 & attr(x, 'num.sensor')[2] > 0,
          stop("The `type` specified is not an available slot")
   ) 
 }
