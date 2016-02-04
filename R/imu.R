@@ -178,9 +178,10 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
 #' @param freq An \code{integer} that provides the frequency for the data.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
+#' @param stype A \code{string} that describes the sensor type. Default value is \code{NULL}.
 #' @return An \code{imu} object class.
 #' @keywords internal
-create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL){
+create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL, stype = NULL){
   
   if(ngyros>0 && nacces>0){
     colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis), paste( rep('Accel.', times = nacces), axis))
@@ -196,7 +197,8 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
                   axis = axis,
                   freq = freq,
                   unit = unit,
-                  name = name, 
+                  name = name,
+                  stype = stype,
                   class = c("imu","matrix"))
 
 }
@@ -240,7 +242,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 read.imu = function(file, type, unit = NULL, name = NULL){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1], unit = unit, name = name)
+  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1], unit = unit, name = name, stype = type)
 }
 
 

@@ -71,7 +71,15 @@ print.imu = function(x,
                      obs = 10L,
                      row.names = TRUE, ...)
 {
-  
+  if(!is.null(attr(x,"name"))){
+    cat("Data Name:",attr(x,"name"),"\n")
+  }
+  if(!is.null(attr(x,"stype"))){
+    cat("Sensor:",attr(x,"stype"),"@",attr(x,"freq"),"Hz\n")
+    cat("Obs:", nrow(x), " over ", round(nrow(x)/attr(x,"freq")/3600,2),"Hours \n")
+  }else{
+    cat("Freq:",attr(x,"freq"),"Hz\n")
+  }
   outf(x, obs, row.names, ...)
 }
 

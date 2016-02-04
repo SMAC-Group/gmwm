@@ -4,7 +4,8 @@
 \alias{create_imu}
 \title{Internal IMU Object Construction}
 \usage{
-create_imu(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL)
+create_imu(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL,
+  stype = NULL)
 }
 \arguments{
 \item{data}{A \code{matrix} with dimensions N x length(index)}
@@ -18,6 +19,8 @@ create_imu(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL)
 \item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
 
 \item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
+
+\item{stype}{A \code{string} that describes the sensor type. Default value is \code{NULL}.}
 
 \item{naccess}{An \code{integer} containing the number of accelerometers}
 }
