@@ -252,7 +252,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' 
 #' }
 #' 
-'[.imu' = function(x, i, j, ...){
+'[.imu' = function(x, i, j){
   
   axis = attr(x,"axis")
   sensor = attr(x,"sensor")

@@ -4,7 +4,7 @@
 \alias{[.imu}
 \title{Subset an IMU Object}
 \usage{
-\method{[}{imu}(x, i, j, ...)
+\method{[}{imu}(x, i, j)
 }
 \arguments{
 \item{x}{A \code{imu} object}
