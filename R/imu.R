@@ -203,6 +203,94 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 
 }
 
+#' Subset an IMU Object
+#' 
+#' Enables the IMU object to be subsettable. That is, you can load all the data in and then select certain properties.
+#' 
+#' @param x A \code{imu} object
+#' @param i A \code{integer vector} that specifies the rows to subset. If blank, all rows are selected.
+#' @param j A \code{integer vector} that specifies the columns to subset. Special rules apply see details.
+#' @return An \code{imu} object class.
+#' @details 
+#' When using the subset operator, note that all the Gyroscopes are placed at the front of object 
+#' and, then, the Accelerometers are placed.
+#' 
+#' The current implementation of this function requires the following:
+#' 
+#' \itemize{
+#' \item There must be the same number of Gyros & Accels per axis option. 
+#' \itemize{
+#' \item Good: 1 \bold{x}-gyro and 1 \bold{x}-accel
+#' \item Bad: 1 x-gyro and 1 z-accel
+#' }
+#' \item The column names are the default cast. (Backend)
+#' }
+#' 
+#' @examples 
+#' \dontrun{
+#' if(!require("imudata")){
+#' install_imudata()
+#' library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' 
+#' # Create an IMU Object that is full. 
+#' ex = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+#' 
+#' # Create an IMU object that has only gyros. 
+#' ex.gyro = ex[,1:3]
+#' ex.gyro2 = ex[,c("Gyro. X","Gyro. Y","Gyro. Z")]
+#' 
+#' # Create an IMU object that has only accels. 
+#' ex.accel = ex[,4:6]
+#' ex.accel2 = ex[,c("Accel. X","Accel. Y","Accel. Z")]
+#' 
+#' # Create an IMU object with both gyros and accels on axis X and Y
+#' ex.b = ex[,c(1,2,4,5)]
+#' ex.b2 = ex[,c("Gyro. X","Gyro. Y","Accel. X","Accel. Y")]
+#' 
+#' }
+#' 
+'[.imu' = function(x, i, j, ...){
+  
+  axis = attr(x,"axis")
+  sensor = attr(x,"sensor")
+  num.sensor = attr(x,"num.sensor")
+  
+  # If j is missing, then it is simply lowering the number of observations!
+  if(!missing(j)){
+    # Select column names picked by user
+    nc = colnames(x)[j]
+    
+    # Remove structure to get Gyros/Accels
+    g = gsub("\\..*","",nc)
+    ng = table(g)
+    
+    # Remove structure to get at X,Y,Z axis.
+    g2 = gsub(".* ","",nc)
+    ng2 = table(g2)
+    
+    # If we have multiples (e.g. Gyros & Accels), they should have the same amount.
+    if(length(names(ng)) == 2 && !all(ng == ng[1])){
+      stop("The same amount of `gyros` and `accels` must be present!")
+    }
+    
+    # Check if the axis have the same number.
+    if(!all(ng2 == ng2[1]) || (length(names(ng)) == 2 && length(names(ng2)) == 2)){
+      stop("The same amount of `axis` must be present.")
+    }
+    
+    axis = names(ng2)
+    sensor = names(ng)
+    num.sensor = c({if(!is.na(ng["Gyro"])) ng["Gyro"] else 0}, {if(!is.na(ng["Accel"])) ng["Accel"] else 0})
+  }
+  
+  create_imu(NextMethod("[", drop = FALSE),
+             num.sensor[1], num.sensor[2], axis, attr(x,"freq"), attr(x,"unit"), attr(x,"name"), attr(x,"stype"))
+  
+}
+
 #' @title Read an IMU Binary File into R
 #' 
 #' @description 
