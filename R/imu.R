@@ -206,10 +206,11 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' Subset an IMU Object
 #' 
 #' Enables the IMU object to be subsettable. That is, you can load all the data in and then select certain properties.
-#' 
-#' @param x A \code{imu} object
-#' @param i A \code{integer vector} that specifies the rows to subset. If blank, all rows are selected.
-#' @param j A \code{integer vector} that specifies the columns to subset. Special rules apply see details.
+#' @export
+#' @param x    A \code{imu} object
+#' @param i    A \code{integer vector} that specifies the rows to subset. If blank, all rows are selected.
+#' @param j    A \code{integer vector} that specifies the columns to subset. Special rules apply see details.
+#' @param drop A \code{boolean} indicating whether the structure should be preserved or simplified.
 #' @return An \code{imu} object class.
 #' @details 
 #' When using the subset operator, note that all the Gyroscopes are placed at the front of object 
@@ -225,7 +226,6 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' }
 #' \item The column names are the default cast. (Backend)
 #' }
-#' 
 #' @examples 
 #' \dontrun{
 #' if(!require("imudata")){
@@ -252,7 +252,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' 
 #' }
 #' 
-'[.imu' = function(x, i, j){
+'[.imu' = function(x, i, j, drop = FALSE){
   
   axis = attr(x,"axis")
   sensor = attr(x,"sensor")
@@ -284,6 +284,10 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
     axis = names(ng2)
     sensor = names(ng)
     num.sensor = c({if(!is.na(ng["Gyro"])) ng["Gyro"] else 0}, {if(!is.na(ng["Accel"])) ng["Accel"] else 0})
+  }
+  
+  if(drop){
+    return(NextMethod("[", drop = TRUE))
   }
   
   create_imu(NextMethod("[", drop = FALSE),

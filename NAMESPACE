@@ -2,6 +2,7 @@
 
 S3method("*",ts.model)
 S3method("+",ts.model)
+S3method("[",imu)
 S3method(autoplot,auto.imu)
 S3method(autoplot,gmwm)
 S3method(autoplot,gmwm1)

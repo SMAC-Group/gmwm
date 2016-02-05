@@ -4,7 +4,7 @@
 \alias{[.imu}
 \title{Subset an IMU Object}
 \usage{
-\method{[}{imu}(x, i, j)
+\method{[}{imu}(x, i, j, drop = FALSE)
 }
 \arguments{
 \item{x}{A \code{imu} object}
@@ -12,6 +12,8 @@
 \item{i}{A \code{integer vector} that specifies the rows to subset. If blank, all rows are selected.}
 
 \item{j}{A \code{integer vector} that specifies the columns to subset. Special rules apply see details.}
+
+\item{drop}{A \code{boolean} indicating whether the structure should be preserved or simplified.}
 }
 \value{
 An \code{imu} object class.
