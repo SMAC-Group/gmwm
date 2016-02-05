@@ -33,7 +33,7 @@ install_imudata = function(type="ONL",loc=NULL){
   type = toupper(type)
   
   if(type == "ONL"){
-    install.packages("imudata")
+    install.packages("imudata", repos = "http://smac-group.com/datarepo")
   }else{
     if(!is.null(loc)){ 
       message("Installing the package using a local .tar file.")

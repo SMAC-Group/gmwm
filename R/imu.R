@@ -754,7 +754,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
                          legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, 
                          legend.text.size = 13, facet.label.background = "#003C7D33", scales = "free_y", ...){
   
-  value=low=high=WV=.x=NULL
+  value=low=high=WV=.x=axis=NULL
   
   # S1: Checking statement (Reset it to default setting if user passes wrong values)
   if( !(background %in% c('grey','gray', 'white')) ){
