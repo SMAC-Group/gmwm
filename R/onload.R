@@ -43,11 +43,3 @@
   packageStartupMessage('Check for updates and report bugs at https://github.com/SMAC-Group/gmwm')
   packageStartupMessage('To see the user guides use browseVignettes("gmwm").')
 }
-
-
-.onLoad <- function(libname, pkgname) {
-  repos = getOption("repos")
-  repos["SMAC"]="http://smac-group.com/datarepo"
-  options(repos = repos)
-  invisible(repos)
-}
