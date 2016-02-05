@@ -139,7 +139,7 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
 #' 
 #' set.seed(1336)
 #' # GM + WN
-#' model = GM(beta = 0.06931472, sigma2_gm = 0.1333333) + WN(sigma2=1)
+#' model = GM(beta = 6.9314718, sigma2_gm = 0.1333333) + WN(sigma2=1)
 #' x = gen.gts(model, n, freq = 10, unit = 'sec')
 #' x
 #' plot(x, to.unit = 'min')
@@ -192,10 +192,10 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
     
     theta = model$theta
     
-    # Convert from AR1 to GM
+    # Convert from GM to AR1
     if(any(model$desc == "GM")){
       idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-      theta[idx] = ar1_to_gm(theta[idx],freq)
+      theta[idx] = gm_to_ar1(theta[idx],1/freq)
     }
     
     out = .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, obj)
