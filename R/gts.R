@@ -195,7 +195,7 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
     # Convert from AR1 to GM
     if(any(model$desc == "GM")){
       idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-      theta[idx] = ar1_to_gm(theta[idx],freq)
+      theta[idx] = ar1_to_gm(theta[idx],1/freq)
     }
     
     out = .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, obj)

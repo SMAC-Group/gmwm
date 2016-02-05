@@ -236,7 +236,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   # Convert from GM to AR1
   if(!starting && any(model$desc == "GM")){
     idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    theta[idx,] = gm_to_ar1(theta[idx,], freq)
+    theta[idx,] = gm_to_ar1(theta[idx,], 1/freq)
   }
   
 
@@ -255,8 +255,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   # Convert from AR1 to GM
   if(any(model$desc == "GM")){
     idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    estimate[idx,] = ar1_to_gm(estimate[idx,],freq)
-    init.guess[idx,] = ar1_to_gm(init.guess[idx,],freq)
+    estimate[idx,] = ar1_to_gm(estimate[idx,],1/freq)
+    init.guess[idx,] = ar1_to_gm(init.guess[idx,],1/freq)
   }
   
   # Wrap this into the C++ Lib
@@ -405,7 +405,7 @@ update.gmwm = function(object, model, ...){
   # Convert from GM to AR1
   if(!model$starting && any(model$desc == "GM")){
     idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    model$theta[idx,] = gm_to_ar1(model$theta[idx,], object$freq)
+    model$theta[idx,] = gm_to_ar1(model$theta[idx,], 1/object$freq)
   }
   
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
@@ -435,8 +435,8 @@ update.gmwm = function(object, model, ...){
   # Convert from AR1 to GM
   if(any(model$desc == "GM")){
     idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    estimate[idx,] = ar1_to_gm(estimate[idx,], object$freq)
-    init.guess[idx,] = ar1_to_gm(init.guess[idx,], object$freq)
+    estimate[idx,] = ar1_to_gm(estimate[idx,], 1/object$freq)
+    init.guess[idx,] = ar1_to_gm(init.guess[idx,], 1/object$freq)
   }
   
   object$estimate = estimate
@@ -634,7 +634,7 @@ summary.gmwm = function(object, inference = NULL,
     # Convert from GM to AR1
     if(any(object$model$desc == "GM")){
       idx = object$model$process.desc %in% c("BETA","SIGMA2_GM")
-      object$estimate[idx,] = gm_to_ar1(object$estimate[idx,], object$freq)
+      object$estimate[idx,] = gm_to_ar1(object$estimate[idx,], 1/object$freq)
     }
     
     mm = .Call('gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
@@ -650,7 +650,7 @@ summary.gmwm = function(object, inference = NULL,
     # Convert back from AR1 to GM
     if(any(object$model$process.desc == "BETA")){
       idx = object$model$process.desc %in% c("BETA","SIGMA2_GM")
-      object$estimate[idx,] = ar1_to_gm(object$estimate[idx,], object$freq)
+      object$estimate[idx,] = ar1_to_gm(object$estimate[idx,], 1/object$freq)
     }
     
   }else{
