@@ -55,6 +55,31 @@ packageVersionCRAN = function(pkg, cran_url="http://cran.r-project.org/web/packa
 }
 
 
+#' GM Conversion
+#' 
+#' Convert from AR1 to GM and vice-versa
+#' @param theta        A \code{numeric vector} containing the theta values
+#' @param process.desc A \code{character vector} containing the names of parameters.
+#' @param freq         A \code{double} indicating the frequency of the data.
+#' @keywords internal
+#' @author JJB
+#' @rdname gm_conv
+conv.ar1.to.gm = function(theta, process.desc, freq){
+  idx = process.desc %in% c("BETA","SIGMA2_GM")
+  theta[idx] = ar1_to_gm(theta[idx],freq)
+  
+  theta
+}
+
+#' @rdname gm_conv
+conv.gm.to.ar1 = function(theta, process.desc, freq){
+  idx = process.desc %in% c("BETA","SIGMA2_GM")
+  theta[idx] = gm_to_ar1(theta[idx],freq)
+  
+  theta
+}
+
+
 #' @title Print GMWM Data Object
 #' @description 
 #' Pretty formatting for \code{gts}, \code{imu}, and \code{lts} objects.

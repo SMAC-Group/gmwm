@@ -46,6 +46,9 @@ arma::vec ar1_to_gm(arma::vec theta, double freq){
   unsigned int n = theta.n_elem;
   if(theta.n_elem %2 != 0){Rcpp::stop("Bad Theta Vector");}
   
+  // Convert to delta.t
+  freq = 1.0/freq;
+  
   for(unsigned int i = 0; i < int(double(n)/2.0); i++){
     double phi = theta(2*i);
     double sigma2 = theta(2*i+1);
@@ -77,6 +80,9 @@ arma::vec ar1_to_gm(arma::vec theta, double freq){
 arma::vec gm_to_ar1(arma::vec theta, double freq){
   unsigned int n = theta.n_elem;
   if(theta.n_elem %2 != 0){Rcpp::stop("Bad Theta Vector");}
+  
+  // Convert to delta.t
+  freq = 1.0/freq;
   
   for(unsigned int i = 0; i < int(double(n)/2.0); i++){
     double beta = theta(2*i);

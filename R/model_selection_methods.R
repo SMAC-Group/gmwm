@@ -94,9 +94,8 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
   
   
   if(any(model.hat$desc == "GM")){
-    idx = model.hat$process.desc %in% c("BETA","SIGMA2_GM")
-    estimate[idx,] = ar1_to_gm(estimate[idx,],freq)
-    init.guess[idx,] = ar1_to_gm(init.guess[idx,],freq)
+    estimate[,1] = conv.ar1.to.gm(estimate[,1], model.hat$process.desc, freq)
+    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model.hat$process.desc, freq) 
   }
   
   model.hat$theta = as.numeric(estimate)
