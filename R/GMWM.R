@@ -127,9 +127,8 @@
 #'  
 #' # ARMA case
 #' set.seed(1336)
-#' data = arima.sim(n = 200, 
-#'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-#'               sd = sqrt(0.1796))
+#' data = gen.gts(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
+#'               sigma2 = 0.1796), 200)
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
@@ -823,12 +822,11 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' mod = gmwm(AR1(), data=x, model.type="imu")
 #' autoplot(mod)
 #' 
-#' y = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
-#' mod = gmwm(2*AR1(), data = y)
+#' mod = gmwm(2*AR1(), data = x)
 #' autoplot(mod)
 autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,
