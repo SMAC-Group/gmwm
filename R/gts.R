@@ -149,7 +149,7 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
 #' plot(x2, to.unit = 'min')
 #' 
 #' # Same time series
-#' all.equal(x, x2, check.attributes = F)
+#' all.equal(x, x2, check.attributes = FALSE)
 gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
   
   # 1. Do we have a valid model?

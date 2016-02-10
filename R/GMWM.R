@@ -400,8 +400,8 @@ update.gmwm = function(object, model, ...){
   }
   
   # Convert from GM to AR1
-  if(!starting && any(model$desc == "GM")){
-    model$theta = conv.gm.to.ar1(model$theta, model$process.desc, freq)
+  if(!object$starting && any(model$desc == "GM")){
+    model$theta = conv.gm.to.ar1(model$theta, model$process.desc, object$freq)
   }
   
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
@@ -430,8 +430,8 @@ update.gmwm = function(object, model, ...){
   
   # Convert from AR1 to GM
   if(any(model$desc == "GM")){
-    estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, freq)
-    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, freq)
+    estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, object$freq)
+    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, object$freq)
   }
   
   object$estimate = estimate
@@ -627,8 +627,8 @@ summary.gmwm = function(object, inference = NULL,
   if(inference){
     
     # Convert from GM to AR1
-    if(any(model$desc == "GM")){
-      object$estimate[,1] = conv.gm.to.ar1(object$estimate[,1], model$process.desc, freq)
+    if(any(object$model$desc == "GM")){
+      object$estimate[,1] = conv.gm.to.ar1(object$estimate[,1], object$model$process.desc, object$freq)
     }
     
     mm = .Call('gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
@@ -642,8 +642,8 @@ summary.gmwm = function(object, inference = NULL,
                                                     bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci,
                                                     B)
     # Convert from AR1 to GM
-    if(any(model$desc == "GM")){
-      object$estimate[,1] = conv.ar1.to.gm(object$estimate[,1], model$process.desc, freq)
+    if(any(object$model$desc == "GM")){
+      object$estimate[,1] = conv.ar1.to.gm(object$estimate[,1], object$model$process.desc, object$freq)
     }
     
     

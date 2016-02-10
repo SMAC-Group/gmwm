@@ -52,9 +52,16 @@ plot(x)
 
 set.seed(1336)
 # GM + WN
-model = GM(beta = 0.06931472, sigma2_gm = 0.1333333) + WN(sigma2=1)
-x = gen.gts(model, n, freq = 10, unit = 'sec')
-x
-plot(x, to.unit = 'min')
+# Convert from AR1 to GM values
+m = ar1_to_gm(c(.5,.1),10)
+# Beta = 6.9314718, Sigma2_gm = 0.1333333
+model = GM(beta = m[1], sigma2_gm = m[2]) + WN(sigma2=1)
+x2 = gen.gts(model, n, freq = 10, unit = 'sec')
+x2
+
+plot(x2, to.unit = 'min')
+
+# Same time series
+all.equal(x, x2, check.attributes = FALSE)
 }
 
