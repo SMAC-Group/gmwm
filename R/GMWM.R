@@ -127,9 +127,8 @@
 #'  
 #' # ARMA case
 #' set.seed(1336)
-#' data = arima.sim(n = 200, 
-#'               list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-#'               sd = sqrt(0.1796))
+#' data = gen.gts(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
+#'               sigma2 = 0.1796), 200)
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
@@ -235,11 +234,9 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   
   # Convert from GM to AR1
   if(!starting && any(model$desc == "GM")){
-    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    theta[idx,] = gm_to_ar1(theta[idx,], freq)
+    theta = conv.gm.to.ar1(theta, model$process.desc, freq)
   }
   
-
   out = .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = alpha, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff)
@@ -247,16 +244,15 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
   colnames(estimate) = "Estimates" 
-  
+
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   colnames(init.guess) = "Starting" 
   
   # Convert from AR1 to GM
   if(any(model$desc == "GM")){
-    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    estimate[idx,] = ar1_to_gm(estimate[idx,],freq)
-    init.guess[idx,] = ar1_to_gm(init.guess[idx,],freq)
+    estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, freq)
+    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, freq)
   }
   
   # Wrap this into the C++ Lib
@@ -403,9 +399,8 @@ update.gmwm = function(object, model, ...){
   }
   
   # Convert from GM to AR1
-  if(!model$starting && any(model$desc == "GM")){
-    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    model$theta[idx,] = gm_to_ar1(model$theta[idx,], object$freq)
+  if(!object$starting && any(model$desc == "GM")){
+    model$theta = conv.gm.to.ar1(model$theta, model$process.desc, object$freq)
   }
   
   out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
@@ -434,9 +429,8 @@ update.gmwm = function(object, model, ...){
   
   # Convert from AR1 to GM
   if(any(model$desc == "GM")){
-    idx = model$process.desc %in% c("BETA","SIGMA2_GM")
-    estimate[idx,] = ar1_to_gm(estimate[idx,], object$freq)
-    init.guess[idx,] = ar1_to_gm(init.guess[idx,], object$freq)
+    estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, object$freq)
+    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, object$freq)
   }
   
   object$estimate = estimate
@@ -633,8 +627,7 @@ summary.gmwm = function(object, inference = NULL,
     
     # Convert from GM to AR1
     if(any(object$model$desc == "GM")){
-      idx = object$model$process.desc %in% c("BETA","SIGMA2_GM")
-      object$estimate[idx,] = gm_to_ar1(object$estimate[idx,], object$freq)
+      object$estimate[,1] = conv.gm.to.ar1(object$estimate[,1], object$model$process.desc, object$freq)
     }
     
     mm = .Call('gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
@@ -647,11 +640,11 @@ summary.gmwm = function(object, inference = NULL,
                                                     inference, F, # fullV is always false. Need same logic updates.
                                                     bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci,
                                                     B)
-    # Convert back from AR1 to GM
-    if(any(object$model$process.desc == "BETA")){
-      idx = object$model$process.desc %in% c("BETA","SIGMA2_GM")
-      object$estimate[idx,] = ar1_to_gm(object$estimate[idx,], object$freq)
+    # Convert from AR1 to GM
+    if(any(object$model$desc == "GM")){
+      object$estimate[,1] = conv.ar1.to.gm(object$estimate[,1], object$model$process.desc, object$freq)
     }
+    
     
   }else{
     mm = vector('list',3)
@@ -829,12 +822,11 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
 #' mod = gmwm(AR1(), data=x, model.type="imu")
 #' autoplot(mod)
 #' 
-#' y = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
-#' mod = gmwm(2*AR1(), data = y)
+#' mod = gmwm(2*AR1(), data = x)
 #' autoplot(mod)
 autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,

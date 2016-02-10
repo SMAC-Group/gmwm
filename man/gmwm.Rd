@@ -136,9 +136,8 @@ guided.ar1.wn.new = gmwm(AR1()+WN(), data)
  
 # ARMA case
 set.seed(1336)
-data = arima.sim(n = 200, 
-              list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-              sd = sqrt(0.1796))
+data = gen.gts(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
+              sigma2 = 0.1796), 200)
 #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
                 data, model.type="ssm")
