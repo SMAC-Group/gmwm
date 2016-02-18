@@ -2024,6 +2024,24 @@ haar_filter <- function() {
     .Call('gmwm_haar_filter', PACKAGE = 'gmwm')
 }
 
+#' @title d4 filter construction
+#' @description Creates the d4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d4_filter()
+d4_filter <- function() {
+    .Call('gmwm_d4_filter', PACKAGE = 'gmwm')
+}
+
 #' @title Select the Wavelet Filter
 #' @description Constructs the wavelet filter to be used.
 #' @usage select_filter(filter_name)

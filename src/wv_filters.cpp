@@ -20,6 +20,50 @@
 // We use reverse_vec
 #include "armadillo_manipulations.h"
 
+
+// Creates an index to call functions by memory address.
+struct A{
+  
+  // @title Construct Filter Selection Map
+  static std::map<std::string, arma::field<arma::vec> (*)()> create_map()
+  {
+    // Makes a map of function addresses indexed by a call string
+    std::map<std::string, arma::field<arma::vec> (*)()> filterMap; 
+    
+    
+    filterMap["haar"] = &haar_filter;
+    
+    // Change to appropriate function (make sure to add to "wv_filters.h")
+    filterMap["d4"] = &d4_filter;
+    filterMap["d6"] = &haar_filter;
+    filterMap["d8"] = &haar_filter;
+    filterMap["d16"] = &haar_filter;
+    
+    filterMap["fk4"] = &haar_filter;
+    filterMap["fk8"] = &haar_filter;
+    filterMap["fk14"] = &haar_filter;
+    filterMap["fk22"] = &haar_filter;
+    
+    filterMap["bl14"] = &haar_filter;
+    filterMap["bl20"] = &haar_filter;
+    
+    filterMap["la8"] = &haar_filter;
+    filterMap["la16"] = &haar_filter;
+    filterMap["la20"] = &haar_filter;
+    
+    filterMap["mb4"] = &haar_filter;
+    filterMap["mb8"] = &haar_filter;
+    filterMap["mb16"] = &haar_filter;
+    filterMap["mb24"] = &haar_filter;
+    
+    return filterMap;
+  }
+  
+  static const std::map<std::string, arma::field<arma::vec> (*)()> filterMap;
+};
+
+const std::map<std::string, arma::field<arma::vec> (*)()> A::filterMap =  A::create_map();
+
 //' @title Quadrature Mirror Filter
 //' @description Calculate the series quadrature mirror filter (QMF). Requires a series of an even length.
 //' @usage qmf(g, inverse)
@@ -86,6 +130,44 @@ arma::field<arma::vec> haar_filter() {
     return out;
 }
 
+
+//' @title d4 filter construction
+//' @description Creates the d4 filter
+//' @return A \code{field<vec>} that contains:
+//' \itemize{
+//'  \item{"L"}{A \code{integer} specifying the length of the filter}
+//'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+//'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+//' }
+//' @details
+//' This template can be used to increase the amount of filters available for selection.
+//' @author JJB
+//' @keywords internal
+//' @examples
+//' d4_filter()
+// [[Rcpp::export]]
+arma::field<arma::vec> d4_filter() {
+  
+  arma::vec L(1);
+  L(0) = 4.0;
+  
+  arma::vec g(4);
+  g(0) = 0.4829629131445341;
+  g(1) = 0.8365163037378077;
+  g(2) = 0.2241438680420134; 
+  g(3) = -0.1294095225512603;
+  
+  arma::vec h = qmf(g);
+  
+  arma::field<arma::vec> out(3);
+  
+  out(0)=L;
+  out(1)=h;
+  out(2)=g;
+  
+  return out;
+}
+
 //' @title Select the Wavelet Filter
 //' @description Constructs the wavelet filter to be used.
 //' @usage select_filter(filter_name)
@@ -107,10 +189,15 @@ arma::field<arma::vec> select_filter(std::string filter_name = "haar")
 {
   
   arma::field<arma::vec> info(3);
-  if(filter_name == "haar"){  
-      info = haar_filter();
+  
+  
+  std::map<std::string,arma::field<arma::vec> (*)()>::const_iterator it = A::filterMap.find(filter_name);
+  if(it != A::filterMap.end())
+  {
+    //element found;
+    info = (*(it->second))();
   }else{
-      Rcpp::stop("Wave Filter is not supported! See ?select_filter for supported types."); 
+    Rcpp::stop("Wave Filter is not supported! See ?select_filter for supported types."); 
   }
   
   return info;

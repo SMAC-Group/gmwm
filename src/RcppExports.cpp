@@ -1684,6 +1684,16 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// d4_filter
+arma::field<arma::vec> d4_filter();
+RcppExport SEXP gmwm_d4_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(d4_filter());
+    return __result;
+END_RCPP
+}
 // select_filter
 arma::field<arma::vec> select_filter(std::string filter_name);
 RcppExport SEXP gmwm_select_filter(SEXP filter_nameSEXP) {

@@ -20,7 +20,11 @@
 
 arma::vec qmf(arma::vec g, bool inverse);
 
+// Filters
 arma::field<arma::vec> haar_filter();
+
+// Daubechies 
+arma::field<arma::vec> d4_filter() ;
 
 arma::field<arma::vec> select_filter(std::string filter_name);
 
