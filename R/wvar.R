@@ -213,13 +213,13 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
     obj.list[[i]] = create_wvar(obj.list[[i]], decomp, robust, eff, alpha, scales, unit)
 
     # Cast for Graphing IMU Results
-    x.num.sensor = attr(x, 'num.sensor')
+    sensor = attr(x, 'sensor')
     obj[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
                                        scales = scales,
                                        low = obj.list[[i]]$ci_low,
                                        high = obj.list[[i]]$ci_high,
-                                       axis = x.axis[(i-1)%%naxis+1], 
-                                       sensor = if(i <= x.num.sensor[1]){"Gyroscope"}else{"Accelerometer"},
+                                       axis = x.axis[i], 
+                                       sensor = sensor[i],
                                        stringsAsFactors=FALSE)
     t = t + nlevels
   }
