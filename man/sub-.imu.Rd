@@ -24,17 +24,6 @@ Enables the IMU object to be subsettable. That is, you can load all the data in 
 \details{
 When using the subset operator, note that all the Gyroscopes are placed at the front of object 
 and, then, the Accelerometers are placed.
-
-The current implementation of this function requires the following:
-
-\itemize{
-\item There must be the same number of Gyros & Accels per axis option. 
-\itemize{
-\item Good: 1 \bold{x}-gyro and 1 \bold{x}-accel
-\item Bad: 1 x-gyro and 1 z-accel
-}
-\item The column names are the default cast. (Backend)
-}
 }
 \examples{
 \dontrun{
@@ -46,7 +35,7 @@ library("imudata")
 data(imu6)
 
 # Create an IMU Object that is full. 
-ex = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+ex = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 
 # Create an IMU object that has only gyros. 
 ex.gyro = ex[,1:3]

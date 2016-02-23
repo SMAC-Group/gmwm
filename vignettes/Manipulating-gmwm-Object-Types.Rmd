@@ -111,7 +111,7 @@ x = imu(vals,
 x = imu(vals,
         gyros = 1:2, 
         accels = 3:4,
-        axis = c("A","B"), 
+        axis = c("A","B","A","B"), 
         freq = 5, unit = "sec", name = "Example 3 Data")
 ```
 2. Load in an IMU binary file
