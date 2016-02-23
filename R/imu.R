@@ -116,7 +116,9 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
   # 3. Check 'axis': if the user supplies the axis, check input to make sure it is 'good'.
   if(!is.null(axis)){
     
-    if (length(axis) != (ngyros + nacces)){
+    if(length(axis)==((ngyros + nacces)/2) && ngyros!=0 && nacces!=0){
+      axis = rep(axis, times = 2)
+    }else if (length(axis) != (ngyros + nacces)){
       stop('Please specify the axis for each column of data.')
     }
     
@@ -130,28 +132,23 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
 
   }else{
     # if the user doesn't supply the axis, guess number of sensors
-    
-    if(ngyros == 0|| nacces == 0){
-      # No axis is supplied. try to generate it automatically.
-      naxis = if(ngyros != 0) ngyros else nacces  
-      axis = switch(as.character(naxis),
-                    '1' = 'X',
-                    '2' = c('X','Y'),
-                    '3' = c('X','Y','Z'),
-                    stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
-      )
-    }else if(ngyros > 0 && nacces > 0 && ngyros == nacces) {
-      # No axis is supplied. try to generate it automatically.
-      naxis = ngyros + nacces
-      axis = switch(as.character(naxis),
-                    '2' = c('X','X'),
-                    '4' = c('X','Y','X','Y'),
-                    '6' = c('X','Y','Z', 'X','Y','Z'),
-                    stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
-      )
-    }else {
-      stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
+    if(ngyros > 0 && nacces > 0){
+      naxis = if(ngyros == nacces) ngyros else 0
+    }else{
+      naxis = if(ngyros != 0) ngyros else nacces
     }
+    
+    axis = switch(as.character(naxis),
+                  '1' = 'X',
+                  '2' = c('X','Y'),
+                  '3' = c('X','Y','Z'),
+                  stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
+    )
+    
+    if(ngyros == nacces){
+      axis = rep(axis, times = 2)
+    }
+    
   }
   
   # 4. Check freq
@@ -189,7 +186,7 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
 create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL, stype = NULL){
   
   if(ngyros>0 && nacces>0){
-    colnames(data) = c(paste( c(rep('Gyro.', times = ngyros), rep('Accel.', times = nacces)), axis))
+    colnames(data) = paste( c(rep('Gyro.', times = ngyros), rep('Accel.', times = nacces)), axis)
   }else if (ngyros > 0){
     colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis))
   }else{

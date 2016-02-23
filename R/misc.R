@@ -44,8 +44,12 @@ placeLegend = function(wv_1, low_n, high_n){
 #' @return A ggplot2 panel containing the frequent graph setting for paper.
 #' @keywords internal
 paperSetting = function(){
-  p = theme(axis.title.y=element_text(vjust=3.5), axis.title.x=element_text(vjust=-2.5), 
-            plot.title = element_text(vjust=2.5), plot.margin=unit(c(0.7,0.1,0.7,0.7),"cm"))
+  
+  p = theme(axis.title.y=element_text(margin=margin(0,22.5,0,0)), 
+            axis.title.x=element_text(margin=margin(22.5,0,0,0)), 
+            plot.title = element_text(margin=margin(0,0,20,0)), 
+            plot.margin=unit(c(0.7,0.1,0.7,0.7),"cm"))
+  
   return(p)
 }
 

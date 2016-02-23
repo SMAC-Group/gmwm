@@ -844,11 +844,16 @@ autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', C
     background = 'white'
   }
   
+  L = length(object$model$desc) + 1 # Find number of latent processes
+  if(process.decomp==T && L==2){
+    process.decomp = F #one latent process: no need to show decompsed process
+    message("Since the model contains only one process, 'process.decomp' is set to FALSE.")
+  }
+  
   if(!process.decomp){
     if(CI == T) {numLabel = 3}else {numLabel = 2}
   }else{
-    L = length(object$model$desc) + 1 # Find number of latent processes
-    if(!bw && (L-1)> 9){warning('Object has more than 9 latent processes, but the palette has only 9 colors')}
+    if(!bw && (L-1)> 8){warning('Object has more than 8 latent processes, but the palette has only 8 colors')}
     if(CI == T) {numLabel = 2+L}else{numLabel = 1+L}
   }
   
@@ -929,9 +934,9 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   nlen = nchar(L)
   nom = sprintf(paste0("z%0",nlen,"d"),1:L)
   
-  Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628" ,"#F781BF", "#999999")
-  modulus = (L-1)%/% 9
-  remainder = (L-1)%% 9
+  Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628" ,"#F781BF", "#999999")
+  modulus = (L-1)%/% 8
+  remainder = (L-1)%% 8
   process.color = c( rep(Set1, times = modulus), Set1[1:remainder] )
   process.bw_color = gray.colors(L-1, start = 0.2, end = max( max(1, L-2)/(L-1), 0.7))
   
@@ -939,7 +944,8 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   for(i in 1: (L-1)){
     process.label1[i] = paste0(object$model$desc[i], paste0(rep(' ',times = i), collapse = ''))
   }
-  process.label2 = paste0(object$model$desc, collapse = '+')
+  #process.label2 = paste0(object$model$desc, collapse = '+')
+  process.label2 = 'Sum'
   process.label = c(process.label1, process.label2)
   
   if(CI == T){
@@ -1101,7 +1107,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     if(is.null(line.color)){line.color = c("#003C7D", "#999999" , "#F47F24")}
     if(bw){
       line.color = c("#b2b2b2", "#404040", "#000000")
-      color.CI = "grey50"
+      CI.color = "grey50"
     }
     if(length(line.color)==3){line.color = c(line.color[1:2],line.color[2:3])}
     
