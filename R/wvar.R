@@ -213,13 +213,13 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
     obj.list[[i]] = create_wvar(obj.list[[i]], decomp, robust, eff, alpha, scales, unit)
 
     # Cast for Graphing IMU Results
-    x.num.sensor = attr(x, 'num.sensor')
+    sensor = attr(x, 'sensor')
     obj[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
                                        scales = scales,
                                        low = obj.list[[i]]$ci_low,
                                        high = obj.list[[i]]$ci_high,
-                                       axis = x.axis[(i-1)%%naxis+1], 
-                                       sensor = if(i <= x.num.sensor[1]){"Gyroscope"}else{"Accelerometer"},
+                                       axis = x.axis[i], 
+                                       sensor = sensor[i],
                                        stringsAsFactors=FALSE)
     t = t + nlevels
   }
@@ -526,18 +526,18 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
                   labels = trans_format("log10", math_format(10^.x))) 
   if (!is.null(line.color)){
     #legend.label should work. Not work here. But it is changed when creating 'obj' (in wrapper function)
-    p = p + scale_color_manual(name = legend.title, values = line.color , labels = legend.label)
+    p = p + scale_color_manual(name = legend.title, values = line.color)
   } 
       
-  p = p + scale_size_manual(name = legend.title, values = point.size , labels = legend.label) +
-      scale_shape_manual(name = legend.title, values = point.shape , labels = legend.label)
+  p = p + scale_size_manual(name = legend.title, values = point.size ) +
+      scale_shape_manual(name = legend.title, values = point.shape)
 
   if(CI){
     p = p + 
       geom_line(mapping = aes(y = low, color = dataset), linetype = line.type[2]) + geom_line(mapping = aes(y = high, color = dataset), linetype = line.type[2]) + 
       geom_ribbon(mapping = aes(ymin = low, ymax = high, fill = dataset), alpha = transparence) 
     if(!is.null(CI.color)){
-      p = p + scale_fill_manual(name = legend.title, values = alpha(CI.color, transparence) , labels = legend.label)
+      p = p + scale_fill_manual(name = legend.title, values = alpha(CI.color, transparence))
     }
   }
   

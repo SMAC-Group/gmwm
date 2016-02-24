@@ -18,7 +18,7 @@
 #' @param data A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.
 #' @param gyros A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.
 #' @param accels A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.
-#' @param axis A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.
+#' @param axis A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'. Please supply the axises for gyroscope data before that for accelerometer data, if gyroscope data exists.
 #' @param freq An \code{integer} that provides the frequency for the data.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
 #' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
@@ -35,13 +35,10 @@
 #' \code{data} can be a numeric vector, matrix or data frame.
 #' 
 #' \code{gyros} and \code{accels} cannot be \code{NULL} at the same time, but it will be fine if one of them is \code{NULL}.
-#' Also, in order to plot the graph, the length of \code{gyros} and \code{accels} are restricted to be equal.
+#' In the new implementation, the length of \code{gyros} and \code{accels} do not need to be equal.
 #' 
-#' In \code{axis}, duplicate elements are not alowed. If one of parameters between \code{gyros} and \code{accels}
-#' is \code{NULL}, specify the axis for each column of data. Check example 1 for help. If both of them are not \code{NULL}, specify the
-#' \code{axis} only for one parameter (\code{gyros} or \code{accels}). Check example 3 for help.
-#' 
-#' \code{axis} will be automatically generated if there are less than or equal to 3 axises.
+#' In \code{axis}, duplicate elements are not alowed for each sensor. In the new implementation, please specify the axis for each column of data.
+#' \code{axis} will be automatically generated if there are less than or equal to 3 axises for each sensor.
 #' 
 #' @author JJB, Wenchao
 #' @examples
@@ -64,12 +61,14 @@
 #' plot(df2)
 #' 
 #' # Example 3 - 3 gyros and 3 accelerometers
-#' test3 = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+#' test3 = imu(imu6, gyros = 1:3, accels = 4:6, axis = 
+#'                        c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 #' df3 = wvar.imu(test3)
 #' plot(df3)
 #' 
 #' # Example 4 - Custom axis
-#' test4 = imu(imu6, gyros = 1:2, accels = 4:5, axis = c('A', 'B'), freq = 100)
+#' test4 = imu(imu6, gyros = 1:2, accels = 4:6, axis = 
+#'                        c('X', 'Y', 'X', 'Y', 'Z'), freq = 100)
 #' df4 = wvar.imu(test4)
 #' plot(df4)
 #' }
@@ -98,10 +97,6 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
   
   if(is.null(gyro) && is.null(acce)){
     stop("At lease one of parameters ('gyros' or 'accels') must be not NULL.") 
-  }else if(!is.null(gyro) && !is.null(acce)){
-    if(ngyros != nacces){
-      stop('Data must have equal number of columns for gyroscope and accelerometer sensor.')
-    }
   }
   
   # Merge indices
@@ -121,32 +116,39 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
   # 3. Check 'axis': if the user supplies the axis, check input to make sure it is 'good'.
   if(!is.null(axis)){
     
-    # Duplicate elements are not allowed
-    if( anyDuplicated(axis) ){
-      stop('`axis` cannot have duplicated elements.')
+    if(length(axis)==((ngyros + nacces)/2) && ngyros!=0 && nacces!=0){
+      axis = rep(axis, times = 2)
+    }else if (length(axis) != (ngyros + nacces)){
+      stop('Please specify the axis for each column of data.')
     }
     
-    if(!is.null(gyro) && !is.null(acce)){  
-      if(2*length(axis) != length(index)){
-        stop('When `gyros` and `accels` are both not NULL, specify the axis only for one sensor.')
+    if (ngyros == 0||nacces == 0){
+      if( anyDuplicated(axis) ){
+        stop('`axis` cannot have duplicated elements.')
       }
-    }else{
-      if(length(axis) != length(index)){
-        stop("If only one parameter between 'gyros' and 'accels' are not NULL, specify the axis for each column of data.")
-      }
+    }else if (anyDuplicated(axis[1:ngyros]) || anyDuplicated(axis[(ngyros+1):length(axis)])){
+      stop('For each sensor, `axis` cannot have duplicated elements.')
     }
-    
+
   }else{
-    # Guess number of sensors
-    naxis = if(ngyros > 0 && nacces > 0) nacces else nacces + ngyros
+    # if the user doesn't supply the axis, guess number of sensors
+    if(ngyros > 0 && nacces > 0){
+      naxis = if(ngyros == nacces) ngyros else 0
+    }else{
+      naxis = if(ngyros != 0) ngyros else nacces
+    }
     
-    # No axis is supplied. try to generate it automatically.
     axis = switch(as.character(naxis),
                   '1' = 'X',
                   '2' = c('X','Y'),
                   '3' = c('X','Y','Z'),
                   stop('axis cannot be automatically generated. Please supply it by specifying "axis = ...".')
-                  )
+    )
+    
+    if(ngyros == nacces){
+      axis = rep(axis, times = 2)
+    }
+    
   }
   
   # 4. Check freq
@@ -184,7 +186,7 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
 create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL, stype = NULL){
   
   if(ngyros>0 && nacces>0){
-    colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis), paste( rep('Accel.', times = nacces), axis))
+    colnames(data) = paste( c(rep('Gyro.', times = ngyros), rep('Accel.', times = nacces)), axis)
   }else if (ngyros > 0){
     colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis))
   }else{
@@ -192,7 +194,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
   }
    
   out = structure(data, 
-                  sensor = c(rep("Gyroscope",ngyros > 0), rep("Accelerometer",nacces > 0)),
+                  sensor = c(rep("Gyroscope",ngyros), rep("Accelerometer",nacces)),
                   num.sensor = c(ngyros, nacces),
                   axis = axis,
                   freq = freq,
@@ -216,16 +218,6 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' When using the subset operator, note that all the Gyroscopes are placed at the front of object 
 #' and, then, the Accelerometers are placed.
 #' 
-#' The current implementation of this function requires the following:
-#' 
-#' \itemize{
-#' \item There must be the same number of Gyros & Accels per axis option. 
-#' \itemize{
-#' \item Good: 1 \bold{x}-gyro and 1 \bold{x}-accel
-#' \item Bad: 1 x-gyro and 1 z-accel
-#' }
-#' \item The column names are the default cast. (Backend)
-#' }
 #' @examples 
 #' \dontrun{
 #' if(!require("imudata")){
@@ -236,7 +228,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' data(imu6)
 #' 
 #' # Create an IMU Object that is full. 
-#' ex = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+#' ex = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 #' 
 #' # Create an IMU object that has only gyros. 
 #' ex.gyro = ex[,1:3]
@@ -261,7 +253,12 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
   # If j is missing, then it is simply lowering the number of observations!
   if(!missing(j)){
     # Select column names picked by user
-    nc = colnames(x)[j]
+    
+    if(is(j, "character")){
+      nc = j
+    }else{
+      nc = colnames(x)[j]
+    }
     
     # Remove structure to get Gyros/Accels
     g = gsub("\\..*","",nc)
@@ -269,20 +266,8 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
     
     # Remove structure to get at X,Y,Z axis.
     g2 = gsub(".* ","",nc)
-    ng2 = table(g2)
-    
-    # If we have multiples (e.g. Gyros & Accels), they should have the same amount.
-    if(length(names(ng)) == 2 && !all(ng == ng[1])){
-      stop("The same amount of `gyros` and `accels` must be present!")
-    }
-    
-    # Check if the axis have the same number.
-    if(!all(ng2 == ng2[1]) || (length(names(ng)) == 2 && length(names(ng2)) == 2)){
-      stop("The same amount of `axis` must be present.")
-    }
-    
-    axis = names(ng2)
-    sensor = names(ng)
+    axis = g2
+  
     num.sensor = c({if(!is.na(ng["Gyro"])) ng["Gyro"] else 0}, {if(!is.na(ng["Accel"])) ng["Accel"] else 0})
   }
   
@@ -334,7 +319,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 read.imu = function(file, type, unit = NULL, name = NULL){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z'), d[[2]][1], unit = unit, name = name, stype = type)
+  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z','X','Y','Z'), d[[2]][1], unit = unit, name = name, stype = type)
 }
 
 
@@ -905,7 +890,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 #' df = auto.imu(test)
 #' plot(df)
 #' plot(df, CI = F)
@@ -966,7 +951,7 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'))
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 #' df = auto.imu(test)
 #' autoplot(df)
 #' autoplot(df, CI = F)
@@ -1026,18 +1011,11 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
   freq = object[[1]][[2]]$freq
   
   #what is axis
-  if(num.sensor[1] == 0 || num.sensor[2] == 0){##only "Accelerometer"/only "Gyroscope"
-    axis = rep(0, ncols)
-    for(i in 1:ncols){
-      axis[i] = object[[i]][[2]]$axis
-    }
-    
-  }else{#both 
-    axis = rep(0, ncols/2)
-    
-    for(i in 1:(ncols/2)){
-      axis[i] = object[[i]][[2]]$axis
-    }
+  axis = rep(0, ncols)
+  sensor = rep(0, ncols)
+  for(i in 1:ncols){
+    axis[i] = object[[i]][[2]]$axis
+    sensor[i] = object[[i]][[2]]$sensor
   }
   
   #assume 
@@ -1066,63 +1044,19 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
                    axis = 'AXIS',
                    sensor = 'SENSOR', stringsAsFactors=FALSE)
   
-  if(num.sensor[2] == 0){ ## only "Gyroscope"
-    #put data into data frame
-    t = 1
-    for (i in 1:ncols){
-      d = each.len[i]
-      
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
-                                   emp = obj.list[[i]]$wv.empir,
-                                   low = obj.list[[i]]$ci.low,
-                                   high = obj.list[[i]]$ci.high,
-                                   theo = obj.list[[i]]$theo,
-                                   axis = axis[i], 
-                                   sensor = "Gyroscope",
-                                   stringsAsFactors=FALSE)
-      t = t +d
-    }
+  t = 1
+  for (i in 1:ncols){
+    d = each.len[i]
     
-  }else if(num.sensor[1] == 0){ #only "Accelerometer"
-    #put data into data frame
-    t = 1
-    for (i in 1:ncols){
-      d = each.len[i]
-      
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
-                                   emp = obj.list[[i]]$wv.empir,
-                                   low = obj.list[[i]]$ci.low,
-                                   high = obj.list[[i]]$ci.high,
-                                   theo = obj.list[[i]]$theo,
-                                   axis = axis[i], 
-                                   sensor = "Accelerometer",
-                                   stringsAsFactors=FALSE)
-      t = t +d
-    }
-    
-  }else{ # both "Gyroscope" and "Accelerometer"
-    #put data into data frame
-    t = 1
-    for (i in 1:ncols){
-      if(i <= length(axis)){
-        temp.axis = axis[i]
-        temp.sensor = "Gyroscope"
-      }else{ 
-        temp.axis = axis[i-length(axis)]
-        temp.sensor = "Accelerometer"
-      }
-      
-      d = each.len[i]
-      obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
-                                   emp = obj.list[[i]]$wv.empir,
-                                   low = obj.list[[i]]$ci.low,
-                                   high = obj.list[[i]]$ci.high,
-                                   theo = obj.list[[i]]$theo,
-                                   axis = temp.axis, 
-                                   sensor = temp.sensor,
-                                   stringsAsFactors=FALSE)
-      t = t +d
-    }
+    obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales/freq, # freq conversion
+                                 emp = obj.list[[i]]$wv.empir,
+                                 low = obj.list[[i]]$ci.low,
+                                 high = obj.list[[i]]$ci.high,
+                                 theo = obj.list[[i]]$theo,
+                                 axis = axis[i], 
+                                 sensor = sensor[i],
+                                 stringsAsFactors=FALSE)
+    t = t +d
   }
   
   #-----END OF DATA PROCESSING-------------------------

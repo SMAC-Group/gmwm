@@ -14,7 +14,7 @@ imu(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL,
 
 \item{accels}{A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.}
 
-\item{axis}{A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.}
+\item{axis}{A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'. Please supply the axises for gyroscope data before that for accelerometer data, if gyroscope data exists.}
 
 \item{freq}{An \code{integer} that provides the frequency for the data.}
 
@@ -40,13 +40,10 @@ Builds an IMU object that provides the program with gyroscope, accelerometer, an
 \code{data} can be a numeric vector, matrix or data frame.
 
 \code{gyros} and \code{accels} cannot be \code{NULL} at the same time, but it will be fine if one of them is \code{NULL}.
-Also, in order to plot the graph, the length of \code{gyros} and \code{accels} are restricted to be equal.
+In the new implementation, the length of \code{gyros} and \code{accels} do not need to be equal.
 
-In \code{axis}, duplicate elements are not alowed. If one of parameters between \code{gyros} and \code{accels}
-is \code{NULL}, specify the axis for each column of data. Check example 1 for help. If both of them are not \code{NULL}, specify the
-\code{axis} only for one parameter (\code{gyros} or \code{accels}). Check example 3 for help.
-
-\code{axis} will be automatically generated if there are less than or equal to 3 axises.
+In \code{axis}, duplicate elements are not alowed for each sensor. In the new implementation, please specify the axis for each column of data.
+\code{axis} will be automatically generated if there are less than or equal to 3 axises for each sensor.
 }
 \examples{
 \dontrun{
@@ -68,12 +65,14 @@ df2 = wvar.imu(test2)
 plot(df2)
 
 # Example 3 - 3 gyros and 3 accelerometers
-test3 = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+test3 = imu(imu6, gyros = 1:3, accels = 4:6, axis = 
+                       c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 df3 = wvar.imu(test3)
 plot(df3)
 
 # Example 4 - Custom axis
-test4 = imu(imu6, gyros = 1:2, accels = 4:5, axis = c('A', 'B'), freq = 100)
+test4 = imu(imu6, gyros = 1:2, accels = 4:6, axis = 
+                       c('X', 'Y', 'X', 'Y', 'Z'), freq = 100)
 df4 = wvar.imu(test4)
 plot(df4)
 }

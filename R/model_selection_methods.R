@@ -211,8 +211,10 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
   if(nested == F){
     full.str = .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
     
-    if(!any(sapply(desc, function(x, want) isTRUE(all.equal(x, want)),  full.str)) ){
-      print("Creating a Common Denominator Model!")
+    n.full = count_models(full.str)
+    
+    if(!any(sapply(desc, function(x, n.full) isTRUE(all.equal(count_models(x), n.full)),  n.full)) ){
+      message("Creating a Common Denominator Model!")
       desc[[length(desc)+1]] = full.str
     }
     desc = vector_to_set(desc)
@@ -324,25 +326,21 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   n.gyro = num.sensor[1]
   n.acc = num.sensor[2]
   
-  a.gyro = 0
-  a.acc = 0
-  
   freq = attr(data, 'freq')
   for(i in 1:ncol(data)){
     obj = out[[i]]
     obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, freq)
     
     obj.gmwm = obj[[2]]
-    if(a.acc != n.acc){
-      a.acc = a.acc + 1 
-      obj.gmwm$sensor = "Gyroscope"
-      obj.gmwm$axis = axis[a.acc]
-    } else if(a.gyro != n.gyro){
-      a.gyro = a.gyro + 1 
-      obj.gmwm$sensor = "Accelerometer"
-      obj.gmwm$axis = axis[a.gyro]
-    }
 
+    if(i<=n.gyro){
+      obj.gmwm$sensor = "Gyroscope"
+      obj.gmwm$axis = axis[i]
+    }else{
+      obj.gmwm$sensor = "Accelerometer"
+      obj.gmwm$axis = axis[i]
+    }
+    
     obj.gmwm$num.sensor = num.sensor
     
     obj[[2]] = obj.gmwm
