@@ -211,8 +211,10 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
   if(nested == F){
     full.str = .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
     
-    if(!any(sapply(desc, function(x, want) isTRUE(all.equal(x, want)),  full.str)) ){
-      print("Creating a Common Denominator Model!")
+    n.full = count_models(full.str)
+    
+    if(!any(sapply(desc, function(x, n.full) isTRUE(all.equal(count_models(x), n.full)),  n.full)) ){
+      message("Creating a Common Denominator Model!")
       desc[[length(desc)+1]] = full.str
     }
     desc = vector_to_set(desc)
