@@ -128,3 +128,115 @@ orderModel = function(models){
     return(models)
   }
 }
+
+#' @title Get the Computation Method and Efficiency of \code{gmwm} Object
+#' @description The computation method (classical/robust) and efficiency will be returned in a certain format.
+#' @param x A \code{gmwm} object
+#' @details Used in \code{compare.eff()}.
+#' @keywords internal
+#' @examples 
+#' n = 1000
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.9)
+#' GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
+#' 
+#' returnRobustEff(GMWM1)
+#' returnRobustEff(GMWM2)
+returnRobustEff = function(x){
+  if(!x$robust){
+    return('Classical')
+  }else{
+    res = paste0('Robust eff. ', x$eff)
+    return(res)
+  }
+} 
+
+#' @title Validity of the Object List for \code{compare.eff}
+#' @description Check whether the object list is valid for function \code{compare.eff}.
+#' @param obj.list A \code{list} of \code{gmwm} object
+#' @details 
+#' A valid object list should contain \code{gmwm} objects constructed by the same data
+#' and the same model.
+#' 
+#' @keywords internal
+is.validCompEffObj = function(obj.list){
+  
+  # All gmwm object
+  sapply(obj.list, FUN = 
+                     function(x){ 
+                       if(!is(x, 'gmwm')){
+                          stop('The function can only work on gmwm object.')}
+                     })
+  
+  #constructed by same data
+  expectDiff = sapply(obj.list, FUN = 
+                      function(x){x$expect.diff})
+  if( any(expectDiff!=expectDiff[1]) ){
+    stop('This function can only operate on models constrcuted by the same data.') 
+  }
+  
+  #same model
+  count.map = sapply(obj.list, FUN = function(x){
+    count_models( x$model.hat$desc )
+  })
+  count.map = as.data.frame(count.map)
+  sameModel = sapply(count.map, FUN = function(x){
+    x == count.map[,1]
+  })
+  if(any(sameModel==F)){
+    stop('gmwm objects are not constructed by the same model.')
+  }
+  
+}
+
+#' @title Add Space to Avoid Duplicate Elements
+#' @description Add space to every element if there are duplicates in the vector.
+#' @param x A \code{character vector}
+#' @keywords internal
+#' @examples 
+#' ##no duplicate
+#' x1 = c('GMWM2', 'GMWM1', 'GMWM3')
+#' addSpaceIfDuplicate(x1)
+#' 
+#' ##duplicate
+#' x2 = c('GMWM3', 'GMWM1', 'GMWM3')
+#' addSpaceIfDuplicate(x2)
+addSpaceIfDuplicate = function(x){
+  res = x
+  num = length(x)
+  
+  if ( any(table(x) > 1)  ){
+    for(i in 2:num){
+      res[i] = paste0(x[i], paste0(rep(' ',times = i), collapse = ''))
+    }
+    
+  }
+  return(res)
+}
+
+
+#' @title Get \code{gmwm} Efficiency Values
+#' @description Get efficiency values from a list of \code{gmwm} object
+#' @param obj.list A \code{list} of \code{gmwm} object
+#' @return A \code{numeric vector}. If the object is computed by classical method, it will return 1.1.
+#' @keywords internal
+#' @examples 
+#' set.seed(8836)
+#' n = 1000
+#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
+#' GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.1)
+#' GMWM3 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.6)
+#' obj.list = list(GMWM1, GMWM2, GMWM3)
+#' getEff(obj.list)
+getEff = function(obj.list){
+  res = sapply(obj.list, FUN = function(x){
+    
+    if(x$robust){return(x$eff)
+    }else{return(1.1)} #classical method is robust with eff=1
+    #eff = Var(Robust)/Var(Classical)
+  })
+  
+  return(res)
+}
+
