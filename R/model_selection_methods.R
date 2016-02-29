@@ -85,8 +85,11 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
   gmwm.obj = out[[2]]
   estimate = gmwm.obj[[1]]
   rownames(estimate) = model.ts$process.desc
+  colnames(estimate) = "Estimates" 
+  
   init.guess = gmwm.obj[[2]]
   rownames(init.guess) = model.ts$process.desc
+  colnames(init.guess) = "Starting" 
   
   model.hat = model.ts
   
@@ -165,7 +168,7 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
 rank.models = function(data, ..., nested = F, bootstrap = F, 
-                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, freq = 1, seed = 1337){
+                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
   
   set.seed(seed)
   
@@ -229,7 +232,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
     
   }
   
-  out = .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap, seed)
   
   N = length(data)
   nlevels =  floor(log2(N))
@@ -284,7 +287,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' m[[1]][[2]]
 #' 
 #' }
-auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
+auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, seed = 1337){
   
   # Check object
   if(!is.imu(data) ) {
@@ -301,16 +304,12 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   num.sensor = attr(data, 'num.sensor')
   axis = attr(data, 'axis')
 
-  # Set seed for reproducible results
-  # Need to figure out a way to do set same seed on each model generation.
-  set.seed(seed)
-  
   # Set up data and models for automatic processing
   full.str = model$desc
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap, seed)
   
   # Handle post processing
   

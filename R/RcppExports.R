@@ -384,6 +384,23 @@ build_model_set <- function(combs, x) {
     .Call('gmwm_build_model_set', PACKAGE = 'gmwm', combs, x)
 }
 
+#' Set the RNG Seed from within Rcpp
+#' 
+#' Within Rcpp, one can set the R session seed without triggering
+#' the CRAN rng modifier check. 
+#' @param seed A \code{unsigned int} that is the seed one wishes to use. 
+#' @return A set RNG scope.
+#' @keywords internal
+#' @examples
+#' set.seed(10)
+#' x = rnorm(5,0,1)
+#' set_seed(10)
+#' y = rnorm(5,0,1)
+#' all.equal(x,y, check.attributes = F)
+set_seed <- function(seed) {
+    invisible(.Call('gmwm_set_seed', PACKAGE = 'gmwm', seed))
+}
+
 #' @title Conversion function of Vector to Set
 #' @description Converts a vector into a set
 #' @param x A \code{vec<vec<string>>} that contains a list of model descriptors.
@@ -416,10 +433,11 @@ find_full_model <- function(x) {
 #' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
 #' @param eff A \code{double} that indicates the efficiency to use.
 #' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+#' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
-rank_models <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism) {
-    .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism)
+rank_models <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
+    .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Find the auto imu result
@@ -436,10 +454,11 @@ rank_models <- function(data, model_str, full_model, alpha, compute_v, model_typ
 #' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
 #' @param eff A \code{double} that indicates the efficiency to use.
 #' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+#' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
-auto_imu <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism) {
-    .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism)
+auto_imu <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
+    .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Bootstrap for Matrix V
