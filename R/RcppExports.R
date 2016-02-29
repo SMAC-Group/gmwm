@@ -2096,6 +2096,348 @@ haar_filter <- function() {
     .Call('gmwm_haar_filter', PACKAGE = 'gmwm')
 }
 
+#' @title d4 filter construction
+#' @description Creates the d4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d4_filter()
+d4_filter <- function() {
+    .Call('gmwm_d4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb4 filter construction
+#' @description Creates the mb4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb4_filter()
+mb4_filter <- function() {
+    .Call('gmwm_mb4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title w4 filter construction
+#' @description Creates the w4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' w4_filter()
+w4_filter <- function() {
+    .Call('gmwm_w4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk4 filter construction
+#' @description Creates the fk4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk4_filter()
+fk4_filter <- function() {
+    .Call('gmwm_fk4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d6 filter construction
+#' @description Creates the d6 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d6_filter()
+d6_filter <- function() {
+    .Call('gmwm_d6_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk6 filter construction
+#' @description Creates the fk6 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk6_filter()
+fk6_filter <- function() {
+    .Call('gmwm_fk6_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d8 filter construction
+#' @description Creates the d8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d8_filter()
+d8_filter <- function() {
+    .Call('gmwm_d8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk8 filter construction
+#' @description Creates the fk8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk8_filter()
+fk8_filter <- function() {
+    .Call('gmwm_fk8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title la8 filter construction
+#' @description Creates the la8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' la8_filter()
+la8_filter <- function() {
+    .Call('gmwm_la8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb8 filter construction
+#' @description Creates the mb8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb8_filter()
+mb8_filter <- function() {
+    .Call('gmwm_mb8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title bl14 filter construction
+#' @description Creates the bl14 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' bl14_filter()
+bl14_filter <- function() {
+    .Call('gmwm_bl14_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk14 filter construction
+#' @description Creates the fk14 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk14_filter()
+fk14_filter <- function() {
+    .Call('gmwm_fk14_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d16 filter construction
+#' @description Creates the d16 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d16_filter()
+d16_filter <- function() {
+    .Call('gmwm_d16_filter', PACKAGE = 'gmwm')
+}
+
+#' @title la16 filter construction
+#' @description Creates the la16 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' la16_filter()
+la16_filter <- function() {
+    .Call('gmwm_la16_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb16 filter construction
+#' @description Creates the mb16 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb16_filter()
+mb16_filter <- function() {
+    .Call('gmwm_mb16_filter', PACKAGE = 'gmwm')
+}
+
+#' @title la20 filter construction
+#' @description Creates the la20 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' la20_filter()
+la20_filter <- function() {
+    .Call('gmwm_la20_filter', PACKAGE = 'gmwm')
+}
+
+#' @title bl20 filter construction
+#' @description Creates the bl20 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' bl20_filter()
+bl20_filter <- function() {
+    .Call('gmwm_bl20_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk22 filter construction
+#' @description Creates the fk22 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk22_filter()
+fk22_filter <- function() {
+    .Call('gmwm_fk22_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb24 filter construction
+#' @description Creates the mb24 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb24_filter()
+mb24_filter <- function() {
+    .Call('gmwm_mb24_filter', PACKAGE = 'gmwm')
+}
+
 #' @title Select the Wavelet Filter
 #' @description Constructs the wavelet filter to be used.
 #' @usage select_filter(filter_name)

@@ -44,11 +44,11 @@ unsigned int count_params(const std::vector<std::string>& desc){
   
   unsigned int params = 0; 
   for (std::map<std::string, int>::iterator it = w.begin(); it!=w.end(); ++it) {		
-   if(it->first == "AR1" ){
-     params += 2*it->second;
-   }else{
-     params += 1;
-   }
+    if(it->first == "AR1" || it->first == "GM"){
+      params += 2*it->second;
+    }else{
+      params += 1;
+    }
   }		
   
   return params;		
@@ -73,7 +73,7 @@ std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std
     }
     models.insert(tmp);
   }
-
+  
   return models;
 }
 
@@ -116,12 +116,14 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
   // AR1s can have an infinite amount of combinations
   unsigned int maxAR1s = 0;
   
+  // String type to describe internal representation (e.g. AR1 vs. GM).
+  std::string type = "AR1";
+  
   // In the mean time, WN, RW, QN, and DR, can only appear once in a model. 
   bool WN = false;
   bool RW = false;
   bool QN = false;
   bool DR = false;
-  
   
   // Begin iterating through the set. 
   for(it = x.begin(); it != x.end(); ++it)
@@ -132,10 +134,10 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
     
     // Iterate through the vector 
     for (it2 = (*it).begin(); it2 != (*it).end(); ++it2){
-
-      if(*it2 == "AR1"){
+      
+      if(*it2 == "AR1" || *it2 == "GM"){
         num_AR1s++; // For each AR1 detected, increment by 1. 
-        
+        if(*it2 == "GM"){type="GM";}else{type="AR1";}
       }else if(*it2 == "WN"){
         
         if(!WN){
@@ -182,7 +184,7 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
   unsigned int i;
   
   for(i = 0; i < maxAR1s; i++){
-    out[i] = "AR1";
+    out[i] = type;
   }
   
   if(WN){
@@ -190,13 +192,13 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
     i++;
   }
   
-  if(RW){
-    out[i] = "RW";
+  if(QN){
+    out[i] = "QN";
     i++;
   }
   
-  if(QN){
-    out[i] = "QN";
+  if(RW){
+    out[i] = "RW";
     i++;
   }
   
@@ -209,15 +211,13 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
 }
 
 
-
-
 arma::rowvec bs_optim_calc(const arma::vec& theta,
-                        const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
-                        std::string model_type, const arma::vec& scales, const arma::mat& omega, unsigned int N,
-                        double obj_value, double alpha,
-                        std::string compute_v, 
-                        unsigned int K, unsigned int H, unsigned int G, 
-                        bool robust, double eff){
+                           const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                           std::string model_type, const arma::vec& scales, const arma::mat& omega, unsigned int N,
+                           double obj_value, double alpha,
+                           std::string compute_v, 
+                           unsigned int K, unsigned int H, unsigned int G, 
+                           bool robust, double eff){
   
   arma::field<arma::mat> bso = opt_n_gof_bootstrapper(theta,
                                                       desc, objdesc,
@@ -228,10 +228,10 @@ arma::rowvec bs_optim_calc(const arma::vec& theta,
   
   arma::mat bs_obj_values = bso(1);
   
-
+  
   double optimism = 2*sum(diagvec(cov_nu_nu_theta * omega));
   
-
+  
   arma::rowvec temp(4);
   
   temp(0) = obj_value;
@@ -239,9 +239,9 @@ arma::rowvec bs_optim_calc(const arma::vec& theta,
   temp(1) = optimism;
   
   temp(2) = obj_value + optimism;
-
+  
   temp(3) = arma::as_scalar(bootstrap_gof_test(obj_value, bs_obj_values, alpha, false).row(0));
-
+  
   return temp;
 }
 
@@ -253,11 +253,11 @@ arma::rowvec asympt_calc(const arma::vec& theta,
   
   // Take derivatives
   arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
-
+  
   /* A note to someone in the future...
-   * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
-   *  and the model_score diff (theo-wv_empir).
-   */
+  * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
+  *  and the model_score diff (theo-wv_empir).
+  */
   
   // Create the D Matrix (note this is in the analytical_matrix_derivaties.cpp file)
   arma::mat D = D_matrix(theta, desc, objdesc, scales, omega*(theo - wv_empir));
@@ -278,14 +278,14 @@ arma::rowvec asympt_calc(const arma::vec& theta,
 // ---- End helper functions
 
 arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
-                          const std::set<std::vector<std::string > >& models,
-                          const std::vector< std::string >& full_model,
-                          std::string model_type,
-                          bool bs_optimism,
-                          double alpha,
-                          std::string compute_v, 
-                          unsigned int K, unsigned int H, unsigned int G, 
-                          bool robust, double eff){
+                                                  const std::set<std::vector<std::string > >& models,
+                                                  const std::vector< std::string >& full_model,
+                                                  std::string model_type,
+                                                  bool bs_optimism,
+                                                  double alpha,
+                                                  std::string compute_v, 
+                                                  unsigned int K, unsigned int H, unsigned int G, 
+                                                  bool robust, double eff){
   
   // Number of data points
   unsigned int N = data.n_rows;
@@ -379,7 +379,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   mod_output(11) = omega;
   mod_output(12) = dr_slope;
   
-    
+  
   // ------------------------------------
   
   // Here we set up specifics that are used not in a specific mode.
@@ -477,8 +477,8 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     count++;
   }
   
-
-
+  
+  
   // Only run if in asymptotic mode
   if(!bs_optimism){
     
@@ -487,12 +487,12 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     iter = models.begin(); 
     
     /*
-     * Iterate through all models
-     * If i != j, then 
-     * IF (Complex_i > Complex_j && Obj_i > Obj_j){
-     *  IF(Crit_i < Crit_J)
-     * }
-     */
+    * Iterate through all models
+    * If i != j, then 
+    * IF (Complex_i > Complex_j && Obj_i > Obj_j){
+    *  IF(Crit_i < Crit_J)
+    * }
+    */
     while(iter != models.end()){
       iter2 = models.begin(); 
       while(iter2 != models.end()){
@@ -508,7 +508,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
         }
         iter2++;
       }
-     iter++; 
+      iter++; 
     }
     
   }
@@ -526,7 +526,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   
   // Sort the result matrix by Criterion
   arma::mat sorted = sort_mat(results, 2);
-    
+  
   // ---------
   
   // Set up output feed
@@ -551,7 +551,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     mod_output(9) = m(4);
     mod_output(10) = m(5);
   }
-
+  
   
   // Output to me!
   out(0) = ms;
@@ -579,12 +579,12 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
 //' @keywords internal
 // [[Rcpp::export]]
 arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec& data,
-                                                                const std::vector<std::vector < std::string > >& model_str, 
-                                                                const std::vector< std::string >&  full_model,
-                                                                double alpha, 
-                                                                std::string compute_v, std::string model_type, 
-                                                                unsigned int K, unsigned int H, unsigned int G, 
-                                                                bool robust, double eff, bool bs_optimism){
+                                                                 const std::vector<std::vector < std::string > >& model_str, 
+                                                                 const std::vector< std::string >&  full_model,
+                                                                 double alpha, 
+                                                                 std::string compute_v, std::string model_type, 
+                                                                 unsigned int K, unsigned int H, unsigned int G, 
+                                                                 bool robust, double eff, bool bs_optimism){
   
   
   std::set<std::vector < std::string > > models = vector_to_set(model_str);
@@ -592,14 +592,14 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
   arma::field< arma::field<arma::field<arma::mat> > > h(1);
   
   h(0) = model_select(data,
-      models,
-      full_model,
-      model_type,
-      bs_optimism,
-      alpha,
-      compute_v, 
-      K, H, G, 
-      robust, eff);
+    models,
+    full_model,
+    model_type,
+    bs_optimism,
+    alpha,
+    compute_v, 
+    K, H, G, 
+    robust, eff);
   
   return h;
 }
@@ -622,12 +622,12 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
 //' @keywords internal
 // [[Rcpp::export]]
 arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& data,
-                                              const arma::mat& combs,
-                                              const std::vector< std::string >&  full_model,
-                                              double alpha, 
-                                              std::string compute_v, std::string model_type, 
-                                              unsigned int K, unsigned int H, unsigned int G, 
-                                              bool robust, double eff, bool bs_optimism){
+                                                              const arma::mat& combs,
+                                                              const std::vector< std::string >&  full_model,
+                                                              double alpha, 
+                                                              std::string compute_v, std::string model_type, 
+                                                              unsigned int K, unsigned int H, unsigned int G, 
+                                                              bool robust, double eff, bool bs_optimism){
   
   
   

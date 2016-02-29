@@ -2,7 +2,7 @@
 title: "Manipulating Objects in gmwm"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Quick Start Guide for the GMWM R Package}
+  %\VignetteIndexEntry{Manipulating Objects in gmwm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -183,7 +183,10 @@ tail(x, 5)
 
 ## `lts` object
 
-The `lts` object represents data from a **l**atent **t**ime **s**eries. This object is meant to act as a means to demo the decomposition of a state-space model. If you do not need to prepare a demo, it is not advised to use this function as it provides a more detailed representation of the processes.
+The `lts` object represents data from a **l**atent **t**ime **s**eries. This object is meant to act as a means to demo the decomposition of a state-space model. If you do not need to prepare a demo, it is advised to use the `gts` object as it provides less information attached to the process.
+
+
+
 
 ## Implementation of Base Objects
 

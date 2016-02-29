@@ -1706,6 +1706,196 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// d4_filter
+arma::field<arma::vec> d4_filter();
+RcppExport SEXP gmwm_d4_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(d4_filter());
+    return __result;
+END_RCPP
+}
+// mb4_filter
+arma::field<arma::vec> mb4_filter();
+RcppExport SEXP gmwm_mb4_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(mb4_filter());
+    return __result;
+END_RCPP
+}
+// w4_filter
+arma::field<arma::vec> w4_filter();
+RcppExport SEXP gmwm_w4_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(w4_filter());
+    return __result;
+END_RCPP
+}
+// fk4_filter
+arma::field<arma::vec> fk4_filter();
+RcppExport SEXP gmwm_fk4_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(fk4_filter());
+    return __result;
+END_RCPP
+}
+// d6_filter
+arma::field<arma::vec> d6_filter();
+RcppExport SEXP gmwm_d6_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(d6_filter());
+    return __result;
+END_RCPP
+}
+// fk6_filter
+arma::field<arma::vec> fk6_filter();
+RcppExport SEXP gmwm_fk6_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(fk6_filter());
+    return __result;
+END_RCPP
+}
+// d8_filter
+arma::field<arma::vec> d8_filter();
+RcppExport SEXP gmwm_d8_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(d8_filter());
+    return __result;
+END_RCPP
+}
+// fk8_filter
+arma::field<arma::vec> fk8_filter();
+RcppExport SEXP gmwm_fk8_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(fk8_filter());
+    return __result;
+END_RCPP
+}
+// la8_filter
+arma::field<arma::vec> la8_filter();
+RcppExport SEXP gmwm_la8_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(la8_filter());
+    return __result;
+END_RCPP
+}
+// mb8_filter
+arma::field<arma::vec> mb8_filter();
+RcppExport SEXP gmwm_mb8_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(mb8_filter());
+    return __result;
+END_RCPP
+}
+// bl14_filter
+arma::field<arma::vec> bl14_filter();
+RcppExport SEXP gmwm_bl14_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(bl14_filter());
+    return __result;
+END_RCPP
+}
+// fk14_filter
+arma::field<arma::vec> fk14_filter();
+RcppExport SEXP gmwm_fk14_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(fk14_filter());
+    return __result;
+END_RCPP
+}
+// d16_filter
+arma::field<arma::vec> d16_filter();
+RcppExport SEXP gmwm_d16_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(d16_filter());
+    return __result;
+END_RCPP
+}
+// la16_filter
+arma::field<arma::vec> la16_filter();
+RcppExport SEXP gmwm_la16_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(la16_filter());
+    return __result;
+END_RCPP
+}
+// mb16_filter
+arma::field<arma::vec> mb16_filter();
+RcppExport SEXP gmwm_mb16_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(mb16_filter());
+    return __result;
+END_RCPP
+}
+// la20_filter
+arma::field<arma::vec> la20_filter();
+RcppExport SEXP gmwm_la20_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(la20_filter());
+    return __result;
+END_RCPP
+}
+// bl20_filter
+arma::field<arma::vec> bl20_filter();
+RcppExport SEXP gmwm_bl20_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(bl20_filter());
+    return __result;
+END_RCPP
+}
+// fk22_filter
+arma::field<arma::vec> fk22_filter();
+RcppExport SEXP gmwm_fk22_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(fk22_filter());
+    return __result;
+END_RCPP
+}
+// mb24_filter
+arma::field<arma::vec> mb24_filter();
+RcppExport SEXP gmwm_mb24_filter() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(mb24_filter());
+    return __result;
+END_RCPP
+}
 // select_filter
 arma::field<arma::vec> select_filter(std::string filter_name);
 RcppExport SEXP gmwm_select_filter(SEXP filter_nameSEXP) {

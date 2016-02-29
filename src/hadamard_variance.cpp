@@ -76,7 +76,6 @@ arma::mat hadam_to_cpp(arma::vec x) {
     for(unsigned int j = 0; j < N;j++){
       yBar(j) = sum( x.rows(tau*j, tau*j+tau - 1) )/tau;
     }
-    
 
     // Clusters
     unsigned int M = floor(T/(3*tau)) ;
@@ -86,7 +85,6 @@ arma::mat hadam_to_cpp(arma::vec x) {
     for(unsigned int k = 0; k <=  M - 1 ; k++){
       summed +=  pow( yBar(3*k+2) - 2*yBar(3*k+1) + yBar(3*k),2);
     }
-    
 
     // Cluster size
     hv(i-1,0) = tau; 
@@ -150,6 +148,7 @@ arma::mat hadam_mo_cpp(arma::vec x) {
     
     // Y.Bar
     arma::vec yBar = arma::zeros<arma::vec>(T);
+
     for(unsigned int j = 0; j <= T - tau; j++){
       yBar(j) = sum( x.rows(j, j+tau-1) ) / tau;
     }
@@ -157,6 +156,7 @@ arma::mat hadam_mo_cpp(arma::vec x) {
     // Clusters
     unsigned int M = T-3*tau;
     double summed = 0;
+
     for(unsigned int k = 0; k <= M - 1; k++){
       summed +=  pow( yBar(k+2*tau) - 2*yBar(k+tau) + yBar(k),2);
     }
@@ -171,8 +171,5 @@ arma::mat hadam_mo_cpp(arma::vec x) {
   
   return ha;
 }
-
-
-
 
 /* --------------------- End Hadamard Variance Functions ---------------------- */
