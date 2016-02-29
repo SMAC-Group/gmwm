@@ -14,7 +14,7 @@ hadam(x, type = "mo")
 \value{
 Hadamard variance fixed
 
-av A \code{list} that contains:
+hadam A \code{list} that contains:
 \itemize{
  \item{"clusters"}{The size of the cluster}
  \item{"hadamard"}{The Hadamard variance}
@@ -56,11 +56,11 @@ white.noise = rnorm(N, 0, 2)
 #Simulate random walk (P 4)
 random.walk = cumsum(0.1*rnorm(N, 0, 2))
 combined.ts = white.noise+random.walk
-hadam_mat = hadam_mo_cpp(combined.ts)
+hadam_mo = hadam(combined.ts)
+
+hadam_to = hadam(combined.ts, type = "to")
 }
 \author{
-Avinash Balakrishnan
-
-JJB
+Avinash Balakrishnan, JJB
 }
 

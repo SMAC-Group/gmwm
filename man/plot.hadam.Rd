@@ -2,7 +2,7 @@
 % Please edit documentation in R/hadam.R
 \name{plot.hadam}
 \alias{plot.hadam}
-\title{Plot Allan Variance}
+\title{Plot Hadamard Variance}
 \usage{
 \method{plot}{hadam}(x, ...)
 }
@@ -15,7 +15,7 @@
 ggplot2 graph
 }
 \description{
-Displays a plot containing the allan variance
+Displays a plot containing the Hadamard variance
 }
 \examples{
 set.seed(999)

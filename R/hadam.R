@@ -18,8 +18,7 @@
 #' @param x     A \code{vec} containing the time series under observation.
 #' @param type  A \code{string} containing either \code{"mo"} for Maximal Overlap or \code{"to"} for Tau Overlap
 #' @return Hadamard variance fixed
-#' @author Avinash Balakrishnan
-#' @return av A \code{list} that contains:
+#' @return hadam A \code{list} that contains:
 #' \itemize{
 #'  \item{"clusters"}{The size of the cluster}
 #'  \item{"hadamard"}{The Hadamard variance}
@@ -48,7 +47,7 @@
 #' \eqn{\frac{1}{{6(M - 2)}}\sum\limits_{t = 1}^{M - 2} {{{[{y_{t + 2}} - 2{y_{t + 1}} + {y_t}]}^2}} }
 #' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
 #' 
-#' @author JJB
+#' @author Avinash Balakrishnan, JJB
 #' @examples
 #' set.seed(999)
 #' # Simulate white noise (P 1) with sigma^2 = 4
@@ -58,7 +57,9 @@
 #' #Simulate random walk (P 4)
 #' random.walk = cumsum(0.1*rnorm(N, 0, 2))
 #' combined.ts = white.noise+random.walk
-#' hadam_mat = hadam_mo_cpp(combined.ts)
+#' hadam_mo = hadam(combined.ts)
+#' 
+#' hadam_to = hadam(combined.ts, type = "to")
 hadam = function(x, type = "mo") {
   x = as.vector(x)
   

@@ -15,7 +15,7 @@
 console output
 }
 \description{
-Displays the allHadamardan variance information
+Displays the all Hadamard variance information
 }
 \examples{
 set.seed(999)
