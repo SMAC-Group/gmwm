@@ -2,7 +2,7 @@
 % Please edit documentation in R/hadam.R
 \name{summary.hadam}
 \alias{summary.hadam}
-\title{Summary Allan Variance}
+\title{Summary Hadamard Variance}
 \usage{
 \method{summary}{hadam}(object, ...)
 }
@@ -15,7 +15,7 @@
 Summary table
 }
 \description{
-Displays the summary table of allan variance
+Displays the summary table of Hadamard variance
 }
 \examples{
 set.seed(999)
