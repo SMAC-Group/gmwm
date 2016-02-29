@@ -77,7 +77,7 @@ hadam = function(x, type = "mo") {
 }
 
 #' @title Prints Hadamard Variance
-#' @description Displays the allHadamardan variance information
+#' @description Displays the all Hadamard variance information
 #' @method print hadam
 #' @export
 #' @param x   A \code{hadam} object.
@@ -92,14 +92,14 @@ hadam = function(x, type = "mo") {
 print.hadam = function(x, ...) {
   cat("\n Clusters: \n")
   print(x$clusters, digits=5)
-  cat("\n Allan Variances: \n")
+  cat("\n Hadamard Variances: \n")
   print(x$hadamard, digits=5)
   cat("\n Errors: \n")
   print(x$errors, digits=5)
 }
 
-#' @title Plot Allan Variance
-#' @description Displays a plot containing the allan variance
+#' @title Plot Hadamard Variance
+#' @description Displays a plot containing the Hadamard variance
 #' @method plot hadam
 #' @export
 #' @param x   A \code{hadam} object.
@@ -123,8 +123,8 @@ plot.hadam = function(x, ...){
 }
 
 
-#' @title Summary Allan Variance
-#' @description Displays the summary table of allan variance
+#' @title Summary Hadamard Variance
+#' @description Displays the summary table of Hadamard variance
 #' @method summary hadam
 #' @export
 #' @param object A \code{hadam} object.
@@ -141,7 +141,7 @@ summary.hadam = function(object, ...) {
   colnames(out_matrix) = c("Time", "hadam", "HDEV", "Lower CI", "Upper CI", "Error")
   out_matrix[,"Time"] = object$clusters
   out_matrix[,"hadam"] = object$hadamard
-  out_matrix[,"ADEV"] = object$hdev
+  out_matrix[,"HDEV"] = object$hdev
   out_matrix[,"Lower CI"] = object$lci
   out_matrix[,"Upper CI"] = object$uci
   out_matrix[,"Error"] = object$errors
