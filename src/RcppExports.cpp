@@ -837,6 +837,28 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// hadam_to_cpp
+arma::mat hadam_to_cpp(arma::vec x);
+RcppExport SEXP gmwm_hadam_to_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    __result = Rcpp::wrap(hadam_to_cpp(x));
+    return __result;
+END_RCPP
+}
+// hadam_mo_cpp
+arma::mat hadam_mo_cpp(arma::vec x);
+RcppExport SEXP gmwm_hadam_mo_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    __result = Rcpp::wrap(hadam_mo_cpp(x));
+    return __result;
+END_RCPP
+}
 // idf_arma
 arma::vec idf_arma(const arma::vec& ar, const arma::vec& ma, const double sigma2, unsigned int N, bool robust, double eff, unsigned int H);
 RcppExport SEXP gmwm_idf_arma(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP) {

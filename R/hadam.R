@@ -31,13 +31,13 @@
 #' 
 #' Maximal Overlap Hadamard Variance
 #' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
-#' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
-#' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
-#' Then, \eqn{M = N - 2n} samples exist. 
+#' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/3}.
+#' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log3(N))}}
+#' Then, \eqn{M = N - 3n} samples exist. 
 #' The Maximal-overlap estimator is given by:
-#' \eqn{\frac{1}{{2\left( {N - 2k + 1} \right)}}\sum\limits_{t = 2k}^N {{{\left[ {{{\bar Y}_t}\left( k \right) - {{\bar Y}_{t - k}}\left( k \right)} \right]}^2}} }
+#' \eqn{\[\frac{1}{{6(M - 3m + 1)}}\sum\limits_{i = 1}^{M - 3m + 1} {{{[{y_{i + 2}} - 2{y_{i + 1}} + {y_i}]}^2}} \]}
 #' 
-#' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
+#' where \eqn{ \[{y_i} = {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} .\] }.
 #' 
 #' Tau-Overlap Allan Variance
 #' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
@@ -45,11 +45,10 @@
 #' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
 #' Then, a sampling of \eqn{m = \left\lfloor {\frac{{N - 1}}{n}} \right\rfloor  - 1} samples exist. 
 #' The tau-overlap estimator is given by:
-#' 
+#' \eqn{\frac{1}{{6(M - 2)}}\sum\limits_{t = 1}^{M - 2} {{{[{y_{t + 2}} - 2{y_{t + 1}} + {y_t}]}^2}} }
 #' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
 #' 
 #' @author JJB
-#' @references Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
 #' @examples
 #' set.seed(999)
 #' # Simulate white noise (P 1) with sigma^2 = 4
@@ -59,7 +58,7 @@
 #' #Simulate random walk (P 4)
 #' random.walk = cumsum(0.1*rnorm(N, 0, 2))
 #' combined.ts = white.noise+random.walk
-#' av_mat = hadam_mo_cpp(combined.ts)
+#' hadam_mat = hadam_mo_cpp(combined.ts)
 hadam = function(x, type = "mo") {
   x = as.vector(x)
   
@@ -94,7 +93,7 @@ print.hadam = function(x, ...) {
   cat("\n Clusters: \n")
   print(x$clusters, digits=5)
   cat("\n Allan Variances: \n")
-  print(x$allan, digits=5)
+  print(x$hadamard, digits=5)
   cat("\n Errors: \n")
   print(x$errors, digits=5)
 }
@@ -113,12 +112,12 @@ print.hadam = function(x, ...) {
 #' out = hadam(x)
 #' plot( out )
 plot.hadam = function(x, ...){
-  plot(x$clusters, x$adev,log="xy",
+  plot(x$clusters, x$hdev,log="xy",
        xlab=expression("Scale " ~ tau),
        ylab=expression("Hadamard Deviation " ~ phi[tau]),
        main=expression(log(tau) ~ " vs. " ~ log(phi[tau]))
   )
-  lines(x$clusters, x$adev, type="l")
+  lines(x$clusters, x$hdev, type="l")
   lines(x$clusters, x$lci, type="l", col="grey", lty=2)
   lines(x$clusters, x$uci, type="l", col="grey", lty=2)
 }
@@ -139,10 +138,10 @@ plot.hadam = function(x, ...){
 #' summary( out )
 summary.hadam = function(object, ...) {
   out_matrix = matrix(0, nrow = length(object$clusters), ncol = 6)
-  colnames(out_matrix) = c("Time", "hadam", "ADEV", "Lower CI", "Upper CI", "Error")
+  colnames(out_matrix) = c("Time", "hadam", "HDEV", "Lower CI", "Upper CI", "Error")
   out_matrix[,"Time"] = object$clusters
-  out_matrix[,"hadam"] = object$allan
-  out_matrix[,"ADEV"] = object$adev
+  out_matrix[,"hadam"] = object$hadamard
+  out_matrix[,"ADEV"] = object$hdev
   out_matrix[,"Lower CI"] = object$lci
   out_matrix[,"Upper CI"] = object$uci
   out_matrix[,"Error"] = object$errors
