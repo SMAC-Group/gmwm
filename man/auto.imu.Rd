@@ -5,7 +5,7 @@
 \title{Automatically select appropriate model for IMU}
 \usage{
 auto.imu(data, model = 3 * AR1() + WN() + RW() + QN() + DR(), bootstrap = F,
-  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+05,
+  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+06,
   seed = 1337)
 }
 \arguments{

@@ -16,7 +16,7 @@ A \code{vec} containing logit terms.
 This function computes the logit link function.
 }
 \examples{
-x.sim = runif(100)
+x.sim = runif(10)
 logit(x.sim)
 }
 \keyword{internal}

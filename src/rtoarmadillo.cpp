@@ -107,7 +107,7 @@ arma::vec quantile_cpp(arma::vec x, const arma::vec& probs) {
 //' @author JJB
 //' @keywords internal
 //' @examples
-//' x = rnorm(10000, 0, 1)
+//' x = rnorm(10, 0, 1)
 //' diff_cpp(x,1,1)
 // [[Rcpp::export]]
 arma::vec diff_cpp(arma::vec x, unsigned int lag, unsigned int differences){
@@ -175,7 +175,7 @@ arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max)
 //' @author R Core Team and JJB
 //' @keywords internal
 //' @examples
-//' x = 1:100
+//' x = 1:15
 //' # 
 //' cfilter(x, rep(1, 3), sides = 2, circular = FALSE)
 //' # Using R's function
@@ -253,7 +253,7 @@ arma::vec cfilter(arma::vec x, arma::vec filter, int sides, bool circular)
 //' @author R Core Team and JJB
 //' @keywords internal
 //' @examples
-//' x = 1:100
+//' x = 1:15
 //' # 
 //' rfilter(x, rep(1, 3), rep(1, 3))
 //' # Using R's function
@@ -442,7 +442,7 @@ arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max)
 //' Consider piping back into R and rewrapping the object. (Decrease of about 10 microseconds.)
 //' @keywords internal
 //' @examples
-//' x=rnorm(100)
+//' x=rnorm(10)
 //' dft_acf(x)
 // [[Rcpp::export]]
 arma::vec dft_acf(const arma::vec& x){
@@ -464,7 +464,7 @@ arma::vec dft_acf(const arma::vec& x){
 //' @return A \code{double} that contains the mean of the first difference of the data.
 //' @keywords internal
 //' @examples
-//' x=rnorm(100)
+//' x=rnorm(10)
 //' mean_diff(x)
 // [[Rcpp::export]]
 double mean_diff(const arma::vec& x){
