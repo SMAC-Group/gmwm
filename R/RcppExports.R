@@ -396,7 +396,7 @@ build_model_set <- function(combs, x) {
 #' x = rnorm(5,0,1)
 #' set_seed(10)
 #' y = rnorm(5,0,1)
-#' all.equal(x,y, check.attributes = F)
+#' all.equal(x,y, check.attributes = FALSE)
 set_seed <- function(seed) {
     invisible(.Call('gmwm_set_seed', PACKAGE = 'gmwm', seed))
 }

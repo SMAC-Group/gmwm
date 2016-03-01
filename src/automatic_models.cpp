@@ -91,11 +91,11 @@ std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std
 //' x = rnorm(5,0,1)
 //' set_seed(10)
 //' y = rnorm(5,0,1)
-//' all.equal(x,y, check.attributes = F)
+//' all.equal(x,y, check.attributes = FALSE)
 // [[Rcpp::export]]
 void set_seed(unsigned int seed) {
-  Rcpp::Environment baseE("package:base");
-  Rcpp::Function set_seed_r = baseE["set.seed"];
+  Rcpp::Environment base_env("package:base");
+  Rcpp::Function set_seed_r = base_env["set.seed"];
   set_seed_r(seed);  
 }
 

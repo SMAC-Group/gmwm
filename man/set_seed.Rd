@@ -21,7 +21,7 @@ set.seed(10)
 x = rnorm(5,0,1)
 set_seed(10)
 y = rnorm(5,0,1)
-all.equal(x,y, check.attributes = F)
+all.equal(x,y, check.attributes = FALSE)
 }
 \keyword{internal}
 
