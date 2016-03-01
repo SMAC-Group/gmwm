@@ -21,8 +21,8 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.1\cr
-#' Date: \tab 2015-12-28\cr
+#' Version: \tab 2.1.0\cr
+#' Date: \tab 2016-02-29\cr
 #' License: \tab CC BY-NC-SA 4.0\cr
 #' }
 #' 

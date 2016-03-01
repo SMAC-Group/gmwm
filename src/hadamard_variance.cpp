@@ -61,7 +61,7 @@ arma::mat hadam_to_cpp(arma::vec x) {
   // Length of vector
   unsigned int T = x.n_elem;
   // Create the number of halves possible and use it to find the number of clusters
-  unsigned int J = floor(log10(T)/log10(3))-1;
+  unsigned int J = floor(log10(T)/log10(3))-2;
   
   // Hadamard Variance Matrix
   arma::mat hv = arma::zeros<arma::mat>(J,3);
@@ -76,14 +76,16 @@ arma::mat hadam_to_cpp(arma::vec x) {
     for(unsigned int j = 0; j < N;j++){
       yBar(j) = sum( x.rows(tau*j, tau*j+tau - 1) )/tau;
     }
-    
+
     // Clusters
-    unsigned int M = floor(T/(3*tau));
+    unsigned int M = floor(T/(3*tau)) ;
+    
+
     double summed = 0;
-    for(unsigned int k = 0; k <= M-2 ; k++){
+    for(unsigned int k = 0; k <=  M - 1 ; k++){
       summed +=  pow( yBar(3*k+2) - 2*yBar(3*k+1) + yBar(3*k),2);
     }
-    
+
     // Cluster size
     hv(i-1,0) = tau; 
     // Compute the Hadamard Variance estimate
@@ -138,7 +140,7 @@ arma::mat hadam_mo_cpp(arma::vec x) {
   unsigned int J = floor(log10(T)/log10(3))-1;
   
   // Hadamard Variance Matrix
-  arma::mat av = arma::zeros<arma::mat>(J,3);
+  arma::mat ha = arma::zeros<arma::mat>(J,3);
   
   for (unsigned int i = 1; i <= J; i++){
     // Tau
@@ -146,26 +148,28 @@ arma::mat hadam_mo_cpp(arma::vec x) {
     
     // Y.Bar
     arma::vec yBar = arma::zeros<arma::vec>(T);
-    for(unsigned int j = 0; j <= T-tau; j++){
-      yBar(j) = sum( x.rows(j, tau+j -1) ) / tau;
+
+    for(unsigned int j = 0; j <= T - tau; j++){
+      yBar(j) = sum( x.rows(j, j+tau-1) ) / tau;
     }
     
     // Clusters
     unsigned int M = T-3*tau;
     double summed = 0;
-    for(unsigned int k = 0; k <= M; k++){
-      summed +=  pow(yBar(k) - yBar(k+tau),2);
+
+    for(unsigned int k = 0; k <= M - 1; k++){
+      summed +=  pow( yBar(k+2*tau) - 2*yBar(k+tau) + yBar(k),2);
     }
     
     // Cluster size
-    av(i-1,0) = tau; 
+    ha(i-1,0) = tau; 
     // Compute the Hadamard Variance estimate
-    av(i-1,1) = summed/(6*(T - 3*tau + 1)); 
+    ha(i-1,1) = summed/(6*(T - 3*tau +1)); 
     // Compute Error
-    av(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
+    ha(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
   }
   
-  return av;
+  return ha;
 }
 
 /* --------------------- End Hadamard Variance Functions ---------------------- */

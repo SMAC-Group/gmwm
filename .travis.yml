@@ -1,5 +1,6 @@
-language: r
-sudo: required
+language: R
+cache: packages
+sudo: false
 warnings_are_errors: true
 
 r_packages:
@@ -7,7 +8,5 @@ r_packages:
  - RcppArmadillo
  - knitr
  - grid
-
-before_script:
- - Rscript -e "devtools::install_github('SMAC-Group/imudata')"
- - Rscript -e "Rcpp::compileAttributes()"
+ - scales
+ - devtools
