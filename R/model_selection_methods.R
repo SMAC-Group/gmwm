@@ -170,8 +170,6 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 rank.models = function(data, ..., nested = F, bootstrap = F, 
                        model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
   
-  set.seed(seed)
-  
   models = list(...)
   numObj = length(models)
   desc = vector("list", numObj) 
