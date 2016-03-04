@@ -10,10 +10,17 @@ getEff(obj.list)
 \item{obj.list}{A \code{list} of \code{gmwm} object}
 }
 \value{
-A \code{numeric vector}. If the object is computed by classical method, it will return 1.1.
+A \code{numeric vector}.
 }
 \description{
 Get efficiency values from a list of \code{gmwm} object
+}
+\details{
+If the object is computed by classical method, it will return 1.1. The reason is:
+
+It's possible for user to create one object by robust method with eff=1, though it is exactly same
+as classical method. In this case, if we want the classical method to always appear on the 
+top left corner,  number larger than 1 (e.g. 1.1) is used. This setting makes it easy to draw the graph.
 }
 \examples{
 set.seed(8836)

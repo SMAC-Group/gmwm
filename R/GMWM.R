@@ -2193,16 +2193,11 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
       }
     }
     
-    # freq conversion
-    for(i in 1:numObj){
-      obj_list[[i]]$scales = obj_list[[i]]$scales/obj_list[[i]]$freq
-    }
-    
     # S2: Auto-select parameters, if not provided by users
     
     # decide what should appear in facet label
     if(is.null(facet.label) && display.eff){
-      object.names = sapply(obj_list, FUN = function(x){returnRobustEff(x)} )
+      object.names = sapply(obj_list, FUN = function(x){formatRobustEff(x)} )
     }else if(is.null(facet.label)){
       object.names = as.character(substitute(...()))
     }else{
@@ -2281,10 +2276,11 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
     each.len = numeric(numObj)
     
     for (i in 1:numObj ){
-      for (j in 1:numObj){
+        # freq conversion
+        obj_list[[i]]$scales = obj_list[[i]]$scales/obj_list[[i]]$freq
+        
         each.len[i] = length(obj_list[[i]]$wv.empir)
-        total.len = total.len + each.len[i]
-      }
+        total.len = total.len + each.len[i]*numObj
     }
     
     #Choose the column names for empty data frame

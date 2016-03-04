@@ -140,9 +140,9 @@ orderModel = function(models){
 #' GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.9)
 #' GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
 #' 
-#' returnRobustEff(GMWM1)
-#' returnRobustEff(GMWM2)
-returnRobustEff = function(x){
+#' formatRobustEff(GMWM1)
+#' formatRobustEff(GMWM2)
+formatRobustEff = function(x){
   if(!x$robust){
     return('Classical')
   }else{
@@ -164,7 +164,7 @@ is.validCompEffObj = function(obj.list){
   # All gmwm object
   sapply(obj.list, FUN = 
                      function(x){ 
-                       if(!is(x, 'gmwm')){
+                       if( !is.gmwm(x) ){
                           stop('The function can only work on gmwm object.')}
                      })
   
@@ -179,10 +179,8 @@ is.validCompEffObj = function(obj.list){
   count.map = sapply(obj.list, FUN = function(x){
     count_models( x$model.hat$desc )
   })
-  count.map = as.data.frame(count.map)
-  sameModel = sapply(count.map, FUN = function(x){
-    x == count.map[,1]
-  })
+  sameModel = apply(count.map, 2, identical, count.map[,1])
+  
   if(any(sameModel==F)){
     stop('gmwm objects are not constructed by the same model.')
   }
@@ -199,15 +197,23 @@ is.validCompEffObj = function(obj.list){
 #' addSpaceIfDuplicate(x1)
 #' 
 #' ##duplicate
-#' x2 = c('GMWM3', 'GMWM1', 'GMWM3')
+#' x2 = c('GMWM3', 'GMWM4', 'GMWM3', 'GMWM4', 'GMWM5', 'GMWM6','GMWM3')
 #' addSpaceIfDuplicate(x2)
 addSpaceIfDuplicate = function(x){
   res = x
-  num = length(x)
+  count.table = table(x)
   
-  if ( any(table(x) > 1)  ){
-    for(i in 2:num){
-      res[i] = paste0(x[i], paste0(rep(' ',times = i), collapse = ''))
+  if ( any( count.table > 1)  ){
+    
+    dup.item = count.table[ count.table>1 ]
+    
+    for(each in names(dup.item) ){
+      index = which(x == each)
+      
+      for(i in 2:length(index)){
+        res[ index[i]  ] = paste0(x[ index[i] ], paste0(rep(' ',times = (i-1) ), collapse = ''))
+      }
+     
     }
     
   }
@@ -218,8 +224,16 @@ addSpaceIfDuplicate = function(x){
 #' @title Get \code{gmwm} Efficiency Values
 #' @description Get efficiency values from a list of \code{gmwm} object
 #' @param obj.list A \code{list} of \code{gmwm} object
-#' @return A \code{numeric vector}. If the object is computed by classical method, it will return 1.1.
+#' @return A \code{numeric vector}.
 #' @keywords internal
+#' @details 
+#' 
+#' If the object is computed by classical method, it will return 1.1. The reason is:
+#' 
+#' It's possible for user to create one object by robust method with eff=1, though it is exactly same
+#' as classical method. In this case, if we want the classical method to always appear on the 
+#' top left corner,  number larger than 1 (e.g. 1.1) is used. This setting makes it easy to draw the graph.
+#' 
 #' @examples 
 #' set.seed(8836)
 #' n = 1000
