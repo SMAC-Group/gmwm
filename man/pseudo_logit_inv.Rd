@@ -16,7 +16,7 @@ A \code{vec} containing logit probabilities.
 This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain
 }
 \examples{
-x.sim = rnorm(100)
+x.sim = rnorm(10)
 pseudo_logit_inv(x.sim)
 }
 \keyword{internal}

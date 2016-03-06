@@ -5,7 +5,7 @@
 \title{Automatically select appropriate model for a set of models}
 \usage{
 rank.models(data, ..., nested = F, bootstrap = F, model.type = "ssm",
-  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+05, freq = 1,
+  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+06, freq = 1,
   seed = 1337)
 }
 \arguments{

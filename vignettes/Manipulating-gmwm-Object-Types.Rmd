@@ -8,6 +8,8 @@ vignette: >
 ---
 ```{r load_pkg, echo = F, message=F}
 library(gmwm)
+library("knitr")
+opts_chunk$set(fig.width = 7, fig.height = 4)
 ```
 
 # Introduction
@@ -183,9 +185,71 @@ tail(x, 5)
 
 ## `lts` object
 
-The `lts` object represents data from a **l**atent **t**ime **s**eries. This object is meant to act as a means to demo the decomposition of a state-space model. If you do not need to prepare a demo, it is advised to use the `gts` object as it provides less information attached to the process.
+The `lts` object represents data from a **l**atent **t**ime **s**eries. This object is meant to act as a means to demo the decomposition of a state-space model. If you do not need to prepare a demo, it is highly recommend that one uses the `gts` object as it provides less information attached to the process.
 
 
+### Loading data into an `lts` object
+
+As was the case with `gts`, there are two options to populate an `lts` object:
+
+1. Load data generated outside of the `gmwm` package:
+```{r eval = F}
+N = 10000
+
+wn = gen_wn(N,1)
+dr = gen_dr(N,.001)
+t  = wn + dr
+
+vals = cbind(wn,dr,t)
+
+# Basic
+x = lts(vals, process = c("WN","DR","WN+DR"))
+```
+
+2. Generate data according to an underlying process
+```{r}
+N = 10000
+
+model = WN(sigma2=1) + DR(0.001)
+
+# Basic
+ex2.basic = gen.lts(model, N)
+
+# Advanced
+ex2.adv = gen.lts(model, freq = 3, unit = "sec", name = "Example Adv Data")
+```
+
+### Working with `lts`
+
+To use the `lts` object in your own code, there are a few helpful functions:
+
+1. Detect whether or not the object is gts
+```{r eval = F}
+is.lts(x)
+```
+2. Find out the matrix properties
+```{r eval = F}
+# Number of Processes
+ncol(x)
+
+# Number of Realizations of each Process
+nrow(x)
+```
+
+### Graphing with `lts`
+
+To create a graph with the `lts` object use:
+
+```{r, fig.height = 6}
+x = gen.lts(WN(1)+DR(0.001), 50)
+plot(x)
+```
+
+This can be improved by doing:
+
+```{r, fig.height = 6}
+plot(x, title = "Example of `lts` plot", axis.x.label = "Time", axis.y.label = "Value")
+```
 
 
 ## Implementation of Base Objects

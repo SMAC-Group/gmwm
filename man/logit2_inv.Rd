@@ -16,7 +16,7 @@ A \code{vec} containing logit probabilities.
 This function computes the inverse of a logit transformation of the parameters.
 }
 \examples{
-x.sim = rnorm(100)
+x.sim = rnorm(10)
 logit_inv(x.sim)
 }
 \keyword{internal}

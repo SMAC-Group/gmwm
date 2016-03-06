@@ -16,7 +16,7 @@ A \code{vec} containing logit terms.
 This function compute the link function to constrain parameters to a positive domain.
 }
 \examples{
-x.sim = runif(100)
+x.sim = runif(10)
 pseudo_logit(x.sim)
 }
 \keyword{internal}

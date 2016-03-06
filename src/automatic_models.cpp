@@ -78,6 +78,28 @@ std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std
 }
 
 
+
+//' Set the RNG Seed from within Rcpp
+//' 
+//' Within Rcpp, one can set the R session seed without triggering
+//' the CRAN rng modifier check. 
+//' @param seed A \code{unsigned int} that is the seed one wishes to use. 
+//' @return A set RNG scope.
+//' @keywords internal
+//' @examples
+//' set.seed(10)
+//' x = rnorm(5,0,1)
+//' set_seed(10)
+//' y = rnorm(5,0,1)
+//' all.equal(x,y, check.attributes = FALSE)
+// [[Rcpp::export]]
+void set_seed(unsigned int seed) {
+  Rcpp::Environment base_env("package:base");
+  Rcpp::Function set_seed_r = base_env["set.seed"];
+  set_seed_r(seed);  
+}
+
+
 //' @title Conversion function of Vector to Set
 //' @description Converts a vector into a set
 //' @param x A \code{vec<vec<string>>} that contains a list of model descriptors.
@@ -285,7 +307,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
                                                   double alpha,
                                                   std::string compute_v, 
                                                   unsigned int K, unsigned int H, unsigned int G, 
-                                                  bool robust, double eff){
+                                                  bool robust, double eff, unsigned int seed){
   
   // Number of data points
   unsigned int N = data.n_rows;
@@ -314,6 +336,8 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   arma::mat results(num_models, 4);
   
   Rcpp::Rcout << "Processing model 1 out of " << num_models << std::endl;
+  
+  set_seed(seed);
   
   // Obtain the largest models information
   arma::field<arma::mat> master = gmwm_master_cpp(data, 
@@ -430,6 +454,10 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
     
     if(full_model_index != count){
       countModels++;
+      
+      // Set guessing seed
+      set_seed(seed);
+      
       Rcpp::Rcout << "Processing model " << countModels << " out of " << num_models << std::endl;
       // Get the first model
       desc = *iter;
@@ -575,6 +603,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
 //' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
 //' @param eff A \code{double} that indicates the efficiency to use.
 //' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+//' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 //' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 //' @keywords internal
 // [[Rcpp::export]]
@@ -584,7 +613,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
                                                                  double alpha, 
                                                                  std::string compute_v, std::string model_type, 
                                                                  unsigned int K, unsigned int H, unsigned int G, 
-                                                                 bool robust, double eff, bool bs_optimism){
+                                                                 bool robust, double eff, bool bs_optimism, unsigned int seed){
   
   
   std::set<std::vector < std::string > > models = vector_to_set(model_str);
@@ -599,7 +628,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
     alpha,
     compute_v, 
     K, H, G, 
-    robust, eff);
+    robust, eff, seed);
   
   return h;
 }
@@ -618,6 +647,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
 //' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
 //' @param eff A \code{double} that indicates the efficiency to use.
 //' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+//' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 //' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 //' @keywords internal
 // [[Rcpp::export]]
@@ -627,7 +657,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
                                                               double alpha, 
                                                               std::string compute_v, std::string model_type, 
                                                               unsigned int K, unsigned int H, unsigned int G, 
-                                                              bool robust, double eff, bool bs_optimism){
+                                                              bool robust, double eff, bool bs_optimism, unsigned int seed){
   
   
   
@@ -650,7 +680,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
       alpha,
       compute_v, 
       K, H, G, 
-      robust, eff);
+      robust, eff, seed);
     
     Rcpp::Rcout << std::endl;
   }

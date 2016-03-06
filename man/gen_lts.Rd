@@ -24,7 +24,7 @@ Create a latent time series based on a supplied time series model.
 \examples{
 # AR
 set.seed(1336)
-gen_lts(1000, c(.9,1), "AR1", list(c(1,1)))
+gen_lts(10, c(.9,1), "AR1", list(c(1,1)))
 }
 \keyword{internal}
 

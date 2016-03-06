@@ -171,7 +171,7 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
 //' @backref src/gen_process.h
 //' @keywords internal
 //' @examples
-//' gen_arma(100, c(.3,.5), c(.1), 1, 0)
+//' gen_arma(10, c(.3,.5), c(.1), 1, 0)
 // [[Rcpp::export]]
 arma::vec gen_arma(const unsigned int N,
                    const arma::vec& ar, const arma::vec& ma,
@@ -390,7 +390,7 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
 //' @examples
 //' # AR
 //' set.seed(1336)
-//' gen_lts(1000, c(.9,1), "AR1", list(c(1,1)))
+//' gen_lts(10, c(.9,1), "AR1", list(c(1,1)))
 // [[Rcpp::export]]
 arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
   unsigned int i_theta = 0;

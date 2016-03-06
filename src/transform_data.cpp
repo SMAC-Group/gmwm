@@ -25,7 +25,7 @@
 //' @return A \code{vec} containing logit probabilities.
 //' @keywords internal
 //' @examples
-//' x.sim = rnorm(100)
+//' x.sim = rnorm(10)
 //' pseudo_logit_inv(x.sim)
 // [[Rcpp::export]]
 arma::vec pseudo_logit_inv(const arma::vec& x){
@@ -44,7 +44,7 @@ double pseudo_logit_inv(double x){
 //' @return A \code{vec} containing logit probabilities.
 //' @keywords internal
 //' @examples
-//' x.sim = rnorm(100)
+//' x.sim = rnorm(10)
 //' logit_inv(x.sim)
 // [[Rcpp::export]]
 arma::vec logit_inv(const arma::vec& x){
@@ -61,7 +61,7 @@ double logit_inv(double x){
 //' @return A \code{vec} containing logit terms.
 //' @keywords internal
 //' @examples
-//' x.sim = runif(100)
+//' x.sim = runif(10)
 //' pseudo_logit(x.sim)
 // [[Rcpp::export]]
 arma::vec pseudo_logit(const arma::vec& x){
@@ -80,7 +80,7 @@ double pseudo_logit(double x){
 //' @return A \code{vec} containing logit terms.
 //' @keywords internal
 //' @examples
-//' x.sim = runif(100)
+//' x.sim = runif(10)
 //' logit(x.sim)
 // [[Rcpp::export]]
 arma::vec logit(const arma::vec& x){
@@ -99,7 +99,7 @@ double logit(double x){
 //' @return A \code{vec} containing logit terms.
 //' @keywords internal
 //' @examples
-//' x.sim = runif(100)
+//' x.sim = runif(10)
 //' logit(x.sim)
 // [[Rcpp::export]]
 arma::vec logit2(const arma::vec& x){
@@ -122,7 +122,7 @@ double logit2(double x){
 //' @return A \code{vec} containing logit probabilities.
 //' @keywords internal
 //' @examples
-//' x.sim = rnorm(100)
+//' x.sim = rnorm(10)
 //' logit_inv(x.sim)
 // [[Rcpp::export]]
 arma::vec logit2_inv(const arma::vec& x){
