@@ -53,7 +53,7 @@
 #' @docType package
 #' @useDynLib gmwm
 #' @importFrom Rcpp evalCpp
-#' @importFrom grDevices gray.colors hcl
+#' @importFrom grDevices gray.colors hcl graphics.off
 #' @importFrom graphics lines plot
 #' @importFrom methods is
 #' @importFrom stats arima predict ts as.ts
