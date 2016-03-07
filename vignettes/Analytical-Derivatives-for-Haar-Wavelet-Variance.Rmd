@@ -32,8 +32,8 @@ $$\begin{aligned}
 
 Quantisation Noise (QN):
 $$\begin{aligned}
-  {\nu ^2}\left( \tau  \right) &= \frac{{3Q_0^2}}{{2{\tau ^2}}} \\
-  \frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) &= \frac{3}{{2{\tau ^2}}} \\
+  {\nu ^2}\left( \tau  \right) = \frac{{6Q_0^2}}{{{\tau ^2}}} \\
+  \frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) &= \frac{6}{{{\tau ^2}}} \\
   \frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) &= 0 \\
 \end{aligned}$$
 
