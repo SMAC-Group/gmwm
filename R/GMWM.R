@@ -232,8 +232,10 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   
   theta = model$theta
   
+  detected_gm = any(model$desc == "GM")
+  
   # Convert from GM to AR1
-  if(!starting && any(model$desc == "GM")){
+  if(!starting && detected_gm){
     theta = conv.gm.to.ar1(theta, model$process.desc, freq)
   }
   
@@ -244,13 +246,13 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
   colnames(estimate) = "Estimates" 
-
+  
   init.guess = out[[2]]
   rownames(init.guess) = model$process.desc
   colnames(init.guess) = "Starting" 
   
   # Convert from AR1 to GM
-  if(any(model$desc == "GM")){
+  if(detected_gm){
     estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, freq)
     init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, freq)
   }
@@ -398,8 +400,11 @@ update.gmwm = function(object, model, ...){
     }
   }
   
+  
+  detected_gm = any(model$desc == "GM")
+
   # Convert from GM to AR1
-  if(!object$starting && any(model$desc == "GM")){
+  if(!object$starting && detected_gm){
     model$theta = conv.gm.to.ar1(model$theta, model$process.desc, object$freq)
   }
   
@@ -428,7 +433,7 @@ update.gmwm = function(object, model, ...){
   rownames(init.guess) = model$process.desc
   
   # Convert from AR1 to GM
-  if(any(model$desc == "GM")){
+  if(detected_gm){
     estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, object$freq)
     init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, object$freq)
   }

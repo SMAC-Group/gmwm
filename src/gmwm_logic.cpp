@@ -207,8 +207,12 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
         theta = code_zero(theta);
     }
   }
+  
+  
+  std::map<std::string, int> models = count_models(desc);
+  
   // Order AR1s so largest phi is first!
-  if(count_models(desc)["AR1"] > 1){
+  if(models["AR1"] > 1  || models["GM"] > 1){
     theta = order_AR1s(theta, desc, objdesc);
   }
   
@@ -334,11 +338,11 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     
     guessed_theta = theta;
   }
-
+  
   // Obtain the GMWM estimator's estimates.
   theta = gmwm_engine(theta, desc, objdesc, model_type, 
                       wv_empir, omega, scales, starting);
-
+  
   // Optim may return a very small value. In this case, instead of saying its zero (yielding a transform issue), make it EPSILON.
   theta = code_zero(theta);
   
@@ -372,8 +376,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   std::map<std::string, int> models = count_models(desc);
   
-  // Order AR1s so largest phi is first!
-   if(count_models(desc)["AR1"] > 1){
+  // Order AR1s / GM so largest phi is first!
+   if(models["AR1"] > 1 || models["GM"] > 1){
      theta = order_AR1s(theta, desc, objdesc);
    }
 
