@@ -252,7 +252,7 @@ plot.gts = function(x, to.unit = NULL, background = 'white',
                     point.size = 0, point.shape = 20,
                     title = NULL, title.size= 15, 
                     axis.label.size = 13, axis.tick.size = 11, 
-                    axis.x.label = NULL, axis.y.label = NULL, ... ){
+                    axis.x.label = NULL, axis.y.label = 'Observation', ... ){
   
   autoplot.gts(object = x, to.unit = to.unit, background = background,  
                line.type = line.type, line.color = line.color,
@@ -293,7 +293,7 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
                         point.size = 0, point.shape = 20,
                         title = NULL, title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
-                        axis.x.label = NULL, axis.y.label = NULL, ... ){
+                        axis.x.label = NULL, axis.y.label = 'Observation', ... ){
   x1=y1=NULL
   from.unit = attr(object, 'unit')
   start =  attr(object, 'start')
@@ -338,16 +338,14 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
   # axis label: default setting
   if(is.null(axis.x.label)){
     if(!is.null(from.unit) && !is.null(to.unit) && obj$converted){ 
-      axis.x.label = paste('time(',to.unit,')', sep = '')
+      axis.x.label = paste('Time(',to.unit,')', sep = '')
     }else if(is.null(from.unit) == F){
-      axis.x.label =paste('time(',from.unit,')', sep = '')
+      axis.x.label =paste('Time(',from.unit,')', sep = '')
     }else{
-      axis.x.label = 'time'
+      axis.x.label = 'Time'
     }
   }
-  if(is.null(axis.y.label)){
-    axis.y.label = 'observations'
-  }
+
     
   p = p +  
     xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
