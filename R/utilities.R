@@ -60,6 +60,8 @@ packageVersionCRAN = function(pkg, cran_url="http://cran.r-project.org/web/packa
 #' @return 
 #' A \code{logical} value that indicates whether R is open in RStudio.
 #' @author JJB
+#' @examples 
+#' is.rstudio()
 is.rstudio = function(){
   .Platform$GUI == "RStudio"
 }
@@ -71,7 +73,9 @@ is.rstudio = function(){
 #' @details 
 #' Depending on the operating system, the default drivers attempted to be used are:
 #' 
-#' OS X and Linux: quartz()
+#' OS X: quartz()
+#' 
+#' Linux: x11()
 #' 
 #' Windows: windows()
 #' 
@@ -79,15 +83,23 @@ is.rstudio = function(){
 #'
 #' Also, the active graphing environment will be killed. As a result, any graphs that are open will be deleted. You will have to regraph them. 
 #' @author JJB
+#' @examples
+#' \dontrun{
+#' # Turn on external graphs
+#' external_graphs()
+#' 
+#' # Turn off external graphs
+#' external_graphs(F)
+#' }
 external_graphs = function(ext = TRUE){
   if( is.rstudio() ){
     if(isTRUE(ext)){
       o = tolower(Sys.info()["sysname"])
-      if(o == "darwin" || o == "linux"){
-        options("device"="quartz")
-      }else if(o == "windows"){
-        options("device"="windows")
-      }
+      a = switch(o,
+                 "darwin"  = "quartz",
+                 "linux"   = "x11",
+                 "windows" = "windows")
+      options("device" = a)
     } else{
       options("device"="RStudioGD")
     }

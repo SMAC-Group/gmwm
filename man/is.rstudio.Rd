@@ -12,6 +12,9 @@ A \code{logical} value that indicates whether R is open in RStudio.
 \description{
 Detects whether R is open in RStudio.
 }
+\examples{
+is.rstudio()
+}
 \author{
 JJB
 }

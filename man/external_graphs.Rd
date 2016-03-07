@@ -15,13 +15,24 @@ Checks to see if the user is in RStudio. If so, then it changes the device to a 
 \details{
 Depending on the operating system, the default drivers attempted to be used are:
 
-OS X and Linux: quartz()
+OS X: quartz()
+
+Linux: x11()
 
 Windows: windows()
 
 Note, this setting is not permanent. Thus, the behavioral change will last until the end of the session. 
 
 Also, the active graphing environment will be killed. As a result, any graphs that are open will be deleted. You will have to regraph them.
+}
+\examples{
+\dontrun{
+# Turn on external graphs
+external_graphs()
+
+# Turn off external graphs
+external_graphs(F)
+}
 }
 \author{
 JJB
