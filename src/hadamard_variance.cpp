@@ -17,6 +17,8 @@
 
 #include <RcppArmadillo.h>
 
+// For reverse vec
+#include "armadillo_manipulations.h"
 
 #include "hadamard_variance.h"
 
@@ -173,6 +175,59 @@ arma::mat hadam_mo_cpp(arma::vec x) {
 }
 
 
+arma::mat hadam_total_cpp(arma::vec x) {
+  
+  // Length of vector
+  unsigned int T = x.n_elem;
+  
+  // Create the number of halves possible and use it to find the number of clusters
+  unsigned int J = floor(log10(T)/log10(3))-1;
+  
+  // Hadamard Variance Matrix
+  arma::mat ha = arma::zeros<arma::mat>(J,3);
+  
+  for (unsigned int i = 1; i <= J; i++){
+    // Tau
+    unsigned int tau = pow(3,i);
+    
+    // Y.Bar
+    arma::vec yBar = arma::zeros<arma::vec>(T);
+    for(unsigned int j = 0; j <= T - tau; j++){
+      yBar(j) = sum( x.rows(j, j+tau-1) ) / tau;
+    }
+  
+    //  Remove Frequency Drift
+    
+    unsigned int len_ybar = yBar.n_elem;
+    double sqr_sum = tau * (tau + 1) * (2*tau + 1) / 6;
+    arma::vec i_vec = arma::linspace<arma::vec>(1,tau,1);
+    
+    for(unsigned int k = 0; k <= len_ybar - tau ; k++){
+      arma::vec sub_seq = yBar.rows(k, k+tau-1);
+      // calculate drift
+      double c_hat = arma::dot(sub_seq,i_vec) / sqr_sum;
+      arma::vec y_not = sub_seq - c_hat * i_vec;
+      
+      // New Sequence 
+      arma::vec new_y_not = arma::join_rows(reverse_vec(y_not),y_not,reverse_vec(y_not));
+      
+      
+  
+  }
+    
+   
+   
+    
+    // Cluster size
+    ha(i-1,0) = tau; 
+    // Compute the Hadamard Variance estimate
+    ha(i-1,1) = summed/(6*(T - 3*tau +1)); 
+    // Compute Error
+    ha(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
+  }
+  
+  return ha;
+}
 
 
 /* --------------------- End Hadamard Variance Functions ---------------------- */
