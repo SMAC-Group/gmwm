@@ -202,6 +202,9 @@ arma::mat hadam_total_cpp(arma::vec x) {
     double sqr_sum = tau * (tau + 1) * (2*tau + 1) / 6;
     arma::vec i_vec = arma::linspace<arma::vec>(1,tau,1);
     
+    arma::vec y_bar_new = arma::zeros<arma::vec>(len_ybar - tau + 1);
+    
+    
     for(unsigned int k = 0; k <= len_ybar - tau ; k++){
       arma::vec sub_seq = yBar.rows(k, k+tau-1);
       // calculate drift
@@ -209,19 +212,19 @@ arma::mat hadam_total_cpp(arma::vec x) {
       arma::vec y_not = sub_seq - c_hat * i_vec;
       
       // New Sequence 
-      arma::vec new_y_not = arma::join_rows(reverse_vec(y_not),y_not,reverse_vec(y_not));
+      arma::vec new_y_not = arma::join_horiz(reverse_vec(y_not),y_not,reverse_vec(y_not));
       
-      
-  
+      unsigned int M = new_y_not.n_elem - 3*tau;
+      double summed = 0;
+      for(unsigned int k = 0; k <= M - 1; k++){
+        summed +=  pow( new_y_not(k+2*tau) - 2*new_y_not(k+tau) + new_y_not(k),2);
+      }
+      y_bar_new(k) = summed / 6*M;
   }
-    
-   
-   
-    
-    // Cluster size
+     // Cluster size
     ha(i-1,0) = tau; 
     // Compute the Hadamard Variance estimate
-    ha(i-1,1) = summed/(6*(T - 3*tau +1)); 
+    ha(i-1,1) = y_bar_new/(6*(T - 3*tau +1)); 
     // Compute Error
     ha(i-1,2) = 1/sqrt(2*( (double(T)/tau) - 1) );
   }
