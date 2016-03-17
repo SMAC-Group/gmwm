@@ -254,3 +254,75 @@ getEff = function(obj.list){
   return(res)
 }
 
+#' @title Get N Colors
+#' @description Creates n colors from specific palette
+#' @param palette A \code{string} that indicates the name of the palette.
+#' @param n An \code{integer} that specifies the number of colors to be generated.
+#' @param rm An \code{integer vector} that specifies the index of colors to be removed.
+#' @keywords internal
+#' @details 
+#' Currently, only the palette 'Set1' is implemented in this function.
+#' 
+#' 'Set1' palette in the package \code{RColorBrewer} originally has 9 colors, but we delete the 
+#' yellow color (the 6th one) since it is too much vibrant. 
+#' 
+#' If \code{n} is larger than the mamixum number of colors in the palette, the function
+#' will repeat the palette until \code{n} colors is created.
+#' 
+#' @examples 
+#' getColors('Set1', 10)
+getColors = function(palette, n, rm = NULL){
+  
+  if(palette == 'Set1'){
+    color = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628" ,"#F781BF", "#999999")
+  }
+  
+  if(!is.null(rm)){
+    color = color[-rm]
+  }
+  
+  modulus = n %/% length(color)
+  remainder = n %% length(color)
+  result = c( rep(color, times = modulus), color[1:remainder] )
+  return(result)
+}
+
+#' @title Check the Parameters
+#' @description Check the user supplied parameters and assign them to the default if they are wrong.
+#' @param params A \code{character vector} that specifies the user supplied parameters.
+#' @param require.len An \code{integer vector} that specifies the required length of each parameter.
+#' @param default A \code{list} that specifies the default of each parameter.
+#' @param null.is.fine A \code{boolean vector} to indicate whether \code{NULL} is fine for parameters.
+#' @param env An \code{environment} to use.
+#' @keywords internal
+#' @details 
+#' 
+#' The user supplied parameters are usually \code{line.color}, \code{line.type}, \code{point.size}, 
+#' \code{point.shape}, \code{CI.color} and \code{legend.label}.
+#' 
+#' This function will check whether the required length of the parameter is met. If not, it will assign the 
+#' default value to that parameter.
+#' 
+checkParams = function(params, require.len, default, null.is.fine, env = parent.frame()){
+  
+  for (i in 1:length(params)){
+    
+    one_param = params[i]
+    value = get(one_param, envir = env)
+    
+    if( length(value)!=require.len[i]){
+      
+      isNull = is.null(value)
+      
+      if( (!isNull) || (!null.is.fine[i]) ){
+        
+        warning(paste('Parameter', one_param, 'requires', require.len[i],'elements,','but', length(value),
+                      'is supplied.','Default setting is used.'))
+      }
+      
+      assign(one_param, default[[i]], envir = env)
+    }
+  }
+  
+}
+

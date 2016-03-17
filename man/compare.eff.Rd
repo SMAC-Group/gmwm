@@ -14,7 +14,7 @@ compare.eff(..., display.eff = T, order.eff = T, facet.label = NULL,
   axis.y.label = expression(paste("Wavelet Variance ", nu)))
 }
 \arguments{
-\item{...}{Several \code{gmwm} objects, and they must be constrcuted by the same data and same model.}
+\item{...}{Several \code{gmwm} objects, and they must be constrcuted by the same data and same model. Or one \code{gmwm_robust} object created by \code{\link[gmwm]{gmwm.robust}} function.}
 
 \item{display.eff}{A \code{boolean} indicating whether the classical/robust method with efficiency should be displayed in the facet label. It is only used when \code{facet.label} is NULL.}
 
