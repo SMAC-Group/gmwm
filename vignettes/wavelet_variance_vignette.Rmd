@@ -7,8 +7,6 @@ output: html_document
 ```{r setup, include=FALSE}
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 10)
-
-read_chunk("wv_code.R")
 ```
 
 # Introduction
@@ -179,7 +177,7 @@ $$y_t=y_{t-1}+\omega_t$$ with the initial condition $y_0=c$
 
 **Process to WV formula:**
 
-$${\nu ^2}\left( \tau \right) = \frac{{{\sigma ^2}\left( {2{\tau ^2} + 4} \right)}}{{24\tau }}$$
+$${\nu ^2}(\tau ) = \frac{{{\sigma ^2}({\tau ^2} + 2)}}{{12\tau }}$$
 
 
 ```{r, message=FALSE, cache=TRUE}
@@ -205,19 +203,12 @@ Quantization is the process of mapping a large set of input values to a (countab
 
 **Process equation:**
 
-\[\begin{gathered}
-  U_k^*\sim U\left[ {0,1} \right]  \\
-  {U_k} = \sqrt {12} U_k^*  \\
-  {{\dot U}_k} = \frac{{{U_{k + \Delta t}} - {U_k}}}{{\Delta t}}  \\
-  {{\dot U}_k}\Delta t = {U_{k + \Delta t}} - {U_k}  \\
-  {x_k} = \sqrt Q {{\dot U}_k}\Delta t  \\
-  {x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)  \\ 
-\end{gathered} \]
+$${X_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
 
 
 **Process to WV formula:**
 
-\[{\nu ^2}\left( \tau  \right) = \frac{{6Q_0^2}}{{{\tau ^2}}}\]
+$${\nu ^2}\left( \tau  \right) = \frac{{6Q_0^2}}{{{\tau ^2}}}$$
 
 
 ```{r, message=FALSE, cache=TRUE}
@@ -311,7 +302,7 @@ $$X_t=c+\epsilon_t+\sum_{i=1}^{p}\phi_iX_{t-i}+\sum_{i=1}^{q}\theta_i\epsilon_{t
 
 ***Process to WV formula:***
 
-$${\nu ^2}\left( { \tau } \right) = \left( {1 + {\theta ^2}} \right)\frac{{\left[ {\frac{\tau }{2} - \left( {\tau - 3} \right)\left( {\frac{\theta }{{1 + {\theta ^2}}}} \right)} \right]}}{{\frac{{{\tau ^2}}}{4}}}{\sigma ^2}$$
+$${\nu ^2}\left( { \tau } \right) =\frac{{\left[ {\frac{\tau }{2}{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - {\phi _1}{\theta _1} + {\theta ^2}} \right) + \left( {{\phi _1} - {\theta _1}} \right)\left( {1 - {\phi _1}{\theta _1}} \right)\left( {\tau - 3 - \tau \phi + 4\phi _1^n - \phi _1^{2n}} \right)} \right]{\sigma ^2}}}{{\frac{{{\tau ^2}}}{4}{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - \phi _1^2} \right)}}$$
 
 
 ```{r, message=FALSE, cache=TRUE}
@@ -327,6 +318,74 @@ wv = wvar(xt)
 # Graph comparing observed vs. wavelet variance
 grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
 ```
+
+
+### DR()
+
+**Description:**
+
+A drift process has two components: time and slope. As more points are accumulated over time, the drift will match the common slope form. Note that a drift is similar to the slope-intercept form of a linear line.
+
+**Process equation:**
+
+$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( \tau \right) = \frac{{{\tau ^2}{\omega ^2}}}{{16}}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = DR(slope = 0.0001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+### MA()
+
+**Description:**
+
+In time series analysis, the moving-average (MA) model is a common approach for modeling univariate time series. The notation MA(q) refers to the moving average model of order q.
+
+**Process equation:**
+
+$$X_t=\mu+\epsilon_t+\sum_{i=1}^{q}\theta_i\epsilon_{t-i}$$
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( { \tau } \right) = \left( {1 + {\theta ^2}} \right)\frac{{\left[ {\frac{\tau }{2} - \left( {\tau - 3} \right)\left( {\frac{\theta }{{1 + {\theta ^2}}}} \right)} \right]}}{{\frac{{{\tau ^2}}}{4}}}{\sigma ^2}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = MA(theta=.32, sigma=.3)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+
+
+
+## Composite Processes
+
+Below are the realization of different processes given above. 
+
 
 
 
@@ -406,14 +465,7 @@ $$y_t=y_{t-1}+\omega_t$$
 
 QN:
 
-\[\begin{gathered}
-  U_k^*\sim U\left[ {0,1} \right]  \\
-  {U_k} = \sqrt {12} U_k^*  \\
-  {{\dot U}_k} = \frac{{{U_{k + \Delta t}} - {U_k}}}{{\Delta t}}  \\
-  {{\dot U}_k}\Delta t = {U_{k + \Delta t}} - {U_k}  \\
-  {x_k} = \sqrt Q {{\dot U}_k}\Delta t  \\
-  {x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)  \\ 
-\end{gathered} \]
+$${x_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
 
 LTS equation:
 
@@ -434,38 +486,6 @@ grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, 
 ```
 
 
-### DR()
-
-**Description:**
-
-A drift process has two components: time and slope. As more points are accumulated over time, the drift will match the common slope form. Note that a drift is similar to the slope-intercept form of a linear line.
-
-**Process equation:**
-
-$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
-
-**Process to WV formula:**
-
-$${\nu ^2}\left( \tau \right) = \frac{{{\tau ^2}{\omega ^2}}}{{16}}$$
-
-
-```{r, message=FALSE, cache=TRUE}
-# Model
-mod = DR(slope = 0.0001)
-
-# Simulation
-xt = gen.gts(mod,n)
-
-# Decomposed wavelet variance
-wv = wvar(xt)
-
-# Graph comparing observed vs. wavelet variance
-grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
-```
-
-## Composite Processes
-
-Below are the realization of different processes given above. 
 
 ### QN()+DR()
 
@@ -473,14 +493,7 @@ Below are the realization of different processes given above.
 
 QN:
 
-\[\begin{gathered}
-  U_k^*\sim U\left[ {0,1} \right]  \\
-  {U_k} = \sqrt {12} U_k^*  \\
-  {{\dot U}_k} = \frac{{{U_{k + \Delta t}} - {U_k}}}{{\Delta t}}  \\
-  {{\dot U}_k}\Delta t = {U_{k + \Delta t}} - {U_k}  \\
-  {x_k} = \sqrt Q {{\dot U}_k}\Delta t  \\
-  {x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)  \\ 
-\end{gathered} \]
+$${x_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
 
 DR:
 
@@ -543,18 +556,11 @@ grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, 
 
 QN:
 
-\[\begin{gathered}
-  U_k^*\sim U\left[ {0,1} \right]  \\
-  {U_k} = \sqrt {12} U_k^*  \\
-  {{\dot U}_k} = \frac{{{U_{k + \Delta t}} - {U_k}}}{{\Delta t}}  \\
-  {{\dot U}_k}\Delta t = {U_{k + \Delta t}} - {U_k}  \\
-  {x_k} = \sqrt Q {{\dot U}_k}\Delta t  \\
-  {x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)  \\ 
-\end{gathered} \]
+$${x_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
 
 RW:
 
-$$x_t=x_{t-1}+\omega_t$$
+$$x_k=x_{k-1}+\omega_k$$
 
 DR:
 
@@ -626,14 +632,7 @@ $${x_{3}}_{(t)} = {\phi _3}{x_{3(}}_{t - 1)} + \omega t$$ where $\omega_t$ is ii
 
 QN:
 
-\[\begin{gathered}
-  U_k^*\sim U\left[ {0,1} \right]  \\
-  {U_k} = \sqrt {12} U_k^*  \\
-  {{\dot U}_k} = \frac{{{U_{k + \Delta t}} - {U_k}}}{{\Delta t}}  \\
-  {{\dot U}_k}\Delta t = {U_{k + \Delta t}} - {U_k}  \\
-  {x_k} = \sqrt Q {{\dot U}_k}\Delta t  \\
-  {x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)  \\ 
-\end{gathered} \]
+$${x_k} = \sqrt {12{Q^2}} \left( {{U_k} - {U_{k - 1}}} \right)$$
 
 WN:
 
@@ -667,31 +666,3 @@ grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, 
 ```
 
 
-### MA()
-
-**Description:**
-
-In time series analysis, the moving-average (MA) model is a common approach for modeling univariate time series. The notation MA(q) refers to the moving average model of order q.
-
-**Process equation:**
-
-$$X_t=\mu+\epsilon_t+\sum_{i=1}^{q}\theta_i\epsilon_{t-i}$$
-
-**Process to WV formula:**
-
-$${\nu ^2}\left( { \tau } \right) = \left( {1 + {\theta ^2}} \right)\frac{{\left[ {\frac{\tau }{2} - \left( {\tau - 3} \right)\left( {\frac{\theta }{{1 + {\theta ^2}}}} \right)} \right]}}{{\frac{{{\tau ^2}}}{4}}}{\sigma ^2}$$
-
-
-```{r, message=FALSE, cache=TRUE}
-# Model
-mod = MA(theta=.32, sigma=.3)
-
-# Simulation
-xt = gen.gts(mod,n)
-
-# Decomposed wavelet variance
-wv = wvar(xt)
-
-# Graph comparing observed vs. wavelet variance
-grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
-```
