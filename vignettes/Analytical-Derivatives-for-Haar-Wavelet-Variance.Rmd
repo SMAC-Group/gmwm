@@ -18,54 +18,58 @@ $$\begin{aligned}
 
 Random Walk:
 $$\begin{aligned}
-  {\nu ^2}\left( \tau \right) = \frac{{{\sigma ^2}\left( {2{\tau ^2} + 4} \right)}}{{24\tau }} \\
-  \frac{\partial }{{\partial {\sigma ^2}}}{\nu ^2}(\tau ) = \frac{{{\tau ^2} + 2}}{{12\tau }} \\
-  \frac{\partial }{{\partial {\sigma ^4}}}{\nu ^2}(\tau ) = 0
+  {\nu ^2}\left( \tau \right) &= \frac{{{\sigma ^2}\left( {2{\tau ^2} + 4} \right)}}{{24\tau }} \\
+  \frac{\partial }{{\partial {\sigma ^2}}}{\nu ^2}(\tau ) &= \frac{{{\tau ^2} + 2}}{{12\tau }} \\
+  \frac{\partial }{{\partial {\sigma ^4}}}{\nu ^2}(\tau ) &= 0
 \end{aligned}$$
 
 Drift Process:
-$${\nu ^2}\left( \tau \right) = \frac{{{\tau ^2}{\omega ^2}}}{{16}}$$
-
-\[\frac{\partial }{{\partial {\omega ^2}}}{\nu ^2}(\tau ) = \frac{{{\tau ^2}}}{{16}}\]
-
-\[\frac{\partial }{{\partial {\omega ^4}}}{\nu ^2}(\tau ) = 0\]
+$$\begin{aligned}
+  {\nu ^2}\left( \tau \right) &= \frac{{{\tau ^2}{\omega ^2}}}{{16}} \\
+  \frac{\partial }{{\partial {\omega ^2}}}{\nu ^2}(\tau ) &= \frac{{{\tau ^2}}}{{16}}\\
+  \frac{\partial }{{\partial {\omega ^4}}}{\nu ^2}(\tau ) &= 0
+\end{aligned}$$
 
 Quantisation Noise (QN):
 $$\begin{aligned}
-  {\nu ^2}\left( \tau  \right) = \frac{{6Q_0^2}}{{{\tau ^2}}} \\
+  {\nu ^2}\left( \tau  \right) &= \frac{{6Q_0^2}}{{{\tau ^2}}} \\
   \frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) &= \frac{6}{{{\tau ^2}}} \\
-  \frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) &= 0 \\
+  \frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) &= 0
 \end{aligned}$$
 
 AR 1 Process:
-$${\nu ^2}\left( { \tau } \right) = \frac{{\left( {\frac{\tau }{2} - 3\phi - \frac{{\tau {\phi ^2}}}{2} + 4{\phi ^{\frac{\tau }{2} + 1}} - {\phi ^{\tau + 1}}} \right){\sigma ^2}}}{{\frac{{{\tau ^2}}}{2}{{\left( {1 - \phi } \right)}^2}\left( {1 - {\phi ^2}} \right)}}$$
-
+$$\begin{aligned}
+  {\nu ^2}\left( { \tau } \right) &= \frac{{\left( {\frac{\tau }{2} - 3\phi - \frac{{\tau {\phi ^2}}}{2} + 4{\phi ^{\frac{\tau }{2} + 1}} - {\phi ^{\tau + 1}}} \right){\sigma ^2}}}{{\frac{{{\tau ^2}}}{2}{{\left( {1 - \phi } \right)}^2}\left( {1 - {\phi ^2}} \right)}}
+\end{aligned}$$
 
 Derivatives w.r.t. $\phi$
-$$\frac{\partial }{{\partial \phi }}{\nu ^2}(\tau ) = \frac{{2{\sigma ^2}(\phi \tau  - 4{\phi ^{\frac{\tau }{2}}}(\frac{\tau }{2} + 1) + {\phi ^\tau }(\tau  + 1) + 3)}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^2}}} - \frac{{4{\sigma ^2}(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^3}}} - \frac{{4\phi {\sigma ^2}(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^2}{{({\phi ^2} - 1)}^2}{{(\phi  - 1)}^2}}}$$
-
-
-$$\frac{\partial }{{\partial {\phi ^2}}}{\nu ^2}(\tau ) = \frac{{2{\sigma ^2}(\phi  + {\phi ^\tau } - 2{\phi ^{\frac{\tau }{2}}} - 2{\phi ^{\frac{\tau }{2}}}log(\phi )(\frac{\tau }{2} + 1) + {\phi ^\tau }log(\phi )(\tau  + 1))}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^2}}} - \frac{{4{\sigma ^2}(\phi \tau  - 4{\phi ^{\frac{\tau }{2}}}(\frac{\tau }{2} + 1) + {\phi ^\tau }(\tau  + 1) + 3)}}{{{\tau ^3}({\phi ^2} - 1){{(\phi  - 1)}^2}}} + \frac{{8{\sigma ^2}(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^3}({\phi ^2} - 1){{(\phi  - 1)}^3}}} + \frac{{4{\sigma ^2}(2{\phi ^{\frac{\tau }{2} + 1}}log(\phi ) - \frac{{{\phi ^2}}}{2} - {\phi ^{\tau  + 1}}log(\phi ) + \frac{1}{2})}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^3}}} + \frac{{8\phi {\sigma ^2}*(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^3}{{({\phi ^2} - 1)}^2}{{(\phi  - 1)}^2}}} + \frac{{4\phi {\sigma ^2}(2{\phi ^{\frac{\tau }{2} + 1}}log(\phi ) - \frac{{{\phi ^2}}}{2} - {\phi ^{\tau  + 1}}*log(\phi ) + \frac{1}{2})}}{{{\tau ^2}{{({\phi ^2} - 1)}^2}{{(\phi  - 1)}^2}}}$$
+$$\begin{aligned}
+  \frac{\partial }{{\partial \phi }}{\nu ^2}(\tau ) &= \frac{{2{\sigma ^2}(\phi \tau  - 4{\phi ^{\frac{\tau }{2}}}(\frac{\tau }{2} + 1) + {\phi ^\tau }(\tau  + 1) + 3)}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^2}}} - \frac{{4{\sigma ^2}(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^3}}} - \frac{{4\phi {\sigma ^2}(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^2}{{({\phi ^2} - 1)}^2}{{(\phi  - 1)}^2}}}\\
+  \frac{\partial }{{\partial {\phi ^2}}}{\nu ^2}(\tau ) &= \frac{{2{\sigma ^2}(\phi  + {\phi ^\tau } - 2{\phi ^{\frac{\tau }{2}}} - 2{\phi ^{\frac{\tau }{2}}}log(\phi )(\frac{\tau }{2} + 1) + {\phi ^\tau }log(\phi )(\tau  + 1))}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^2}}} - \frac{{4{\sigma ^2}(\phi \tau  - 4{\phi ^{\frac{\tau }{2}}}(\frac{\tau }{2} + 1) + {\phi ^\tau }(\tau  + 1) + 3)}}{{{\tau ^3}({\phi ^2} - 1){{(\phi  - 1)}^2}}} + \frac{{8{\sigma ^2}(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^3}({\phi ^2} - 1){{(\phi  - 1)}^3}}} + \frac{{4{\sigma ^2}(2{\phi ^{\frac{\tau }{2} + 1}}log(\phi ) - \frac{{{\phi ^2}}}{2} - {\phi ^{\tau  + 1}}log(\phi ) + \frac{1}{2})}}{{{\tau ^2}({\phi ^2} - 1){{(\phi  - 1)}^3}}} + \frac{{8\phi {\sigma ^2}*(3\phi  - \frac{\tau }{2} - 4{\phi ^{\frac{\tau }{2} + 1}} + \frac{{{\phi ^2}\tau }}{2} + {\phi ^{\tau  + 1}})}}{{{\tau ^3}{{({\phi ^2} - 1)}^2}{{(\phi  - 1)}^2}}} + \frac{{4\phi {\sigma ^2}(2{\phi ^{\frac{\tau }{2} + 1}}log(\phi ) - \frac{{{\phi ^2}}}{2} - {\phi ^{\tau  + 1}}*log(\phi ) + \frac{1}{2})}}{{{\tau ^2}{{({\phi ^2} - 1)}^2}{{(\phi  - 1)}^2}}}
+\end{aligned}$$
 
 Derivatives w.r.t. $\sigma^2$
-$$\frac{\partial }{{\partial {\sigma ^2}}}{\nu ^2}(\tau ) = \frac{{\frac{\tau }{2} - 3\phi  - \frac{{\tau {\phi ^2}}}{2} + 4{\phi ^{\frac{\tau }{2} + 1}} - {\phi ^{\tau  + 1}}}}{{\frac{{{\tau ^2}}}{2}{{(1 - \phi )}^2}(1 - {\phi ^2})}}$$
-
-$$\frac{\partial }{{\partial {\sigma ^4}}}{\nu ^2}(\tau ) = 0$$
+$$\begin{aligned}
+  \frac{\partial }{{\partial {\sigma ^2}}}{\nu ^2}(\tau ) &= \frac{{\frac{\tau }{2} - 3\phi  - \frac{{\tau {\phi ^2}}}{2} + 4{\phi ^{\frac{\tau }{2} + 1}} - {\phi ^{\tau  + 1}}}}{{\frac{{{\tau ^2}}}{2}{{(1 - \phi )}^2}(1 - {\phi ^2})}}\\
+  \frac{\partial }{{\partial {\sigma ^4}}}{\nu ^2}(\tau ) &= 0
+\end{aligned}$$
    
 MA 1 process:
 $${\nu ^2}\left( { \tau } \right) = \left( {1 + {\theta ^2}} \right)\frac{{\left[ {\frac{\tau }{2} - \left( {\tau - 3} \right)\left( {\frac{\theta }{{1 + {\theta ^2}}}} \right)} \right]}}{{\frac{{{\tau ^2}}}{4}}}{\sigma ^2}$$
 
 
 Derivatives w.r.t $\theta$
-$$\frac{\partial }{{\partial \theta }}{\nu ^2}(\tau ) = \frac{{8{\sigma ^2}\theta \frac{{\frac{\tau }{2} - \theta (\tau  - 3)}}{{{\theta ^2} + 1}}}}{{{\tau ^2}}} - 4{\sigma ^2}\frac{{\tau  - 3 - \frac{{2{\theta ^2}(\tau  - 3)}}{{{\theta ^2} + 1}}}}{{{\tau ^2}}}$$
-
-$$\frac{\partial }{{\partial {\theta ^2}}}{\nu ^2}(\tau ) = \frac{{8{\sigma ^2}({\theta ^2} + 1)(\frac{{\tau  - 3}}{{{\theta ^2} + 1}} - \frac{{2{\theta ^2}(\tau  - 3)}}{{{{({\theta ^2} + 1)}^2}}})}}{{{\tau ^3}}} - \frac{{16{\sigma ^2}\theta (\frac{\tau }{2} - \frac{{\theta (\tau  - 3)}}{{{\theta ^2} + 1}})}}{{{\tau ^3}}} - \frac{{4{\sigma ^2}\frac{{1 - 2{\theta ^2}({\theta ^2} + 1)}}{{{{({\theta ^2} + 1)}^2}}}}}{{{\tau ^2}}} - \frac{{8{\sigma ^2}\theta (\frac{\theta }{{{\theta ^2} + 1}} - \frac{1}{2})}}{{{\tau ^2}}}$$
+$$\begin{aligned}
+  \frac{\partial }{{\partial \theta }}{\nu ^2}(\tau ) &= \frac{{8{\sigma ^2}\theta \frac{{\frac{\tau }{2} - \theta (\tau  - 3)}}{{{\theta ^2} + 1}}}}{{{\tau ^2}}} - 4{\sigma ^2}\frac{{\tau  - 3 - \frac{{2{\theta ^2}(\tau  - 3)}}{{{\theta ^2} + 1}}}}{{{\tau ^2}}}\\
+  \frac{\partial }{{\partial {\theta ^2}}}{\nu ^2}(\tau ) &= \frac{{8{\sigma ^2}({\theta ^2} + 1)(\frac{{\tau  - 3}}{{{\theta ^2} + 1}} - \frac{{2{\theta ^2}(\tau  - 3)}}{{{{({\theta ^2} + 1)}^2}}})}}{{{\tau ^3}}} - \frac{{16{\sigma ^2}\theta (\frac{\tau }{2} - \frac{{\theta (\tau  - 3)}}{{{\theta ^2} + 1}})}}{{{\tau ^3}}} - \frac{{4{\sigma ^2}\frac{{1 - 2{\theta ^2}({\theta ^2} + 1)}}{{{{({\theta ^2} + 1)}^2}}}}}{{{\tau ^2}}} - \frac{{8{\sigma ^2}\theta (\frac{\theta }{{{\theta ^2} + 1}} - \frac{1}{2})}}{{{\tau ^2}}}
+\end{aligned}$$
 
 
 Derivatives w.r.t. $\sigma^2$
 
-$$\frac{\partial }{{\partial {\sigma ^2}}}{\nu ^2}(\tau ) = (1 + {\theta ^2})\frac{{\frac{\tau }{2} - (\tau  - 3)(\frac{\theta }{{1 + {\theta ^2}}})}}{{\frac{{{\tau ^2}}}{4}}}$$
-
-$$\frac{\partial }{{\partial {\sigma ^4}}}{\nu ^2}(\tau ) = 0$$
+$$\begin{aligned}
+  \frac{\partial }{{\partial {\sigma ^2}}}{\nu ^2}(\tau ) &= (1 + {\theta ^2})\frac{{\frac{\tau }{2} - (\tau  - 3)(\frac{\theta }{{1 + {\theta ^2}}})}}{{\frac{{{\tau ^2}}}{4}}}\\
+  \frac{\partial }{{\partial {\sigma ^4}}}{\nu ^2}(\tau ) &= 0
+\end{aligned}$$
 
 
