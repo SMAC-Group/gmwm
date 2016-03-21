@@ -1653,6 +1653,31 @@ mean_diff <- function(x) {
     .Call('gmwm_mean_diff', PACKAGE = 'gmwm', x)
 }
 
+#' Expand Parameters for an SARIMA object
+#' 
+#' Creates an expanded PHI and THETA vector for use in other objects. 
+#' @param params  A \code{vec} containing the theta values of the parameters.
+#' @param objdesc A \code{vec} containing the model term information.
+#' @return A \code{field<vec>} of size two as follows:
+#' \itemize{
+#'   \item AR    values
+#'   \item THETA values
+#' }
+#' @details 
+#' The \code{objdesc} is assumed to have the structure of:
+#' \itemize{
+#' \item AR(p)
+#' \item MA(q)
+#' \item SAR(P)
+#' \item SMA(Q)
+#' \item Seasons
+#' }
+#' @examples
+#' m = expand_sarima(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+expand_sarima <- function(params, objdesc) {
+    .Call('gmwm_expand_sarima', PACKAGE = 'gmwm', params, objdesc)
+}
+
 #' @title Routing function for summary info
 #' @description Gets all the data for the summary.gmwm function.
 #' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters

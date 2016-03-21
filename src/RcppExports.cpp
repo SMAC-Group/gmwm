@@ -1350,6 +1350,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// expand_sarima
+arma::field<arma::vec> expand_sarima(const arma::vec& params, const arma::vec& objdesc);
+RcppExport SEXP gmwm_expand_sarima(SEXP paramsSEXP, SEXP objdescSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type objdesc(objdescSEXP);
+    __result = Rcpp::wrap(expand_sarima(params, objdesc));
+    return __result;
+END_RCPP
+}
 // get_summary
 arma::field<arma::mat> get_summary(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, const arma::vec& wv_empir, const arma::vec& theo, const arma::vec& scales, arma::mat V, const arma::mat& omega, double obj_value, unsigned int N, double alpha, bool robust, double eff, bool inference, bool fullV, bool bs_gof, bool bs_gof_p_ci, bool bs_theta_est, bool bs_ci, unsigned int B);
 RcppExport SEXP gmwm_get_summary(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP theoSEXP, SEXP scalesSEXP, SEXP VSEXP, SEXP omegaSEXP, SEXP obj_valueSEXP, SEXP NSEXP, SEXP alphaSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP inferenceSEXP, SEXP fullVSEXP, SEXP bs_gofSEXP, SEXP bs_gof_p_ciSEXP, SEXP bs_theta_estSEXP, SEXP bs_ciSEXP, SEXP BSEXP) {
