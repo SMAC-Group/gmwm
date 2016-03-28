@@ -247,7 +247,7 @@ arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,
         n = std::min(n, temp_size);
         
         // Addresses the case where all scales are removed.
-        if(n != (temp_size-1)){        
+        if(n != temp_size){        
           x(j) = temp.rows(n,temp_size);
         }else{
           x(j) = arma::zeros<arma::vec>(0);
