@@ -17,6 +17,7 @@
 #' @description Calculates the (MODWT) wavelet variance
 #' @param x         A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
 #' @param decomp    A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.
+#' @param filter    A \code{string} that specifies what wavelet filter to use. 
 #' @param nlevels   An \code{integer} that indicates the level of decomposition. It must be less than or equal to floor(log2(length(x))).
 #' @param robust    A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff       A \code{double} that indicates the efficiency as it relates to an MLE.
@@ -67,28 +68,28 @@ wvar = function(x, ...) {
 
 #' @rdname wvar
 #' @export
-wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
+wvar.lts = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
   warning('`lts` object is detected. This function can only operate on the combined process.')
   freq = attr(x, 'freq')
   unit = attr(x, 'unit')
   x = x[,ncol(x)]
 
-  wvar.default(x, decomp, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
+  wvar.default(x, decomp, filter, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
 }
 
 #' @rdname wvar
 #' @export
-wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
+wvar.gts = function(x, decomp="modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
   freq = attr(x, 'freq')
   unit = attr(x, 'unit')
   x = x[,1]
   
-  wvar.default(x, decomp, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
+  wvar.default(x, decomp, filter, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
 }
 
 #' @rdname wvar
 #' @export
-wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL, ...){
+wvar.default = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL, ...){
   if(is.null(x)){
     stop("`x` must contain a value")
   }else if((is.data.frame(x) || is.matrix(x))){
@@ -111,7 +112,7 @@ wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robus
   
   obj =  .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
                signal=x, nlevels=nlevels, robust=robust, eff=eff, alpha=alpha, 
-               ci_type="eta3", strWavelet="haar", decomp = decomp)
+               ci_type="eta3", strWavelet=filter, decomp = decomp)
 
   scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/freq
   
@@ -138,7 +139,7 @@ wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robus
   }else{
     unit = from.unit}
   
-  create_wvar(obj, decomp, robust, eff, alpha, scales, unit)
+  create_wvar(obj, decomp, filter, robust, eff, alpha, scales, unit)
 }
 
 #' @rdname wvar
@@ -210,7 +211,7 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
   t = 1
   for (i in 1:ncol(x)){
     # Cast for Analytical IMU Results
-    obj.list[[i]] = create_wvar(obj.list[[i]], decomp, robust, eff, alpha, scales, unit)
+    obj.list[[i]] = create_wvar(obj.list[[i]], decomp, filter, robust, eff, alpha, scales, unit)
 
     # Cast for Graphing IMU Results
     sensor = attr(x, 'sensor')
@@ -234,6 +235,7 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
 #' @description Structures elements into a WVar object
 #' @param obj    A \code{matrix} with dimensions N x 3, that contains the wavelet variance, low ci, hi ci.
 #' @param decomp A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition
+#' @param filter A \code{string} that specifies the type of wavelet filter used in the decomposition
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff    A \code{double} that indicates the efficiency as it relates to an MLE.
 #' @param alpha  A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
@@ -250,7 +252,7 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
 #'   \item{"unit"}{String representation of the unit}
 #' }
 #' @keywords internal
-create_wvar = function(obj, decomp, robust, eff, alpha, scales, unit){
+create_wvar = function(obj, decomp, filter, robust, eff, alpha, scales, unit){
   structure(list(variance = obj[,1],
                        ci_low = obj[,2], 
                        ci_high = obj[,3], 
@@ -259,7 +261,8 @@ create_wvar = function(obj, decomp, robust, eff, alpha, scales, unit){
                        alpha = alpha,
                        scales = scales,
                        decomp = decomp,
-                       unit = unit), class = "wvar")
+                       unit = unit,
+                       filter = filter), class = "wvar")
 }
 
 #' @title Print Wavelet Variances
