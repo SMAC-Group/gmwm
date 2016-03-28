@@ -1653,6 +1653,39 @@ mean_diff <- function(x) {
     .Call('gmwm_mean_diff', PACKAGE = 'gmwm', x)
 }
 
+#' Replicate a Vector of Elements \eqn{n} times
+#' 
+#' This function takes a vector and replicates all of the data \eqn{n} times
+#' @param x A \code{vec} containing the data
+#' @param n An \code{unsigned int} indicating the number of times the vector should be repeated.
+#' @return A \code{vec} with repeated elements of the initial supplied vector.
+#' @keywords internal
+num_rep <- function(x, n) {
+    .Call('gmwm_num_rep', PACKAGE = 'gmwm', x, n)
+}
+
+#' @rdname diff_inv
+intgr_vec <- function(x, xi, lag) {
+    .Call('gmwm_intgr_vec', PACKAGE = 'gmwm', x, xi, lag)
+}
+
+#' @param xi A \code{vec} with length \eqn{lag*d} that provides initial values for the integration.
+#' @rdname diff_inv
+diff_inv_values <- function(x, lag, d, xi) {
+    .Call('gmwm_diff_inv_values', PACKAGE = 'gmwm', x, lag, d, xi)
+}
+
+#' Discrete Intergral: Inverse Difference
+#' 
+#' Takes the inverse difference (e.g. goes from diff() result back to previous vector)
+#' @param x   A \code{vec} containing the data
+#' @param lag An \code{unsigned int} indicating the lag between observations. 
+#' @param d   An \code{unsigned int} which gives the number of "differences" to invert.
+#' @keywords internal
+diff_inv <- function(x, lag, d) {
+    .Call('gmwm_diff_inv', PACKAGE = 'gmwm', x, lag, d)
+}
+
 #' Expand Parameters for an SARIMA object
 #' 
 #' Creates an expanded PHI and THETA vector for use in other objects. 

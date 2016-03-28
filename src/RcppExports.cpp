@@ -1350,6 +1350,58 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// num_rep
+arma::vec num_rep(const arma::vec& x, unsigned int n);
+RcppExport SEXP gmwm_num_rep(SEXP xSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    __result = Rcpp::wrap(num_rep(x, n));
+    return __result;
+END_RCPP
+}
+// intgr_vec
+arma::vec intgr_vec(const arma::vec& x, const arma::vec& xi, unsigned int lag);
+RcppExport SEXP gmwm_intgr_vec(SEXP xSEXP, SEXP xiSEXP, SEXP lagSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type xi(xiSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type lag(lagSEXP);
+    __result = Rcpp::wrap(intgr_vec(x, xi, lag));
+    return __result;
+END_RCPP
+}
+// diff_inv_values
+arma::vec diff_inv_values(const arma::vec& x, unsigned int lag, unsigned int d, const arma::vec& xi);
+RcppExport SEXP gmwm_diff_inv_values(SEXP xSEXP, SEXP lagSEXP, SEXP dSEXP, SEXP xiSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type lag(lagSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type xi(xiSEXP);
+    __result = Rcpp::wrap(diff_inv_values(x, lag, d, xi));
+    return __result;
+END_RCPP
+}
+// diff_inv
+arma::vec diff_inv(const arma::vec& x, unsigned int lag, unsigned int d);
+RcppExport SEXP gmwm_diff_inv(SEXP xSEXP, SEXP lagSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type lag(lagSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type d(dSEXP);
+    __result = Rcpp::wrap(diff_inv(x, lag, d));
+    return __result;
+END_RCPP
+}
 // expand_sarima
 arma::field<arma::vec> expand_sarima(const arma::vec& params, const arma::vec& objdesc);
 RcppExport SEXP gmwm_expand_sarima(SEXP paramsSEXP, SEXP objdescSEXP) {

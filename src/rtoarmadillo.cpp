@@ -471,6 +471,74 @@ double mean_diff(const arma::vec& x){
   return arma::mean(diff_cpp(x, 1, 1));
 }
 
+//' Replicate a Vector of Elements \eqn{n} times
+//' 
+//' This function takes a vector and replicates all of the data \eqn{n} times
+//' @param x A \code{vec} containing the data
+//' @param n An \code{unsigned int} indicating the number of times the vector should be repeated.
+//' @return A \code{vec} with repeated elements of the initial supplied vector.
+//' @keywords internal
+// [[Rcpp::export]]
+arma::vec num_rep(const arma::vec& x, unsigned int n) {
+  
+  unsigned int nj = x.n_elem, tot = nj*n, i;
+  
+  arma::vec x_rep(tot);
+  
+  for(i = 0; i < n; i++){
+    x_rep.rows(i*nj, nj*i + nj - 1) = x;
+  }
+  
+  return x_rep;  
+}
 
+//' @rdname diff_inv
+// [[Rcpp::export]]
+arma::vec intgr_vec(const arma::vec& x, const arma::vec& xi, unsigned int lag){
+  
+  unsigned int lagn = x.n_elem + lag;
+  arma::vec y = arma::zeros<arma::vec>(lagn);
+  y.rows(0,lag-1) = xi; 
+  
+  for (unsigned int i = lag; i < lagn; i++){
+    y(i) = x(i - lag) + y(i - lag); 
+  }
+  
+  return y;
+}
+
+//' @param xi A \code{vec} with length \eqn{lag*d} that provides initial values for the integration.
+//' @rdname diff_inv
+// [[Rcpp::export]]
+arma::vec diff_inv_values(const arma::vec& x, unsigned int lag, unsigned int d, const arma::vec& xi){
+  
+  if(lag*d != xi.n_elem){
+    Rcpp::stop("length of `xi` must be `lag*d`.");
+  }
+  
+  if (d == 1) {
+    return intgr_vec(x, xi, lag);
+  }
+  
+  arma::vec dec_xi = diff_cpp(xi, lag, 1);
+  
+  arma::vec new_xi = xi.rows(0,lag-1);
+  
+  return diff_inv_values(diff_inv_values(x, lag, d - 1, dec_xi),
+                         lag, 1, new_xi);
+}
+
+//' Discrete Intergral: Inverse Difference
+//' 
+//' Takes the inverse difference (e.g. goes from diff() result back to previous vector)
+//' @param x   A \code{vec} containing the data
+//' @param lag An \code{unsigned int} indicating the lag between observations. 
+//' @param d   An \code{unsigned int} which gives the number of "differences" to invert.
+//' @keywords internal
+// [[Rcpp::export]]
+arma::vec diff_inv(const arma::vec& x, unsigned int lag, unsigned int d){
+  arma::vec xi =  arma::zeros<arma::vec>(lag*d);
+  return diff_inv_values(x, lag, d, xi);
+}
 
 /* ------------------ End R to Armadillo Functions ----------------------- */
