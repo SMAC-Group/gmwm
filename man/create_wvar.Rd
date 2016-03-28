@@ -4,12 +4,14 @@
 \alias{create_wvar}
 \title{Create a Wvar object}
 \usage{
-create_wvar(obj, decomp, robust, eff, alpha, scales, unit)
+create_wvar(obj, decomp, filter, robust, eff, alpha, scales, unit)
 }
 \arguments{
 \item{obj}{A \code{matrix} with dimensions N x 3, that contains the wavelet variance, low ci, hi ci.}
 
 \item{decomp}{A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition}
+
+\item{filter}{A \code{string} that specifies the type of wavelet filter used in the decomposition}
 
 \item{robust}{A \code{boolean} that triggers the use of the robust estimate.}
 

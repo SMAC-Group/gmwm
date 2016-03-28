@@ -10,15 +10,15 @@
 \usage{
 wvar(x, ...)
 
-\method{wvar}{lts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6, to.unit = NULL, ...)
+\method{wvar}{lts}(x, decomp = "modwt", filter = "haar", nlevels = NULL,
+  alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
-\method{wvar}{gts}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6, to.unit = NULL, ...)
+\method{wvar}{gts}(x, decomp = "modwt", filter = "haar", nlevels = NULL,
+  alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
-\method{wvar}{default}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
-  robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL,
-  to.unit = NULL, ...)
+\method{wvar}{default}(x, decomp = "modwt", filter = "haar",
+  nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1,
+  from.unit = NULL, to.unit = NULL, ...)
 
 \method{wvar}{imu}(x, decomp = "modwt", nlevels = NULL, alpha = 0.05,
   robust = F, eff = 0.6, to.unit = NULL, ...)
@@ -29,6 +29,8 @@ wvar(x, ...)
 \item{...}{Further arguments passed to or from other methods.}
 
 \item{decomp}{A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.}
+
+\item{filter}{A \code{string} that specifies what wavelet filter to use.}
 
 \item{nlevels}{An \code{integer} that indicates the level of decomposition. It must be less than or equal to floor(log2(length(x))).}
 
