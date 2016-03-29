@@ -2407,13 +2407,17 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
                         high = high_df$high, 
                         h_value = high_df$value) #levels(CI_df$dataset_h), levels(CI_df$dataset_v) no need to set again
     
+    # Remove NAs
+    line_df = na.omit(line_df)
+    CI_df = na.omit(CI_df)
+    
     # S4: Generate the graph
     # CALL Graphical Functions
     p = ggplot() + 
-      geom_line( data = line_df, mapping = aes(x = scales, y = value, color = variable, linetype = variable), na.rm = TRUE) + 
-      geom_point(data = line_df, mapping = aes(x = scales, y = value, color = variable, size = variable, shape = variable), na.rm=TRUE) +
+      geom_line( data = line_df, mapping = aes(x = scales, y = value, color = variable, linetype = variable) ) + 
+      geom_point(data = line_df, mapping = aes(x = scales, y = value, color = variable, size = variable, shape = variable) ) +
       
-      geom_ribbon(data = CI_df, mapping = aes(x = scales, ymin = l_value, ymax = h_value, fill = low),alpha = transparence, na.rm = TRUE) +
+      geom_ribbon(data = CI_df, mapping = aes(x = scales, ymin = l_value, ymax = h_value, fill = low),alpha = transparence ) +
       
       scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                     labels = trans_format("log10", math_format(10^.x))) + 
