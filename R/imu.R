@@ -551,17 +551,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     nullIsFine = c(rep(T,4))
   }
   
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
-  }
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
   
   if(CI){
     #default setting
@@ -620,11 +610,6 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     if(is.null(point.shape)){
       point.shape = c(20)
     }
-    #if(is.null(legend.label)){
-    #  legend.label = parse(text = c(expression(paste("Empirical WV ", hat(nu))) ) )
-    #}
-    
-    #breaks = c('WV')
     
   }
   
@@ -654,11 +639,6 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     scale_size_manual(values = c(point.size)) +
     scale_color_manual(values = c(line.color))
   
-  #scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
-  #scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
-  #scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
-  #scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
-  
   if(CI){
     #construct the data frame to plot CI
     obj.CI = data.frame(scales = object$scales,
@@ -669,8 +649,6 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     
     p = p + 
       geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
-    # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-    # CI.color: a hexadecimal color value
   }
   
   if( background == 'white'){
@@ -764,17 +742,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
     nullIsFine = c(rep(T,4))
   }
   
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
-  }
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
   
   # S2: Auto-select parameters, if not provided by users
   if(is.null(line.color)){
@@ -1131,7 +1099,6 @@ autoplot.auto.imu2 = function(object, CI = TRUE, background = 'white', transpare
     nullIsFine = c(rep(T,5))
   }
   checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
-  
   
   ###2. construct data frame
   t = 1
@@ -1493,11 +1460,6 @@ autoplot.auto.imu1 = function(object, CI = TRUE, background = 'white', transpare
     if(is.null(point.shape)){
       point.shape = c(20, 1)
     }
-    #if(is.null(legend.label)){
-    #  legend.label = parse(text = c(expression(paste("Empirical WV ", hat(nu))) ) )
-    #}
-    
-    #breaks = c('WV')
     
   }
   
@@ -1542,8 +1504,7 @@ autoplot.auto.imu1 = function(object, CI = TRUE, background = 'white', transpare
     
     p = p + 
       geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
-    # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-    #CI.color: a hexadecimal color value
+    
   }
   
   if( background == 'white'){

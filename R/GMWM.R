@@ -2012,15 +2012,15 @@ compare.models = function(..., display.model = T, background = 'white', transpar
   obj$dataset_h = factor(obj$dataset_h, levels = object.names )
   obj$dataset_v = factor(obj$dataset_v, levels = object.names )
   
-  object = melt(obj, id.vars = c('scales', 'dataset_v', 'dataset_h'))
+  object = melt(obj, id.vars = c('scales', 'dataset_v', 'dataset_h'), na.rm = T)
   
   # S4: Generate the graph
   ## CALL Graphical Functions
   p = ggplot() + 
-    geom_line( data = object, mapping = aes(x = scales, y = value, color = variable, linetype = variable), na.rm = TRUE) + 
-    geom_point(data = object, mapping = aes(x = scales, y = value, color = variable, size = variable, shape = variable), na.rm=TRUE) +
+    geom_line( data = object, mapping = aes(x = scales, y = value, color = variable, linetype = variable)) + 
+    geom_point(data = object, mapping = aes(x = scales, y = value, color = variable, size = variable, shape = variable)) +
     
-    geom_ribbon(data = obj, mapping = aes(x = scales, ymin = low, ymax = high), fill = CI.color, alpha = transparence, na.rm = TRUE) +
+    geom_ribbon(data = obj, mapping = aes(x = scales, ymin = low, ymax = high), fill = CI.color, alpha = transparence) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) + 
@@ -2156,6 +2156,7 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
   
   obj_list = list(...) 
   numObj = length(obj_list)
+  object.names = as.character(substitute(...()))
   
   #deal with gmwm_robust object
   if( is(obj_list[[1]], 'gmwm_robust') ){
@@ -2190,7 +2191,10 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
       
       # if it is in descending order, it's ok
       if(is.unsorted(-eff.vec)){
-        obj_list = obj_list[order(eff.vec, decreasing = T)]
+        new.order = order(eff.vec, decreasing = T)
+        
+        obj_list = obj_list[new.order]
+        object.names = object.names[new.order]
       }
     }
     
@@ -2207,9 +2211,7 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
     # decide what should appear in facet label
     if(is.null(facet.label) && display.eff){
       object.names = sapply(obj_list, FUN = function(x){formatRobustEff(x)} )
-    }else if(is.null(facet.label)){
-      object.names = as.character(substitute(...()))
-    }else{
+    }else if(!is.null(facet.label)){
       object.names = facet.label 
     }
     
@@ -2393,23 +2395,19 @@ compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL,
     obj$dataset_v = factor(obj$dataset_v, levels = object.names )
     
     # 1. data frame that is used to plot lines
-    line_df = melt(obj, id.vars = c('scales', 'dataset_v', 'dataset_h'), factorsAsStrings = F)
+    line_df = melt(obj, id.vars = c('scales', 'dataset_v', 'dataset_h'), factorsAsStrings = F, na.rm = T)
     
     # 2. data frame that is used to plot CI
     o1 = obj[,c('scales', 'dataset_h', 'dataset_v', low_names)] 
     o2 = obj[,c('scales', 'dataset_h', 'dataset_v', high_names)] 
     
-    low_df = melt(o1, measure.vars = low_names, variable.name = 'low', factorsAsStrings = F )
-    high_df = melt(o2, measure.vars = high_names, variable.name = 'high', factorsAsStrings = F )
+    low_df = melt(o1, measure.vars = low_names, variable.name = 'low', factorsAsStrings = F, na.rm = T )
+    high_df = melt(o2, measure.vars = high_names, variable.name = 'high', factorsAsStrings = F, na.rm = T )
     
     colnames(low_df) = c('scales', 'dataset_h', 'dataset_v', 'low', 'l_value')
     CI_df =  data.frame(low_df, 
                         high = high_df$high, 
                         h_value = high_df$value) #levels(CI_df$dataset_h), levels(CI_df$dataset_v) no need to set again
-    
-    # Remove NAs
-    line_df = na.omit(line_df)
-    CI_df = na.omit(CI_df)
     
     # S4: Generate the graph
     # CALL Graphical Functions
