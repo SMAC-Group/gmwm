@@ -551,17 +551,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     nullIsFine = c(rep(T,4))
   }
   
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
-  }
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
   
   if(CI){
     #default setting
@@ -620,11 +610,6 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     if(is.null(point.shape)){
       point.shape = c(20)
     }
-    #if(is.null(legend.label)){
-    #  legend.label = parse(text = c(expression(paste("Empirical WV ", hat(nu))) ) )
-    #}
-    
-    #breaks = c('WV')
     
   }
   
@@ -654,11 +639,6 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     scale_size_manual(values = c(point.size)) +
     scale_color_manual(values = c(line.color))
   
-  #scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
-  #scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
-  #scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
-  #scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
-  
   if(CI){
     #construct the data frame to plot CI
     obj.CI = data.frame(scales = object$scales,
@@ -669,8 +649,6 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
     
     p = p + 
       geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
-    # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-    # CI.color: a hexadecimal color value
   }
   
   if( background == 'white'){
@@ -764,17 +742,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
     nullIsFine = c(rep(T,4))
   }
   
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
-  }
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
   
   # S2: Auto-select parameters, if not provided by users
   if(is.null(line.color)){
@@ -863,6 +831,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
 #' @method plot auto.imu
 #' @export
 #' @param x A \code{auto.imu} object
+#' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not.
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
@@ -880,6 +849,11 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
+#' @param legend.title A \code{string} that indicates the title of legend. Used only when \code{process.decomp = T}.
+#' @param legend.label A \code{character vector} that indicates the labels on legend. Used only when \code{process.decomp = T}.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. Used only when \code{process.decomp = T}.
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend. Used only when \code{process.decomp = T}.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend. Used only when \code{process.decomp = T}.
 #' @param ... Additional options.
 #' @return A panel containing the automatic model selection results of an IMU sensor.
 #' @examples
@@ -893,26 +867,29 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
 #' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 #' df = auto.imu(test)
 #' plot(df)
+#' plot(df, process.decomp = T)
 #' plot(df, CI = F)
 #' plot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
 #' }
-plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+plot.auto.imu = function(x, process.decomp = FALSE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
                          line.type = NULL, point.size = NULL, point.shape = NULL,
                          CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
                          axis.y.label = expression(paste("Wavelet Variance ", nu)), 
-                         facet.label.size = 13, facet.label.background = "#003C7D33",
-                         scales = "free_y",...){
+                         facet.label.size = 13, facet.label.background = "#003C7D33", scales = "free_y",
+                         legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
+                         legend.text.size = 13, ...){
   
-  autoplot.auto.imu(x, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+  autoplot.auto.imu(x, process.decomp = process.decomp, CI = CI, background = background, transparence = transparence, line.color = line.color, 
                     line.type = line.type, point.size = point.size, point.shape = point.shape,
                     CI.color = CI.color, title = title, title.size= title.size, 
                     axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                     axis.x.label = axis.x.label,
                     axis.y.label = axis.y.label, 
-                    facet.label.size = facet.label.size, facet.label.background = facet.label.background,
-                    scales = scales)
+                    facet.label.size = facet.label.size, facet.label.background = facet.label.background, scales = scales,
+                    legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                    legend.text.size = legend.text.size)
   
   
 }
@@ -921,6 +898,401 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @title Automatic Model Selection Results of IMU Object
 #' @description Creates a graph of the automatic model selection result containing the empirical and theoretical wavelet variances. 
 #' @method autoplot auto.imu
+#' @export
+#' @keywords internal
+#' @param object A \code{auto.imu} object
+#' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not.
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of the line drawn (e.g. black, blue, red, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines. 
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param CI.color A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
+#' @param legend.title A \code{string} that indicates the title of legend. Used only when \code{process.decomp = T}.
+#' @param legend.label A \code{character vector} that indicates the labels on legend. Used only when \code{process.decomp = T}.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. Used only when \code{process.decomp = T}.
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend. Used only when \code{process.decomp = T}.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend. Used only when \code{process.decomp = T}.
+#' @param ... Additional options.
+#' @return A panel containing the automatic model selection results of an IMU sensor.
+#' @author Wenchao
+#' @examples
+#' \dontrun{
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
+#' df = auto.imu(test)
+#' autoplot(df)
+#' autoplot(df, process.decomp = T)
+#' autoplot(df, CI = F)
+#' autoplot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
+#' }
+autoplot.auto.imu = function(object, process.decomp = FALSE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+                              line.type = NULL, point.size = NULL, point.shape = NULL,
+                              CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
+                              axis.label.size = 13, axis.tick.size = 11, 
+                              axis.x.label = expression(paste("Scale ", tau)),
+                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                              facet.label.size = 13, facet.label.background = "#003C7D33",scales = "free_y",
+                              legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
+                              legend.text.size = 13, ...){
+  
+  ## Common checking shared by two functions
+  if( !(background %in% c('grey','gray', 'white')) ){
+    warning("Parameter background: No such option. Default setting is used.")
+    background = 'white'
+  }
+  
+  if(!is(object, "auto.imu") ){
+    stop('This function can only operate on auto.imu object.')
+  }
+  
+  if(!process.decomp){
+    
+    autoplot.auto.imu1(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+                      line.type = line.type, point.size = point.size, point.shape = point.shape,
+                      CI.color = CI.color, title = title, title.size= title.size, 
+                      axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                      axis.x.label = axis.x.label,
+                      axis.y.label = axis.y.label, 
+                      facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                      scales = scales)
+  }else{
+    
+    #process.decomp == T
+    autoplot.auto.imu2(object, CI = CI, background = background, transparence = transparence, line.color = line.color, 
+                       line.type = line.type, point.size = point.size, point.shape = point.shape,
+                       CI.color = CI.color, title = title, title.size= title.size, 
+                       axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                       axis.x.label = axis.x.label,
+                       axis.y.label = axis.y.label, 
+                       facet.label.size = facet.label.size, facet.label.background = facet.label.background, scales = scales,
+                       legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                       legend.text.size = legend.text.size)
+  }
+  
+}
+
+
+#' @title Automatic Model Selection Results of IMU Object with Decomposed Processes
+#' @description Creates a graph of the automatic model selection result with decomposed processes
+#' @method autoplot auto.imu2
+#' @export
+#' @keywords internal
+#' @param object A \code{auto.imu} object
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the confidence interval.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of the line drawn (e.g. black, blue, red, etc.)
+#' @param line.type A \code{vector} of \code{string} that indicates the type of line (e.g. solid, dotted, etc.)
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of points on lines. 
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of points on lines.
+#' @param CI.color A \code{string} that indicates the color of the confidence interval (e.g. black, red, #003C7D, etc.)
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
+#' @param legend.title A \code{string} that indicates the title of legend. 
+#' @param legend.label A \code{character vector} that indicates the labels on legend. 
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend. 
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend. 
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend.
+#' @param ... Additional options.
+#' @author Wenchao
+#' @return A panel containing the automatic model selection results of an IMU sensor.
+autoplot.auto.imu2 = function(object, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+                   line.type = NULL, point.size = NULL, point.shape = NULL,
+                   CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
+                   axis.label.size = 13, axis.tick.size = 11, 
+                   axis.x.label = expression(paste("Scale ", tau)),
+                   axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                   facet.label.size = 13, facet.label.background = "#003C7D33", scales = "free_y", 
+                   legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
+                   legend.text.size = 13, ...){
+  variable=variable2=value2=a_low=a_high=.x=NULL
+  
+  ###0. pre-process the object: auto.imu
+  gmwm1 = object[[1]][[2]] #one gmwm object
+  
+  #what is num.sensor and ncols
+  num.sensor = gmwm1$num.sensor
+  ncols = sum(num.sensor)
+  
+  #what is freq
+  freq = gmwm1$freq
+  #what is alpha
+  sig.level = gmwm1$alpha
+  
+  #what is axis
+  axis = rep(0, ncols)
+  sensor = rep(0, ncols)
+  for(i in 1:ncols){
+    axis[i] = object[[i]][[2]]$axis
+    sensor[i] = object[[i]][[2]]$sensor
+  }
+  
+  #Put data in the desired form
+  obj.list = vector("list", ncols)
+  
+  #how large the data frame should be
+  total.len = 0
+  each.len = numeric(ncols)
+  
+  for (i in 1:ncols){
+    obj.list[[i]] = object[[i]][[2]] 
+    obj.list[[i]]$scales = obj.list[[i]]$scales/freq #freq conversion
+    
+    each.len[i] = length(obj.list[[i]]$wv.empir)
+    total.len = total.len + each.len[i]
+  }
+  
+  #initialize empty data frame with right number of rows
+  #1) WV, low, high, theo 
+  obj = data.frame(scales = numeric(total.len),
+                   a_emp = numeric(total.len), 
+                   a_low = numeric(total.len),
+                   a_high = numeric(total.len),
+                   z_theo = numeric(total.len),
+                   axis = 'AXIS',
+                   sensor = 'SENSOR', stringsAsFactors=FALSE)
+  
+  #2) decomped process
+  all.model.desc = unlist( lapply(X = obj.list, FUN = function(x){addSpaceIfDuplicate(x$model$desc)} ) )
+  # unique processes
+  unique.model.desc = unique(all.model.desc)
+  num.unique.model = length(unique.model.desc)
+  
+  num.col = num.unique.model + 3 # scales, process, axis, sensor
+  process.df = as.data.frame(matrix(NA, ncol = num.col, nrow = total.len), stringsAsFactors = FALSE)
+  colnames(process.df) = c('scales', unique.model.desc, 'axis', 'sensor')
+  
+  ###1. param checking
+  if(CI){
+    params = c('line.color', 'line.type', 'point.size', 'point.shape', 'CI.color', 'legend.label')
+    requireLength = c(num.unique.model+3, num.unique.model+3, num.unique.model+3, num.unique.model+3, 1, num.unique.model+3)
+    default = list(NULL, NULL,  NULL, NULL, "#003C7D", NULL)
+    nullIsFine = c(rep(T,6))
+  }else{
+    params = c('line.color', 'line.type', 'point.size', 'point.shape', 'legend.label')
+    requireLength = c(num.unique.model+2, num.unique.model+2, num.unique.model+2, num.unique.model+2, num.unique.model+2)
+    default = list(NULL, NULL,  NULL, NULL, NULL)
+    nullIsFine = c(rep(T,5))
+  }
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
+  
+  ###2. construct data frame
+  t = 1
+  for (i in 1:ncols){
+    d = each.len[i]
+    
+    #1) WV, low, high, theo 
+    obj[t:(t+d-1),] = data.frame(scales = obj.list[[i]]$scales, 
+                                 a_emp = obj.list[[i]]$wv.empir,
+                                 a_low = obj.list[[i]]$ci.low,
+                                 a_high = obj.list[[i]]$ci.high,
+                                 z_theo = obj.list[[i]]$theo,
+                                 axis = axis[i], 
+                                 sensor = sensor[i],
+                                 stringsAsFactors=FALSE)
+    
+    #2) decomped process
+    model.desc = c('scales', addSpaceIfDuplicate(obj.list[[i]]$model$desc), 'axis', 'sensor')
+    process.df[t:(t+d-1), model.desc] = data.frame(obj.list[[i]]$scales, 
+                                                   as.data.frame(obj.list[[i]]$decomp.theo),
+                                                   axis = axis[i], 
+                                                   sensor = sensor[i],
+                                                   stringsAsFactors=FALSE)
+    
+    t = t +d
+  }
+  
+  # 1) WV, low, high, theo
+  if(CI){
+    wv.df = data.frame(scales = obj$scales,
+                     a_emp = obj$a_emp,
+                     a_low = obj$a_low,
+                     a_high = obj$a_high,
+                     z_theo = obj$z_theo,
+                     axis = obj$axis,
+                     sensor = obj$sensor, stringsAsFactors = F)
+    
+    #construct the data frame to plot CI
+    ci.df = data.frame(scales = obj$scales,
+                        a_low = obj$a_low,
+                        a_high = obj$a_high,
+                        axis = obj$axis,
+                        sensor = obj$sensor, stringsAsFactors = F)
+    
+  }else{
+    wv.df = data.frame(scales = obj$scales,
+                     a_emp = obj$a_emp,
+                     z_theo = obj$z_theo,
+                     axis = obj$axis,
+                     sensor = obj$sensor, stringsAsFactors = F)
+  }
+  melt.wv.df = melt(wv.df, id.vars = c('scales', 'axis', 'sensor'))
+  
+  # 2) Process Decomp
+  melt.process.df = melt(process.df, id.vars = c('scales', 'axis', 'sensor'), 
+                         variable.name = 'variable2', value.name = 'value2')
+  
+  ###3. Auto-select the param
+  # order to change the aethetics:
+  # a_emp, a_high, a_low, decomposed prcesses, z_theo(sum)
+  
+  process.label = c(unique.model.desc, bquote("Implied WV "~nu*"("*hat(theta)*")"))
+  process.color = getColors('Set1', num.unique.model, rm = 2) #remove blue color
+  L = num.unique.model + 1 #decomposed process + theo
+  
+  if(CI == T){
+    #CI.color
+    if(is.null(CI.color)){CI.color = "#003C7D"}
+    trans.CI.color = alpha(CI.color, transparence)
+    
+    #line type
+    if(is.null(line.type)){
+      line.type = c('solid','dotted', rep('solid', L) )}
+    if(length(line.type) == (L+2) ){
+      line.type = append(line.type, values = line.type[2], 2)}
+    
+    #line color
+    if(is.null(line.color)){
+      line.color = c("#003C7D", "#003C7D", process.color, "#F47F24")}
+    if(length(line.color)== (L+2)){
+      line.color = append(line.color, values = line.color[2], 2)}
+    
+    #point size
+    if(is.null(point.size)){
+      point.size = rep(0, L+2) }
+    if(length(point.size)== (L+2)){
+      point.size = append(point.size, values = point.size[2], 2)}
+    
+    #point shape
+    if(is.null(point.shape)){
+      point.shape = c(20, 20, rep(20,L-1), 1) }
+    if(length(point.shape)== (L+2)){
+      point.shape = append(point.shape, values = point.shape[2], 2)}
+    
+    #legend label
+    if(is.null(legend.label)){
+      legend.label = c(bquote("Empirical WV "~hat(nu)), 
+                       bquote("CI("*hat(nu)*", "*.(1-sig.level)*")" ),
+                       process.label) 
+    }
+    
+    breaks = c('a_emp','a_low', unique.model.desc, 'z_theo')
+    legend.fill = c(NA, trans.CI.color, rep(NA, L) )
+    legend.linetype = c(line.type[1], 'blank', line.type[4:length(line.type)])
+    legend.pointshape = c(point.shape[1], NA, point.shape[4:length(point.shape)])
+    
+  }else{
+    #line.type
+    if(is.null(line.type)){line.type = rep('solid', L+1) }
+    
+    #line color
+    if(is.null(line.color)){line.color = c("#003C7D", process.color, "#F47F24")}
+    
+    #point size
+    if(is.null(point.size)){point.size = rep(0, L+1)}
+    
+    #point shape
+    if(is.null(point.shape)){point.shape =c(20, rep(20,L-1), 1) }
+    
+    #legend.label
+    if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
+                                               process.label)}
+    
+    breaks = c('a_emp', unique.model.desc, 'z_theo')
+  }
+  
+  ### 4. start to plot
+  p = ggplot() +
+    geom_line(data = melt.wv.df, mapping = aes(x = scales, y = value, linetype = variable, color = variable), na.rm = T) +
+    geom_point(data = melt.wv.df, mapping = aes(x = scales, y = value, size = variable, shape = variable, color = variable), na.rm = T) +
+    
+    geom_line(data = melt.process.df, mapping = aes(x = scales, y = value2, linetype = variable2, color = variable2), na.rm = T) +
+    geom_point(data = melt.process.df, mapping = aes(x = scales, y = value2, size = variable2, shape = variable2, color = variable2), na.rm = T) +
+    
+    scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label ) +
+    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label) +
+    scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
+    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
+  
+  if(CI){
+    p = p + 
+      geom_ribbon(data = ci.df, mapping = aes(x = scales, ymin = a_low, ymax = a_high), fill = trans.CI.color, show.legend = T, na.rm = T) + 
+      guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
+  }
+  
+  if( background == 'white'){
+    p = p + theme_bw() 
+  }
+  
+  #what is y.lim
+  y.lim.low = min(
+    sapply(obj.list, FUN = function(x){
+      0.8* min( c(x$ci.low, x$wv.empir) )
+    })
+  ) 
+  y.lim.high = max(
+    sapply(obj.list, FUN = function(x){
+      1.05*max( c(x$wv.empir, x$ci.high))
+    })
+  )
+  y.lim = c(y.lim.low, y.lim.high)
+  
+  p = p + facet_grid(sensor ~ axis, scales = scales) +
+    
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    
+    coord_cartesian(ylim = y.lim) +
+    # set y lim makes scaels useless at all ==
+    
+    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
+    theme(
+      plot.title = element_text(size= title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      legend.key.size = unit(legend.key.size, "cm"),
+      legend.text = element_text(size = legend.text.size),  
+      legend.title = element_text(size = legend.title.size),
+      legend.background = element_rect(fill="transparent"),
+      legend.text.align = 0, 
+      strip.text = element_text(size = facet.label.size), 
+      strip.background = element_rect(fill= facet.label.background) )
+  
+  p
+  
+}
+
+#' @title Automatic Model Selection Results of IMU Object without Decomposed Processes
+#' @description Creates a graph of the automatic model selection result without decomposed processes
+#' @method autoplot auto.imu1
 #' @export
 #' @keywords internal
 #' @param object A \code{auto.imu} object
@@ -943,21 +1315,7 @@ plot.auto.imu = function(x, CI = TRUE, background = 'white', transparence = 0.1,
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
 #' @param ... Additional options.
 #' @return A panel containing the automatic model selection results of an IMU sensor.
-#' @examples
-#' \dontrun{
-#' if(!require("imudata")){
-#'    install_imudata()
-#'    library("imudata")
-#' }
-#' 
-#' data(imu6)
-#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
-#' df = auto.imu(test)
-#' autoplot(df)
-#' autoplot(df, CI = F)
-#' autoplot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
-#' }
-autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
+autoplot.auto.imu1 = function(object, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
                              line.type = NULL, point.size = NULL, point.shape = NULL,
                              CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
                              axis.label.size = 13, axis.tick.size = 11, 
@@ -968,10 +1326,6 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
   value = variable = low = high = .x = NULL
   
   ###0. param checking
-  if( !(background %in% c('grey','gray', 'white')) ){
-    warning("Parameter background: No such option. Default setting is used.")
-    background = 'white'
-  }
   
   if(CI){
     params = c('line.color', 'line.type', 'point.size', 'point.shape', 'CI.color')
@@ -985,23 +1339,9 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     nullIsFine = c(rep(T,4))
   }
   
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
-  }
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
   
   ###1. pre-process the object: auto.imu
-  
-  if(!is(object, "auto.imu") ){
-    stop('This function can only operate on auto.imu object.')
-  }
   
   #what is num.sensor and ncols
   num.sensor = object[[1]][[2]]$num.sensor
@@ -1120,11 +1460,6 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     if(is.null(point.shape)){
       point.shape = c(20, 1)
     }
-    #if(is.null(legend.label)){
-    #  legend.label = parse(text = c(expression(paste("Empirical WV ", hat(nu))) ) )
-    #}
-    
-    #breaks = c('WV')
     
   }
   
@@ -1169,8 +1504,7 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
     
     p = p + 
       geom_ribbon(data = obj.CI, mapping = aes(x = scales, ymin = low, ymax = high), fill = alpha(CI.color, transparence), show.legend = F)
-    # guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-    #CI.color: a hexadecimal color value
+    
   }
   
   if( background == 'white'){
@@ -1202,5 +1536,3 @@ autoplot.auto.imu = function(object, CI = TRUE, background = 'white', transparen
   
   p
 }
-
-
