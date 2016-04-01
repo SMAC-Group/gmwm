@@ -4,18 +4,21 @@
 \alias{plot.auto.imu}
 \title{Wrapper to Automatic Model Selection Results of IMU Object}
 \usage{
-\method{plot}{auto.imu}(x, CI = TRUE, background = "white",
-  transparence = 0.1, line.color = NULL, line.type = NULL,
-  point.size = NULL, point.shape = NULL, CI.color = "#003C7D",
-  title = "Automatic Model Selection Results", title.size = 15,
-  axis.label.size = 13, axis.tick.size = 11,
+\method{plot}{auto.imu}(x, process.decomp = FALSE, CI = TRUE,
+  background = "white", transparence = 0.1, line.color = NULL,
+  line.type = NULL, point.size = NULL, point.shape = NULL,
+  CI.color = "#003C7D", title = "Automatic Model Selection Results",
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
   facet.label.size = 13, facet.label.background = "#003C7D33",
-  scales = "free_y", ...)
+  scales = "free_y", legend.title = "", legend.label = NULL,
+  legend.key.size = 1, legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
 \item{x}{A \code{auto.imu} object}
+
+\item{process.decomp}{A \code{boolean} that indicates whether the decomposed processes should be plotted or not.}
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
 
@@ -51,6 +54,16 @@
 
 \item{scales}{Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.}
 
+\item{legend.title}{A \code{string} that indicates the title of legend. Used only when \code{process.decomp = T}.}
+
+\item{legend.label}{A \code{character vector} that indicates the labels on legend. Used only when \code{process.decomp = T}.}
+
+\item{legend.key.size}{A \code{double} that indicates the size of key (in centermeters) on legend. Used only when \code{process.decomp = T}.}
+
+\item{legend.title.size}{An \code{integer} that indicates the size of title on legend. Used only when \code{process.decomp = T}.}
+
+\item{legend.text.size}{An \code{integer} that indicates the size of key label on legend. Used only when \code{process.decomp = T}.}
+
 \item{...}{Additional options.}
 }
 \value{
@@ -67,9 +80,10 @@ if(!require("imudata")){
 }
 
 data(imu6)
-test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'))
+test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 df = auto.imu(test)
 plot(df)
+plot(df, process.decomp = T)
 plot(df, CI = F)
 plot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
 }

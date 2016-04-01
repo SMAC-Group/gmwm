@@ -21,8 +21,8 @@
 #' \tabular{ll}{
 #' Package: \tab GMWM\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.1\cr
-#' Date: \tab 2015-12-28\cr
+#' Version: \tab 2.1.0\cr
+#' Date: \tab 2016-02-29\cr
 #' License: \tab CC BY-NC-SA 4.0\cr
 #' }
 #' 
@@ -53,13 +53,13 @@
 #' @docType package
 #' @useDynLib gmwm
 #' @importFrom Rcpp evalCpp
-#' @importFrom grDevices gray.colors hcl
+#' @importFrom grDevices gray.colors hcl graphics.off
 #' @importFrom graphics lines plot
 #' @importFrom methods is
 #' @importFrom stats arima predict ts as.ts
-#' @importFrom utils install.packages tail head
+#' @importFrom utils install.packages tail head packageDescription compareVersion
 #' @importFrom scales trans_breaks trans_format math_format
 #' @importFrom grid textGrob gpar
-#' @import ggplot2 reshape2 gridExtra
+#' @import ggplot2 reshape2
 #' @exportPattern ^[[:alpha:]]+
 NULL

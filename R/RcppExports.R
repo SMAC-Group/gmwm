@@ -384,6 +384,23 @@ build_model_set <- function(combs, x) {
     .Call('gmwm_build_model_set', PACKAGE = 'gmwm', combs, x)
 }
 
+#' Set the RNG Seed from within Rcpp
+#' 
+#' Within Rcpp, one can set the R session seed without triggering
+#' the CRAN rng modifier check. 
+#' @param seed A \code{unsigned int} that is the seed one wishes to use. 
+#' @return A set RNG scope.
+#' @keywords internal
+#' @examples
+#' set.seed(10)
+#' x = rnorm(5,0,1)
+#' set_seed(10)
+#' y = rnorm(5,0,1)
+#' all.equal(x,y, check.attributes = FALSE)
+set_seed <- function(seed) {
+    invisible(.Call('gmwm_set_seed', PACKAGE = 'gmwm', seed))
+}
+
 #' @title Conversion function of Vector to Set
 #' @description Converts a vector into a set
 #' @param x A \code{vec<vec<string>>} that contains a list of model descriptors.
@@ -416,10 +433,11 @@ find_full_model <- function(x) {
 #' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
 #' @param eff A \code{double} that indicates the efficiency to use.
 #' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+#' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
-rank_models <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism) {
-    .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism)
+rank_models <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
+    .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Find the auto imu result
@@ -436,10 +454,11 @@ rank_models <- function(data, model_str, full_model, alpha, compute_v, model_typ
 #' @param robust A \code{bool} that indicates whether to use classical or robust wavelet variance.
 #' @param eff A \code{double} that indicates the efficiency to use.
 #' @param bs_optimism A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.
+#' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
-auto_imu <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism) {
-    .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism)
+auto_imu <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
+    .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Bootstrap for Matrix V
@@ -780,7 +799,7 @@ gen_rw <- function(N, sigma2 = 1) {
 #' @backref src/gen_process.h
 #' @keywords internal
 #' @examples
-#' gen_arma(100, c(.3,.5), c(.1), 1, 0)
+#' gen_arma(10, c(.3,.5), c(.1), 1, 0)
 gen_arma <- function(N, ar, ma, sigma2 = 1.5, n_start = 0L) {
     .Call('gmwm_gen_arma', PACKAGE = 'gmwm', N, ar, ma, sigma2, n_start)
 }
@@ -816,7 +835,7 @@ gen_model <- function(N, theta, desc, objdesc) {
 #' @examples
 #' # AR
 #' set.seed(1336)
-#' gen_lts(1000, c(.9,1), "AR1", list(c(1,1)))
+#' gen_lts(10, c(.9,1), "AR1", list(c(1,1)))
 gen_lts <- function(N, theta, desc, objdesc) {
     .Call('gmwm_gen_lts', PACKAGE = 'gmwm', N, theta, desc, objdesc)
 }
@@ -882,8 +901,8 @@ gmwm_engine <- function(theta, desc, objdesc, model_type, wv_empir, omega, scale
 #' @keywords internal
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
-gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff) {
-    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, orgV, scales, wv_empir, starting, compute_v, K, H, G, robust, eff)
+gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff) {
+    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff)
 }
 
 #' @title Master Wrapper for the GMWM Estimator
@@ -909,6 +928,26 @@ gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, or
 #' @backref src/gmwm_logic.h
 gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff) {
     .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
+}
+
+#' @title Randomly guess a starting parameter
+#' @description Sets starting parameters for each of the given parameters. 
+#' @param desc A \code{vector<string>} that contains the model's components.
+#' @param objdesc A \code{field<vec>} that contains an object description (e.g. values) of the model.
+#' @param model_type A \code{string} that indicates whether it is an SSM or sensor.
+#' @param num_param An \code{unsigned int} number of parameters in the model (e.g. # of thetas).
+#' @param expect_diff A \code{double} that contains the mean of the first difference of the data
+#' @param N A \code{integer} that contains the number of observations in the data.
+#' @param wv_empir A \code{vec} that contains the empirical wavelet variance.
+#' @param tau A \code{vec} that contains the scales. (e.g. 2^(1:J))
+#' @param double A \code{double} that contains the drift slope given by \eqn{\frac{max-min}{N}}{(Max-Min)/N}
+#' @param G A \code{integer} that indicates how many random draws that should be performed.
+#' @return A \code{vec} containing smart parameter starting guesses to be iterated over.
+#' @keywords internal
+#' @examples
+#' #TBA
+guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G) {
+    .Call('gmwm_guess_initial', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G)
 }
 
 #' @title Randomly guess starting parameters for AR1
@@ -953,8 +992,80 @@ arma_draws <- function(p, q, sigma2_total) {
 #' @keywords internal
 #' @examples
 #' #TBA
-guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
-    .Call('gmwm_guess_initial', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+guess_initial_old <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
+    .Call('gmwm_guess_initial_old', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+}
+
+#' @title Compute Tau-Overlap Hadamard Variance
+#' @description Computation of  Hadamard Variance
+#' @usage hadam_to_cpp(x)
+#' @param x A \code{vector} with dimensions M x 1. 
+#' @return  A \code{matrix} that contains:
+#' \itemize{
+#'  \item{Col 1}{The size of the cluster}
+#'  \item{Col 2}{The Hadamard variance}
+#'  \item{Col 3}{The error associated with the variance estimation.}
+#' }
+#' @details
+#' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
+#' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
+#' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
+#' Then, a sampling of \eqn{m = \left\lfloor {\frac{{N - 1}}{n}} \right\rfloor  - 1} samples exist. 
+#' The tau-overlap estimator is given by:
+#' 
+#' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
+#' 
+#' @author JJB
+#' @references Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
+#' @examples
+#' set.seed(999)
+#' # Simulate white noise (P 1) with sigma^2 = 4
+#' N = 100000
+#' white.noise = rnorm(N, 0, 2)
+#' #plot(white.noise,ylab="Simulated white noise process",xlab="Time",type="o")
+#' #Simulate random walk (P 4)
+#' random.walk = cumsum(0.1*rnorm(N, 0, 2))
+#' combined.ts = white.noise+random.walk
+#' av_mat = avar_to_cpp(combined.ts)
+#' @keywords internal
+hadam_to_cpp <- function(x) {
+    .Call('gmwm_hadam_to_cpp', PACKAGE = 'gmwm', x)
+}
+
+#' @title Compute Maximal-Overlap Hadamard Variance using Means
+#' @description Computation of Maximal-Overlap Hadamard Variance
+#' @usage avar_mo_cpp(x)
+#' @param x A \code{vector} with dimensions N x 1. 
+#' @return av A \code{list} that contains:
+#' \itemize{
+#'  \item{"clusters"}{The size of the cluster}
+#'  \item{"hadamard"}{The Hadamard variance}
+#'  \item{"errors"}{The error associated with the variance estimation.}
+#' }
+#' @details
+#' Given \eqn{N} equally spaced samples with averaging time \eqn{\tau = n\tau _0}{tau = n*tau_0},
+#' where \eqn{n} is an integer such that \eqn{ 1 \le n \le \frac{N}{2}}{1<= n <= N/2}.
+#' Therefore, \eqn{n} is able to be selected from \eqn{\left\{ {n|n < \left\lfloor {{{\log }_2}\left( N \right)} \right\rfloor } \right\}}{{n|n< floor(log2(N))}}
+#' Then, \eqn{M = N - 2n} samples exist. 
+#' The Maximal-overlap estimator is given by:
+#' \eqn{\frac{1}{{2\left( {N - 2k + 1} \right)}}\sum\limits_{t = 2k}^N {{{\left[ {{{\bar Y}_t}\left( k \right) - {{\bar Y}_{t - k}}\left( k \right)} \right]}^2}} }
+#' 
+#' where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }.
+#' @author JJB
+#' @references Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
+#' @examples
+#' set.seed(999)
+#' # Simulate white noise (P 1) with sigma^2 = 4
+#' N = 100000
+#' white.noise = rnorm(N, 0, 2)
+#' #plot(white.noise,ylab="Simulated white noise process",xlab="Time",type="o")
+#' #Simulate random walk (P 4)
+#' random.walk = cumsum(0.1*rnorm(N, 0, 2))
+#' combined.ts = white.noise+random.walk
+#' av_mat = avar_mo_cpp(combined.ts)
+#' @keywords internal
+hadam_mo_cpp <- function(x) {
+    .Call('gmwm_hadam_mo_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' @title Indirect Inference for ARMA
@@ -1420,7 +1531,7 @@ quantile_cpp <- function(x, probs) {
 #' @author JJB
 #' @keywords internal
 #' @examples
-#' x = rnorm(10000, 0, 1)
+#' x = rnorm(10, 0, 1)
 #' diff_cpp(x,1,1)
 diff_cpp <- function(x, lag, differences) {
     .Call('gmwm_diff_cpp', PACKAGE = 'gmwm', x, lag, differences)
@@ -1456,7 +1567,7 @@ ARMAtoMA_cpp <- function(ar, ma, lag_max) {
 #' @author R Core Team and JJB
 #' @keywords internal
 #' @examples
-#' x = 1:100
+#' x = 1:15
 #' # 
 #' cfilter(x, rep(1, 3), sides = 2, circular = FALSE)
 #' # Using R's function
@@ -1486,7 +1597,7 @@ cfilter <- function(x, filter, sides, circular) {
 #' @author R Core Team and JJB
 #' @keywords internal
 #' @examples
-#' x = 1:100
+#' x = 1:15
 #' # 
 #' rfilter(x, rep(1, 3), rep(1, 3))
 #' # Using R's function
@@ -1524,7 +1635,7 @@ ARMAacf_cpp <- function(ar, ma, lag_max) {
 #' Consider piping back into R and rewrapping the object. (Decrease of about 10 microseconds.)
 #' @keywords internal
 #' @examples
-#' x=rnorm(100)
+#' x=rnorm(10)
 #' dft_acf(x)
 dft_acf <- function(x) {
     .Call('gmwm_dft_acf', PACKAGE = 'gmwm', x)
@@ -1536,10 +1647,68 @@ dft_acf <- function(x) {
 #' @return A \code{double} that contains the mean of the first difference of the data.
 #' @keywords internal
 #' @examples
-#' x=rnorm(100)
+#' x=rnorm(10)
 #' mean_diff(x)
 mean_diff <- function(x) {
     .Call('gmwm_mean_diff', PACKAGE = 'gmwm', x)
+}
+
+#' Replicate a Vector of Elements \eqn{n} times
+#' 
+#' This function takes a vector and replicates all of the data \eqn{n} times
+#' @param x A \code{vec} containing the data
+#' @param n An \code{unsigned int} indicating the number of times the vector should be repeated.
+#' @return A \code{vec} with repeated elements of the initial supplied vector.
+#' @keywords internal
+num_rep <- function(x, n) {
+    .Call('gmwm_num_rep', PACKAGE = 'gmwm', x, n)
+}
+
+#' @rdname diff_inv
+intgr_vec <- function(x, xi, lag) {
+    .Call('gmwm_intgr_vec', PACKAGE = 'gmwm', x, xi, lag)
+}
+
+#' @param xi A \code{vec} with length \eqn{lag*d} that provides initial values for the integration.
+#' @rdname diff_inv
+diff_inv_values <- function(x, lag, d, xi) {
+    .Call('gmwm_diff_inv_values', PACKAGE = 'gmwm', x, lag, d, xi)
+}
+
+#' Discrete Intergral: Inverse Difference
+#' 
+#' Takes the inverse difference (e.g. goes from diff() result back to previous vector)
+#' @param x   A \code{vec} containing the data
+#' @param lag An \code{unsigned int} indicating the lag between observations. 
+#' @param d   An \code{unsigned int} which gives the number of "differences" to invert.
+#' @keywords internal
+diff_inv <- function(x, lag, d) {
+    .Call('gmwm_diff_inv', PACKAGE = 'gmwm', x, lag, d)
+}
+
+#' Expand Parameters for an SARIMA object
+#' 
+#' Creates an expanded PHI and THETA vector for use in other objects. 
+#' @param params  A \code{vec} containing the theta values of the parameters.
+#' @param objdesc A \code{vec} containing the model term information.
+#' @return A \code{field<vec>} of size two as follows:
+#' \itemize{
+#'   \item AR    values
+#'   \item THETA values
+#' }
+#' @details 
+#' The \code{objdesc} is assumed to have the structure of:
+#' \itemize{
+#' \item AR(p)
+#' \item MA(q)
+#' \item SAR(P)
+#' \item SMA(Q)
+#' \item Seasons
+#' }
+#' @examples
+#' m = expand_sarima(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+expand_sarima <- function(params, objdesc) {
+    .Call('gmwm_expand_sarima', PACKAGE = 'gmwm', params, objdesc)
 }
 
 #' @title Routing function for summary info
@@ -1576,7 +1745,7 @@ get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales
 #' @return A \code{vec} containing logit probabilities.
 #' @keywords internal
 #' @examples
-#' x.sim = rnorm(100)
+#' x.sim = rnorm(10)
 #' pseudo_logit_inv(x.sim)
 pseudo_logit_inv <- function(x) {
     .Call('gmwm_pseudo_logit_inv', PACKAGE = 'gmwm', x)
@@ -1588,7 +1757,7 @@ pseudo_logit_inv <- function(x) {
 #' @return A \code{vec} containing logit probabilities.
 #' @keywords internal
 #' @examples
-#' x.sim = rnorm(100)
+#' x.sim = rnorm(10)
 #' logit_inv(x.sim)
 logit_inv <- function(x) {
     .Call('gmwm_logit_inv', PACKAGE = 'gmwm', x)
@@ -1600,7 +1769,7 @@ logit_inv <- function(x) {
 #' @return A \code{vec} containing logit terms.
 #' @keywords internal
 #' @examples
-#' x.sim = runif(100)
+#' x.sim = runif(10)
 #' pseudo_logit(x.sim)
 pseudo_logit <- function(x) {
     .Call('gmwm_pseudo_logit', PACKAGE = 'gmwm', x)
@@ -1612,7 +1781,7 @@ pseudo_logit <- function(x) {
 #' @return A \code{vec} containing logit terms.
 #' @keywords internal
 #' @examples
-#' x.sim = runif(100)
+#' x.sim = runif(10)
 #' logit(x.sim)
 logit <- function(x) {
     .Call('gmwm_logit', PACKAGE = 'gmwm', x)
@@ -1624,7 +1793,7 @@ logit <- function(x) {
 #' @return A \code{vec} containing logit terms.
 #' @keywords internal
 #' @examples
-#' x.sim = runif(100)
+#' x.sim = runif(10)
 #' logit(x.sim)
 logit2 <- function(x) {
     .Call('gmwm_logit2', PACKAGE = 'gmwm', x)
@@ -1636,7 +1805,7 @@ logit2 <- function(x) {
 #' @return A \code{vec} containing logit probabilities.
 #' @keywords internal
 #' @examples
-#' x.sim = rnorm(100)
+#' x.sim = rnorm(10)
 #' logit_inv(x.sim)
 logit2_inv <- function(x) {
     .Call('gmwm_logit2_inv', PACKAGE = 'gmwm', x)
@@ -2002,6 +2171,348 @@ qmf <- function(g, inverse = TRUE) {
 #' haar_filter()
 haar_filter <- function() {
     .Call('gmwm_haar_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d4 filter construction
+#' @description Creates the d4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d4_filter()
+d4_filter <- function() {
+    .Call('gmwm_d4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb4 filter construction
+#' @description Creates the mb4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb4_filter()
+mb4_filter <- function() {
+    .Call('gmwm_mb4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title w4 filter construction
+#' @description Creates the w4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' w4_filter()
+w4_filter <- function() {
+    .Call('gmwm_w4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk4 filter construction
+#' @description Creates the fk4 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk4_filter()
+fk4_filter <- function() {
+    .Call('gmwm_fk4_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d6 filter construction
+#' @description Creates the d6 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d6_filter()
+d6_filter <- function() {
+    .Call('gmwm_d6_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk6 filter construction
+#' @description Creates the fk6 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk6_filter()
+fk6_filter <- function() {
+    .Call('gmwm_fk6_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d8 filter construction
+#' @description Creates the d8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d8_filter()
+d8_filter <- function() {
+    .Call('gmwm_d8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk8 filter construction
+#' @description Creates the fk8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk8_filter()
+fk8_filter <- function() {
+    .Call('gmwm_fk8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title la8 filter construction
+#' @description Creates the la8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' la8_filter()
+la8_filter <- function() {
+    .Call('gmwm_la8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb8 filter construction
+#' @description Creates the mb8 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb8_filter()
+mb8_filter <- function() {
+    .Call('gmwm_mb8_filter', PACKAGE = 'gmwm')
+}
+
+#' @title bl14 filter construction
+#' @description Creates the bl14 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' bl14_filter()
+bl14_filter <- function() {
+    .Call('gmwm_bl14_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk14 filter construction
+#' @description Creates the fk14 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk14_filter()
+fk14_filter <- function() {
+    .Call('gmwm_fk14_filter', PACKAGE = 'gmwm')
+}
+
+#' @title d16 filter construction
+#' @description Creates the d16 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' d16_filter()
+d16_filter <- function() {
+    .Call('gmwm_d16_filter', PACKAGE = 'gmwm')
+}
+
+#' @title la16 filter construction
+#' @description Creates the la16 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' la16_filter()
+la16_filter <- function() {
+    .Call('gmwm_la16_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb16 filter construction
+#' @description Creates the mb16 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb16_filter()
+mb16_filter <- function() {
+    .Call('gmwm_mb16_filter', PACKAGE = 'gmwm')
+}
+
+#' @title la20 filter construction
+#' @description Creates the la20 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' la20_filter()
+la20_filter <- function() {
+    .Call('gmwm_la20_filter', PACKAGE = 'gmwm')
+}
+
+#' @title bl20 filter construction
+#' @description Creates the bl20 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' bl20_filter()
+bl20_filter <- function() {
+    .Call('gmwm_bl20_filter', PACKAGE = 'gmwm')
+}
+
+#' @title fk22 filter construction
+#' @description Creates the fk22 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' fk22_filter()
+fk22_filter <- function() {
+    .Call('gmwm_fk22_filter', PACKAGE = 'gmwm')
+}
+
+#' @title mb24 filter construction
+#' @description Creates the mb24 filter
+#' @return A \code{field<vec>} that contains:
+#' \itemize{
+#'  \item{"L"}{A \code{integer} specifying the length of the filter}
+#'  \item{"h"}{A \code{vector} containing the coefficients for the wavelet filter}
+#'  \item{"g"}{A \code{vector} containing the coefficients for the scaling filter}
+#' }
+#' @details
+#' This template can be used to increase the amount of filters available for selection.
+#' @author JJB
+#' @keywords internal
+#' @examples
+#' mb24_filter()
+mb24_filter <- function() {
+    .Call('gmwm_mb24_filter', PACKAGE = 'gmwm')
 }
 
 #' @title Select the Wavelet Filter

@@ -1,7 +1,7 @@
-This is the first submission of `gmwm` 
+This is the second submission of `gmwm` 
 
 ## Test environments
-* local OS X install, R 3.2.2 (installer for devel not available at r.research.att.com)
+* local OS X install, R 3.2.3 
 * win-builder (devel and release)
 
 ## R CMD check results
@@ -11,15 +11,21 @@ There were no ERRORs or WARNINGs in R 3.2.2 with --as-cran or under win-devel.
 We did receive a note:
 
 * checking CRAN incoming feasibility ... NOTE
-  Maintainer: ‘Stephane Guerrier <stephane@illinois.edu>’
-  New submission
-  
-  This is because the package is new!
-* Non-FOSS package license (file LICENSE)
-  We would like to release the methods underneath the Q Public License.
-  Users are free to use the methods for research and non-commerical use.
-  Commerical users must request permission.
+Maintainer: 'Stephane Guerrier <stephane@illinois.edu>'
 
+Possibly mis-spelled words in DESCRIPTION:
+  ARIMA (19:16)
+  GMWM (14:53, 18:23)
+  decompositions (20:58)
+
+Suggests or Enhances not in mainstream repositories:
+  imudata
+
+Availability using Additional_repositories specification:
+  imudata   yes   http://smac-group.com/datarepo
+  
+  This is because the package we reference a data package that is 40 mb in size and does not adhere to CRAN's policy.
+  
 ## Downstream dependencies
 
-There are no downstream dependencies as this package is new.
+There are no downstream dependencies.

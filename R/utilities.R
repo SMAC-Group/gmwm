@@ -1,3 +1,139 @@
+# Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+#
+# This file is part of GMWM R Methods Package
+#
+# The `gmwm` R package is free software: you can redistribute it and/or modify it
+# under the terms of the Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+# included within the packages source as the LICENSE file.
+#
+# The `gmwm` R package is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# You should have received a copy of the Attribution-NonCommercial-ShareAlike 4.0 International 
+# (CC BY-NC-SA 4.0) along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
+
+
+#' Latest Version of Package on CRAN
+#' 
+#' Determines the version number on cran via obtaining the packages page
+#' 
+#' @param pkg         Name of Package
+#' @param cran_url    URL to CRAN Packages
+#' @return A \code{vector} of \code{string}s that contain:
+#' \itemize{
+#' \item the verison of the package on cran
+#' \item release date of the package on cran
+#' }
+#' @examples 
+#' library(gmwm)
+#' packageVersion("gmwm")
+#' packageVersionCRAN("gmwm")
+#' 
+#' @author JJB
+packageVersionCRAN = function(pkg, cran_url="http://cran.r-project.org/web/packages/")
+{
+  
+  cran_pkg_loc = paste0(cran_url,pkg)
+  
+  suppressWarnings( conn <- try( url(cran_pkg_loc) , silent=TRUE ) )
+  
+  if ( all( class(conn) != "try-error") ) {
+    suppressWarnings( cran_pkg_page <- try( readLines(conn) , silent=TRUE ) )
+    close(conn)
+  } else {
+    return(NULL)
+  }
+  
+  version_line = cran_pkg_page[grep("Version:",cran_pkg_page)+1]
+  version_num_cran = gsub("<(td|\\/td)>","",version_line)
+  
+  publish_line = cran_pkg_page[grep("Published:",cran_pkg_page)+1]
+  publish_date_cran = gsub("<(td|\\/td)>","",publish_line)
+  
+  c(version_num_cran,publish_date_cran)  
+}
+
+#' @title Is R Open in RStudio?
+#' @description 
+#' Detects whether R is open in RStudio. 
+#' @return 
+#' A \code{logical} value that indicates whether R is open in RStudio.
+#' @author JJB
+#' @examples 
+#' is.rstudio()
+is.rstudio = function(){
+  .Platform$GUI == "RStudio"
+}
+
+#' @title Change Default Graphing Device from RStudio
+#' @description 
+#' Checks to see if the user is in RStudio. If so, then it changes the device to a popup window. 
+#' @param ext A \code{logical} indicating whether the graph should be done externally or internally in RStudio.
+#' @details 
+#' Depending on the operating system, the default drivers attempted to be used are:
+#' 
+#' OS X: quartz()
+#' 
+#' Linux: x11()
+#' 
+#' Windows: windows()
+#' 
+#' Note, this setting is not permanent. Thus, the behavioral change will last until the end of the session. 
+#'
+#' Also, the active graphing environment will be killed. As a result, any graphs that are open will be deleted. You will have to regraph them. 
+#' @author JJB
+#' @examples
+#' \dontrun{
+#' # Turn on external graphs
+#' external_graphs()
+#' 
+#' # Turn off external graphs
+#' external_graphs(F)
+#' }
+external_graphs = function(ext = TRUE){
+  if( is.rstudio() ){
+    if(isTRUE(ext)){
+      o = tolower(Sys.info()["sysname"])
+      a = switch(o,
+                 "darwin"  = "quartz",
+                 "linux"   = "x11",
+                 "windows" = "windows")
+      options("device" = a)
+    } else{
+      options("device"="RStudioGD")
+    }
+    
+    # Kill open graphic devices
+    graphics.off()
+  }
+}
+
+#' GM Conversion
+#' 
+#' Convert from AR1 to GM and vice-versa
+#' @param theta        A \code{numeric vector} containing the theta values
+#' @param process.desc A \code{character vector} containing the names of parameters.
+#' @param freq         A \code{double} indicating the frequency of the data.
+#' @keywords internal
+#' @author JJB
+#' @rdname gm_conv
+conv.ar1.to.gm = function(theta, process.desc, freq){
+  idx = process.desc %in% c("BETA","SIGMA2_GM")
+  theta[idx] = ar1_to_gm(theta[idx],freq)
+  
+  theta
+}
+
+#' @rdname gm_conv
+conv.gm.to.ar1 = function(theta, process.desc, freq){
+  idx = process.desc %in% c("BETA","SIGMA2_GM")
+  theta[idx] = gm_to_ar1(theta[idx],freq)
+  
+  theta
+}
+
+
 #' @title Print GMWM Data Object
 #' @description 
 #' Pretty formatting for \code{gts}, \code{imu}, and \code{lts} objects.
@@ -14,7 +150,15 @@ print.imu = function(x,
                      obs = 10L,
                      row.names = TRUE, ...)
 {
-  
+  if(!is.null(attr(x,"name"))){
+    cat("Data Name:",attr(x,"name"),"\n")
+  }
+  if(!is.null(attr(x,"stype"))){
+    cat("Sensor:",attr(x,"stype"),"@",attr(x,"freq"),"Hz\n")
+    cat("Obs:", nrow(x), " over ", round(nrow(x)/attr(x,"freq")/3600,2),"Hours \n")
+  }else{
+    cat("Freq:",attr(x,"freq"),"Hz\n")
+  }
   outf(x, obs, row.names, ...)
 }
 
@@ -46,7 +190,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
     rn = c(seq_len(obs), seq.int(to=nrow(x), length.out=obs))
     print_dashes = TRUE
   } else {
-    print_lines = x$data
+    print_lines = head(x,nrow(x))
     rn = seq_len(nrow(x))
     print_dashes = FALSE
   }
@@ -56,7 +200,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
   }else{
     rownames(print_lines) = rep("", nrow(print_lines))
   }
-  if(is.null(names(x$data))){
+  if(is.null(colnames(x))){
     colnames(print_lines) = rep("NA", ncol(print_lines))
   }
   if(print_dashes) {
@@ -64,7 +208,7 @@ outf = function(x, obs = 10L, row.names = TRUE){
     rownames(print_lines) = format(rownames(print_lines),justify="right")
   }
   
-  print(print_lines,right=TRUE,quote=FALSE)
+  print.default(print_lines,right=TRUE,quote=FALSE)
   return(invisible())
 }
 
@@ -103,85 +247,6 @@ is.wvar = function(x){ inherits(x, "wvar") }
 is.ts.model = function(x){ inherits(x, "ts.model") }
 
 
-#' @title Dimensions of GMWM Objects
-#' @description 
-#' Returns the dimensions of a 
-#' \code{gts}, \code{imu}, or \code{lts} object.
-#' @param x  A \code{gts}, \code{imu}, \code{lts} object.
-#' @return 
-#' A \code{vector} with two elements.
-#' 
-#' The first element contains the number of rows. 
-#' The second element contains the number of columns.
-#' @author JJB
-#' @rdname dim_func
-#' @export
-dim.gts = function(x){ dim(x$data) }
-
-#' @rdname dim_func
-#' @export
-dim.imu = function(x){ dim(x$data) }
-
-#' @rdname dim_func
-#' @export
-dim.lts = function(x){ dim(x$data) }
-
-#' @title The Number of Rows/Columns of a GMWM Object
-#' @description 
-#' Returns either the number of rows or columns of a 
-#' \code{gts}, \code{imu}, or \code{lts} object.
-#' @param x  A \code{gts}, \code{imu}, \code{lts} object.
-#' @return 
-#' An \code{\link[base]{integer}} of length 1 or \code{\link[base]{NULL}}
-#' @author JJB
-#' @rdname nvals_func
-#' @export
-ncol.gts = function(x){ ncol(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NCOL.gts = function(x){ ncol.gts(x)}
-
-#' @rdname nvals_func
-#' @export
-nrow.gts = function(x){ nrow(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NROW.gts = function(x){ nrow.gts(x)}
-
-#' @rdname nvals_func
-#' @export
-ncol.imu = function(x){ ncol(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NCOL.imu = function(x){ ncol.imu(x) }
-
-#' @rdname nvals_func
-#' @export
-nrow.imu = function(x){ nrow(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NROW.imu = function(x){ nrow.imu(x)}
-
-#' @rdname nvals_func
-#' @export
-ncol.lts = function(x){ ncol(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NCOL.lts = function(x){ ncol.lts(x) }
-
-#' @rdname nvals_func
-#' @export
-nrow.lts = function(x){ nrow(x$data) }
-
-#' @rdname nvals_func
-#' @export
-NROW.lts = function(x){ nrow.lts(x)}
-
 #' @title Obtain the value of an object's properties
 #' @description 
 #' Used to access different properties of the
@@ -207,56 +272,12 @@ value = function(x, type){
 #' @describeIn value Access \code{imu} object properties
 #' @export
 value.imu = function(x, type){
-    switch(type,
-           accel   = x$num.sensor[1],
-           gyro    = x$num.sensor[2],
-           sensors = sum(x$num.sensor),
-           stop("The `type` specified is not an available slot")
-    ) 
-}
-
-
-#' @title Return the First or Last Part of a GMWM Object
-#' @description Returns the first or last \eqn{n} observations of a \code{gts}, \code{imu}, or \code{lts} object.
-#' @param x   A \code{gts}, \code{imu}, or \code{lts} object.
-#' @param n   A \code{integer} indicating how many observations should be displayed
-#' @param ... Arguments to be passed to or from other methods.
-#' @return The method will return a matrix with \eqn{n} observations.
-#' @author JJB
-#' @rdname head_tail
-#' @export
-head.imu = function(x, n = 6L, ...){
-  head(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-tail.imu = function(x, n = 6L, ...){
-  tail(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-head.gts = function(x, n = 6L, ...){
-  head(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-tail.gts = function(x, n = 6L, ...){
-  tail(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-head.lts = function(x, n = 6L, ...){
-  head(x$data, n)
-}
-
-#' @rdname head_tail
-#' @export
-tail.lts = function(x, n = 6L, ...){
-  tail(x$data, n)
+  switch(type,
+         accel   = attr(x, 'num.sensor')[1],
+         gyro    = attr(x, 'num.sensor')[2],
+         sensors = sum(attr(x, 'num.sensor')),
+         stop("The `type` specified is not an available slot")
+  ) 
 }
 
 #' @title Obtain the value of an object's properties
@@ -284,9 +305,9 @@ has = function(x, type){
 #' @export
 has.imu = function(x, type){
   switch(type,
-         accel   = x$num.sensor[1] > 0,
-         gyro    = x$num.sensor[2] > 0,
-         sensors = x$num.sensor[1] > 0 & x$num.sensor[2] > 0,
+         accel   = attr(x, 'num.sensor')[1] > 0,
+         gyro    = attr(x, 'num.sensor')[2] > 0,
+         sensors = attr(x, 'num.sensor')[1] > 0 & attr(x, 'num.sensor')[2] > 0,
          stop("The `type` specified is not an available slot")
   ) 
 }

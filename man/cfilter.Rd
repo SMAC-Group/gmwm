@@ -26,7 +26,7 @@ This is a port of the cfilter function harnessed by the filter function in stats
 It is about 5-7 times faster than R's base function. The benchmark was done on iMac Late 2013 using vecLib as the BLAS.
 }
 \examples{
-x = 1:100
+x = 1:15
 # 
 cfilter(x, rep(1, 3), sides = 2, circular = FALSE)
 # Using R's function

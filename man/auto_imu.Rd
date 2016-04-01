@@ -5,7 +5,7 @@
 \title{Find the auto imu result}
 \usage{
 auto_imu(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust,
-  eff, bs_optimism)
+  eff, bs_optimism, seed)
 }
 \arguments{
 \item{data}{A \code{mat} containing multiple columns of independent data with the same number of observations.}
@@ -29,6 +29,8 @@ auto_imu(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust,
 \item{eff}{A \code{double} that indicates the efficiency to use.}
 
 \item{bs_optimism}{A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.}
+
+\item{seed}{A \code{unsigned int} that is the seed one wishes to use.}
 
 \item{model_str}{A \code{vector<vector<string>>} that gives a list of models to test.}
 }

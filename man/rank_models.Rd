@@ -5,7 +5,7 @@
 \title{Find the Rank Models result}
 \usage{
 rank_models(data, model_str, full_model, alpha, compute_v, model_type, K, H, G,
-  robust, eff, bs_optimism)
+  robust, eff, bs_optimism, seed)
 }
 \arguments{
 \item{data}{A \code{vec} of data.}
@@ -31,6 +31,8 @@ rank_models(data, model_str, full_model, alpha, compute_v, model_type, K, H, G,
 \item{eff}{A \code{double} that indicates the efficiency to use.}
 
 \item{bs_optimism}{A \code{bool} that indicates whether the model selection score should be calculated with bootstrap or asymptotics.}
+
+\item{seed}{A \code{unsigned int} that is the seed one wishes to use.}
 }
 \value{
 A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.

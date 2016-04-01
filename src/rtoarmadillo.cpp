@@ -107,7 +107,7 @@ arma::vec quantile_cpp(arma::vec x, const arma::vec& probs) {
 //' @author JJB
 //' @keywords internal
 //' @examples
-//' x = rnorm(10000, 0, 1)
+//' x = rnorm(10, 0, 1)
 //' diff_cpp(x,1,1)
 // [[Rcpp::export]]
 arma::vec diff_cpp(arma::vec x, unsigned int lag, unsigned int differences){
@@ -175,7 +175,7 @@ arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max)
 //' @author R Core Team and JJB
 //' @keywords internal
 //' @examples
-//' x = 1:100
+//' x = 1:15
 //' # 
 //' cfilter(x, rep(1, 3), sides = 2, circular = FALSE)
 //' # Using R's function
@@ -253,7 +253,7 @@ arma::vec cfilter(arma::vec x, arma::vec filter, int sides, bool circular)
 //' @author R Core Team and JJB
 //' @keywords internal
 //' @examples
-//' x = 1:100
+//' x = 1:15
 //' # 
 //' rfilter(x, rep(1, 3), rep(1, 3))
 //' # Using R's function
@@ -442,7 +442,7 @@ arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max)
 //' Consider piping back into R and rewrapping the object. (Decrease of about 10 microseconds.)
 //' @keywords internal
 //' @examples
-//' x=rnorm(100)
+//' x=rnorm(10)
 //' dft_acf(x)
 // [[Rcpp::export]]
 arma::vec dft_acf(const arma::vec& x){
@@ -464,13 +464,81 @@ arma::vec dft_acf(const arma::vec& x){
 //' @return A \code{double} that contains the mean of the first difference of the data.
 //' @keywords internal
 //' @examples
-//' x=rnorm(100)
+//' x=rnorm(10)
 //' mean_diff(x)
 // [[Rcpp::export]]
 double mean_diff(const arma::vec& x){
   return arma::mean(diff_cpp(x, 1, 1));
 }
 
+//' Replicate a Vector of Elements \eqn{n} times
+//' 
+//' This function takes a vector and replicates all of the data \eqn{n} times
+//' @param x A \code{vec} containing the data
+//' @param n An \code{unsigned int} indicating the number of times the vector should be repeated.
+//' @return A \code{vec} with repeated elements of the initial supplied vector.
+//' @keywords internal
+// [[Rcpp::export]]
+arma::vec num_rep(const arma::vec& x, unsigned int n) {
+  
+  unsigned int nj = x.n_elem, tot = nj*n, i;
+  
+  arma::vec x_rep(tot);
+  
+  for(i = 0; i < n; i++){
+    x_rep.rows(i*nj, nj*i + nj - 1) = x;
+  }
+  
+  return x_rep;  
+}
 
+//' @rdname diff_inv
+// [[Rcpp::export]]
+arma::vec intgr_vec(const arma::vec& x, const arma::vec& xi, unsigned int lag){
+  
+  unsigned int lagn = x.n_elem + lag;
+  arma::vec y = arma::zeros<arma::vec>(lagn);
+  y.rows(0,lag-1) = xi; 
+  
+  for (unsigned int i = lag; i < lagn; i++){
+    y(i) = x(i - lag) + y(i - lag); 
+  }
+  
+  return y;
+}
+
+//' @param xi A \code{vec} with length \eqn{lag*d} that provides initial values for the integration.
+//' @rdname diff_inv
+// [[Rcpp::export]]
+arma::vec diff_inv_values(const arma::vec& x, unsigned int lag, unsigned int d, const arma::vec& xi){
+  
+  if(lag*d != xi.n_elem){
+    Rcpp::stop("length of `xi` must be `lag*d`.");
+  }
+  
+  if (d == 1) {
+    return intgr_vec(x, xi, lag);
+  }
+  
+  arma::vec dec_xi = diff_cpp(xi, lag, 1);
+  
+  arma::vec new_xi = xi.rows(0,lag-1);
+  
+  return diff_inv_values(diff_inv_values(x, lag, d - 1, dec_xi),
+                         lag, 1, new_xi);
+}
+
+//' Discrete Intergral: Inverse Difference
+//' 
+//' Takes the inverse difference (e.g. goes from diff() result back to previous vector)
+//' @param x   A \code{vec} containing the data
+//' @param lag An \code{unsigned int} indicating the lag between observations. 
+//' @param d   An \code{unsigned int} which gives the number of "differences" to invert.
+//' @keywords internal
+// [[Rcpp::export]]
+arma::vec diff_inv(const arma::vec& x, unsigned int lag, unsigned int d){
+  arma::vec xi =  arma::zeros<arma::vec>(lag*d);
+  return diff_inv_values(x, lag, d, xi);
+}
 
 /* ------------------ End R to Armadillo Functions ----------------------- */

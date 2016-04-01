@@ -4,12 +4,16 @@
 \alias{read.imu}
 \title{Read an IMU Binary File into R}
 \usage{
-read.imu(file, type)
+read.imu(file, type, unit = NULL, name = NULL)
 }
 \arguments{
 \item{file}{A \code{string} containing file names or paths.}
 
 \item{type}{A \code{string} that contains a supported IMU type given below.}
+
+\item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
+
+\item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
 }
 \value{
 An \code{imu} object that contains 3 gyroscopes and 3 accelerometers in that order.

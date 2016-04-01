@@ -4,8 +4,8 @@
 \alias{gmwm_update_cpp}
 \title{Update Wrapper for the GMWM Estimator}
 \usage{
-gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, orgV, scales,
-  wv_empir, starting, compute_v, K, H, G, robust, eff)
+gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV,
+  scales, wv, starting, compute_v, K, H, G, robust, eff)
 }
 \arguments{
 \item{theta}{A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters}
@@ -18,9 +18,9 @@ gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, orgV, scales,
 
 \item{scales}{A \code{vec} that contains the scales or taus (2^(1:J))}
 
-\item{wv_empir}{A \code{vec} that contains the empirical wavelet variance}
-
 \item{starting}{A \code{bool} that indicates whether we guessed starting (T) or the user supplied estimates (F).}
+
+\item{wv_empir}{A \code{vec} that contains the empirical wavelet variance}
 
 \item{omega}{A \code{mat} that represents the covariance matrix.}
 }

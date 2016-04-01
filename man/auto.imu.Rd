@@ -5,7 +5,7 @@
 \title{Automatically select appropriate model for IMU}
 \usage{
 auto.imu(data, model = 3 * AR1() + WN() + RW() + QN() + DR(), bootstrap = F,
-  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+05,
+  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+06,
   seed = 1337)
 }
 \arguments{
@@ -52,7 +52,7 @@ library("imudata")
 data(imu6)
 
 # Example 1
-test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+test1 = imu(imu6, gyros = 1:3, accels = NULL, axis = c('X', 'Y', 'Z'), freq = 100)
 
 m = auto.imu(test1)
 

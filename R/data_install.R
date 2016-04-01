@@ -33,13 +33,13 @@ install_imudata = function(type="ONL",loc=NULL){
   type = toupper(type)
   
   if(type == "ONL"){
-    install.packages("imudata")
+    install.packages("imudata", repos = "http://smac-group.com/datarepo")
   }else{
     if(!is.null(loc)){ 
       message("Installing the package using a local .tar file.")
       message("Note: You must have a compiler installed!")
       message("The following packages are also required:")
-      message("ggplot2, RcppArmadillo, and gridExtra")
+      message("ggplot2 and RcppArmadillo")
       install.packages(loc, type="source")
     }else{ 
       message("To install locally, you must also set the `loc` paramter!")

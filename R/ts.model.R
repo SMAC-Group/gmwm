@@ -385,6 +385,149 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   invisible(out)
 }
 
+
+#' @title Create an Autoregressive Moving Average (ARMA) Process
+#' @description Sets up the necessary backend for the ARMA process.
+#' @param ar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.
+#' @param ma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
+#' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
+#'  \item{theta}{\eqn{\sigma}{sigma}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{obj.desc}{y desc replicated x times}
+#'  \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @details
+#' A standard deviation is required since the model generation statements utilize 
+#' randomization functions expecting a standard deviation instead of a variance.
+#' @author JJB
+#' @examples
+#' # Create an SARIMA(1,0,1)x(1,0,1)[12] process
+#' SARIMA()
+#' 
+#' # Create an SARIMA(1,1,0)x(0,0) process
+#' SARIMA(ar = 1, d = 0, ma = 0, sar = 1, D = 0, sma = 0, s = 4, sigma2 = 1)
+#' # Creates an ARMA(3,2) process with predefined coefficients.
+#' SARIMA(ar=c(0.23,.43, .59), ma=c(0.4,.3))
+#' 
+#' # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
+#' SARIMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
+SARIMA = function(ar = 1, d = 0, ma = 1, sar = 1, D = 0, sma = 1, s = 4, sigma2 = 1.0) {
+  # Assume the user specified data
+  starting = FALSE
+  
+  # Get initial parameters
+  p = length(ar)
+  q = length(ma)
+  
+  # If P or Q == 1, this implies we might have a starting guess. 
+  if( p == 1 || q == 1 ){
+    if(p == 1){
+      if(is.whole(ar) & ar != 0){
+        ar = rep(-1, ar)
+        starting = TRUE
+      }else if(ar == 0){
+        ar = numeric(0) # creates a size 0 vector
+      }
+    }
+    
+    if(q == 1){
+      if(is.whole(ma) & ma != 0){
+        ma = rep(-2, ma)
+        starting = TRUE
+      }else if(ma == 0){
+        ma = numeric(0) 
+      }
+    }
+  }
+  
+  # Update the values.
+  p = length(ar)
+  q = length(ma)
+  
+  out = structure(list(process.desc = c(rep("AR", p), rep("MA",q), "SIGMA2"),
+                       theta = c(ar, ma, sigma2),
+                       plength = p + q + 1,
+                       desc = "ARMA",
+                       obj.desc = list(c(p,q,1)),
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
+
+
+#' @title Create an Autoregressive Moving Average (ARMA) Process
+#' @description Sets up the necessary backend for the ARMA process.
+#' @param ar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.
+#' @param ma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
+#' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
+#'  \item{theta}{\eqn{\sigma}{sigma}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{obj.desc}{y desc replicated x times}
+#'  \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @details
+#' A standard deviation is required since the model generation statements utilize 
+#' randomization functions expecting a standard deviation instead of a variance.
+#' @author JJB
+#' @examples
+#' # Create an ARMA(1,2) process
+#' ARMA(ar=1,2)
+#' # Creates an ARMA(3,2) process with predefined coefficients.
+#' ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3))
+#' 
+#' # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
+#' ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
+SARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
+  # Assume the user specified data
+  starting = FALSE
+  
+  # Get initial parameters
+  p = length(ar)
+  q = length(ma)
+  
+  # If P or Q == 1, this implies we might have a starting guess. 
+  if( p == 1 || q == 1 ){
+    if(p == 1){
+      if(is.whole(ar) & ar != 0){
+        ar = rep(-1, ar)
+        starting = TRUE
+      }else if(ar == 0){
+        ar = numeric(0) # creates a size 0 vector
+      }
+    }
+    
+    if(q == 1){
+      if(is.whole(ma) & ma != 0){
+        ma = rep(-2, ma)
+        starting = TRUE
+      }else if(ma == 0){
+        ma = numeric(0) 
+      }
+    }
+  }
+  
+  # Update the values.
+  p = length(ar)
+  q = length(ma)
+  
+  out = structure(list(process.desc = c(rep("AR", p), rep("MA",q), "SIGMA2"),
+                       theta = c(ar, ma, sigma2),
+                       plength = p + q + 1,
+                       desc = "ARMA",
+                       obj.desc = list(c(p,q,1)),
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
+
 #' @title Multiple a ts.model by constant
 #' @description Sets up the necessary backend for creating multiple model objects.
 #' @method * ts.model

@@ -5,7 +5,7 @@
 \title{Automatically select appropriate model for a set of models}
 \usage{
 rank.models(data, ..., nested = F, bootstrap = F, model.type = "ssm",
-  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+05,
+  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+06, freq = 1,
   seed = 1337)
 }
 \arguments{
@@ -28,6 +28,8 @@ rank.models(data, ..., nested = F, bootstrap = F, model.type = "ssm",
 \item{B}{A \code{integer} that contains the amount of bootstrap replications}
 
 \item{G}{A \code{integer} that indicates the amount of guesses for caliberating the startup.}
+
+\item{freq}{A \code{double} that represents the frequency between observations.}
 
 \item{seed}{A \code{integer} that is used to set a seed for reproducibility.}
 }

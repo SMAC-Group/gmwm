@@ -15,20 +15,26 @@
 
 #' @title Wavelet Variance
 #' @description Calculates the (MODWT) wavelet variance
-#' @param x       A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
-#' @param decomp  A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.
-#' @param nlevels An \code{integer} that indicates the level of decomposition. It must be less than or equal to floor(log2(length(x))).
-#' @param robust  A \code{boolean} that triggers the use of the robust estimate.
-#' @param eff     A \code{double} that indicates the efficiency as it relates to an MLE.
-#' @param alpha   A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param x         A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
+#' @param decomp    A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.
+#' @param filter    A \code{string} that specifies what wavelet filter to use. 
+#' @param nlevels   An \code{integer} that indicates the level of decomposition. It must be less than or equal to floor(log2(length(x))).
+#' @param robust    A \code{boolean} that triggers the use of the robust estimate.
+#' @param eff       A \code{double} that indicates the efficiency as it relates to an MLE.
+#' @param alpha     A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
+#' @param freq      A \code{numeric} that provides the rate of samples.
+#' @param from.unit A \code{string} indicating the unit which the data is converted from.
+#' @param to.unit   A \code{string} indicating the unit which the data is converted to.
+#' @param ... Further arguments passed to or from other methods.
 #' @return A \code{list} with the structure:
 #' \describe{
-#'   \item{"variance"}{Wavelet Variance},
+#'   \item{"variance"}{Wavelet Variance}
 #'   \item{"ci_low"}{Lower CI}
 #'   \item{"ci_high"}{Upper CI}
 #'   \item{"robust"}{Robust active}
 #'   \item{"eff"}{Efficiency level for Robust}
 #'   \item{"alpha"}{p value used for CI}
+#'   \item{"unit"}{String representation of the unit}
 #' }
 #' @details 
 #' If `nlevels` is not specified, it is set to floor(log2(length(x)))
@@ -52,33 +58,38 @@
 #' }
 #' 
 #' data(imu6)
-#' test = imu(imu6, gyroscope = 1:3, accelerometer = 4:6)
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, freq = 100)
 #' df = wvar.imu(test)
 #' }
 #' @export
-wvar = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6) {
+wvar = function(x, ...) {
   UseMethod("wvar")
 }
 
 #' @rdname wvar
 #' @export
-wvar.lts = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.lts = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
   warning('`lts` object is detected. This function can only operate on the combined process.')
-  x = x$data[,ncol(x$data)]
+  freq = attr(x, 'freq')
+  unit = attr(x, 'unit')
+  x = x[,ncol(x)]
+
+  wvar.default(x, decomp, filter, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
+}
+
+#' @rdname wvar
+#' @export
+wvar.gts = function(x, decomp="modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
+  freq = attr(x, 'freq')
+  unit = attr(x, 'unit')
+  x = x[,1]
   
-  wvar.default(x, decomp, nlevels, alpha, robust, eff)
+  wvar.default(x, decomp, filter, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
 }
 
 #' @rdname wvar
 #' @export
-wvar.gts = function(x, decomp="modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
-  x = x$data[,1]
-  wvar.default(x, decomp, nlevels, alpha, robust, eff)
-}
-
-#' @rdname wvar
-#' @export
-wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6){
+wvar.default = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL, ...){
   if(is.null(x)){
     stop("`x` must contain a value")
   }else if((is.data.frame(x) || is.matrix(x))){
@@ -89,18 +100,51 @@ wvar.default = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robus
     nlevels = floor(log2(length(x)))
   }
 
+  # check freq
+  if(!is(freq,"numeric") || length(freq) != 1){ stop("'freq' must be one numeric number.") }
+  if(freq <= 0) { stop("'freq' must be larger than 0.") }
+  
+  # check unit
+  all.units = c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')
+  if( (!is.null(from.unit) && !from.unit %in% all.units) || (!is.null(to.unit) && !to.unit %in% all.units) ){
+      stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
+  }
+  
   obj =  .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
                signal=x, nlevels=nlevels, robust=robust, eff=eff, alpha=alpha, 
-               ci_type="eta3", strWavelet="haar", decomp = decomp)
+               ci_type="eta3", strWavelet=filter, decomp = decomp)
 
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
-
-  create_wvar(obj, decomp, robust, eff, alpha, scales)
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/freq
+  
+  # NO unit conversion
+  if( is.null(from.unit) && is.null(to.unit)==F ){
+    warning("'from.unit' is NULL. Unit conversion was not done.")
+  }
+  
+  # unit conversion
+  if (!is.null(from.unit)){
+    if (!is.null(to.unit)){
+      convert.obj = unitConversion(scales, from.unit = from.unit, to.unit = to.unit)
+      
+      if (convert.obj$converted) {
+        # YES unit conversion
+        scales = convert.obj$x
+        message(paste0('Unit of object is converted from ', from.unit, ' to ', to.unit), appendLF = T)
+      }
+    }
+  }
+  
+  if(!is.null(from.unit) && !is.null(to.unit)){ 
+    unit = to.unit
+  }else{
+    unit = from.unit}
+  
+  create_wvar(obj, decomp, filter, robust, eff, alpha, scales, unit)
 }
 
 #' @rdname wvar
 #' @export
-wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6){
+wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6, to.unit = NULL, ...){
 
   if(!is.imu(x)){
     stop("`wvar.imu()` requires an IMU Object")
@@ -114,10 +158,34 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
   if(nlevels > mlevels){
     stop("`nlevels` must be less than ", mlevels,", which is the max number of levels.")
   }
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
+  
+  # freq conversion
+  x.freq = attr(x, 'freq')
+  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/x.freq
+  
+  # NO unit conversion
+  from.unit = attr(x, 'unit')
+  if( is.null(from.unit) && is.null(to.unit)==F ){
+    warning("The unit of the object is NULL. Unit conversion was not done.")
+  }
+  
+  # unit conversion
+  if (!is.null(from.unit)){
+    if (!is.null(to.unit)){
+      # start_end = c(start, end)
+      obj = unitConversion(scales, from.unit = from.unit, to.unit = to.unit)
+      
+      if (obj$converted) {
+        # YES unit conversion
+        scales = obj$x
+        
+        message(paste0('Unit of object is converted from ', from.unit, ' to ', to.unit), appendLF = T)
+      }
+    }
+  }
   
   obj.list = .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
-                   x$data, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
+                   x, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
 
   total.len = nlevels*ncol(x)
   
@@ -130,26 +198,34 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
                    sensor = character(total.len), stringsAsFactors=FALSE)
   
   # Axis length
-  naxis = length(x$axis)
+  x.axis = attr(x, 'axis')
+  naxis = length(x.axis)
+  
+  # The correct unit
+  if(!is.null(from.unit) && !is.null(to.unit)){ 
+    unit = to.unit
+  }else{
+    unit = from.unit}
   
   # Put data into data frame
   t = 1
   for (i in 1:ncol(x)){
     # Cast for Analytical IMU Results
-    obj.list[[i]] = create_wvar(obj.list[[i]], decomp, robust, eff, alpha, scales)
+    obj.list[[i]] = create_wvar(obj.list[[i]], decomp, filter, robust, eff, alpha, scales, unit)
 
     # Cast for Graphing IMU Results
+    sensor = attr(x, 'sensor')
     obj[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
                                        scales = scales,
                                        low = obj.list[[i]]$ci_low,
                                        high = obj.list[[i]]$ci_high,
-                                       axis = x$axis[(i-1)%%naxis+1], 
-                                       sensor = if(i <= x$num.sensor[1]){"Accelerometer"}else{"Gyroscope"},
+                                       axis = x.axis[i], 
+                                       sensor = sensor[i],
                                        stringsAsFactors=FALSE)
     t = t + nlevels
   }
   
-  out = structure(list(dataobj=obj.list, plotobj=obj), class="wvar.imu")
+  out = structure(list(dataobj=obj.list, plotobj=obj, unit = unit), class="wvar.imu")
   
   out
 }
@@ -159,21 +235,24 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
 #' @description Structures elements into a WVar object
 #' @param obj    A \code{matrix} with dimensions N x 3, that contains the wavelet variance, low ci, hi ci.
 #' @param decomp A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition
+#' @param filter A \code{string} that specifies the type of wavelet filter used in the decomposition
 #' @param robust A \code{boolean} that triggers the use of the robust estimate.
 #' @param eff    A \code{double} that indicates the efficiency as it relates to an MLE.
 #' @param alpha  A \code{double} that indicates the \eqn{\left(1-p\right)*\alpha}{(1-p)*alpha} confidence level 
 #' @param scales A \code{vec} that contains the amount of decomposition done at each level.
+#' @param unit   A \code{string} that contains the unit expression of the frequency.
 #' @return A \code{list} with the structure:
 #' \describe{
-#'   \item{"variance"}{Wavelet Variance},
+#'   \item{"variance"}{Wavelet Variance}
 #'   \item{"ci_low"}{Lower CI}
 #'   \item{"ci_high"}{Upper CI}
 #'   \item{"robust"}{Robust active}
 #'   \item{"eff"}{Efficiency level for Robust}
 #'   \item{"alpha"}{p value used for CI}
+#'   \item{"unit"}{String representation of the unit}
 #' }
 #' @keywords internal
-create_wvar = function(obj, decomp, robust, eff, alpha, scales){
+create_wvar = function(obj, decomp, filter, robust, eff, alpha, scales, unit){
   structure(list(variance = obj[,1],
                        ci_low = obj[,2], 
                        ci_high = obj[,3], 
@@ -181,7 +260,9 @@ create_wvar = function(obj, decomp, robust, eff, alpha, scales){
                        eff = eff,
                        alpha = alpha,
                        scales = scales,
-                       decomp = decomp), class = "wvar")
+                       decomp = decomp,
+                       unit = unit,
+                       filter = filter), class = "wvar")
 }
 
 #' @title Print Wavelet Variances
@@ -448,18 +529,18 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
                   labels = trans_format("log10", math_format(10^.x))) 
   if (!is.null(line.color)){
     #legend.label should work. Not work here. But it is changed when creating 'obj' (in wrapper function)
-    p = p + scale_color_manual(name = legend.title, values = line.color , labels = legend.label)
+    p = p + scale_color_manual(name = legend.title, values = line.color)
   } 
       
-  p = p + scale_size_manual(name = legend.title, values = point.size , labels = legend.label) +
-      scale_shape_manual(name = legend.title, values = point.shape , labels = legend.label)
+  p = p + scale_size_manual(name = legend.title, values = point.size ) +
+      scale_shape_manual(name = legend.title, values = point.shape)
 
   if(CI){
     p = p + 
       geom_line(mapping = aes(y = low, color = dataset), linetype = line.type[2]) + geom_line(mapping = aes(y = high, color = dataset), linetype = line.type[2]) + 
       geom_ribbon(mapping = aes(ymin = low, ymax = high, fill = dataset), alpha = transparence) 
     if(!is.null(CI.color)){
-      p = p + scale_fill_manual(name = legend.title, values = alpha(CI.color, transparence) , labels = legend.label)
+      p = p + scale_fill_manual(name = legend.title, values = alpha(CI.color, transparence))
     }
   }
   

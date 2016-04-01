@@ -38,4 +38,12 @@ arma::vec dft_acf(const arma::vec& x);
 
 double mean_diff(const arma::vec& x);
 
+arma::vec num_rep(const arma::vec& x, unsigned int n);
+
+arma::vec intgr_vec(const arma::vec& x, const arma::vec& xi, unsigned int lag);
+
+arma::vec diff_inv_values(const arma::vec& x, unsigned int lag, unsigned int d, const arma::vec& xi);
+
+arma::vec diff_inv(const arma::vec& x, unsigned int lag, unsigned int d);
+
 #endif

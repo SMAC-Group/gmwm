@@ -85,8 +85,11 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
   gmwm.obj = out[[2]]
   estimate = gmwm.obj[[1]]
   rownames(estimate) = model.ts$process.desc
+  colnames(estimate) = "Estimates" 
+  
   init.guess = gmwm.obj[[2]]
   rownames(init.guess) = model.ts$process.desc
+  colnames(init.guess) = "Starting" 
   
   model.hat = model.ts
   
@@ -94,9 +97,8 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
   
   
   if(any(model.hat$desc == "GM")){
-    idx = model.hat$process.desc %in% c("BETA","SIGMA2_GM")
-    estimate[idx,] = ar1_to_gm(estimate[idx,],freq)
-    init.guess[idx,] = ar1_to_gm(init.guess[idx,],freq)
+    estimate[,1] = conv.ar1.to.gm(estimate[,1], model.hat$process.desc, freq)
+    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model.hat$process.desc, freq) 
   }
   
   model.hat$theta = as.numeric(estimate)
@@ -151,6 +153,7 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' @param B          A \code{integer} that contains the amount of bootstrap replications
 #' @param G          A \code{integer} that indicates the amount of guesses for caliberating the startup.
 #' @param seed       A \code{integer} that is used to set a seed for reproducibility.
+#' @param freq       A \code{double} that represents the frequency between observations.
 #' @details 
 #' The models MUST be nested within each other. 
 #' If the models are not nested, the algorithm creates the "common denominator" model.
@@ -165,14 +168,12 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
 rank.models = function(data, ..., nested = F, bootstrap = F, 
-                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
+                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
   
-  set.seed(seed)
+  models = list(...)
   numObj = length(models)
   desc = vector("list", numObj) 
   
-  models = list(...)
-
   gmterm = FALSE
   
   for(i in 1:numObj){
@@ -194,28 +195,27 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
     desc[[i]] = mod$desc
   }
   
-  freq = 1
-  
   if(is.gts(data)){
-    freq = data$freq
-    data = data$data
+    freq = attr(data, 'freq')
+    
   }else if(is.data.frame(data) || is.matrix(data) || is.imu(data)){
     if(ncol(data) > 1){
       stop("`rank.models()` is not supported for multiple columns.")
     }
     if(is.imu(data)){
-      freq = data$freq
-      data = data$data
+      freq = attr(data, 'freq')
     }
   }else if(is.lts(data)){
-    data = data$data[,ncol(data$data)]
+    data = data[,ncol(data)]
   }
   
   if(nested == F){
     full.str = .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
     
-    if(!any(sapply(desc, function(x, want) isTRUE(all.equal(x, want)),  full.str)) ){
-      print("Creating a Common Denominator Model!")
+    n.full = count_models(full.str)
+    
+    if(!any(sapply(desc, function(x, n.full) isTRUE(all.equal(count_models(x), n.full)),  n.full)) ){
+      message("Creating a Common Denominator Model!")
       desc[[length(desc)+1]] = full.str
     }
     desc = vector_to_set(desc)
@@ -230,7 +230,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
     
   }
   
-  out = .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap, seed)
   
   N = length(data)
   nlevels =  floor(log2(N))
@@ -274,7 +274,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' data(imu6)
 #' 
 #' # Example 1
-#' test1 = imu(imu6, gyroscope = 1:3, accelerometer = NULL, axis = c('X', 'Y', 'Z'))
+#' test1 = imu(imu6, gyros = 1:3, accels = NULL, axis = c('X', 'Y', 'Z'), freq = 100)
 #' 
 #' m = auto.imu(test1)
 #' 
@@ -285,7 +285,7 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
 #' m[[1]][[2]]
 #' 
 #' }
-auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 100000, seed = 1337){
+auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, seed = 1337){
   
   # Check object
   if(!is.imu(data) ) {
@@ -298,20 +298,16 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   }
   
   # Extract data for IMU Injection
-  sensors = data$sensor
-  num.sensor = data$num.sensor
-  axis = data$axis
+  sensors = attr(data, 'sensor')
+  num.sensor = attr(data, 'num.sensor')
+  axis = attr(data, 'axis')
 
-  # Set seed for reproducible results
-  # Need to figure out a way to do set same seed on each model generation.
-  set.seed(seed)
-  
   # Set up data and models for automatic processing
   full.str = model$desc
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data$data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap)
+  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap, seed)
   
   # Handle post processing
   
@@ -327,24 +323,21 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   n.gyro = num.sensor[1]
   n.acc = num.sensor[2]
   
-  a.gyro = 0
-  a.acc = 0
-  
+  freq = attr(data, 'freq')
   for(i in 1:ncol(data)){
     obj = out[[i]]
-    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, data$freq)
+    obj = output.format(obj, model.names, scales, N, alpha, robust, eff, B, G, seed, freq)
     
     obj.gmwm = obj[[2]]
-    if(a.acc != n.acc){
-      a.acc = a.acc + 1 
-      obj.gmwm$sensor = "Gyroscope"
-      obj.gmwm$axis = axis[a.acc]
-    } else if(a.gyro != n.gyro){
-      a.gyro = a.gyro + 1 
-      obj.gmwm$sensor = "Accelerometer"
-      obj.gmwm$axis = axis[a.gyro]
-    }
 
+    if(i<=n.gyro){
+      obj.gmwm$sensor = "Gyroscope"
+      obj.gmwm$axis = axis[i]
+    }else{
+      obj.gmwm$sensor = "Accelerometer"
+      obj.gmwm$axis = axis[i]
+    }
+    
     obj.gmwm$num.sensor = num.sensor
     
     obj[[2]] = obj.gmwm

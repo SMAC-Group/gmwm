@@ -235,17 +235,23 @@ arma::field<arma::vec> brick_wall(arma::field<arma::vec> x,
 
     for(unsigned int j = 0; j < x.n_elem; j++)
     {
-        double binary_power = pow(2,j+1);
+        double binary_power = pow(2.0,double(j)+1.0);
 
-        unsigned int n = (binary_power - 1.0) * (m - 1.0);
+        int n = (binary_power - 1.0) * (m - 1.0);
 
         if (method == "dwt"){
-            n = ceil((m - 2) * (1.0 - 1.0/binary_power));
+            n = ceil((m - 2.0) * (1.0 - 1.0/binary_power));
         }
         arma::vec temp = x(j);
-        unsigned int temp_size = temp.n_elem;
+        int temp_size = temp.n_elem - 1; // numbers are 0,...,(N-1)
         n = std::min(n, temp_size);
-        x(j) = temp.rows(n,temp_size-1);
+        
+        // Addresses the case where all scales are removed.
+        if(n != temp_size){        
+          x(j) = temp.rows(n,temp_size);
+        }else{
+          x(j) = arma::zeros<arma::vec>(0);
+        }
     }
     
     return x;

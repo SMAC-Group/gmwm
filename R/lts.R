@@ -16,32 +16,34 @@
 #' @title Generate Latent Time Series Object Based on Data
 #' @description Create a \code{lts} object based on a supplied matrix or data frame.
 #' @param data A multiple-column \code{matrix} or \code{data.frame}. It must contain at least 2 columns. The last column must equal to the sum of all previous columns.
+#' @param start A \code{numeric} that provides the time of the first observation.
+#' @param end A \code{numeric} that provides the time of the last observation.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
-#' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
+#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
 #' @param process A \code{vector} that contains model names of decomposed and combined processes.
-#' @return A \code{lts} object with the structure:
-#' \itemize{
-#'   \item{x:} {A \code{matirx} that contains x-axis values to plot}
-#'   \item{process:} {A \code{vector} that contains model names of decomposed and combined processes}
-#'   \item{data:} {A \code{matrix} that contains data for decomposed and combined processes}
-#'   \item{freq:} {Numeric representation of frequency}
-#'   \item{unit:} {String representation of the unit}
-#'   \item{name:} {Name of the dataset}
+#' @return A \code{lts} object with the following attributes:
+#' \describe{
+#'   \item{start}{The time of the first observation}
+#'   \item{end}{The time of the last observation}
+#'   \item{freq}{Numeric representation of frequency}
+#'   \item{unit}{String representation of the unit}
+#'   \item{name}{Name of the dataset}
+#'   \item{process}{A \code{vector} that contains model names of decomposed and combined processes}
 #' }
 #' @author Wenchao
 #' @examples
 #' model1 = AR1(phi = .99, sigma = 1) 
 #' model2 = WN(sigma2=1)
-#' col1 = gen.gts(model1, N = 1000)$data
-#' col2 = gen.gts(model2, N = 1000)$data
+#' col1 = gen.gts(model1, N = 1000)
+#' col2 = gen.gts(model2, N = 1000)
 #' testMat = cbind(col1, col2, col1+col2)
 #' testLts = lts(testMat, unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 #' plot(testLts)
-lts = function(data, freq = 1, unit = NULL, name = "", process = NULL){
-  
+lts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL){
+  # 1. requirment for 'data'
   if(!is(data,'matrix') && !is(data,'data.frame')){
-    stop('data must be a matrix or data frame.')
+    stop("'data' must be a matrix or data frame.")
   }
   
   # Force data.frame to matrix  
@@ -52,55 +54,67 @@ lts = function(data, freq = 1, unit = NULL, name = "", process = NULL){
   #check ncol
   ncolumn = ncol(data)
   if(ncolumn<2){
-    stop('data must have at least two columns.')
+    stop("'data' must have at least two columns.")
   }
   
   #check ndata
   ndata = nrow(data)
-  if(ndata == 0 ){stop('data contains 0 observation.')}
+  if(ndata == 0 ){stop("'data' contains 0 observation.")}
   
   #check: the last column must equal to the sum of all previous columns
-  tolerance = 1E-4
+  tolerance = 1E-2
   sumAllPreviousColumns = apply(data[,1:(ncolumn-1),drop = F], MARGIN = 1, sum)
   checkVec = sumAllPreviousColumns - data[,ncolumn]
   if(any(checkVec>tolerance)){
     stop(paste0('The last column of data must equal to the sum of all previous columns. The tolerance is ', tolerance,'.' ))
   }
   
-  #check process
+  # 2. check process
   if(!is.null(process)){
     if(length(process) != ncolumn ){
       stop(paste0('data has ', ncolumn, ' processes (including the combined one). You must specify the name of each process in parameter "process".') )
     }
   }else{
-    process = c(paste(rep('process', times = ncolumn-1), 1:(ncolumn-1)), 'combined process')
+    process = c(paste(rep('Process', times = ncolumn-1), 1:(ncolumn-1), sep = ''), 'Sum')
   }
   
-  #check freq
-  if(!is(freq,"numeric") || length(freq)!=1){
-    stop("freq must be numeric")
-  }
-  if(freq<=0) {stop('freq must be larger than 0.')}
+  # 3. requirement for 'freq'
+  if(!is(freq,"numeric") || length(freq) != 1){ stop("'freq' must be one numeric number.") }
+  if(freq <= 0) { stop("'freq' must be larger than 0.") }
   
+  # 4. requirements for 'start' and 'end'
+  if( is.numeric(start)==F && is.numeric(end)==F){
+    stop("'start' or 'end' must be specified.")}
+  
+  if(is.null(start)==F && is.null(end)==F && (end-start)!= ((ndata-1)/freq) ){
+    stop("end-start == (ndata-1)/freq must be TRUE.")
+  }
+  
+  if ( is.null(end) ){
+    end = start + (ndata - 1)/freq} # freq conversion (unit conversion is handled in graphical function)
+  else if ( is.null(start) ){
+    start = end - (ndata - 1)/freq}
+  
+  # 5. requirement for 'unit'
   if(!is.null(unit)){
     if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
       stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
     }
   }
   
-  #x = seq(from = x.lim[1], to = x.lim[2], length.out = ndata)
-  x = 0:(ndata-1)
+  # 6. add column name to data
+  colnames(data) = process
   
+  out = structure(.Data = data, 
+                  start = start, 
+                  end= end, # start and end will not be null now
+                  freq = freq,
+                  unit = unit,
+                  name = name, 
+                  process = process,
+                  class = c("lts","matrix"))
   
-  out = structure(list(
-    x = as.matrix(x),
-    process = process,
-    data = data,
-    name = name, 
-    freq = freq, 
-    unit = unit), class = 'lts' )
-  
-  invisible(out)
+  out
 }
 
 
@@ -108,17 +122,20 @@ lts = function(data, freq = 1, unit = NULL, name = "", process = NULL){
 #' @description Create a \code{lts} object based on a supplied time series model.
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
 #' @param N An \code{interger} indicating the amount of observations generated in this function.
+#' @param start A \code{numeric} that provides the time of the first observation.
+#' @param end A \code{numeric} that provides the time of the last observation.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
-#' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
-#' @return A \code{lts} object with the structure:
-#' \itemize{
-#'   \item{x:} {A \code{matirx} that contains x-axis values to plot}
-#'   \item{process:} {A \code{vector} that contains model names of decomposed and combined processes}
-#'   \item{data:} {A \code{matrix} that contains data for decomposed and combined processes}
-#'   \item{freq:} {Numeric representation of frequency}
-#'   \item{unit:} {String representation of the Unit}
-#'   \item{name:} {Name of the Dataset}
+#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
+#' @param process A \code{vector} that contains model names of decomposed and combined processes.
+#' @return A \code{lts} object with the following attributes:
+#' \describe{
+#'   \item{start}{The time of the first observation}
+#'   \item{end}{The time of the last observation}
+#'   \item{freq}{Numeric representation of frequency}
+#'   \item{unit}{String representation of the unit}
+#'   \item{name}{Name of the dataset}
+#'   \item{process}{A \code{vector} that contains model names of decomposed and combined processes}
 #' }
 #' @author JJB, Wenchao
 #' @details
@@ -127,10 +144,11 @@ lts = function(data, freq = 1, unit = NULL, name = "", process = NULL){
 #' # AR
 #' set.seed(1336)
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' gen.lts(model)
-gen.lts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
+#' test = gen.lts(model)
+#' plot(test)
+gen.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL){
   
-  # Do we have a valid model?
+  # 1. Do we have a valid model?
   if(!(is(model, "ts.model") || is(model, "gmwm"))){
     stop("model must be created from a ts.model or gmwm object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
   }
@@ -138,27 +156,41 @@ gen.lts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
     model = model$model.hat
   }
   
-  if(!is(freq,"numeric") || length(freq)!=1){
-    stop("freq must be numeric")
-  }
-  if(freq<=0) {stop('freq must be larger than 0.')}
+  # 2. freq
+  if(!is(freq,"numeric") || length(freq) != 1){ stop("'freq' must be one numeric number.") }
+  if(freq <= 0) { stop("'freq' must be larger than 0.") }
   
+  # 3. requirements for 'start' and 'end'
+  if( is.numeric(start)==F && is.numeric(end)==F){
+    stop("'start' or 'end' must be specified.")}
+  
+  if(is.null(start)==F && is.null(end)==F && (end-start)!= ((N-1)/freq) ){
+    stop("end-start == (N-1)/freq must be TRUE.")
+  }
+  
+  if ( is.null(end) ){
+    end = start + (N - 1)/freq # freq conversion (unit conversion is handled in graphical function)
+  }else if ( is.null(start) ){
+    start = end - (N - 1)/freq}
+  
+  # 4. 'unit'
   if(!is.null(unit)){
     if(!unit %in% c('ns', 'ms', 'sec', 'second', 'min', 'minute', 'hour', 'day', 'mon', 'month', 'year')){
       stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
     }
   }
-
-  #if(class(x.lim)!="numeric" || length(x.lim)!=2){
-  #  stop('x.lim must be a numeric vector with 2 values.')}
-  
-  #x = seq(from = x.lim[1], to = x.lim[2], length.out = N)
-  x = 0:(N-1)
   
   # Information Required by GMWM:
   desc = model$desc
   p = length(desc) # p decomposed processes
   obj = model$obj.desc
+  
+  # 5. check process
+  if(!is.null(process)){
+    if(length(process) != (p+1) ){
+      stop(paste0('data has ', (p+1), ' processes (including the combined one). You must specify the name of each process in parameter "process".') )
+    }
+  }
   
   # Identifiability issues
   if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
@@ -172,22 +204,35 @@ gen.lts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
     stop("Need to supply initial values within the ts.model object.")
   }
   
-  #name of each process
-  comp.desc = c(desc, paste0(desc, collapse = '+'))
+  # 6. assign column name
+  if(!is.null(process)){
+    colnames(out) = process
+    
+  }else{
+    #name of each process
+    comp.desc = c(desc, paste0(desc, collapse = '+'))
+    comp.desc2 = orderModel(comp.desc)
+    comp.desc2[length(comp.desc2)] = 'Sum'
+    colnames(out) = comp.desc2
+    
+    process = comp.desc
+  }
   
-  out = structure(list(
-    x = as.matrix(x),
-    process = comp.desc,
-    data = out,
-    name = name, 
-    freq = freq, 
-    unit = unit), class = 'lts' )
+  out = structure(.Data = out, 
+                  start = start, 
+                  end= end, # start and end will not be null now
+                  freq = freq,
+                  unit = unit,
+                  name = name, 
+                  process = process,
+                  class = c("lts","matrix"))
   
-  invisible(out)
+  out
+
 }
 
 #' @title Wrapper Function to Plot the Graph of Latent Time Series
-#' @description This function is implemented with ggplot2.
+#' @description Plots the graph of latent time series using \code{ggplot2}
 #' @method plot lts
 #' @export
 #' @param x A \code{lts} object
@@ -205,21 +250,25 @@ gen.lts = function(model, N = 1000, freq = 1, unit = NULL, name = ""){
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param ncol An \code{integer} that indicates number of columns.
 #' @param nrow An \code{integer} that indicates number of rows.
 #' @param ... other arguments passed to specific methods.
-#' @return A ggplot2 panel containing the graph of latent time series.
+#' @return A \code{ggplot2} panel containing the graph of latent time series.
 #' @author Wenchao
 #' @examples
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' res = gen.lts(model)
+#' res = gen.lts(model, N = 100)
 #' plot(res)
+#' 
+#' # Modify the graph aesthetics
+#' plot(res, line.color = c('blue', 'green', 'black'), point.size = c(1,1,1))
 plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
                     line.type = NULL, line.color = NULL,
                     point.size = NULL, point.shape = NULL,
                     title = NULL, title.size= 15, 
                     axis.label.size = 13, axis.tick.size = 11, 
-                    axis.x.label = NULL, axis.y.label = NULL, facet.label.size = 13,
+                    axis.x.label = NULL, axis.y.label = NULL, facet.label.size = 13, facet.label.background = "#003C7D33",
                     ncol = 1, nrow = NULL, ... ){
   
   autoplot.lts(object = x, to.unit = to.unit, background = background, scales = scales, 
@@ -227,13 +276,13 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
                point.size = point.size, point.shape = point.shape,
                title = title, title.size= title.size, 
                axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-               axis.x.label = axis.x.label, axis.y.label = axis.y.label, facet.label.size = facet.label.size,
+               axis.x.label = axis.x.label, axis.y.label = axis.y.label, facet.label.size = facet.label.size, facet.label.background = facet.label.background,
                ncol = ncol, nrow = nrow)
 
 }
 
 #' @title Plot the Latent Time Series Graph
-#' @description This function is implemented with ggplot2.
+#' @description Plots the graph of latent time series using \code{ggplot2}
 #' @method autoplot lts
 #' @export
 #' @keywords internal
@@ -252,38 +301,43 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param ncol An \code{integer} that indicates number of columns.
 #' @param nrow An \code{integer} that indicates number of rows.
 #' @param ... other arguments passed to specific methods.
-#' @return A ggplot2 panel containing the graph of latent time series.
+#' @return A \code{ggplot2} panel containing the graph of latent time series.
 #' @author Wenchao
 #' @examples
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' res = gen.lts(model)
+#' res = gen.lts(model, N = 100)
 #' autoplot(res)
+#' 
+#' # Modify the graph aesthetics
+#' autoplot(res, line.color = c('blue', 'green', 'black'), point.size = c(1,1,1))
 autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = 'free', 
                         line.type = NULL, line.color = NULL,
                         point.size = NULL, point.shape = NULL,
                         title = NULL, title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
-                        axis.x.label = NULL, axis.y.label = NULL, facet.label.size = 13,
+                        axis.x.label = NULL, axis.y.label = NULL, facet.label.size = 13, facet.label.background = "#003C7D33",
                         ncol = 1, nrow = NULL, ...){
   x=value=variable=NULL
   #if user wants to specify nrow, then set ncol = NULL
   if( !is.null(nrow) ){
     ncol = NULL
-    warning('ncol is set to NULL in case that ncol and nrow have conflict.')}
+    warning("'ncol' is set to NULL in case that 'ncol' and 'nrow' have conflict.")}
   
   if( !(background %in% c('grey','gray', 'white')) ){
     warning("Parameter background: No such option. Default setting is used.")
     background = 'white'
   }
   
-  if(class(object)!='lts'){stop('object must be a lts object. Use function gen.lts() to create it.')}
+  if(!is(object,'lts') ){stop('object must be a lts object. Use function lts() or gen.lts() to create it.')}
   
   #check graphical params
   params = c('line.type', 'line.color', 'point.size','point.shape')
-  numLabel = length(object$process)
+  process = attr(object, 'process')
+  numLabel = length(process)
   for(i in 1:length(params)){
     one_param = params[i]
     if( !is.null(get(one_param)) && length(get(one_param))!=numLabel){
@@ -305,26 +359,38 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   if(is.null(point.size)){point.size = rep(0, numLabel)}
   if(is.null(point.shape)){point.shape = rep(20, numLabel)}
   
-  num.desc = length(object$process)
+  num.desc = length(process)
   #A data frame doesn't allow columns to have the same name, but the decomposed processes might be same
-  for(i in 1:num.desc) {
-    object$process[i] = paste0(object$process[i], paste0(rep(' ',times = (i-1)), collapse = ''))
+  if( any(table(process)>1) ){
+    for(i in 1:num.desc) {
+      process[i] = paste0(process[i], paste0(rep(' ',times = (i-1)), collapse = ''))
+    }
   }
   
   # prepare data frame to plot
-  df = as.data.frame(object$data)
-  colnames(df) = object$process
-  #need to deal with freq now
-  df$x = object$x/object$freq
-  #df$x = object$x
+  df = as.data.frame(object)
+  colnames(df) = process
   
-  if( is.null(object$unit) && is.null(to.unit)==F ){warning('Unit of object is NULL. Conversion was not done.')}
-  if( is.null(object$unit) == F ){
-    if( is.null(to.unit) == F){
-      obj = unitConversion(df$x, object$unit, to.unit)
-      if(obj$converted){
-        df$x = obj$x
-        message(paste0('Unit of object is converted from ', object$unit, ' to ', to.unit), appendLF = T)
+  start = attr(object, 'start')
+  end = attr(object, 'end')
+  ndata = nrow(object)
+  from.unit = attr(object, 'unit')
+  df$x = seq(from = start, to = end, length.out = ndata)
+  
+  # NO unit conversion
+  if( is.null(from.unit) && is.null(to.unit)==F ){
+    warning('Unit of object is NULL. Unit conversion was not done.')
+  }
+  
+  if (is.null(from.unit) == F){
+    if (is.null(to.unit) == F){
+      start_end = c(start, end)
+      obj = unitConversion(start_end, from.unit, to.unit)
+      
+      if (obj$converted) {
+        # YES unit conversion
+        df$x = seq( obj$x[1], obj$x[2], length.out = ndata)
+        message(paste0('Unit of object is converted from ', from.unit, ' to ', to.unit), appendLF = T)
       }
     }
   }
@@ -346,10 +412,22 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
     p = p + theme_bw() 
   }
   
+  # axis label: default setting
+  if(is.null(axis.x.label)){
+    if(!is.null(from.unit) && !is.null(to.unit) && obj$converted){ 
+      axis.x.label = paste('time(',to.unit,')', sep = '')
+    }else if(is.null(from.unit) == F){
+      axis.x.label =paste('time(',from.unit,')', sep = '')
+    }else{
+      axis.x.label = 'time'
+    }
+  }
+  
   p = p +  
     xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
     theme(
       legend.position="none",
+      strip.background = element_rect(fill= facet.label.background),
       plot.title = element_text(size= title.size),
       axis.title.y = element_text(size= axis.label.size),
       axis.text.y  = element_text(size= axis.tick.size),
@@ -361,12 +439,15 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 }
 
 #' @title Generate a Demo about the Latent Time Series
-#' @description Create a time series based on the supplied model, then generate a demo about its latent structure
+#' @description Creates a time series based on the supplied model, then generate a demo about its latent structure
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
-#' @param N An \code{interger} indicating the amount of observations for the time series.
+#' @param N An \code{interger} indicating the amount of observations generated in this function.
+#' @param start A \code{numeric} that provides the time of the first observation.
+#' @param end A \code{numeric} that provides the time of the last observation.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
 #' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
-#' @param name A \code{string} that provides an identifier to the data. Default value is an empty string.
+#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
+#' @param process A \code{vector} that contains model names of decomposed and combined processes.
 #' @param ... Additional parameters passed to \code{autoplot.lts}
 #' @author Wenchao
 #' @details
@@ -376,9 +457,13 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 #' set.seed(1336)
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
 #' demo.lts(model)
-demo.lts = function(model, N = 1000, freq = 1, unit = NULL, name = "", ...){
-  
-  object = gen.lts(model = model, N = N, freq = freq, unit = unit, name = name)
+#' 
+#' # Modify the graph aesthetics
+#' demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), 
+#'          point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
+demo.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL, ...){
+   
+  object = gen.lts(model = model, N = N, start = start, end = end, freq = freq, unit = unit, name = name, process = process)
   autoplot.lts(object = object, ...)
   
 }

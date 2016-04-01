@@ -6,7 +6,7 @@
 \usage{
 gmwm(model, data, model.type = "ssm", compute.v = "auto", robust = FALSE,
   eff = 0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
-  freq = 1)
+  freq = NULL)
 }
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}
@@ -94,19 +94,19 @@ END
 11. Return optimized values.
 
 
-The function estimates a variety of time series models. If type = "imu" or "SSM", then
+The function estimates a variety of time series models. If type = "imu" or "ssm", then
 parameter vector should indicate the characters of the models that compose the latent or state-space model. The model
 options are:
 \describe{
   \item{"AR1"}{a first order autoregressive process with parameters \eqn{(\phi,\sigma^2)}{phi, sigma^2}}
+  \item{"GM"}{a guass-markov process \eqn{(\beta,\sigma_{gm}^2)}{beta, sigma[gm]^2}}
   \item{"ARMA"}{an autoregressive moving average process with parameters \eqn{(\phi _p, \theta _q, \sigma^2)}{phi[p], theta[q], sigma^2}}
   \item{"DR"}{a drift with parameter \eqn{\omega}{omega}}
   \item{"QN"}{a quantization noise process with parameter \eqn{Q}}
   \item{"RW"}{a random walk process with parameter \eqn{\sigma^2}{sigma^2}}
   \item{"WN"}{a white noise process with parameter \eqn{\sigma^2}{sigma^2}}
 }
-If type = "ARMA", the function takes condition least squares as starting values; if type = "imu" or type = "SSM" then
-starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
+If only an ARMA() term is supplied, then the function takes conditional least squares as starting values
 If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 }
 \examples{
@@ -136,9 +136,8 @@ guided.ar1.wn.new = gmwm(AR1()+WN(), data)
  
 # ARMA case
 set.seed(1336)
-data = arima.sim(n = 200, 
-              list(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488)),
-              sd = sqrt(0.1796))
+data = gen.gts(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
+              sigma2 = 0.1796), 200)
 #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
                 data, model.type="ssm")

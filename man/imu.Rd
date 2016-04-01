@@ -4,44 +4,46 @@
 \alias{imu}
 \title{Create an IMU Object}
 \usage{
-imu(object, gyroscope = NULL, accelerometer = NULL, axis = NULL,
-  freq = NULL)
+imu(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL,
+  unit = NULL, name = NULL)
 }
 \arguments{
-\item{object}{A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.}
+\item{data}{A \code{vector} which contains data, or a \code{matrix} or \code{data.frame} which contains the data in each column.}
 
-\item{gyroscope}{A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.}
+\item{gyros}{A \code{vector} that contains the index of columns where gyroscope data (such as Gyro. X, Gyro. Y and Gyro. Z) is placed.}
 
-\item{accelerometer}{A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.}
+\item{accels}{A \code{vector} that contains the index of columns where accelerometer data (such as Accel. X, Accel. Y and Accel. Z) is placed.}
 
-\item{axis}{A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'.}
+\item{axis}{A \code{vector} that indicates the axises, such as 'X', 'Y', 'Z'. Please supply the axises for gyroscope data before that for accelerometer data, if gyroscope data exists.}
 
 \item{freq}{An \code{integer} that provides the frequency for the data.}
+
+\item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
+
+\item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
 }
 \value{
-An \code{imu} object in the following structure:
+An \code{imu} object in the following attributes:
 \describe{
-  \item{data}{A \code{matirx} that contains gyroscope and accelerometer data.}
   \item{sensor}{A \code{vector} that indicates whether data contains gyroscope sensor, accelerometer sensor, or both.}
   \item{num.sensor}{A \code{vector} that indicates how many columns of data are for gyroscope sensor and accelerometer sensor.}
   \item{axis}{Axis value such as 'X', 'Y', 'Z'.}
   \item{freq}{Observations per second.}
+  \item{unit}{String representation of the unit.}
+  \item{name}{Name of the dataset.}
 }
 }
 \description{
 Builds an IMU object that provides the program with gyroscope, accelerometer, and axis information per column in the dataset.
 }
 \details{
-\code{object} can be a numeric vector, matrix or data frame.
+\code{data} can be a numeric vector, matrix or data frame.
 
-\code{gyroscope} and \code{accelerometer} cannot be \code{NULL} at the same time, but it will be fine if one of them is \code{NULL}.
-Also, in order to plot the graph, the length of \code{gyroscope} and \code{accelerometer} are restricted to be equal.
+\code{gyros} and \code{accels} cannot be \code{NULL} at the same time, but it will be fine if one of them is \code{NULL}.
+In the new implementation, the length of \code{gyros} and \code{accels} do not need to be equal.
 
-In \code{axis}, duplicate elements are not alowed. If one of parameters between \code{gyroscope} and \code{accelerometer}
-is \code{NULL}, specify the axis for each column of data. Check example 1 for help. If both of them are not \code{NULL}, specify the
-\code{axis} only for one parameter (\code{gyroscope} or \code{accelerometer}). Check example 2 for help.
-
-\code{axis} will be automatically generated if there are less than or equal to 3 axises.
+In \code{axis}, duplicate elements are not alowed for each sensor. In the new implementation, please specify the axis for each column of data.
+\code{axis} will be automatically generated if there are less than or equal to 3 axises for each sensor.
 }
 \examples{
 \dontrun{
@@ -52,23 +54,25 @@ if(!require("imudata")){
 
 data(imu6)
 
-# Example 1 - Only Gyros
-test1 = imu(imu6, gyroscope = 1:3, freq = 100)
+# Example 1 - Only gyros
+test1 = imu(imu6, gyros = 1:3, axis = c('X', 'Y', 'Z'), freq = 100)
 df1 = wvar.imu(test1)
 plot(df1)
 
 # Example 2 - One gyro and one accelerometer
-test2 = imu(imu6, gyroscope = 1, accelerometer = 4, freq = 100)
+test2 = imu(imu6, gyros = 1, accels = 4, freq = 100)
 df2 = wvar.imu(test2)
 plot(df2)
 
 # Example 3 - 3 gyros and 3 accelerometers
-test3 = imu(imu6, gyroscope = 1:3, accelerometer = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+test3 = imu(imu6, gyros = 1:3, accels = 4:6, axis = 
+                       c('X', 'Y', 'Z', 'X', 'Y', 'Z'), freq = 100)
 df3 = wvar.imu(test3)
 plot(df3)
 
 # Example 4 - Custom axis
-test4 = imu(imu6, gyroscope = 1:2, accelerometer = 4:5, axis = c('A', 'B'), freq = 100)
+test4 = imu(imu6, gyros = 1:2, accels = 4:6, axis = 
+                       c('X', 'Y', 'X', 'Y', 'Z'), freq = 100)
 df4 = wvar.imu(test4)
 plot(df4)
 }

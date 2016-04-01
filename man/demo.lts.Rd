@@ -4,23 +4,30 @@
 \alias{demo.lts}
 \title{Generate a Demo about the Latent Time Series}
 \usage{
-demo.lts(model, N = 1000, freq = 1, unit = NULL, name = "", ...)
+demo.lts(model, N = 1000, start = 0, end = NULL, freq = 1,
+  unit = NULL, name = NULL, process = NULL, ...)
 }
 \arguments{
 \item{model}{A \code{ts.model} or \code{gmwm} object containing one of the allowed models.}
 
-\item{N}{An \code{interger} indicating the amount of observations for the time series.}
+\item{N}{An \code{interger} indicating the amount of observations generated in this function.}
+
+\item{start}{A \code{numeric} that provides the time of the first observation.}
+
+\item{end}{A \code{numeric} that provides the time of the last observation.}
 
 \item{freq}{A \code{numeric} that provides the rate of samples. Default value is 1.}
 
 \item{unit}{A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.}
 
-\item{name}{A \code{string} that provides an identifier to the data. Default value is an empty string.}
+\item{name}{A \code{string} that provides an identifier to the data. Default value is \code{NULL}.}
+
+\item{process}{A \code{vector} that contains model names of decomposed and combined processes.}
 
 \item{...}{Additional parameters passed to \code{autoplot.lts}}
 }
 \description{
-Create a time series based on the supplied model, then generate a demo about its latent structure
+Creates a time series based on the supplied model, then generate a demo about its latent structure
 }
 \details{
 This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2 =1) + WN(sigma2 = 1)) or a \code{gmwm} object.
@@ -30,6 +37,10 @@ This function accepts either a \code{ts.model} object (e.g. AR1(phi = .3, sigma2
 set.seed(1336)
 model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
 demo.lts(model)
+
+# Modify the graph aesthetics
+demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), 
+         point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
 }
 \author{
 Wenchao
