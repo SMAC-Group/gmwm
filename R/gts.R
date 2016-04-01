@@ -60,7 +60,7 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
   }
   
   ndata = nrow(data)
-  colnames(data) = if(is.null(name)) 'observed' else name 
+  colnames(data) = if(is.null(name)) 'Observed' else name 
   
   if(ndata == 0) {
     stop("Not a valid data object! Please supply a data set with one column that is in either a data.frame, matrix, or numeric object.")
@@ -192,7 +192,7 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
   
   # Identifiability issues
   if(any( count_models(desc)[c("DR","QN","RW","WN")] >1)){
-    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
+    stop("Two instances of either: DR, QN, RW, or WN have been detected. As a result, the model will have identifiability issues. Please submit a new model.")
   }
   
   if(!model$starting){
@@ -209,7 +209,7 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
     stop("Need to supply initial values within the ts.model object.")
   }
   
-  colnames(out) = if(is.null(name)) 'observed' else name 
+  colnames(out) = if(is.null(name)) 'Observed' else name 
   
   out = structure(.Data = out, 
                   start = start, 
@@ -338,15 +338,15 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
   # axis label: default setting
   if(is.null(axis.x.label)){
     if(!is.null(from.unit) && !is.null(to.unit) && obj$converted){ 
-      axis.x.label = paste('time(',to.unit,')', sep = '')
+      axis.x.label = paste('Time(',to.unit,')', sep = '')
     }else if(is.null(from.unit) == F){
-      axis.x.label =paste('time(',from.unit,')', sep = '')
+      axis.x.label =paste('Time(',from.unit,')', sep = '')
     }else{
-      axis.x.label = 'time'
+      axis.x.label = 'Time'
     }
   }
   if(is.null(axis.y.label)){
-    axis.y.label = 'observations'
+    axis.y.label = 'Observations'
   }
     
   p = p +  
