@@ -1,0 +1,668 @@
+---
+title: "Wavelet Variance Vignette"
+author: "Yuming Zhang"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE, fig.height = 5, fig.width = 10)
+```
+
+# Introduction
+
+Wavelets are little objects that oscillate but decay fast. It has some important properties such as structure extraction, localization, efficiency, and sparsity that allow wavelets to decompose a signal into components that are independent in both the time and frequency domains. The wavelet coefficients describe the characters of data. After we choose a specific wavelet filter, it is equivalent that we choose a fixed mapping graph between data and wavelet. Data will have the corresponding wavelet coefficient to stand for, which represents the image of the data after filtering.
+
+
+When we decompose a signal, the resolution of our analysis depends on how small we choose our scale (tao) to be. For example, if the scale is small, then we will have more wavelet coefficients in each scale. Wavelet variance measures the variance of wavelet coefficients with respect to scale. For example, if wavelet variance increases, that means when scale becomes larger, the wavelet coefficient will become more widespread.
+
+
+# Visual Guide to Generating Processes and Observing their WV Form 
+
+To begin, we opt to load in the necessary packages. In this case, we will be using the `gwmw` package in addition to using the `gridExtra` package to align the realization graph to what the Wavelet Variance (WV) looks like. 
+
+
+```{r, message = FALSE}
+library(gmwm)
+library(gridExtra)
+```
+
+
+To replicate the settings of this document, please run the following code snippets in order with this declaration:
+
+```{r, message=FALSE, cache=TRUE}
+# Set seed for reproducibility
+set.seed(1)
+
+# Length of the time series
+n = 10000
+```
+
+There are two parts to this guide: the individual processes and the composite processes. Each section provides a brief description of the process, equation, and its process to WV formulation in addition to a visualization of what the process and WV looks like.  
+
+## Individual Processes
+
+Individual process means there is only one specific model to represent the process, like AR1(), WN(), DR() and so on.
+
+
+### Autoregressive order 1
+
+**Description:**
+
+The autoregressive model specifies that the output variable depends linearly on its own previous values and on a stochastic term; thus the model is in the form of a stochastic difference equation.
+
+**Process equation:**
+
+This process is generally denoted as AR(1) and is defined as $$y_t = \phi_1 y_{t-1} + \omega_t$$ where $\omega_t$ is iid with mean, $\mu$, and variance, $\sigma_\omega^2$.
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( { \tau } \right) = \frac{{\left( {\frac{\tau }{2} - 3\phi - \frac{{\tau {\phi ^2}}}{2} + 4{\phi ^{\frac{\tau }{2} + 1}} - {\phi ^{\tau + 1}}} \right){\sigma ^2}}}{{\frac{{{\tau ^2}}}{2}{{\left( {1 - \phi } \right)}^2}\left( {1 - {\phi ^2}} \right)}}$$
+
+**AR1 in GMWM:**
+
+To generate the `AR1` process within the GMWM, one uses:
+
+ `AR1(phi,sigma2)`
+ 
+This creates the correct mapping to the above process equation. 
+
+The example below provides an overview of generating data under the `AR1` model.
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = AR1(phi=.32, sigma2=1.3)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Gauss-Markov Order 1 
+
+**Description:**
+
+Gauss-Markov process satisfies the requirements for both Gaussian process and Markov process.
+
+Every Gauss–Markov process X(t) possesses the three following properties:
+
+(1) If h(t) is a non-zero scalar function of t, then Z(t) = h(t)X(t) is also a Gauss–Markov process.
+
+
+(2) If f(t) is a non-decreasing scalar function of t, then Z(t) = X(f(t)) is also a Gauss–Markov process.
+
+
+(3) There exists a non-zero scalar function h(t) and a non-decreasing scalar function f(t) such that X(t) = h(t)W(f(t)), where W(t) is the standard Wiener process.
+
+
+Property (3) means that every Gauss–Markov process can be synthesized from the standard Wiener process (SWP).
+
+**Process equation and how it is related to AR1:**
+
+\[\begin{gathered}
+  {Y_t} = \exp \left( { - \beta \Delta t} \right){Y_{t - 1}} + {\varepsilon _t}  \\
+  {\varepsilon _t}~N\left( {0,\sigma _{GM}^2\left( {1 - \exp \left( { - 2\beta \Delta t} \right)} \right)} \right)  \\
+    \\
+  \phi  = \exp \left( { - \beta \Delta t} \right)  \\
+  \ln \left( \phi  \right) =  - \beta \Delta t  \\
+   - \frac{{\ln \left( \phi  \right)}}{{\Delta t}} = \beta   \\
+    \\
+  {\sigma ^2} = \sigma _{GM}^2\left( {1 - \exp \left( { - 2\beta \Delta t} \right)} \right)  \\
+  \sigma _{GM}^2 = \frac{{{\sigma ^2}}}{{\left( {1 - \exp \left( { - 2\beta \Delta t} \right)} \right)}}  \\
+  \sigma _{GM}^2 = \frac{{{\sigma ^2}}}{{\left( {1 - \exp \left( { - 2\left( { - \frac{{\ln \left( \phi  \right)}}{{\Delta t}}} \right)\Delta t} \right)} \right)}}  \\
+  \sigma _{GM}^2 = \frac{{{\sigma ^2}}}{{\left( {1 - \exp \left( {2\ln \left( \phi  \right)} \right)} \right)}}  \\
+\end{gathered} \]
+
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = GM(beta=.32, sigma2_gm=1.3)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Normal White Noise 
+
+**Description:** 
+
+White noise process has equal frequencies in any interval of time. In discrete time, white noise is a discrete signal whose samples are regarded as a sequence of serially uncorrelated random variables with zero mean and finite variance. In particular, if each sample has a normal distribution with zero mean, the signal is said to be Gaussian white noise.
+
+**Process equation:** 
+
+$$y_t = \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma^2$
+
+**Process to WV formula:**
+
+$${\nu ^2}(\tau ) = \frac{{{\sigma _0}^2}}{\tau }$$
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = WN(sigma2=3.4)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Random Walk
+
+**Description：**
+
+A random walk is defined as a process where the current value of a variable is composed of the past value plus an error term that is a white noise.
+
+**Process equation:**
+
+$$y_t=y_{t-1}+\omega_t$$ with the initial condition $y_0=c$
+
+**Process to WV formula:**
+
+$${\nu ^2}(\tau ) = \frac{{{\sigma ^2}({\tau ^2} + 2)}}{{12\tau }}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = RW(sigma2=3.4)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Quantization Noise
+
+**Description:**
+
+Quantization is the process of mapping a large set of input values to a (countable) smaller set. 
+
+**Process equation:**
+
+$${X_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
+
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( \tau  \right) = \frac{{6Q_0^2}}{{{\tau ^2}}}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = QN(q2=3.4)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Moving Averages of order Q 
+
+**Description:** 
+
+The concept of a Moving Average Process of Order q is a way to remove “noise” and emphasize the signal. The moving average achieves this by taking the local averages of the data to produce a new smoother time series series. The newly created time series is more descriptive, but it does influence the dependence
+within the time series.
+
+**Process equation:** 
+
+This process is generally denoted as MA(1) and is defined as $$y_t=\theta_1\omega_{t-1}+\omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+
+**Process to WV Formula:**
+
+$${\nu ^2}\left( { \tau } \right) = \left( {1 + {\theta ^2}} \right)\frac{{\left[ {\frac{\tau }{2} - \left( {\tau - 3} \right)\left( {\frac{\theta }{{1 + {\theta ^2}}}} \right)} \right]}}{{\frac{{{\tau ^2}}}{4}}}{\sigma ^2}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = MA(theta = .32, sigma = 1.3)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Autoregressive of order P 
+
+**Description:**
+
+The autoregressive model specifies that the output variable depends linearly on its own previous values and on a stochastic term; thus the model is in the form of a stochastic difference equation.
+
+**Process equation:**
+
+This process is generally denoted as AR(1) and is defined as $$y_t = \phi_1 y_{t-1} + \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( { \tau } \right) = \frac{{\left( {\frac{\tau }{2} - 3\phi - \frac{{\tau {\phi ^2}}}{2} + 4{\phi ^{\frac{\tau }{2} + 1}} - {\phi ^{\tau + 1}}} \right){\sigma ^2}}}{{\frac{{{\tau ^2}}}{2}{{\left( {1 - \phi } \right)}^2}\left( {1 - {\phi ^2}} \right)}}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = AR(phi = .32, sigma = 1.3)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### Autoregressive - Moving Averages of orders P,Q 
+
+**Description:**
+
+Autoregressive–moving-average (ARMA) models provide a parsimonious description of a (weakly) stationary stochastic process in terms of two polynomials, one for the auto-regression and the second for the moving average. 
+
+Given a time series of data $X_t$, the ARMA model is a tool for understanding and, perhaps, predicting future values in this series. The model consists of two parts, an autoregressive (AR) part and a moving average (MA) part. The model is usually then referred to as the ARMA(p,q) model where p is the order of the autoregressive part and q is the order of the moving average part 
+
+**Process equation:**
+
+$$X_t=c+\epsilon_t+\sum_{i=1}^{p}\phi_iX_{t-i}+\sum_{i=1}^{q}\theta_i\epsilon_{t-i}$$
+
+***Process to WV formula:***
+
+$${\nu ^2}\left( { \tau } \right) =\frac{{\left[ {\frac{\tau }{2}{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - {\phi _1}{\theta _1} + {\theta ^2}} \right) + \left( {{\phi _1} - {\theta _1}} \right)\left( {1 - {\phi _1}{\theta _1}} \right)\left( {\tau - 3 - \tau \phi + 4\phi _1^n - \phi _1^{2n}} \right)} \right]{\sigma ^2}}}{{\frac{{{\tau ^2}}}{4}{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - \phi _1^2} \right)}}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = ARMA(ar=0.23, ma=0.4, sigma2 = 1)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### DR()
+
+**Description:**
+
+A drift process has two components: time and slope. As more points are accumulated over time, the drift will match the common slope form. Note that a drift is similar to the slope-intercept form of a linear line.
+
+**Process equation:**
+
+$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( \tau \right) = \frac{{{\tau ^2}{\omega ^2}}}{{16}}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = DR(slope = 0.0001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+### MA()
+
+**Description:**
+
+In time series analysis, the moving-average (MA) model is a common approach for modeling univariate time series. The notation MA(q) refers to the moving average model of order q.
+
+**Process equation:**
+
+$$X_t=\mu+\epsilon_t+\sum_{i=1}^{q}\theta_i\epsilon_{t-i}$$
+
+**Process to WV formula:**
+
+$${\nu ^2}\left( { \tau } \right) = \left( {1 + {\theta ^2}} \right)\frac{{\left[ {\frac{\tau }{2} - \left( {\tau - 3} \right)\left( {\frac{\theta }{{1 + {\theta ^2}}}} \right)} \right]}}{{\frac{{{\tau ^2}}}{4}}}{\sigma ^2}$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = MA(theta=.32, sigma=.3)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+
+
+
+## Composite Processes
+
+Below are the realization of different processes given above. 
+
+
+
+
+### 2*AR1() + WN()
+
+**LTS equation:**
+
+AR1: 
+
+$$x_t = \phi_1 x_{t-1} + \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+$$y_t = \phi_1 y_{t-1} + \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+WN:
+
+$$z_t = \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma^2$
+
+LTS equation:
+
+$$h_t=x_t+y_t+z_t$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod =AR1(phi=.40, sigma2 = 1.5) + AR1(phi=.32, sigma2 = 1.3) + WN(sigma2=3.4)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### AR1() + WN()
+
+**LTS equation:**
+
+AR1: 
+
+$$x_t = \phi_1 x_{t-1} + \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+WN:
+
+$$y_t = \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma^2$
+
+LTS equation:
+
+$$z_t=x_t+y_t$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod =AR1(phi=.32, sigma2 = 1.3) + WN(sigma2=3.4)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### RW() + QN()
+
+**LTS equation:**
+
+RW:
+
+$$y_t=y_{t-1}+\omega_t$$ 
+
+QN:
+
+$${x_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
+
+LTS equation:
+
+$$z_t=x_t+y_t$$
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod =RW(sigma2=3.4) + QN(q2=3.4)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+
+### QN()+DR()
+
+**LTS equation:**
+
+QN:
+
+$${x_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
+
+DR:
+
+$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+LTS equation:
+
+$$z_t=x_t+y_t$$
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = QN(q2 = 3.4) + DR(slope = 0.001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### RW()+DR()
+
+**LTS equation:**
+
+RW:
+
+$$x_t=x_{t-1}+\omega_t$$ 
+
+DR:
+
+$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+LTS equation:
+
+$$z_t=x_t+y_t$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = RW(sigma = 3.4) + DR(slope = 0.001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### QN()+RW()+DR()
+
+**LTS equation:**
+
+QN:
+
+$${x_t} = \sqrt {12{Q^2}} \left( {{U_t} - {U_{t - 1}}} \right)$$
+
+RW:
+
+$$x_k=x_{k-1}+\omega_k$$
+
+DR:
+
+$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+LTS equation:
+
+$$z_t=x_k+x_t+y_t$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = QN(q2 = 3.4) + RW(sigma = 3.4) + DR(slope = 0.001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### WN() + DR()
+
+**LTS equation:**
+
+WN:
+
+$$x_t = \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma^2$
+
+DR:
+
+$$y_t=y_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+LTS equation:
+
+$$z_t=x_t+y_t$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = WN(sigma = 3.4) + DR(slope = 0.001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
+### 3*AR1()+QN()+WN()+RW()+DR()
+
+**LTS equation:**
+
+AR1: 
+
+$${x_{1}}_{(t)} = {\phi _1}{x_{1(}}_{t - 1)} + \omega t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+$${x_{2}}_{(t)} = {\phi _2}{x_{2(}}_{t - 1)} + \omega t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+$${x_{3}}_{(t)} = {\phi _3}{x_{3(}}_{t - 1)} + \omega t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma_\omega^2$
+
+QN:
+
+$${x_k} = \sqrt {12{Q^2}} \left( {{U_k} - {U_{k - 1}}} \right)$$
+
+WN:
+
+$$y_t = \omega_t$$ where $\omega_t$ is iid with mean 0 and variance $\sigma^2$
+
+RW:
+
+$$z_t=y_{t-1}+\omega_t$$
+
+DR:
+
+$$h_t=z_{t-1}+\delta$$ with the initial condition $y_0=c$
+
+LTS equation:
+
+$$f_t={x_{1}}_{(t)}+{x_{2}}_{(t)}+{x_{3}}_{(t)}+x_t+y_t+z_t+h_t$$
+
+
+```{r, message=FALSE, cache=TRUE}
+# Model
+mod = AR1(phi=.32, sigma2=1.3) + AR1(phi=.32, sigma2=1.3) + AR1(phi=.32, sigma2=1.3) + QN(q2 = 3.4) + WN(sigma = 3.4) + RW(sigma = 3.4) + DR(slope = 0.001)
+
+# Simulation
+xt = gen.gts(mod,n)
+
+# Decomposed wavelet variance
+wv = wvar(xt)
+
+# Graph comparing observed vs. wavelet variance
+grid.arrange(plot(xt, axis.x.label='Time', axis.y.label='Observation'),plot(wv, title='Haar WV (Classical)'), ncol = 2)
+```
+
+
