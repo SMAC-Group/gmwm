@@ -408,9 +408,9 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
       // RW
   	  else if(element_type == "RW"){
   	    x += gen_rw(N, theta_value);
-  	  } else {
-  	    // ARMA
-  	    
+  	  } 
+  	  // ARMA
+  	  else {
   	    // Unpackage ARMA model parameter
   	    arma::vec model_params = objdesc(i);
   	    
@@ -458,11 +458,12 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
 
 
 
-//' @title Generate Latent Time Series based on Model (Internal)
-//' @description Create a latent time series based on a supplied time series model.
-//' @param N An \code{interger} containing the amount of observations for the time series.
-//' @param theta A \code{vec} containing the parameters to use to generate the model.
-//' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..).
+//' Generate Latent Time Series based on Model (Internal)
+//' 
+//' Create a latent time series based on a supplied time series model.
+//' @param N       An \code{interger} containing the amount of observations for the time series.
+//' @param theta   A \code{vec} containing the parameters to use to generate the model.
+//' @param desc    A \code{vector<string>} containing the different model types (AR1, WN, etc..).
 //' @param objdesc A \code{field<vec>} containing the different model objects e.g. AR1 = c(1,1)
 //' @return A \code{mat} containing data for each decomposed and combined time series.
 //' @backref src/gen_process.cpp
@@ -496,8 +497,30 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       x.col(i) = gen_ar1(N, theta_value, sig2);
       x.col(num_desc) += x.col(i);
       
+    } 
+    // WN
+    else if(element_type == "WN") {
+      x.col(i) = gen_wn(N, theta_value);
+      x.col(num_desc) += x.col(i);
     }
-    else if(element_type == "ARMA"){
+    // DR
+    else if(element_type == "DR"){
+      x.col(i) = gen_dr(N, theta_value);
+      x.col(num_desc) += x.col(i);
+
+    }
+    // QN
+    else if(element_type == "QN"){
+      x.col(i) = gen_qn(N, theta_value);
+      x.col(num_desc) += x.col(i);
+    }
+    // RW
+    else if(element_type == "RW"){
+      x.col(i) = gen_rw(N, theta_value);
+      x.col(num_desc) += x.col(i);
+    }
+    // ARMA
+    else {
       // Unpackage ARMA model parameter
       arma::vec model_params = objdesc(i);
       
@@ -534,27 +557,6 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       
       // Modified arima.sim
       x.col(i) = gen_arma(N, ar, ma, sig2, 0);
-      x.col(num_desc) += x.col(i);
-    }
-    // DR
-    else if(element_type == "DR"){
-      x.col(i) = gen_dr(N, theta_value);
-      x.col(num_desc) += x.col(i);
-
-    }
-    // QN
-    else if(element_type == "QN"){
-      x.col(i) = gen_qn(N, theta_value);
-      x.col(num_desc) += x.col(i);
-    }
-    // RW
-    else if(element_type == "RW"){
-      x.col(i) = gen_rw(N, theta_value);
-      x.col(num_desc) += x.col(i);
-    }
-    // WN
-    else {
-      x.col(i) = gen_wn(N, theta_value);
       x.col(num_desc) += x.col(i);
     }
     

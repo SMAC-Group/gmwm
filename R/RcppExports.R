@@ -887,11 +887,12 @@ gen_model <- function(N, theta, desc, objdesc) {
     .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, objdesc)
 }
 
-#' @title Generate Latent Time Series based on Model (Internal)
-#' @description Create a latent time series based on a supplied time series model.
-#' @param N An \code{interger} containing the amount of observations for the time series.
-#' @param theta A \code{vec} containing the parameters to use to generate the model.
-#' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..).
+#' Generate Latent Time Series based on Model (Internal)
+#' 
+#' Create a latent time series based on a supplied time series model.
+#' @param N       An \code{interger} containing the amount of observations for the time series.
+#' @param theta   A \code{vec} containing the parameters to use to generate the model.
+#' @param desc    A \code{vector<string>} containing the different model types (AR1, WN, etc..).
 #' @param objdesc A \code{field<vec>} containing the different model objects e.g. AR1 = c(1,1)
 #' @return A \code{mat} containing data for each decomposed and combined time series.
 #' @backref src/gen_process.cpp
