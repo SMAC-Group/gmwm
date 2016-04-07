@@ -1,10 +1,10 @@
 ---
-title: "Analytical Derivatives for Haar Wavelet Variance"
+title: "Process to Haar Wavelet Variance Formulae"
 author: "James Balamuta"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Analytical Derivatives for Haar Wavelet Variance}
+  %\VignetteIndexEntry{Process to Haar Wavelet Variance Formulae}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
