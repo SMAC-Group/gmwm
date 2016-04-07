@@ -49,6 +49,88 @@ AR1 = function(phi = NULL, sigma2 = 1) {
   invisible(out)
 }
 
+#' @title Create an Moving Average 1 [MA(1)] Process
+#' @description Setups the necessary backend for the MA1 process.
+#' @param phi A \code{double} value for the \eqn{\phi}{phi} of an MA1 process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{Used in summary: "MA1","SIGMA2"}
+#'  \item{theta}{\eqn{\theta}{theta}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"MA1"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(1,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' MA1()
+#' MA1(theta=.32, sigma2=1.3)
+MA1 = function(theta = NULL, sigma2 = 1) {
+  starting = FALSE;
+  if(is.null(theta)){
+    theta = 0;
+    sigma2 = 1;
+    starting = TRUE;
+  }
+  if(length(theta) != 1 & length(sigma2) != 1){
+    stop("Bad MA1 model submitted. Must be double values for two parameters.")
+  }
+  out = structure(list(process.desc = c("MA1","SIGMA2"),
+                       theta = c(theta,sigma2),
+                       plength = 2,
+                       desc = "MA1",
+                       obj.desc = list(c(1,1)),
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
+
+#' @title Create an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) Process
+#' @description Sets up the necessary backend for the ARMA(1,1) process.
+#' @param phi    A \code{double} containing the coefficients for \eqn{\phi _1}{phi[1]}'s for the Autoregressive 1 (AR1) term.
+#' @param theta  A \code{double} containing  the coefficients for \eqn{\theta _1}{theta[1]}'s for the Moving Average 1 (MA1) term.
+#' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{\eqn{AR1}, \eqn{MA1}, \eqn{SIGMA2}}
+#'  \item{theta}{\eqn{\phi}{phi}, \eqn{\theta}{theta}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters: 3}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(c(1,1,1))}
+#'  \item{starting}{Guess Starting values? \code{TRUE} or \code{FALSE} (e.g. specified value)}
+#' }
+#' @details
+#' A variance is required since the model generation statements utilize 
+#' randomization functions expecting a variance instead of a standard deviation like R.
+#' @author JJB
+#' @examples
+#' # Creates an ARMA(1,1) process with predefined coefficients.
+#' ARMA11(ar=.23, ma=.1, sigma2 = 1)
+#' 
+#' # Creates an ARMA(1,1) process with values to be guessed on callibration.
+#' ARMA11()
+ARMA11 = function(phi = NULL, theta = NULL, sigma2 = 1.0) {
+  # Assume the user specified data
+  starting = FALSE
+  
+  if(is.null(ar) || is.null(ma)){
+    ar = 0
+    ma = 0;
+    sigma2 = 1;
+    starting = TRUE;
+  }
+  
+  out = structure(list(process.desc = c("AR1","MA1","SIGMA2"),
+                       theta = c(ar, ma, sigma2),
+                       plength = 3,
+                       desc = "ARMA11",
+                       obj.desc = list(c(1,1,1)),
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
+
+
 #' @title Create a Gauss-Markov (GM) Process
 #' @description Setups the necessary backend for the GM process.
 #' @param beta A \code{double} value for the \eqn{\beta}{beta} of an GM process.
@@ -94,92 +176,6 @@ GM = function(beta = NULL, sigma2_gm = 1) {
                        starting = starting), class = "ts.model")
   invisible(out)
 }
-
-
-#' @title Create an Autoregressive P [AR(P)] Process
-#' @description Setups the necessary backend for the AR(P) process.
-#' @param phi A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.
-#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
-#' @return An S3 object with called ts.model with the following structure:
-#' \describe{
-#'  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
-#'  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
-#'  \item{plength}{Number of Parameters}
-#'  \item{desc}{"AR"}
-#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
-#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
-#' }
-#' @author JJB
-#' @examples
-#' AR(1) # Slower version of AR1()
-#' AR(phi=.32, sigma=1.3) # Slower version of AR1()
-#' AR(2) # Equivalent to ARMA(2,0).
-AR = function(phi = NULL, sigma2 = 1) {
-  starting = FALSE;
-  
-  if(is.null(phi)){
-    stop("Must supply either a whole number of a string of numbers for phi parameter in AR().")
-  }
-  
-  p = length(phi)
-  if(p == 1 & is.whole(phi)){
-   p = phi
-   phi = rep(0,p)
-   starting = TRUE;
-  }
-
-  out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
-                      theta = c(phi,sigma2),
-                      plength = 2,
-                      desc = "ARMA", #update to AR when backend supports it!
-                      obj.desc = list(c(p,0,1)), # Remove the 0, when the backend supports it!
-                      starting = starting), class = "ts.model")
-  invisible(out)
-}
-
-
-#' @title Create an Moving Average Q [MA(Q)] Process
-#' @description Setups the necessary backend for the MA(Q) process.
-#' @param theta A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.
-#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
-#' @return An S3 object with called ts.model with the following structure:
-#' \describe{
-#'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
-#'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
-#'  \item{plength}{Number of Parameters}
-#'  \item{desc}{"MA"}
-#'  \item{obj.desc}{Depth of Parameters e.g. list(q,1)}
-#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
-#' }
-#' @author JJB
-#' @examples
-#' MA(1) # One theta
-#' MA(2) # Two thetas!
-#' 
-#' MA(theta=.32, sigma=1.3) # 1 theta with a specific value.
-#' MA(theta=c(.3,.5), sigma=.3) # 2 thetas with specific values.
-MA = function(theta = NULL, sigma2 = 1) {
-  starting = FALSE;
-  if(is.null(theta)){
-    stop("Must supply either a whole number of a string of doubles for theta parameter in MA().")
-  }
-  
-  q = length(theta)
-  if(q == 1 & is.whole(theta)){
-    q = theta
-    theta = rep(1,q)
-    starting = TRUE;
-  }
-  
-  out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
-                      theta = c(theta,sigma2),
-                      plength = 2,
-                      desc = "ARMA", # Move to MA when backend supports it!
-                      obj.desc = list(c(0,q,1)), # Remove the 0 when backend supports it!
-                      starting = starting), class = "ts.model")
-  invisible(out)
-}
-
 
 #' @title Create an Quantisation Noise (QN) Process
 #' @description Sets up the necessary backend for the QN process.
@@ -332,8 +328,8 @@ DR = function(slope = NULL) {
 #'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
 #' }
 #' @details
-#' A standard deviation is required since the model generation statements utilize 
-#' randomization functions expecting a standard deviation instead of a variance.
+#' A variance is required since the model generation statements utilize 
+#' randomization functions expecting a variance instead of a standard deviation like R.
 #' @author JJB
 #' @examples
 #' # Create an ARMA(1,2) process
@@ -384,6 +380,92 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
                        starting = starting), class = "ts.model")
   invisible(out)
 }
+
+
+#' @title Create an Autoregressive P [AR(P)] Process
+#' @description Setups the necessary backend for the AR(P) process.
+#' @param phi A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
+#'  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"AR"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' AR(1) # Slower version of AR1()
+#' AR(phi=.32, sigma=1.3) # Slower version of AR1()
+#' AR(2) # Equivalent to ARMA(2,0).
+AR = function(phi = NULL, sigma2 = 1) {
+  starting = FALSE;
+  
+  if(is.null(phi)){
+    stop("Must supply either a whole number of a string of numbers for phi parameter in AR().")
+  }
+  
+  p = length(phi)
+  if(p == 1 & is.whole(phi)){
+    p = phi
+    phi = rep(0,p)
+    starting = TRUE;
+  }
+  
+  out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
+                       theta = c(phi,sigma2),
+                       plength = 2,
+                       desc = "ARMA", #update to AR when backend supports it!
+                       obj.desc = list(c(p,0,1)), # Remove the 0, when the backend supports it!
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
+
+#' @title Create an Moving Average Q [MA(Q)] Process
+#' @description Setups the necessary backend for the MA(Q) process.
+#' @param theta A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
+#'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"MA"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(q,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' MA(1) # One theta
+#' MA(2) # Two thetas!
+#' 
+#' MA(theta=.32, sigma=1.3) # 1 theta with a specific value.
+#' MA(theta=c(.3,.5), sigma=.3) # 2 thetas with specific values.
+MA = function(theta = NULL, sigma2 = 1) {
+  starting = FALSE;
+  if(is.null(theta)){
+    stop("Must supply either a whole number of a string of doubles for theta parameter in MA().")
+  }
+  
+  q = length(theta)
+  if(q == 1 & is.whole(theta)){
+    q = theta
+    theta = rep(1,q)
+    starting = TRUE;
+  }
+  
+  out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
+                       theta = c(theta,sigma2),
+                       plength = 2,
+                       desc = "ARMA", # Move to MA when backend supports it!
+                       obj.desc = list(c(0,q,1)), # Remove the 0 when backend supports it!
+                       starting = starting), class = "ts.model")
+  invisible(out)
+}
+
 
 #' @title Multiple a ts.model by constant
 #' @description Sets up the necessary backend for creating multiple model objects.
