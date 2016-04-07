@@ -13,7 +13,7 @@ The following equations are derivations used within the package as they relate t
 
 The initial equations, marked by $AVa{r_n}\left[ {X\left( t \right)} \right]$, come from *Allan variance of time series models for measurement data* by Nien Fan Zhang published in Metrologia and *Analysis and Modeling of Inertial Sensors Using Allan Variance* by El-Sheimy, et. al. in IEEE Transactions on Instrumentation and Measurement. That is, these equations are derived using the Allan Variance. The relationship between the Allan variance to the Wavelet Variance is $\frac{1}{2} AVa{r_n}\left[ {X\left( t \right)} \right] = \nu _j^2$. Note, the $n$ used in the Allan variance is equivalent to $\frac{\tau_j}{2}$.
 
-The derivations below were done using [Mathematica](https://www.wolfram.com/mathematica/). The derivation file is available at: [http://smac-group.com/supporting_docs/haar_analytical_derivatives_complete.nb](http://smac-group.com/supporting_docs/haar_analytical_derivatives_complete.nb)
+The derivations below were done using [Mathematica](https://www.wolfram.com/mathematica/). The derivation file is available at: [http://smac-group.com/assets/supporting_docs/haar_analytical_derivatives_complete.nb](http://smac-group.com/assets/supporting_docs/haar_analytical_derivatives_complete.nb)
 
 If you notice one of the derivations as being incorrected, please let us know via an issue at [https://github.com/smac-group/gmwm/issues](https://github.com/smac-group/gmwm/issues).
 
@@ -89,6 +89,7 @@ $$\begin{aligned}
 *>* **NOTE** For the MA(1) process listed in Zhang on Page 552, there is a sign error between equations (21) and (22). This has been corrected here. 
 
 **MA 1 process:**
+
 $$
 \begin{aligned}
   AVa{r_n}\left[ {X\left( t \right)} \right] &= \left( {1 + \theta _1^2} \right)\frac{{\left( {n + \left( {2n - 3} \right)\frac{{{\theta _1}}}{{1 + \theta _1^2}}} \right)}}{{{n^2}}}\sigma _a^2 \\
@@ -99,6 +100,7 @@ $$
 
 
 **Derivatives w.r.t $\theta$**
+
 $$\begin{aligned}
   \frac{\partial }{{\partial {\theta _1}}}\nu _j^2\left( {{\theta _1},{\sigma ^2}} \right) &= \frac{{{\sigma ^2}\left( {2\left( {{\theta _1} + 1} \right){\tau _j} - 6} \right)}}{{\tau _j^2}} \\
   \frac{\partial }{{\partial \theta _1^2}}\nu _j^2\left( {{\theta _1},{\sigma ^2}} \right) &= \frac{{2{\sigma ^2}}}{{{\tau _j}}}
