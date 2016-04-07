@@ -15,7 +15,7 @@ gen_dr(N, slope = 5)
 A \code{vec} containing the drift.
 }
 \description{
-Generates a Drift Process with a given slope, \eq{\omega}.
+Generates a Drift Process with a given slope, \eqn{\omega}.
 }
 \examples{
 gen_dr(10, 8.2)

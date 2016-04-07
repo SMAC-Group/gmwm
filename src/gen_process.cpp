@@ -51,7 +51,7 @@ arma::vec gen_wn(const unsigned int N, const double sigma2 = 1)
 
 //' Generate a Drift Process
 //' 
-//' Generates a Drift Process with a given slope, \eq{\omega}.
+//' Generates a Drift Process with a given slope, \eqn{\omega}.
 //' @param N     An \code{integer} for signal length.
 //' @param slope A \code{double} that contains drift slope
 //' @return A \code{vec} containing the drift.
