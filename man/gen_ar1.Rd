@@ -2,25 +2,32 @@
 % Please edit documentation in src/gen_process.cpp, src/gen_process.h
 \name{gen_ar1}
 \alias{gen_ar1}
-\title{Generate an AR(1) sequence}
+\title{Generate an Autoregressive Order 1 ( AR(1) ) sequence
+Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.}
 \usage{
 gen_ar1(N, phi = 0.3, sigma2 = 1)
 }
 \arguments{
-\item{N}{An \code{integer} for signal length.}
+\item{N}{An \code{unsigned integer} for signal length.}
 
 \item{phi}{A \code{double} that contains autocorrection.}
 
 \item{sigma2}{A \code{double} that contains process variance.}
 }
 \value{
-gm A \code{vec} containing the AR(1) process.
+A \code{vec} containing the AR(1) process.
 }
 \description{
-Generate an AR sequence given phi and sig2.
+Generate an Autoregressive Order 1 ( AR(1) ) sequence
+Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.
 }
 \details{
-This needs to be extended to AR(p) see \code{arima.sim} and \code{filter}.
+The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values without calling the general ARMA function.
+The autoregressive order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} }{x[t] = phi[1]x[t-1]  + w[t]},
+ where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+
+The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+AR values under the above equation.
 }
 \examples{
 gen_ar1(10, 5, 1.2)

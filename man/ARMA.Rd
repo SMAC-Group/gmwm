@@ -28,8 +28,8 @@ An S3 object with called ts.model with the following structure:
 Sets up the necessary backend for the ARMA process.
 }
 \details{
-A standard deviation is required since the model generation statements utilize 
-randomization functions expecting a standard deviation instead of a variance.
+A variance is required since the model generation statements utilize 
+randomization functions expecting a variance instead of a standard deviation like R.
 }
 \examples{
 # Create an ARMA(1,2) process

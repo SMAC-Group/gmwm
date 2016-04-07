@@ -19,7 +19,7 @@ gen_model(N, theta, desc, objdesc)
 A \code{vec} that contains combined time series.
 }
 \description{
-Create a time series based on a supplied time series model.
+Create a time series process based on a supplied \code{ts.model}.
 }
 \examples{
 # AR

@@ -27,9 +27,9 @@
 
 /* ------------------------------ Start Process Generation Functions ------------------------------ */
 
-//' @title Generate a white noise process
-//' @description Generates a white noise process with variance parameter sigma.
-//' @param N An \code{integer} for signal length.
+//' Generate a White Noise Process (\eqn{WN(\sigma^2)})
+//' Generates a White Noise Process with variance parameter \eqn{\sigma ^2}.
+//' @param N      An \code{integer} for signal length.
 //' @param sigma2 A \code{double} that contains process variance.
 //' @return wn A \code{vec} containing the white noise.
 //' @backref src/gen_process.cpp
@@ -49,11 +49,12 @@ arma::vec gen_wn(const unsigned int N, const double sigma2 = 1)
 	return wn;
 }
 
-//' @title Generate a drift
-//' @description Generates a drift sequence with a given slope.
-//' @param N An \code{integer} for signal length.
+//' Generate a Drift Process
+//' 
+//' Generates a Drift Process with a given slope, \eq{\omega}.
+//' @param N     An \code{integer} for signal length.
 //' @param slope A \code{double} that contains drift slope
-//' @return gd A \code{vec} containing the drift.
+//' @return A \code{vec} containing the drift.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -67,11 +68,12 @@ arma::vec gen_dr(const unsigned int N, const double slope = 5)
 	return cumsum(gd);
 }
 
-//' @title Generate a Quantisation Noise (QN) sequence
-//' @description Generate an QN sequence given q2
-//' @param N An \code{integer} for signal length.
+//' Generate a Quantisation Noise (QN) sequence
+//' 
+//' Generate an QN sequence given \eqn{Q^2}
+//' @param N  An \code{integer} for signal length.
 //' @param q2 A \code{double} that contains autocorrection.
-//' @return  A \code{vec} containing the QN process.
+//' @return A \code{vec} containing the QN process.
 //' @keywords internal
 //' @details 
 //' To generate the quantisation noise, we follow this recipe:
@@ -111,13 +113,19 @@ arma::vec gen_qn(const unsigned int N, double q2 = .1)
 }
 
 
-//' @title Generate an AR(1) sequence
-//' @description Generate an AR sequence given phi and sig2.
-//' @details This needs to be extended to AR(p) see \code{arima.sim} and \code{filter}.
-//' @param N An \code{integer} for signal length.
-//' @param phi A \code{double} that contains autocorrection.
+//' Generate an Autoregressive Order 1 ( AR(1) ) sequence
+//' Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.
+//' @param N      An \code{unsigned integer} for signal length.
+//' @param phi    A \code{double} that contains autocorrection.
 //' @param sigma2 A \code{double} that contains process variance.
-//' @return gm A \code{vec} containing the AR(1) process.
+//' @return A \code{vec} containing the AR(1) process.
+//' @details
+//' The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values without calling the general ARMA function.
+//' The autoregressive order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} }{x[t] = phi[1]x[t-1]  + w[t]},
+//'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+//' 
+//' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+//' AR values under the above equation.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -137,9 +145,10 @@ arma::vec gen_ar1(const unsigned int N, const double phi = .3, const double sigm
 	return gm.rows(1,N);
 }
 
-//' @title Generate a random walk without drift
-//' @description Generates a random walk without drift.
-//' @param N An \code{integer} for signal length.
+//' Generate a Random Walk without Drift
+//' 
+//' Generates a random walk without drift.
+//' @param N      An \code{integer} for signal length.
 //' @param sigma2 A \code{double} that contains process variance.
 //' @return grw A \code{vec} containing the random walk without drift.
 //' @backref src/gen_process.cpp
@@ -158,15 +167,91 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
   return cumsum(grw);
 }
 
-//' @title Generate ARMA
-//' @description Generate observations for a supplied ARMA model.
-//' @param N An \code{integer} for signal length.
-//' @param ar A \code{vec} that contains the AR coefficients.
-//' @param ma A \code{vec} that contains the MA coefficients.
+
+//' Generate an Moving Average Order 1 (MA(1)) Process
+//' 
+//' Generate an MA(1) Process given \eqn{\theta} and \eqn{\sigma^2}.
+//' @param N      An \code{integer} for signal length.
+//' @param theta  A \code{double} that contains moving average.
 //' @param sigma2 A \code{double} that contains process variance.
+//' @return A \code{vec} containing the MA(1) process.
+//' @details
+//' The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
+//' The moving average process is defined as \eqn{{x_t} = {w_t} + {\theta _1}{w_{t - 1}}}{x[t] = w[t] + theta*w[t-1]},
+//'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+//' 
+//' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+//' MA values under the above equation.
+//' 
+//' @backref src/gen_process.cpp
+//' @backref src/gen_process.h
+//' @keywords internal
+//' @examples
+//' gen_ma1(10, .2, 1.2)
+// [[Rcpp::export]]
+arma::vec gen_ma1(const unsigned int N, const double theta = .3, const double sigma2 = 1)
+{
+  
+  arma::vec wn = gen_wn(N+1, sigma2);
+  arma::vec ma = arma::zeros<arma::vec>(N+1);
+  for(unsigned int i=1; i <= N; i++ )
+  {		
+    ma(i) = theta*wn(i-1) + wn(i);
+  }
+  
+  return ma.rows(1,N);
+}
+
+//' Generate an ARMA(1,1) sequence
+//' 
+//' Generate an ARMA(1,1) sequence given \eqn{\phi}, \eqn{\theta}, and \eqn{\sigma^2}.
+//' @param N      An \code{integer} for signal length.
+//' @param phi    A \code{double} that contains autoregressive.
+//' @param theta  A \code{double} that contains moving average.
+//' @param sigma2 A \code{double} that contains process variance.
+//' @return A \code{vec} containing the MA(1) process.
+//' @details
+//' The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
+//' The autoregressive order 1 and moving average order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} + {\theta _1}{w_{t - 1}} }{x[t] = phi*x[t-1] + w[t] + theta*w[t-1]},
+//'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+//' 
+//' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+//' ARMA values under the above equation.
+//' 
+//' @backref src/gen_process.cpp
+//' @backref src/gen_process.h
+//' @keywords internal
+//' @examples
+//' gen_ma1(10, .2, 1.2)
+// [[Rcpp::export]]
+arma::vec gen_arma11(const unsigned int N, const double phi = .1, const double theta = .3, const double sigma2 = 1)
+{
+  
+  arma::vec wn = gen_wn(N+1, sigma2);
+  arma::vec arma = arma::zeros<arma::vec>(N+1);
+  for(unsigned int i=1; i <= N; i++ )
+  {		
+    arma(i) = phi*arma(i-1) + theta*wn(i-1) + wn(i);
+  }
+  
+  return arma.rows(1,N);
+}
+
+//' Generate Autoregressive Order P - Moving Average Order Q (ARMA(P,Q)) Model
+//' 
+//' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+//' @param N       An \code{integer} for signal length.
+//' @param ar      A \code{vec} that contains the AR coefficients.
+//' @param ma      A \code{vec} that contains the MA coefficients.
+//' @param sigma2  A \code{double} that contains process variance.
 //' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
-//' @details The innovations are generated from a normal distribution.
 //' @return A \code{vec} that contains the generated observations.
+//' @details 
+//' The innovations are generated from a normal distribution.
+//' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+//' This differs from R's use of the standard deviation, \eqn{\sigma}.
+//' 
+//' For AR(1), MA(1), and ARMA(1,1) please use their functions if speed is important.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -268,17 +353,12 @@ arma::vec gen_arma(const unsigned int N,
   return x;
 }
 
-
-
-
-
-
-
-//' @title Generate Time Series based on Model (Internal)
-//' @description Create a time series based on a supplied time series model.
-//' @param N An \code{interger} containing the amount of observations for the time series.
-//' @param theta A \code{vec} containing the parameters to use to generate the model
-//' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..)
+//' Generate Time Series based on Model (Internal)
+//' 
+//' Create a time series process based on a supplied \code{ts.model}.
+//' @param N       An \code{interger} containing the amount of observations for the time series.
+//' @param theta   A \code{vec} containing the parameters to use to generate the model
+//' @param desc    A \code{vector<string>} containing the different model types (AR1, WN, etc..)
 //' @param objdesc A \code{field<vec>} contains the different model objects e.g. AR1 = c(1,1)
 //' @return A \code{vec} that contains combined time series.
 //' @backref src/gen_process.cpp
@@ -312,45 +392,11 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    
   	    // Compute theoretical WV
   	    x += gen_ar1(N, theta_value, sig2);
-  	  }
-      else if(element_type == "ARMA"){
-        // Unpackage ARMA model parameter
-        arma::vec model_params = objdesc(i);
-        
-        // Get position numbers (AR,MA,SIGMA2)
-        unsigned int p = model_params(0);
-        unsigned int q = model_params(1);
-        
-        // Set up temp storage
-        arma::vec ar;
-        arma::vec ma;
-        
-        // Get AR values
-        if(p == 0){
-          ar = arma::zeros<arma::vec>(0);
-        }else{
-          ar = theta.rows(i_theta,i_theta+p-1);
-        }
-        
-        // Account for the number of P values
-        i_theta += p;
-        
-        // Get MA values
-        if(q == 0){
-          ma = arma::zeros<arma::vec>(0); 
-        }else{
-          ma = theta.rows(i_theta,i_theta+q-1);
-        }
-        
-        // Account for Q values
-        i_theta += q;
-        
-        // Extract sigma2
-        double sig2 = theta(i_theta);
-        
-        // Modified arima.sim
-        x += gen_arma(N, ar, ma, sig2, 0);
-      }
+  	  } 
+  	  // WN
+  	  else if(element_type == "WN") {
+  	    x += gen_wn(N, theta_value);
+  	  } 
       // DR
   	  else if(element_type == "DR"){
   	    x += gen_dr(N, theta_value);
@@ -362,10 +408,45 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
       // RW
   	  else if(element_type == "RW"){
   	    x += gen_rw(N, theta_value);
-  	  }
-  	  // WN
-  	  else {
-  	    x += gen_wn(N, theta_value);
+  	  } else {
+  	    // ARMA
+  	    
+  	    // Unpackage ARMA model parameter
+  	    arma::vec model_params = objdesc(i);
+  	    
+  	    // Get position numbers (AR,MA,SIGMA2)
+  	    unsigned int p = model_params(0);
+  	    unsigned int q = model_params(1);
+  	    
+  	    // Set up temp storage
+  	    arma::vec ar;
+  	    arma::vec ma;
+  	    
+  	    // Get AR values
+  	    if(p == 0){
+  	      ar = arma::zeros<arma::vec>(0);
+  	    }else{
+  	      ar = theta.rows(i_theta,i_theta+p-1);
+  	    }
+  	    
+  	    // Account for the number of P values
+  	    i_theta += p;
+  	    
+  	    // Get MA values
+  	    if(q == 0){
+  	      ma = arma::zeros<arma::vec>(0); 
+  	    }else{
+  	      ma = theta.rows(i_theta,i_theta+q-1);
+  	    }
+  	    
+  	    // Account for Q values
+  	    i_theta += q;
+  	    
+  	    // Extract sigma2
+  	    double sig2 = theta(i_theta);
+  	    
+  	    // Modified arima.sim
+  	    x += gen_arma(N, ar, ma, sig2, 0);
   	  }
       
       // Increment theta once to account for popped value

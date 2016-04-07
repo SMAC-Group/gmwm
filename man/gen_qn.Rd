@@ -15,7 +15,7 @@ gen_qn(N, q2 = 0.1)
 A \code{vec} containing the QN process.
 }
 \description{
-Generate an QN sequence given q2
+Generate an QN sequence given \eqn{Q^2}
 }
 \details{
 To generate the quantisation noise, we follow this recipe:

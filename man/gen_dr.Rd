@@ -2,7 +2,7 @@
 % Please edit documentation in src/gen_process.cpp, src/gen_process.h
 \name{gen_dr}
 \alias{gen_dr}
-\title{Generate a drift}
+\title{Generate a Drift Process}
 \usage{
 gen_dr(N, slope = 5)
 }
@@ -12,10 +12,10 @@ gen_dr(N, slope = 5)
 \item{slope}{A \code{double} that contains drift slope}
 }
 \value{
-gd A \code{vec} containing the drift.
+A \code{vec} containing the drift.
 }
 \description{
-Generates a drift sequence with a given slope.
+Generates a Drift Process with a given slope, \eq{\omega}.
 }
 \examples{
 gen_dr(10, 8.2)

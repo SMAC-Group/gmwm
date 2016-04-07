@@ -2,7 +2,8 @@
 % Please edit documentation in src/gen_process.cpp, src/gen_process.h
 \name{gen_wn}
 \alias{gen_wn}
-\title{Generate a white noise process}
+\title{Generate a White Noise Process (\eqn{WN(\sigma^2)})
+Generates a White Noise Process with variance parameter \eqn{\sigma ^2}.}
 \usage{
 gen_wn(N, sigma2 = 1)
 }
@@ -15,7 +16,8 @@ gen_wn(N, sigma2 = 1)
 wn A \code{vec} containing the white noise.
 }
 \description{
-Generates a white noise process with variance parameter sigma.
+Generate a White Noise Process (\eqn{WN(\sigma^2)})
+Generates a White Noise Process with variance parameter \eqn{\sigma ^2}.
 }
 \examples{
 gen_wn(10, 1.5)

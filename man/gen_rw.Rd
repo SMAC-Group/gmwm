@@ -2,7 +2,7 @@
 % Please edit documentation in src/gen_process.cpp, src/gen_process.h
 \name{gen_rw}
 \alias{gen_rw}
-\title{Generate a random walk without drift}
+\title{Generate a Random Walk without Drift}
 \usage{
 gen_rw(N, sigma2 = 1)
 }

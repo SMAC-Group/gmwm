@@ -661,6 +661,33 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// gen_ma1
+arma::vec gen_ma1(const unsigned int N, const double theta, const double sigma2);
+RcppExport SEXP gmwm_gen_ma1(SEXP NSEXP, SEXP thetaSEXP, SEXP sigma2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP);
+    __result = Rcpp::wrap(gen_ma1(N, theta, sigma2));
+    return __result;
+END_RCPP
+}
+// gen_arma11
+arma::vec gen_arma11(const unsigned int N, const double phi, const double theta, const double sigma2);
+RcppExport SEXP gmwm_gen_arma11(SEXP NSEXP, SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< const double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP);
+    __result = Rcpp::wrap(gen_arma11(N, phi, theta, sigma2));
+    return __result;
+END_RCPP
+}
 // gen_arma
 arma::vec gen_arma(const unsigned int N, const arma::vec& ar, const arma::vec& ma, const double sigma2, unsigned int n_start);
 RcppExport SEXP gmwm_gen_arma(SEXP NSEXP, SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {

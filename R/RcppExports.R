@@ -696,9 +696,9 @@ brick_wall <- function(x, wave_filter, method) {
     .Call('gmwm_brick_wall', PACKAGE = 'gmwm', x, wave_filter, method)
 }
 
-#' @title Generate a white noise process
-#' @description Generates a white noise process with variance parameter sigma.
-#' @param N An \code{integer} for signal length.
+#' Generate a White Noise Process (\eqn{WN(\sigma^2)})
+#' Generates a White Noise Process with variance parameter \eqn{\sigma ^2}.
+#' @param N      An \code{integer} for signal length.
 #' @param sigma2 A \code{double} that contains process variance.
 #' @return wn A \code{vec} containing the white noise.
 #' @backref src/gen_process.cpp
@@ -710,11 +710,12 @@ gen_wn <- function(N, sigma2 = 1) {
     .Call('gmwm_gen_wn', PACKAGE = 'gmwm', N, sigma2)
 }
 
-#' @title Generate a drift
-#' @description Generates a drift sequence with a given slope.
-#' @param N An \code{integer} for signal length.
+#' Generate a Drift Process
+#' 
+#' Generates a Drift Process with a given slope, \eq{\omega}.
+#' @param N     An \code{integer} for signal length.
 #' @param slope A \code{double} that contains drift slope
-#' @return gd A \code{vec} containing the drift.
+#' @return A \code{vec} containing the drift.
 #' @backref src/gen_process.cpp
 #' @backref src/gen_process.h
 #' @keywords internal
@@ -724,11 +725,12 @@ gen_dr <- function(N, slope = 5) {
     .Call('gmwm_gen_dr', PACKAGE = 'gmwm', N, slope)
 }
 
-#' @title Generate a Quantisation Noise (QN) sequence
-#' @description Generate an QN sequence given q2
-#' @param N An \code{integer} for signal length.
+#' Generate a Quantisation Noise (QN) sequence
+#' 
+#' Generate an QN sequence given \eqn{Q^2}
+#' @param N  An \code{integer} for signal length.
 #' @param q2 A \code{double} that contains autocorrection.
-#' @return  A \code{vec} containing the QN process.
+#' @return A \code{vec} containing the QN process.
 #' @keywords internal
 #' @details 
 #' To generate the quantisation noise, we follow this recipe:
@@ -756,13 +758,19 @@ gen_qn <- function(N, q2 = .1) {
     .Call('gmwm_gen_qn', PACKAGE = 'gmwm', N, q2)
 }
 
-#' @title Generate an AR(1) sequence
-#' @description Generate an AR sequence given phi and sig2.
-#' @details This needs to be extended to AR(p) see \code{arima.sim} and \code{filter}.
-#' @param N An \code{integer} for signal length.
-#' @param phi A \code{double} that contains autocorrection.
+#' Generate an Autoregressive Order 1 ( AR(1) ) sequence
+#' Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.
+#' @param N      An \code{unsigned integer} for signal length.
+#' @param phi    A \code{double} that contains autocorrection.
 #' @param sigma2 A \code{double} that contains process variance.
-#' @return gm A \code{vec} containing the AR(1) process.
+#' @return A \code{vec} containing the AR(1) process.
+#' @details
+#' The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values without calling the general ARMA function.
+#' The autoregressive order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} }{x[t] = phi[1]x[t-1]  + w[t]},
+#'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+#' 
+#' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+#' AR values under the above equation.
 #' @backref src/gen_process.cpp
 #' @backref src/gen_process.h
 #' @keywords internal
@@ -772,9 +780,10 @@ gen_ar1 <- function(N, phi = .3, sigma2 = 1) {
     .Call('gmwm_gen_ar1', PACKAGE = 'gmwm', N, phi, sigma2)
 }
 
-#' @title Generate a random walk without drift
-#' @description Generates a random walk without drift.
-#' @param N An \code{integer} for signal length.
+#' Generate a Random Walk without Drift
+#' 
+#' Generates a random walk without drift.
+#' @param N      An \code{integer} for signal length.
 #' @param sigma2 A \code{double} that contains process variance.
 #' @return grw A \code{vec} containing the random walk without drift.
 #' @backref src/gen_process.cpp
@@ -786,15 +795,70 @@ gen_rw <- function(N, sigma2 = 1) {
     .Call('gmwm_gen_rw', PACKAGE = 'gmwm', N, sigma2)
 }
 
-#' @title Generate ARMA
-#' @description Generate observations for a supplied ARMA model.
-#' @param N An \code{integer} for signal length.
-#' @param ar A \code{vec} that contains the AR coefficients.
-#' @param ma A \code{vec} that contains the MA coefficients.
+#' Generate an Moving Average Order 1 (MA(1)) Process
+#' 
+#' Generate an MA(1) Process given \eqn{\theta} and \eqn{\sigma^2}.
+#' @param N      An \code{integer} for signal length.
+#' @param theta  A \code{double} that contains moving average.
 #' @param sigma2 A \code{double} that contains process variance.
+#' @return A \code{vec} containing the MA(1) process.
+#' @details
+#' The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
+#' The moving average process is defined as \eqn{{x_t} = {w_t} + {\theta _1}{w_{t - 1}}}{x[t] = w[t] + theta*w[t-1]},
+#'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+#' 
+#' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+#' MA values under the above equation.
+#' 
+#' @backref src/gen_process.cpp
+#' @backref src/gen_process.h
+#' @keywords internal
+#' @examples
+#' gen_ma1(10, .2, 1.2)
+gen_ma1 <- function(N, theta = .3, sigma2 = 1) {
+    .Call('gmwm_gen_ma1', PACKAGE = 'gmwm', N, theta, sigma2)
+}
+
+#' Generate an ARMA(1,1) sequence
+#' 
+#' Generate an ARMA(1,1) sequence given \eqn{\phi}, \eqn{\theta}, and \eqn{\sigma^2}.
+#' @param N      An \code{integer} for signal length.
+#' @param phi    A \code{double} that contains autoregressive.
+#' @param theta  A \code{double} that contains moving average.
+#' @param sigma2 A \code{double} that contains process variance.
+#' @return A \code{vec} containing the MA(1) process.
+#' @details
+#' The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
+#' The autoregressive order 1 and moving average order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} + {\theta _1}{w_{t - 1}} }{x[t] = phi*x[t-1] + w[t] + theta*w[t-1]},
+#'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+#' 
+#' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
+#' ARMA values under the above equation.
+#' 
+#' @backref src/gen_process.cpp
+#' @backref src/gen_process.h
+#' @keywords internal
+#' @examples
+#' gen_ma1(10, .2, 1.2)
+gen_arma11 <- function(N, phi = .1, theta = .3, sigma2 = 1) {
+    .Call('gmwm_gen_arma11', PACKAGE = 'gmwm', N, phi, theta, sigma2)
+}
+
+#' Generate Autoregressive Order P - Moving Average Order Q (ARMA(P,Q)) Model
+#' 
+#' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+#' @param N       An \code{integer} for signal length.
+#' @param ar      A \code{vec} that contains the AR coefficients.
+#' @param ma      A \code{vec} that contains the MA coefficients.
+#' @param sigma2  A \code{double} that contains process variance.
 #' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
-#' @details The innovations are generated from a normal distribution.
 #' @return A \code{vec} that contains the generated observations.
+#' @details 
+#' The innovations are generated from a normal distribution.
+#' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+#' This differs from R's use of the standard deviation, \eqn{\sigma}.
+#' 
+#' For AR(1), MA(1), and ARMA(1,1) please use their functions if speed is important.
 #' @backref src/gen_process.cpp
 #' @backref src/gen_process.h
 #' @keywords internal
@@ -804,11 +868,12 @@ gen_arma <- function(N, ar, ma, sigma2 = 1.5, n_start = 0L) {
     .Call('gmwm_gen_arma', PACKAGE = 'gmwm', N, ar, ma, sigma2, n_start)
 }
 
-#' @title Generate Time Series based on Model (Internal)
-#' @description Create a time series based on a supplied time series model.
-#' @param N An \code{interger} containing the amount of observations for the time series.
-#' @param theta A \code{vec} containing the parameters to use to generate the model
-#' @param desc A \code{vector<string>} containing the different model types (AR1, WN, etc..)
+#' Generate Time Series based on Model (Internal)
+#' 
+#' Create a time series process based on a supplied \code{ts.model}.
+#' @param N       An \code{interger} containing the amount of observations for the time series.
+#' @param theta   A \code{vec} containing the parameters to use to generate the model
+#' @param desc    A \code{vector<string>} containing the different model types (AR1, WN, etc..)
 #' @param objdesc A \code{field<vec>} contains the different model objects e.g. AR1 = c(1,1)
 #' @return A \code{vec} that contains combined time series.
 #' @backref src/gen_process.cpp
