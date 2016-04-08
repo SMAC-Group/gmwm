@@ -21,13 +21,16 @@
 #include "process_to_wv.h"
 #include "rtoarmadillo.h"
 
-//' @title ARMA Adapter to ARMA to WV Process function
-//' @description Molds the data so that it works with the arma_to_wv function.
+//' ARMA Adapter to ARMA to WV Process function
+//' 
+//' Molds the data so that it works with the arma_to_wv function.
 //' @param theta A \code{vec} that contains all the parameter estimates.
-//' @param p A \code{int} that indicates the number of AR coefficients
-//' @param q A \code{int} that indicates the number of MA coefficients.
-//' @param tau A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+//' @param p     A \code{int} that indicates the number of AR coefficients
+//' @param q     A \code{int} that indicates the number of MA coefficients.
+//' @param tau   A \code{vec} that lists the scales of the process e.g. 2^(1:J)
 //' @return A \code{vec} containing the ARMA to WV results
+//' @details 
+//' The data conversion is more or less a rearrangement of values without using the obj desc. 
 //' @keywords internal
 //' @backref src/analytical_matrix_derivatives.cpp
 //' @backref src/analytical_matrix_derivatives.h
@@ -59,12 +62,13 @@ arma::vec arma_adapter(const arma::vec& theta,
 }
 
 
-//' @title Calculates the Jacobian for the ARMA process
-//' @description Figure out the Jacobian for an ARMA process.
+//' Calculates the Jacobian for the ARMA process
+//' 
+//' Take the numerical derivative for the first derivative of an ARMA using the 2 point rule.
 //' @param theta A \code{vec} that contains all the parameter estimates.
-//' @param p A \code{int} that indicates the number of AR coefficients
-//' @param q A \code{int} that indicates the number of MA coefficients.
-//' @param tau A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+//' @param p     A \code{int} that indicates the number of AR coefficients
+//' @param q     A \code{int} that indicates the number of MA coefficients.
+//' @param tau   A \code{vec} that lists the scales of the process e.g. 2^(1:J)
 //' @return A \code{mat} that returns the numerical jacobian of the ARMA process.
 //' @keywords internal
 //' @backref src/analytical_matrix_derivatives.cpp
@@ -125,14 +129,14 @@ arma::mat jacobian_arma(const arma::vec& theta,
 
 
 //' Analytic D matrix for AR(1) process
-//' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
+//' 
+//' Obtain the first derivative of the AR(1) process. 
+//' @param phi  A \code{double} corresponding to the phi coefficient of an AR(1) process.
 //' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
-//' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @param tau  A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
 //' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
 //' @details
-//' The haar wavelet variance is given as \eqn{\frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}}}{See PDF Manual for equation}
-//' Note: \eqn{\phi = \rho}{phi = rho} and \eqn{V _0^2 = \sigma _0^2}{V[0]^2 = sigma[0]^2}.
-//' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
+//' See the supporting vignette documentation.
 //' @author JJB
 //' @examples
 //' deriv_ar1(.3, 1, 2^(1:5))
@@ -169,7 +173,7 @@ arma::mat deriv_ar1(double phi, double sig2, arma::vec tau){
 //' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
 //' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
 //' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-//' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+//' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi}{\phi} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
 //' @details
 //' The haar wavelet variance is given as \eqn{\frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}}}{See PDF Manual for equation}
 //' Note: \eqn{\phi = \rho}{phi = rho} and \eqn{V _0^2 = \sigma _0^2}{V[0]^2 = sigma[0]^2}.
@@ -210,6 +214,73 @@ arma::mat deriv_2nd_ar1(double phi, double sig2, arma::vec tau){
      
      return D;
 }
+
+//' Analytic D matrix for MA(1) process
+//' 
+//' Obtain the first derivative of the MA(1) process. 
+//' @param theta  A \code{double} corresponding to the phi coefficient of an MA(1) process.
+//' @param sig2   A \code{double} corresponding to the error term of an MA(1) process.
+//' @param tau    A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\theta} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+//' @details
+//' See the supporting vignette documentation.
+//' @author JJB
+//' @examples
+//' deriv_ma1(.3, 1, 2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_ma1(double theta, double sig2, arma::vec tau){
+  unsigned int ntau = tau.n_elem;
+  arma::mat D(ntau,2);
+  
+  // sigma ^2/ tau^2
+  arma::vec shared = (1 / arma::square(tau));
+  
+  // partial derivative with respect to theta
+  D.col(0) = shared % (2.0 * (theta + 1.0) * tau - 6.0) * sig2;
+    
+  // partial derivative with respect to sig2
+  D.col(1) = shared % (square(theta + 1.0) * tau - 6.0 * theta);
+  
+  return D;
+}
+
+
+
+//' Analytic second derivative for MA(1) process
+//' 
+//' To easy calculation, we assume a matrix structure. 
+//' @param theta A \code{double} corresponding to the phi coefficient of an MA(1) process.
+//' @param sig2  A \code{double} corresponding to the error term of an MA(1) process.
+//' @param tau   A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+//' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{\theta},
+//'  the second column contains the partial derivative with respect to \eqn{\theta}{\theta} and \eqn{\sigma ^2}{sigma^2},
+//'  and lastly we have the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+//' @details
+//' See the supporting vignette documentation.
+//' @author JJB
+//' @examples
+//' deriv_2nd_ma1(.3, 1, 2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_2nd_ma1(double theta, double sig2, arma::vec tau){
+  unsigned int ntau = tau.n_elem;
+  arma::mat D(ntau,3);
+  
+  // partial derivative with respect to phi
+  D.col(0) = 2.0*sig2 / tau;
+  
+  // partial derivative with respect to phi and sig2
+  D.col(1) = sig2 / pow(tau,4.0) % // shared sig2 / tau^4
+              (2.0 * (theta + 1.0) * tau - 6.0) % // (2*(theta+1)*tau - 6)
+              (square(theta + 1.0) * tau - 6.0 * theta);
+  
+  // partial derivative with respect to sig2
+  D.col(2).fill(0);
+  
+  return D;
+}
+
+
+
 
 
 //' Analytic D matrix for drift process
@@ -302,11 +373,12 @@ arma::mat deriv_wn(arma::vec tau){
 }
 
 //' Analytic D matrix of Processes
-//' @description This function computes each process to WV (haar) in a given model.
-//' @param theta A \code{vec} containing the list of estimated parameters.
-//' @param desc A \code{vector<string>} containing a list of descriptors.
+//' 
+//' This function computes each process to WV (haar) in a given model.
+//' @param theta   A \code{vec} containing the list of estimated parameters.
+//' @param desc    A \code{vector<string>} containing a list of descriptors.
 //' @param objdesc A \code{field<vec>} containing a list of object descriptors.
-//' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+//' @param tau     A \code{vec} containing the scales e.g. 2^(1:J)
 //' @return A \code{matrix} with the process derivatives going down the column
 //' @details
 //' Function returns the matrix effectively known as "D"
@@ -341,17 +413,18 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
       // Compute theoretical WV
       D.cols(i_theta-1,i_theta) = deriv_ar1(theta_value, sig2, tau);
     }
-    else if(element_type == "ARMA"){
-      arma::vec o = objdesc(i);
+    // MA 1
+    if(element_type == "MA1"){
       
-      unsigned int p = o(0);
-      unsigned int q = o(1);
+      ++i_theta;
+      double sig2 = theta(i_theta);
       
-      D.cols(i_theta, i_theta + p + q) = jacobian_arma(
-          theta.rows(i_theta, i_theta + p + q),
-          p, q, tau);
-      
-      i_theta += p + q;
+      // Compute theoretical WV
+      D.cols(i_theta-1,i_theta) = deriv_ma1(theta_value, sig2, tau);
+    }
+    // WN
+    else if(element_type == "WN"){
+      D.col(i_theta) = deriv_wn(tau);
     }
     // DR
     else if(element_type == "DR"){
@@ -365,9 +438,18 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
     else if(element_type == "RW"){
       D.col(i_theta) = deriv_rw(tau);
     }
-    // WN
-    else{
-      D.col(i_theta) = deriv_wn(tau);
+    // ARMA
+    else {
+      arma::vec o = objdesc(i);
+      
+      unsigned int p = o(0);
+      unsigned int q = o(1);
+      
+      D.cols(i_theta, i_theta + p + q) = jacobian_arma(
+        theta.rows(i_theta, i_theta + p + q),
+        p, q, tau);
+      
+      i_theta += p + q;
     }
     
     ++i_theta;
@@ -378,11 +460,12 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
 
 
 //' Analytic D matrix of Processes
-//' @description This function computes each process to WV (haar) in a given model.
-//' @param theta A \code{vec} containing the list of estimated parameters.
-//' @param desc A \code{vector<string>} containing a list of descriptors.
-//' @param objdesc A \code{field<vec>} containing a list of object descriptors.
-//' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+//' 
+//' This function computes each process to WV (haar) in a given model.
+//' @param theta     A \code{vec} containing the list of estimated parameters.
+//' @param desc      A \code{vector<string>} containing a list of descriptors.
+//' @param objdesc   A \code{field<vec>} containing a list of object descriptors.
+//' @param tau       A \code{vec} containing the scales e.g. 2^(1:J)
 //' @param omegadiff A \code{vec} that contains the result of Omega * (wv_empir - wv_theo)
 //' @return A \code{matrix} with the process derivatives going down the column
 //' @details
@@ -431,6 +514,29 @@ arma::mat D_matrix(const arma::vec& theta,
       A_i.rows(i_theta-1, i_theta) = s.rows(0,1);
       
       // Calculate the D matrix column value for the phi
+      D.col(i_theta-1) = A_i * omegadiff;
+      
+      // Modify p columns for sig
+      A_i.rows(i_theta-1, i_theta) = s.rows(1,2);
+      
+      // Calculate the D matrix column value for the sigma
+      D.col(i_theta) = A_i * omegadiff;
+      
+      // Clear the Ai matrix
+      A_i.row(i_theta-1).fill(0);
+      
+    }else if(element_type == "MA1"){
+      
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      // Return matrix with d/dtheta^2, d/dthetasig, d/dsig^2
+      arma::mat s = deriv_2nd_ma1(theta_value, sig2, tau).t();
+      
+      // Modify p columns for theta
+      A_i.rows(i_theta-1, i_theta) = s.rows(0,1);
+      
+      // Calculate the D matrix column value for the theta
       D.col(i_theta-1) = A_i * omegadiff;
       
       // Modify p columns for sig

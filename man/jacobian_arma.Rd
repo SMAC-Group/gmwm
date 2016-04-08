@@ -19,7 +19,7 @@ jacobian_arma(theta, p, q, tau)
 A \code{mat} that returns the numerical jacobian of the ARMA process.
 }
 \description{
-Figure out the Jacobian for an ARMA process.
+Take the numerical derivative for the first derivative of an ARMA using the 2 point rule.
 }
 \keyword{internal}
 

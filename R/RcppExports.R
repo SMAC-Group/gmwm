@@ -109,13 +109,16 @@ avar_mo_cpp <- function(x) {
     .Call('gmwm_avar_mo_cpp', PACKAGE = 'gmwm', x)
 }
 
-#' @title ARMA Adapter to ARMA to WV Process function
-#' @description Molds the data so that it works with the arma_to_wv function.
+#' ARMA Adapter to ARMA to WV Process function
+#' 
+#' Molds the data so that it works with the arma_to_wv function.
 #' @param theta A \code{vec} that contains all the parameter estimates.
-#' @param p A \code{int} that indicates the number of AR coefficients
-#' @param q A \code{int} that indicates the number of MA coefficients.
-#' @param tau A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+#' @param p     A \code{int} that indicates the number of AR coefficients
+#' @param q     A \code{int} that indicates the number of MA coefficients.
+#' @param tau   A \code{vec} that lists the scales of the process e.g. 2^(1:J)
 #' @return A \code{vec} containing the ARMA to WV results
+#' @details 
+#' The data conversion is more or less a rearrangement of values without using the obj desc. 
 #' @keywords internal
 #' @backref src/analytical_matrix_derivatives.cpp
 #' @backref src/analytical_matrix_derivatives.h
@@ -123,12 +126,13 @@ arma_adapter <- function(theta, p, q, tau) {
     .Call('gmwm_arma_adapter', PACKAGE = 'gmwm', theta, p, q, tau)
 }
 
-#' @title Calculates the Jacobian for the ARMA process
-#' @description Figure out the Jacobian for an ARMA process.
+#' Calculates the Jacobian for the ARMA process
+#' 
+#' Take the numerical derivative for the first derivative of an ARMA using the 2 point rule.
 #' @param theta A \code{vec} that contains all the parameter estimates.
-#' @param p A \code{int} that indicates the number of AR coefficients
-#' @param q A \code{int} that indicates the number of MA coefficients.
-#' @param tau A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+#' @param p     A \code{int} that indicates the number of AR coefficients
+#' @param q     A \code{int} that indicates the number of MA coefficients.
+#' @param tau   A \code{vec} that lists the scales of the process e.g. 2^(1:J)
 #' @return A \code{mat} that returns the numerical jacobian of the ARMA process.
 #' @keywords internal
 #' @backref src/analytical_matrix_derivatives.cpp
@@ -138,14 +142,14 @@ jacobian_arma <- function(theta, p, q, tau) {
 }
 
 #' Analytic D matrix for AR(1) process
-#' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
+#' 
+#' Obtain the first derivative of the AR(1) process. 
+#' @param phi  A \code{double} corresponding to the phi coefficient of an AR(1) process.
 #' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+#' @param tau  A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
 #' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
 #' @details
-#' The haar wavelet variance is given as \eqn{\frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}}}{See PDF Manual for equation}
-#' Note: \eqn{\phi = \rho}{phi = rho} and \eqn{V _0^2 = \sigma _0^2}{V[0]^2 = sigma[0]^2}.
-#' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
+#' See the supporting vignette documentation.
 #' @author JJB
 #' @examples
 #' deriv_ar1(.3, 1, 2^(1:5))
@@ -157,7 +161,7 @@ deriv_ar1 <- function(phi, sig2, tau) {
 #' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
 #' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
 #' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi}{\phi} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
 #' @details
 #' The haar wavelet variance is given as \eqn{\frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}}}{See PDF Manual for equation}
 #' Note: \eqn{\phi = \rho}{phi = rho} and \eqn{V _0^2 = \sigma _0^2}{V[0]^2 = sigma[0]^2}.
@@ -167,6 +171,40 @@ deriv_ar1 <- function(phi, sig2, tau) {
 #' deriv_2nd_ar1(.3, 1, 2^(1:5))
 deriv_2nd_ar1 <- function(phi, sig2, tau) {
     .Call('gmwm_deriv_2nd_ar1', PACKAGE = 'gmwm', phi, sig2, tau)
+}
+
+#' Analytic D matrix for MA(1) process
+#' 
+#' Obtain the first derivative of the MA(1) process. 
+#' @param theta  A \code{double} corresponding to the phi coefficient of an MA(1) process.
+#' @param sig2   A \code{double} corresponding to the error term of an MA(1) process.
+#' @param tau    A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\theta} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+#' @details
+#' See the supporting vignette documentation.
+#' @author JJB
+#' @examples
+#' deriv_ma1(.3, 1, 2^(1:5))
+deriv_ma1 <- function(theta, sig2, tau) {
+    .Call('gmwm_deriv_ma1', PACKAGE = 'gmwm', theta, sig2, tau)
+}
+
+#' Analytic second derivative for MA(1) process
+#' 
+#' To easy calculation, we assume a matrix structure. 
+#' @param theta A \code{double} corresponding to the phi coefficient of an MA(1) process.
+#' @param sig2  A \code{double} corresponding to the error term of an MA(1) process.
+#' @param tau   A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
+#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{\theta},
+#'  the second column contains the partial derivative with respect to \eqn{\theta}{\theta} and \eqn{\sigma ^2}{sigma^2},
+#'  and lastly we have the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+#' @details
+#' See the supporting vignette documentation.
+#' @author JJB
+#' @examples
+#' deriv_2nd_ma1(.3, 1, 2^(1:5))
+deriv_2nd_ma1 <- function(theta, sig2, tau) {
+    .Call('gmwm_deriv_2nd_ma1', PACKAGE = 'gmwm', theta, sig2, tau)
 }
 
 #' Analytic D matrix for drift process
@@ -239,11 +277,12 @@ deriv_wn <- function(tau) {
 }
 
 #' Analytic D matrix of Processes
-#' @description This function computes each process to WV (haar) in a given model.
-#' @param theta A \code{vec} containing the list of estimated parameters.
-#' @param desc A \code{vector<string>} containing a list of descriptors.
+#' 
+#' This function computes each process to WV (haar) in a given model.
+#' @param theta   A \code{vec} containing the list of estimated parameters.
+#' @param desc    A \code{vector<string>} containing a list of descriptors.
 #' @param objdesc A \code{field<vec>} containing a list of object descriptors.
-#' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+#' @param tau     A \code{vec} containing the scales e.g. 2^(1:J)
 #' @return A \code{matrix} with the process derivatives going down the column
 #' @details
 #' Function returns the matrix effectively known as "D"
@@ -256,11 +295,12 @@ derivative_first_matrix <- function(theta, desc, objdesc, tau) {
 }
 
 #' Analytic D matrix of Processes
-#' @description This function computes each process to WV (haar) in a given model.
-#' @param theta A \code{vec} containing the list of estimated parameters.
-#' @param desc A \code{vector<string>} containing a list of descriptors.
-#' @param objdesc A \code{field<vec>} containing a list of object descriptors.
-#' @param tau A \code{vec} containing the scales e.g. 2^(1:J)
+#' 
+#' This function computes each process to WV (haar) in a given model.
+#' @param theta     A \code{vec} containing the list of estimated parameters.
+#' @param desc      A \code{vector<string>} containing a list of descriptors.
+#' @param objdesc   A \code{field<vec>} containing a list of object descriptors.
+#' @param tau       A \code{vec} containing the scales e.g. 2^(1:J)
 #' @param omegadiff A \code{vec} that contains the result of Omega * (wv_empir - wv_theo)
 #' @return A \code{matrix} with the process derivatives going down the column
 #' @details
@@ -712,7 +752,7 @@ gen_wn <- function(N, sigma2 = 1) {
 
 #' Generate a Drift Process
 #' 
-#' Generates a Drift Process with a given slope, \eq{\omega}.
+#' Generates a Drift Process with a given slope, \eqn{\omega}.
 #' @param N     An \code{integer} for signal length.
 #' @param slope A \code{double} that contains drift slope
 #' @return A \code{vec} containing the drift.

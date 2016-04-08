@@ -21,5 +21,8 @@ A \code{vec} containing the ARMA to WV results
 \description{
 Molds the data so that it works with the arma_to_wv function.
 }
+\details{
+The data conversion is more or less a rearrangement of values without using the obj desc.
+}
 \keyword{internal}
 

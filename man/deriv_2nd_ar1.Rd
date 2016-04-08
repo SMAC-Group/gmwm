@@ -14,7 +14,7 @@ deriv_2nd_ar1(phi, sig2, tau)
 \item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
 }
 \value{
-A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi}{\phi} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
 }
 \description{
 Analytic second derivative matrix for AR(1) process

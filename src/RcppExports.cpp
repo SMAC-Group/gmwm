@@ -118,6 +118,32 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// deriv_ma1
+arma::mat deriv_ma1(double theta, double sig2, arma::vec tau);
+RcppExport SEXP gmwm_deriv_ma1(SEXP thetaSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_ma1(theta, sig2, tau));
+    return __result;
+END_RCPP
+}
+// deriv_2nd_ma1
+arma::mat deriv_2nd_ma1(double theta, double sig2, arma::vec tau);
+RcppExport SEXP gmwm_deriv_2nd_ma1(SEXP thetaSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_2nd_ma1(theta, sig2, tau));
+    return __result;
+END_RCPP
+}
 // deriv_dr
 arma::mat deriv_dr(double omega, arma::vec tau);
 RcppExport SEXP gmwm_deriv_dr(SEXP omegaSEXP, SEXP tauSEXP) {
