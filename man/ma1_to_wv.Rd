@@ -22,6 +22,6 @@ This function computes the WV (haar) of a Moving Average order 1 (MA1) process.
 \examples{
 ntau = 7
 tau = 2^(1:ntau)
-wv.theo = ma1_to_wv(1, tau)
+wv.theo = ma1_to_wv(.3, 1, tau)
 }
 

@@ -202,7 +202,7 @@ arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& t
 //' @examples
 //' ntau = 7
 //' tau = 2^(1:ntau)
-//' wv.theo = ma1_to_wv(1, tau)
+//' wv.theo = ma1_to_wv(.3, 1, tau)
 // [[Rcpp::export]]
 arma::vec ma1_to_wv(double theta, double sig2, const arma::vec& tau){
   return sig2 * (square(theta + 1.0) * tau - 6.0 * theta)/arma::square(tau);

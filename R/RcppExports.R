@@ -1442,7 +1442,7 @@ arma11_to_wv <- function(phi, theta, sig2, tau) {
 #' @examples
 #' ntau = 7
 #' tau = 2^(1:ntau)
-#' wv.theo = ma1_to_wv(1, tau)
+#' wv.theo = ma1_to_wv(.3, 1, tau)
 ma1_to_wv <- function(theta, sig2, tau) {
     .Call('gmwm_ma1_to_wv', PACKAGE = 'gmwm', theta, sig2, tau)
 }
