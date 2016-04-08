@@ -113,7 +113,7 @@ ARMA11 = function(phi = NULL, theta = NULL, sigma2 = 1.0) {
   # Assume the user specified data
   starting = FALSE
   
-  if(is.null(phi) || is.null(ma)){
+  if(is.null(phi) || is.null(theta)){
     phi = 0
     theta = 0;
     sigma2 = 1;
