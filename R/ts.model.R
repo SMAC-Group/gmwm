@@ -113,15 +113,17 @@ ARMA11 = function(phi = NULL, theta = NULL, sigma2 = 1.0) {
   # Assume the user specified data
   starting = FALSE
   
-  if(is.null(ar) || is.null(ma)){
-    ar = 0
-    ma = 0;
+  if(is.null(phi) || is.null(ma)){
+    phi = 0
+    theta = 0;
     sigma2 = 1;
     starting = TRUE;
+  }else if(length(phi) != 1 || length(theta) != 1){
+    stop("`phi` and `theta` must have only one value.")
   }
   
   out = structure(list(process.desc = c("AR1","MA1","SIGMA2"),
-                       theta = c(ar, ma, sigma2),
+                       theta = c(phi, theta, sigma2),
                        plength = 3,
                        desc = "ARMA11",
                        obj.desc = list(c(1,1,1)),
