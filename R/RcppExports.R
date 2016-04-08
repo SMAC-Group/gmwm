@@ -1414,9 +1414,43 @@ arma_to_wv_app <- function(ar, ma, tau, sigma, alpha = 0.9999) {
     .Call('gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, tau, sigma, alpha)
 }
 
-#' @title Quantisation Noise to WV
-#' @description This function compute the WV (haar) of a Quantisation Noise (QN) process
-#' @param q2 A \code{double} corresponding to variance of drift
+#' ARMA(1,1) to WV
+#' 
+#' This function computes the WV (haar) of an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) process.
+#' @param theta A \code{double} corresponding to the moving average term. 
+#' @param sig2  A \code{double} the variance of the process. 
+#' @param tau   A \code{vec} containing the scales e.g. 2^tau
+#' @return A \code{vec} containing the wavelet variance of the ARMA(1,1) process.
+#' @details 
+#' This function is significantly faster than its generalized counter part
+#' \code{\link[gmwm]{arma_to_wv}}
+#' @examples
+#' ntau = 7
+#' tau = 2^(1:ntau)
+#' wv.theo = ma1_to_wv(1, tau)
+arma11_to_wv <- function(phi, theta, sig2, tau) {
+    .Call('gmwm_arma11_to_wv', PACKAGE = 'gmwm', phi, theta, sig2, tau)
+}
+
+#' Moving Average Order 1 (MA(1)) to WV
+#' 
+#' This function computes the WV (haar) of a Moving Average order 1 (MA1) process.
+#' @param theta A \code{double} corresponding to the moving average term. 
+#' @param sig2  A \code{double} the variance of the process. 
+#' @param tau   A \code{vec} containing the scales e.g. 2^tau
+#' @return A \code{vec} containing the wavelet variance of the MA(1) process.
+#' @examples
+#' ntau = 7
+#' tau = 2^(1:ntau)
+#' wv.theo = ma1_to_wv(1, tau)
+ma1_to_wv <- function(theta, sig2, tau) {
+    .Call('gmwm_ma1_to_wv', PACKAGE = 'gmwm', theta, sig2, tau)
+}
+
+#' Quantisation Noise to WV
+#' 
+#' This function compute the WV (haar) of a Quantisation Noise (QN) process
+#' @param q2  A \code{double} corresponding to variance of drift
 #' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the QN.
 #' @examples

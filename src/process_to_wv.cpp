@@ -113,8 +113,6 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma
   
   arma::vec wvar(ntau);
   
-  
-  
   double term1;
   double term2;
   double term3;
@@ -163,11 +161,57 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma
 }
 
 
+//' ARMA(1,1) to WV
+//' 
+//' This function computes the WV (haar) of an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) process.
+//' @param theta A \code{double} corresponding to the moving average term. 
+//' @param sig2  A \code{double} the variance of the process. 
+//' @param tau   A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the ARMA(1,1) process.
+//' @details 
+//' This function is significantly faster than its generalized counter part
+//' \code{\link[gmwm]{arma_to_wv}}
+//' @examples
+//' ntau = 7
+//' tau = 2^(1:ntau)
+//' wv.theo = ma1_to_wv(1, tau)
+// [[Rcpp::export]]
+arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& tau){
+  
+  unsigned int size_tau = tau.n_elem;
+  arma::vec temp_term(size_tau);
+  arma::vec temp_term_redux(size_tau);
+  for(unsigned int i=0; i< size_tau; i++){
+    temp_term(i) = -4.0*pow(phi,tau(i)/2.0);
+    temp_term_redux(i) = pow(phi,tau(i));
+  }
+  
+  return (2.0 * sig2 / (square(phi - 1.0) * (1-square(phi)) * arma::square(tau)) ) // common term 2*s^2 / (phi-1)^2(1-phi^2)t^2
+    % (0.5 * square(phi-1.0)*(-2.0*theta*phi + square(theta) + 1.0)*tau - (theta - phi)*(theta*phi - 1.0)*(temp_term + temp_term_redux + (theta - 1.0)*tau + 3.0))
+    ;
+}
 
 
-//' @title Quantisation Noise to WV
-//' @description This function compute the WV (haar) of a Quantisation Noise (QN) process
-//' @param q2 A \code{double} corresponding to variance of drift
+//' Moving Average Order 1 (MA(1)) to WV
+//' 
+//' This function computes the WV (haar) of a Moving Average order 1 (MA1) process.
+//' @param theta A \code{double} corresponding to the moving average term. 
+//' @param sig2  A \code{double} the variance of the process. 
+//' @param tau   A \code{vec} containing the scales e.g. 2^tau
+//' @return A \code{vec} containing the wavelet variance of the MA(1) process.
+//' @examples
+//' ntau = 7
+//' tau = 2^(1:ntau)
+//' wv.theo = ma1_to_wv(1, tau)
+// [[Rcpp::export]]
+arma::vec ma1_to_wv(double theta, double sig2, const arma::vec& tau){
+  return sig2 * (square(theta + 1.0) * tau - 6.0 * theta)/arma::square(tau);
+}
+
+//' Quantisation Noise to WV
+//' 
+//' This function compute the WV (haar) of a Quantisation Noise (QN) process
+//' @param q2  A \code{double} corresponding to variance of drift
 //' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the QN.
 //' @examples
