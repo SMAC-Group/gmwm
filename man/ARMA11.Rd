@@ -32,7 +32,7 @@ randomization functions expecting a variance instead of a standard deviation lik
 }
 \examples{
 # Creates an ARMA(1,1) process with predefined coefficients.
-ARMA11(ar=.23, ma=.1, sigma2 = 1)
+ARMA11(phi = .23, theta = .1, sigma2 = 1)
 
 # Creates an ARMA(1,1) process with values to be guessed on callibration.
 ARMA11()
