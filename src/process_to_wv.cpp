@@ -26,18 +26,21 @@
 
 /* ----------------------------- Start Process to WV Functions ------------------------------- */
 
-//' @title ARMA process to WV
-//' @description This function computes the (haar) WV of an ARMA process
+//' ARMA process to WV
+//' 
+//' This function computes the (haar) WV of an ARMA process
 //' @param ar A \code{vec} containing the coefficients of the AR process
 //' @param ma A \code{vec} containing the coefficients of the MA process
-//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @param sigma A \code{double} containing the residual variance
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
 //' @examples
-//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+//' 
+//' # Calculates the Haar WV for an ARMA(2,3).
+//' arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma) {
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma, arma::vec tau) {
   
   arma::vec n = arma::sort(tau/2);
   unsigned int ntau = tau.n_elem;
@@ -87,20 +90,22 @@ double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha =
   return as_scalar(find(obj == min(obj))) + 1;
 }
 
-//' @title ARMA process to WV approximation
-//' @description This function computes the (haar) WV of an ARMA process
+//' ARMA process to WV Approximation
+//' 
+//' This function computes the (haar) WV of an ARMA process
 //' @param ar A \code{vec} containing the coefficients of the AR process
 //' @param ma A \code{vec} containing the coefficients of the MA process
-//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @param sigma A \code{double} containing the residual variance
+//' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @param alpha A \code{double} indicating the cutoff.
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
 //' @keywords internal
 //' @examples
+//' # Performs an approximation of the Haar WV for an ARMA(2,3).
 //' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
-arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma, double alpha = 0.9999) {
+arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma, arma::vec tau, double alpha = 0.9999) {
   
   arma::vec n = arma::sort(tau/2);
   unsigned int ntau = tau.n_elem;
@@ -164,6 +169,7 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma
 //' ARMA(1,1) to WV
 //' 
 //' This function computes the WV (haar) of an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) process.
+//' @param phi   A \code{double} corresponding to the autoregressive term.
 //' @param theta A \code{double} corresponding to the moving average term. 
 //' @param sig2  A \code{double} the variance of the process. 
 //' @param tau   A \code{vec} containing the scales e.g. 2^tau
@@ -174,7 +180,7 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma
 //' @examples
 //' ntau = 7
 //' tau = 2^(1:ntau)
-//' wv.theo = ma1_to_wv(1, tau)
+//' wv.theo = arma11_to_wv(0.3, 0.1, 1, tau)
 // [[Rcpp::export]]
 arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& tau){
   
@@ -367,7 +373,7 @@ arma::vec theoretical_wv(const arma::vec& theta,
       i_theta += q;
 
       
-      wv_theo += arma_to_wv(ar, ma, tau, theta(i_theta));
+      wv_theo += arma_to_wv(ar, ma, theta(i_theta), tau);
     }
     // DR
     else if(element_type == "DR"){
@@ -461,7 +467,7 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
       i_theta += q;
 
       
-      wv_theo.col(i) = arma_to_wv(ar, ma, tau, theta(i_theta));
+      wv_theo.col(i) = arma_to_wv(ar, ma, theta(i_theta), tau);
     }
     // DR
     else if(element_type == "DR"){

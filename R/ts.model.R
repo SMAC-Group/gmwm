@@ -49,9 +49,10 @@ AR1 = function(phi = NULL, sigma2 = 1) {
   invisible(out)
 }
 
-#' @title Create an Moving Average 1 [MA(1)] Process
-#' @description Setups the necessary backend for the MA1 process.
-#' @param phi A \code{double} value for the \eqn{\phi}{phi} of an MA1 process.
+#' Create an Moving Average 1 [MA(1)] Process
+#' 
+#' Setups the necessary backend for the MA1 process.
+#' @param theta  A \code{double} value for the \eqn{\phi}{phi} of an MA1 process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \describe{

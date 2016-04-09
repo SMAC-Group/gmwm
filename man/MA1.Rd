@@ -7,9 +7,9 @@
 MA1(theta = NULL, sigma2 = 1)
 }
 \arguments{
-\item{sigma2}{A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.}
+\item{theta}{A \code{double} value for the \eqn{\phi}{phi} of an MA1 process.}
 
-\item{phi}{A \code{double} value for the \eqn{\phi}{phi} of an MA1 process.}
+\item{sigma2}{A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.}
 }
 \value{
 An S3 object with called ts.model with the following structure:

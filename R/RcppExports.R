@@ -1371,18 +1371,21 @@ do_polyroot_cpp <- function(z) {
     .Call('gmwm_do_polyroot_cpp', PACKAGE = 'gmwm', z)
 }
 
-#' @title ARMA process to WV
-#' @description This function computes the (haar) WV of an ARMA process
+#' ARMA process to WV
+#' 
+#' This function computes the (haar) WV of an ARMA process
 #' @param ar A \code{vec} containing the coefficients of the AR process
 #' @param ma A \code{vec} containing the coefficients of the MA process
-#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @param sigma A \code{double} containing the residual variance
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the ARMA process.
 #' @examples
-#' arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+#' 
+#' # Calculates the Haar WV for an ARMA(2,3).
+#' arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
 #' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
-arma_to_wv <- function(ar, ma, tau, sigma) {
-    .Call('gmwm_arma_to_wv', PACKAGE = 'gmwm', ar, ma, tau, sigma)
+arma_to_wv <- function(ar, ma, sigma, tau) {
+    .Call('gmwm_arma_to_wv', PACKAGE = 'gmwm', ar, ma, sigma, tau)
 }
 
 #' @title Helper Function for ARMA to WV Approximation
@@ -1398,25 +1401,28 @@ acf_sum <- function(ar, ma, last_tau, alpha = 0.99) {
     .Call('gmwm_acf_sum', PACKAGE = 'gmwm', ar, ma, last_tau, alpha)
 }
 
-#' @title ARMA process to WV approximation
-#' @description This function computes the (haar) WV of an ARMA process
+#' ARMA process to WV Approximation
+#' 
+#' This function computes the (haar) WV of an ARMA process
 #' @param ar A \code{vec} containing the coefficients of the AR process
 #' @param ma A \code{vec} containing the coefficients of the MA process
-#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @param sigma A \code{double} containing the residual variance
+#' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @param alpha A \code{double} indicating the cutoff.
 #' @return A \code{vec} containing the wavelet variance of the ARMA process.
 #' @keywords internal
 #' @examples
+#' # Performs an approximation of the Haar WV for an ARMA(2,3).
 #' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
 #' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
-arma_to_wv_app <- function(ar, ma, tau, sigma, alpha = 0.9999) {
-    .Call('gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, tau, sigma, alpha)
+arma_to_wv_app <- function(ar, ma, sigma, tau, alpha = 0.9999) {
+    .Call('gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, sigma, tau, alpha)
 }
 
 #' ARMA(1,1) to WV
 #' 
 #' This function computes the WV (haar) of an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) process.
+#' @param phi   A \code{double} corresponding to the autoregressive term.
 #' @param theta A \code{double} corresponding to the moving average term. 
 #' @param sig2  A \code{double} the variance of the process. 
 #' @param tau   A \code{vec} containing the scales e.g. 2^tau
@@ -1427,7 +1433,7 @@ arma_to_wv_app <- function(ar, ma, tau, sigma, alpha = 0.9999) {
 #' @examples
 #' ntau = 7
 #' tau = 2^(1:ntau)
-#' wv.theo = ma1_to_wv(1, tau)
+#' wv.theo = arma11_to_wv(0.3, 0.1, 1, tau)
 arma11_to_wv <- function(phi, theta, sig2, tau) {
     .Call('gmwm_arma11_to_wv', PACKAGE = 'gmwm', phi, theta, sig2, tau)
 }

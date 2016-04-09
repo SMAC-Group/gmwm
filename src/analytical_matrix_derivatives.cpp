@@ -58,7 +58,7 @@ arma::vec arma_adapter(const arma::vec& theta,
   
   sigma2 = theta(p+q);
   
-  return arma_to_wv(ar, ma, tau, sigma2);
+  return arma_to_wv(ar, ma, sigma2, tau);
 }
 
 

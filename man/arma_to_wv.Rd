@@ -4,16 +4,16 @@
 \alias{arma_to_wv}
 \title{ARMA process to WV}
 \usage{
-arma_to_wv(ar, ma, tau, sigma)
+arma_to_wv(ar, ma, sigma, tau)
 }
 \arguments{
 \item{ar}{A \code{vec} containing the coefficients of the AR process}
 
 \item{ma}{A \code{vec} containing the coefficients of the MA process}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
-
 \item{sigma}{A \code{double} containing the residual variance}
+
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the ARMA process.
@@ -22,7 +22,9 @@ A \code{vec} containing the wavelet variance of the ARMA process.
 This function computes the (haar) WV of an ARMA process
 }
 \examples{
-arma_to_wv(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3)
+
+# Calculates the Haar WV for an ARMA(2,3).
+arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
 }
 \seealso{
 \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}

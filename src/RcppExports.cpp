@@ -1126,16 +1126,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // arma_to_wv
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, arma::vec tau, double sigma);
-RcppExport SEXP gmwm_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP tauSEXP, SEXP sigmaSEXP) {
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma, arma::vec tau);
+RcppExport SEXP gmwm_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP sigmaSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    __result = Rcpp::wrap(arma_to_wv(ar, ma, tau, sigma));
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    __result = Rcpp::wrap(arma_to_wv(ar, ma, sigma, tau));
     return __result;
 END_RCPP
 }
@@ -1154,17 +1154,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // arma_to_wv_app
-arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, arma::vec tau, double sigma, double alpha);
-RcppExport SEXP gmwm_arma_to_wv_app(SEXP arSEXP, SEXP maSEXP, SEXP tauSEXP, SEXP sigmaSEXP, SEXP alphaSEXP) {
+arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma, arma::vec tau, double alpha);
+RcppExport SEXP gmwm_arma_to_wv_app(SEXP arSEXP, SEXP maSEXP, SEXP sigmaSEXP, SEXP tauSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    __result = Rcpp::wrap(arma_to_wv_app(ar, ma, tau, sigma, alpha));
+    __result = Rcpp::wrap(arma_to_wv_app(ar, ma, sigma, tau, alpha));
     return __result;
 END_RCPP
 }

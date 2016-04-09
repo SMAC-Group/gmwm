@@ -7,6 +7,8 @@
 arma11_to_wv(phi, theta, sig2, tau)
 }
 \arguments{
+\item{phi}{A \code{double} corresponding to the autoregressive term.}
+
 \item{theta}{A \code{double} corresponding to the moving average term.}
 
 \item{sig2}{A \code{double} the variance of the process.}
@@ -26,6 +28,6 @@ This function is significantly faster than its generalized counter part
 \examples{
 ntau = 7
 tau = 2^(1:ntau)
-wv.theo = ma1_to_wv(1, tau)
+wv.theo = arma11_to_wv(0.3, 0.1, 1, tau)
 }
 

@@ -2,18 +2,18 @@
 % Please edit documentation in R/RcppExports.R
 \name{arma_to_wv_app}
 \alias{arma_to_wv_app}
-\title{ARMA process to WV approximation}
+\title{ARMA process to WV Approximation}
 \usage{
-arma_to_wv_app(ar, ma, tau, sigma, alpha = 0.9999)
+arma_to_wv_app(ar, ma, sigma, tau, alpha = 0.9999)
 }
 \arguments{
 \item{ar}{A \code{vec} containing the coefficients of the AR process}
 
 \item{ma}{A \code{vec} containing the coefficients of the MA process}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
-
 \item{sigma}{A \code{double} containing the residual variance}
+
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 
 \item{alpha}{A \code{double} indicating the cutoff.}
 }
@@ -24,6 +24,7 @@ A \code{vec} containing the wavelet variance of the ARMA process.
 This function computes the (haar) WV of an ARMA process
 }
 \examples{
+# Performs an approximation of the Haar WV for an ARMA(2,3).
 arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
 }
 \seealso{
