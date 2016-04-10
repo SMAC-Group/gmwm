@@ -2060,9 +2060,9 @@ gm_to_ar1 <- function(theta, freq) {
 #' @param desc A \code{vector<string>} that contains a list of the strings of each process.
 #' @return A \code{field<vec>} that contains the object description of each process.
 #' @details
-#' This function currently does NOT support ARMA models. 
-#' That is, there is no support for ARMA, AR, or MA.
-#' There is support for AR1, GM, WN, DR, QN, and RW.
+#' This function currently does NOT support ARMA(P,Q) models. 
+#' That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+#' There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 #' @keywords internal
 #' @backref src/ts_model_cpp.cpp
 #' @backref src/ts_model_cpp.h
@@ -2075,9 +2075,9 @@ model_objdesc <- function(desc) {
 #' @param desc A \code{vector<string>} that contains a list of the strings of each process.
 #' @return A \code{vec} with values initialized at 0 that span the space of parameters to be estimated.
 #' @details
-#' This function currently does NOT support ARMA models. 
-#' That is, there is no support for ARMA, AR, or MA.
-#' There is support for AR1, GM, WN, DR, QN, and RW.
+#' This function currently does NOT support ARMA(P,Q) models. 
+#' That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+#' There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 #' @keywords internal
 #' @backref src/ts_model_cpp.cpp
 #' @backref src/ts_model_cpp.h
@@ -2090,9 +2090,9 @@ model_theta <- function(desc) {
 #' @param desc A \code{vector<string>} that contains a list of the strings of each process.
 #' @return A \code{vector<string>} with a list of descriptive values to label the estimate matrix with
 #' @details
-#' This function currently does NOT support ARMA models. 
-#' That is, there is no support for ARMA, AR, or MA.
-#' There is support for AR1, GM, WN, DR, QN, and RW.
+#' This function currently does NOT support ARMA(P,Q) models. 
+#' That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+#' There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 #' @keywords internal
 #' @backref src/ts_model_cpp.cpp
 #' @backref src/ts_model_cpp.h

@@ -20,7 +20,8 @@
 #include "ts_model_cpp.h"
 
 // Goal of file is to be able to recreate a string of values given.
-// Not supported: ARMA
+// Not supported: ARMA(P,Q) model
+// Support does exist for the ARMA(1,1) model
 
 
 //' @title Transform AR1 to GM
@@ -101,9 +102,9 @@ arma::vec gm_to_ar1(arma::vec theta, double freq){
 //' @param desc A \code{vector<string>} that contains a list of the strings of each process.
 //' @return A \code{field<vec>} that contains the object description of each process.
 //' @details
-//' This function currently does NOT support ARMA models. 
-//' That is, there is no support for ARMA, AR, or MA.
-//' There is support for AR1, GM, WN, DR, QN, and RW.
+//' This function currently does NOT support ARMA(P,Q) models. 
+//' That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+//' There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 //' @keywords internal
 //' @backref src/ts_model_cpp.cpp
 //' @backref src/ts_model_cpp.h
@@ -113,14 +114,17 @@ arma::field<arma::vec> model_objdesc(std::vector<std::string> desc){
   arma::field<arma::vec> objdesc(n);
   
   arma::vec ar1 = arma::ones<arma::vec>(2);
+  arma::vec arma11 = arma::ones<arma::vec>(3);
   arma::vec others = arma::ones<arma::vec>(1);
   
   for(unsigned int i = 0; i < n; i++){
     std::string element_type = desc[i];
-    if(element_type == "AR1" || element_type == "GM"){
+    if(element_type == "AR1" || element_type == "GM" || element_type == "MA1"){
       objdesc(i) = ar1;
-    }else{
+    }else if(element_type != "ARMA11"){
       objdesc(i) = others;
+    }else{
+      objdesc(i) = arma11;
     }
   }
   
@@ -133,9 +137,9 @@ arma::field<arma::vec> model_objdesc(std::vector<std::string> desc){
 //' @param desc A \code{vector<string>} that contains a list of the strings of each process.
 //' @return A \code{vec} with values initialized at 0 that span the space of parameters to be estimated.
 //' @details
-//' This function currently does NOT support ARMA models. 
-//' That is, there is no support for ARMA, AR, or MA.
-//' There is support for AR1, GM, WN, DR, QN, and RW.
+//' This function currently does NOT support ARMA(P,Q) models. 
+//' That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+//' There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 //' @keywords internal
 //' @backref src/ts_model_cpp.cpp
 //' @backref src/ts_model_cpp.h
@@ -146,10 +150,12 @@ arma::vec model_theta(std::vector<std::string> desc){
   unsigned int m = 0;
   for(unsigned int i = 0; i < n; i++){
     std::string element_type = desc[i];
-    if(element_type == "AR1" || element_type == "GM"){
+    if(element_type == "AR1" || element_type == "GM" || element_type == "MA1"){
       m += 2;
-    }else{
+    }else if(element_type != "ARMA11"){
       m++;
+    }else{
+      m += 3;
     }
   }
   
@@ -161,9 +167,9 @@ arma::vec model_theta(std::vector<std::string> desc){
 //' @param desc A \code{vector<string>} that contains a list of the strings of each process.
 //' @return A \code{vector<string>} with a list of descriptive values to label the estimate matrix with
 //' @details
-//' This function currently does NOT support ARMA models. 
-//' That is, there is no support for ARMA, AR, or MA.
-//' There is support for AR1, GM, WN, DR, QN, and RW.
+//' This function currently does NOT support ARMA(P,Q) models. 
+//' That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+//' There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 //' @keywords internal
 //' @backref src/ts_model_cpp.cpp
 //' @backref src/ts_model_cpp.h
@@ -181,9 +187,15 @@ std::vector<std::string> model_process_desc(std::vector<std::string> desc){
     }else if(element_type == "GM"){
       proc_desc.push_back("BETA");
       proc_desc.push_back("SIGMA2_GM");
-      
-    }else{
+    }else if(element_type == "MA1"){
+      proc_desc.push_back("MA1");
+      proc_desc.push_back("SIGMA2");
+    }else if(element_type != "ARMA11"){
       proc_desc.push_back(element_type);
+    }else{
+      proc_desc.push_back("AR1");
+      proc_desc.push_back("MA1");
+      proc_desc.push_back("SIGMA2");
     }
   }
   
