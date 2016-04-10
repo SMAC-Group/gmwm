@@ -185,17 +185,17 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma2, arma::vec ta
 arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& tau){
   
   unsigned int size_tau = tau.n_elem;
-  arma::vec phi_tau_ov2(size_tau);
-  arma::vec phi_tau_pl1(size_tau);
+  arma::vec phi_tau_ov2_m1(size_tau);
+  arma::vec phi_tau(size_tau);
   for(unsigned int i=0; i< size_tau; i++){
-    phi_tau_ov2(i) = pow(phi,tau(i)/2.0);
-    phi_tau_pl1(i) = pow(phi,tau(i)+1);
+    phi_tau_ov2_m1(i) = pow(phi,tau(i)/2.0 - 1);
+    phi_tau(i) = pow(phi,tau(i));
   }
-
-  return   -2.0 * sig2 / (arma::square(tau) * pow(phi - 1.0, 3.0) * phi * (phi + 1.0)) % // element wise
-    (0.5 * pow(phi-1.0,2.0) * tau % (phi * (2.0 * theta * phi + pow(theta,2.0) + 1.0) - (theta + phi) * (theta * phi + 1.0)*phi_tau_ov2) +
-    (theta + phi) * (theta * phi + 1.0) * ((phi * (tau * phi/2.0 - tau + 4.0) + tau/2.0)%phi_tau_ov2 - phi_tau_pl1 + phi*(-1*tau*phi+tau-3))
-    );
+  
+  return   -2.0 * sig2 / (arma::square(tau) * pow(phi - 1.0, 3.0)  * (phi + 1.0)) % // element wise
+  (0.5 * pow(phi-1.0,2.0) * tau % ((2.0 * theta * phi + pow(theta,2.0) + 1.0) - (theta + phi) * (theta * phi + 1.0)*phi_tau_ov2_m1) +
+  (theta + phi) * (theta * phi + 1.0) * ((phi * (tau * phi/2.0 - tau + 4.0) + tau/2.0)%phi_tau_ov2_m1 - phi_tau + (-1*tau*phi+tau-3))
+  );
   
 }
 
