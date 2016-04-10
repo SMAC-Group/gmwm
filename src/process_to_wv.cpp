@@ -263,7 +263,7 @@ arma::vec wn_to_wv(double sig2, arma::vec tau){
 //' plot(tau, wv.theo, col = "red")
 // [[Rcpp::export]]
 arma::vec rw_to_wv(double sig2, const arma::vec& tau){
-  return sig2*((2.0*arma::square(tau) + 4.0)/(24.0*tau));
+  return sig2*((arma::square(tau) + 2.0)/(12.0*tau));
 }
 
 
