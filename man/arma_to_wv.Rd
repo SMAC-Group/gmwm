@@ -4,16 +4,16 @@
 \alias{arma_to_wv}
 \title{ARMA process to WV}
 \usage{
-arma_to_wv(ar, ma, sigma, tau)
+arma_to_wv(ar, ma, sigma2, tau)
 }
 \arguments{
 \item{ar}{A \code{vec} containing the coefficients of the AR process}
 
 \item{ma}{A \code{vec} containing the coefficients of the MA process}
 
-\item{sigma}{A \code{double} containing the residual variance}
-
 \item{tau}{A \code{vec} containing the scales e.g. 2^tau}
+
+\item{sigma}{A \code{double} containing the residual variance}
 }
 \value{
 A \code{vec} containing the wavelet variance of the ARMA process.

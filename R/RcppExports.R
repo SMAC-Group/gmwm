@@ -1384,8 +1384,8 @@ do_polyroot_cpp <- function(z) {
 #' # Calculates the Haar WV for an ARMA(2,3).
 #' arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
 #' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
-arma_to_wv <- function(ar, ma, sigma, tau) {
-    .Call('gmwm_arma_to_wv', PACKAGE = 'gmwm', ar, ma, sigma, tau)
+arma_to_wv <- function(ar, ma, sigma2, tau) {
+    .Call('gmwm_arma_to_wv', PACKAGE = 'gmwm', ar, ma, sigma2, tau)
 }
 
 #' @title Helper Function for ARMA to WV Approximation
@@ -1406,17 +1406,17 @@ acf_sum <- function(ar, ma, last_tau, alpha = 0.99) {
 #' This function computes the (haar) WV of an ARMA process
 #' @param ar A \code{vec} containing the coefficients of the AR process
 #' @param ma A \code{vec} containing the coefficients of the MA process
-#' @param sigma A \code{double} containing the residual variance
+#' @param sigma2 A \code{double} containing the residual variance
 #' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @param alpha A \code{double} indicating the cutoff.
 #' @return A \code{vec} containing the wavelet variance of the ARMA process.
 #' @keywords internal
 #' @examples
 #' # Performs an approximation of the Haar WV for an ARMA(2,3).
-#' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
+#' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9), .9)
 #' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
-arma_to_wv_app <- function(ar, ma, sigma, tau, alpha = 0.9999) {
-    .Call('gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, sigma, tau, alpha)
+arma_to_wv_app <- function(ar, ma, sigma2, tau, alpha = 0.9999) {
+    .Call('gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, sigma2, tau, alpha)
 }
 
 #' ARMA(1,1) to WV
@@ -1883,6 +1883,10 @@ expand_sarima <- function(params, objdesc) {
 #' @keywords internal
 get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B) {
     .Call('gmwm_get_summary', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B)
+}
+
+timesTwo <- function(x) {
+    .Call('gmwm_timesTwo', PACKAGE = 'gmwm', x)
 }
 
 #' @title Pseudo Logit Inverse Function

@@ -1126,16 +1126,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // arma_to_wv
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma, arma::vec tau);
-RcppExport SEXP gmwm_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP sigmaSEXP, SEXP tauSEXP) {
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau);
+RcppExport SEXP gmwm_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP);
-    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    __result = Rcpp::wrap(arma_to_wv(ar, ma, sigma, tau));
+    __result = Rcpp::wrap(arma_to_wv(ar, ma, sigma2, tau));
     return __result;
 END_RCPP
 }
@@ -1154,17 +1154,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // arma_to_wv_app
-arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma, arma::vec tau, double alpha);
-RcppExport SEXP gmwm_arma_to_wv_app(SEXP arSEXP, SEXP maSEXP, SEXP sigmaSEXP, SEXP tauSEXP, SEXP alphaSEXP) {
+arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau, double alpha);
+RcppExport SEXP gmwm_arma_to_wv_app(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP tauSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::vec >::type ar(arSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ma(maSEXP);
-    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    __result = Rcpp::wrap(arma_to_wv_app(ar, ma, sigma, tau, alpha));
+    __result = Rcpp::wrap(arma_to_wv_app(ar, ma, sigma2, tau, alpha));
     return __result;
 END_RCPP
 }
@@ -1522,6 +1522,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type bs_ci(bs_ciSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
     __result = Rcpp::wrap(get_summary(theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B));
+    return __result;
+END_RCPP
+}
+// timesTwo
+arma::vec timesTwo(arma::vec x);
+RcppExport SEXP gmwm_timesTwo(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    __result = Rcpp::wrap(timesTwo(x));
     return __result;
 END_RCPP
 }

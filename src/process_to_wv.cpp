@@ -40,11 +40,11 @@
 //' arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma, arma::vec tau) {
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau) {
   
   arma::vec n = arma::sort(tau/2);
   unsigned int ntau = tau.n_elem;
-  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma;
+  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma2;
   
   arma::vec acfvec = ARMAacf_cpp(ar, ma, as_scalar(tau.tail(1)) - 1);
   
@@ -95,24 +95,24 @@ double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha =
 //' This function computes the (haar) WV of an ARMA process
 //' @param ar A \code{vec} containing the coefficients of the AR process
 //' @param ma A \code{vec} containing the coefficients of the MA process
-//' @param sigma A \code{double} containing the residual variance
+//' @param sigma2 A \code{double} containing the residual variance
 //' @param tau A \code{vec} containing the scales e.g. 2^tau
 //' @param alpha A \code{double} indicating the cutoff.
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
 //' @keywords internal
 //' @examples
 //' # Performs an approximation of the Haar WV for an ARMA(2,3).
-//' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
+//' arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9), .9)
 //' @seealso \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
 // [[Rcpp::export]]
-arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma, arma::vec tau, double alpha = 0.9999) {
+arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau, double alpha = 0.9999) {
   
   arma::vec n = arma::sort(tau/2);
   unsigned int ntau = tau.n_elem;
   
   unsigned int lag = acf_sum(ar, ma, as_scalar(tau.tail(1)), alpha);
     
-  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma;
+  double sig2 = (arma::sum(arma::square(ARMAtoMA_cpp(ar,ma,1000)))+1)*sigma2;
   
   arma::vec acfvec = ARMAacf_cpp(ar, ma, lag);
   
@@ -185,16 +185,18 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma, arma::vec tau
 arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& tau){
   
   unsigned int size_tau = tau.n_elem;
-  arma::vec temp_term(size_tau);
-  arma::vec temp_term_redux(size_tau);
+  arma::vec phi_tau_ov2(size_tau);
+  arma::vec phi_tau_pl1(size_tau);
   for(unsigned int i=0; i< size_tau; i++){
-    temp_term(i) = -4.0*pow(phi,tau(i)/2.0);
-    temp_term_redux(i) = pow(phi,tau(i));
+    phi_tau_ov2(i) = pow(phi,tau(i)/2.0);
+    phi_tau_pl1(i) = pow(phi,tau(i)+1);
   }
+
+  return   -2.0 * sig2 / (arma::square(tau) * pow(phi - 1.0, 3.0) * phi * (phi + 1.0)) % // element wise
+    (0.5 * pow(phi-1.0,2.0) * tau % (phi * (2.0 * theta * phi + pow(theta,2.0) + 1.0) - (theta + phi) * (theta * phi + 1.0)*phi_tau_ov2) +
+    (theta + phi) * (theta * phi + 1.0) * ((phi * (tau * phi/2.0 - tau + 4.0) + tau/2.0)%phi_tau_ov2 - phi_tau_pl1 + phi*(-1*tau*phi+tau-3))
+    );
   
-  return (2.0 * sig2 / (square(phi - 1.0) * (1-square(phi)) * arma::square(tau)) ) // common term 2*s^2 / (phi-1)^2(1-phi^2)t^2
-    % (0.5 * square(phi-1.0)*(-2.0*theta*phi + square(theta) + 1.0)*tau - (theta - phi)*(theta*phi - 1.0)*(temp_term + temp_term_redux + (theta - 1.0)*tau + 3.0))
-    ;
 }
 
 

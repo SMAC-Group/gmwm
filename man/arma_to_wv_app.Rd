@@ -4,14 +4,14 @@
 \alias{arma_to_wv_app}
 \title{ARMA process to WV Approximation}
 \usage{
-arma_to_wv_app(ar, ma, sigma, tau, alpha = 0.9999)
+arma_to_wv_app(ar, ma, sigma2, tau, alpha = 0.9999)
 }
 \arguments{
 \item{ar}{A \code{vec} containing the coefficients of the AR process}
 
 \item{ma}{A \code{vec} containing the coefficients of the MA process}
 
-\item{sigma}{A \code{double} containing the residual variance}
+\item{sigma2}{A \code{double} containing the residual variance}
 
 \item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 
@@ -25,7 +25,7 @@ This function computes the (haar) WV of an ARMA process
 }
 \examples{
 # Performs an approximation of the Haar WV for an ARMA(2,3).
-arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 2^(1:9), 3, .9)
+arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9), .9)
 }
 \seealso{
 \code{\link{ARMAtoMA_cpp}},\code{\link{ARMAacf_cpp}}
