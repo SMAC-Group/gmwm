@@ -1885,10 +1885,6 @@ get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales
     .Call('gmwm_get_summary', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B)
 }
 
-timesTwo <- function(x) {
-    .Call('gmwm_timesTwo', PACKAGE = 'gmwm', x)
-}
-
 #' @title Pseudo Logit Inverse Function
 #' @description This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain 
 #' @param x A \code{vec} containing real numbers.

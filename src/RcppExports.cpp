@@ -1525,17 +1525,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// timesTwo
-arma::vec timesTwo(arma::vec x);
-RcppExport SEXP gmwm_timesTwo(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
-    __result = Rcpp::wrap(timesTwo(x));
-    return __result;
-END_RCPP
-}
 // pseudo_logit_inv
 arma::vec pseudo_logit_inv(const arma::vec& x);
 RcppExport SEXP gmwm_pseudo_logit_inv(SEXP xSEXP) {
