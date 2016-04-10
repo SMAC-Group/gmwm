@@ -406,15 +406,13 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
     
     // AR 1
     if(element_type == "AR1" || element_type == "GM"){
-
       ++i_theta;
       double sig2 = theta(i_theta);
       
       // Compute theoretical WV
       D.cols(i_theta-1,i_theta) = deriv_ar1(theta_value, sig2, tau);
-    }
-    // MA 1
-    if(element_type == "MA1"){
+    } // MA 1
+    else if(element_type == "MA1"){
       
       ++i_theta;
       double sig2 = theta(i_theta);

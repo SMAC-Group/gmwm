@@ -18,7 +18,7 @@
 #ifndef PROCESS_TO_WV
 #define PROCESS_TO_WV
 
-arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma, arma::vec tau);
+arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau);
 
 arma::vec qn_to_wv(double q2, const arma::vec& tau);
 

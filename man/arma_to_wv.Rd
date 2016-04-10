@@ -11,9 +11,9 @@ arma_to_wv(ar, ma, sigma2, tau)
 
 \item{ma}{A \code{vec} containing the coefficients of the MA process}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{sigma2}{A \code{double} containing the residual variance}
 
-\item{sigma}{A \code{double} containing the residual variance}
+\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
 }
 \value{
 A \code{vec} containing the wavelet variance of the ARMA process.

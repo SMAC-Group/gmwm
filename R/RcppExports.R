@@ -1376,7 +1376,7 @@ do_polyroot_cpp <- function(z) {
 #' This function computes the (haar) WV of an ARMA process
 #' @param ar A \code{vec} containing the coefficients of the AR process
 #' @param ma A \code{vec} containing the coefficients of the MA process
-#' @param sigma A \code{double} containing the residual variance
+#' @param sigma2 A \code{double} containing the residual variance
 #' @param tau A \code{vec} containing the scales e.g. 2^tau
 #' @return A \code{vec} containing the wavelet variance of the ARMA process.
 #' @examples
