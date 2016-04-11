@@ -44,10 +44,12 @@ unsigned int count_params(const std::vector<std::string>& desc){
   
   unsigned int params = 0; 
   for (std::map<std::string, int>::iterator it = w.begin(); it!=w.end(); ++it) {		
-    if(it->first == "AR1" || it->first == "GM"){
+    if(it->first == "AR1" || it->first == "GM" || it->first == "MA1"){
       params += 2*it->second;
-    }else{
+    }else if(it->first != "ARMA11"){
       params += 1;
+    }else{
+      params += 3;
     }
   }		
   
@@ -138,6 +140,12 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
   // AR1s can have an infinite amount of combinations
   unsigned int maxAR1s = 0;
   
+  // How about MA1s?
+  unsigned int maxMA1s = 0;
+  
+  // And we add in the ability for more than 1 ARMA11().
+  unsigned int maxARMA11s = 0;
+  
   // String type to describe internal representation (e.g. AR1 vs. GM).
   std::string type = "AR1";
   
@@ -153,6 +161,8 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
     
     // Create an internal counter of AR1s for a given vector
     unsigned int num_AR1s = 0;
+    unsigned int num_MA1s = 0;
+    unsigned int num_ARMA11s = 0;
     
     // Iterate through the vector 
     for (it2 = (*it).begin(); it2 != (*it).end(); ++it2){
@@ -160,6 +170,10 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
       if(*it2 == "AR1" || *it2 == "GM"){
         num_AR1s++; // For each AR1 detected, increment by 1. 
         if(*it2 == "GM"){type="GM";}else{type="AR1";}
+      }else if(*it2 == "MA1"){
+        num_MA1s++; // For each MA1 detected, increment by 1. 
+      }else if(*it2 == "ARMA11"){
+        num_ARMA11s++; // For each ARMA11 detected, increment by 1. 
       }else if(*it2 == "WN"){
         
         if(!WN){
@@ -192,6 +206,14 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
         maxAR1s = num_AR1s;
       }
       
+      if(num_MA1s > maxMA1s){
+        maxMA1s = num_MA1s;
+      }
+      
+      if(num_ARMA11s > maxARMA11s){
+        maxARMA11s = num_ARMA11s;
+      }
+      
     }
     // end inner for 
     
@@ -199,15 +221,26 @@ std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > 
   // end outer for
   
   // Create a vector holding all the model terms
-  std::vector<std::string> out(maxAR1s+WN+RW+QN+DR);
+  std::vector<std::string> out(maxAR1s+maxMA1s+maxARMA11s +WN+RW+QN+DR);
   
   
   // Begin assigning the terms
   unsigned int i;
   
+  // Fill vector with ARs first.
   for(i = 0; i < maxAR1s; i++){
     out[i] = type;
   }
+  
+  for(unsigned int c = 0; c < maxMA1s; c++){
+    out[c+i] = "MA1";
+  }
+  i += maxMA1s;
+  
+  for(unsigned int c = 0; c < maxARMA11s; c++){
+    out[c+i] = "ARMA11";
+  }
+  i += maxARMA11s;
   
   if(WN){
     out[i] = "WN";
