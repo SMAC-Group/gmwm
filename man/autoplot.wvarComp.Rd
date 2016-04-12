@@ -11,9 +11,9 @@
   title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
-  facet.label.size = 13, legend.label = NULL, legend.title = "",
-  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
-  nrow = 1, ...)
+  facet.label.size = 13, facet.label.background = "#003C7D33",
+  legend.label = NULL, legend.title = "", legend.key.size = 1.3,
+  legend.title.size = 13, legend.text.size = 13, nrow = 1, ...)
 }
 \arguments{
 \item{object}{A \code{data frame} that contains data in order to plot}
@@ -49,6 +49,8 @@
 \item{axis.y.label}{A \code{string} that indicates the label on y axis}
 
 \item{facet.label.size}{An \code{integer} that indicates the size of facet label}
+
+\item{facet.label.background}{A \code{string} that indicates the background color of the facet label.}
 
 \item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
 

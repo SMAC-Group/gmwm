@@ -901,9 +901,7 @@ autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', C
   
   if(!is.null(legend.label) && anyDuplicated(legend.label) >0){
     warning('Parameter legend.label contains duplicate elements. Add white spaces to each element to avoid this.')
-    for(i in 1:length(legend.label) ){
-      legend.label[i] = paste0(legend.label[i], paste0(rep(' ',times = i), collapse = ''))
-    }
+    legend.label = addSpaceIfDuplicate(legend.label)
   }
   
   #freq converstion
@@ -972,10 +970,9 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   process.color = c( rep(Set1, times = modulus), Set1[1:remainder] )
   process.bw_color = gray.colors(L-1, start = 0.2, end = max( max(1, L-2)/(L-1), 0.7))
   
-  process.label1 = rep(' ', L-1)
-  for(i in 1: (L-1)){
-    process.label1[i] = paste0(object$model$desc[i], paste0(rep(' ',times = i), collapse = ''))
-  }
+  # Make sure process.label does not have duplicates
+  process.label1 = addSpaceIfDuplicate(object$model$desc)
+  
   #process.label2 = paste0(object$model$desc, collapse = '+')
   process.label2 = bquote("Implied WV "~nu*"("*hat(theta)*")")
   process.label = c(process.label1, process.label2)
@@ -1886,13 +1883,7 @@ compare.models = function(..., display.model = T, background = 'white', transpar
     
     # Problem: When object names are the same, function will not work
     # Solution: Add space after object names
-    if ( any(table(object.names) > 1)  ){
-      process.label1 = rep(' ', numObj)
-      for(i in 1:numObj){
-        process.label1[i] = paste0(object.names[i], paste0(rep(' ',times = i), collapse = ''))
-      }
-      object.names = process.label1
-    }
+    object.names = addSpaceIfDuplicate(object.names)
     
     # S2: Auto-select parameters, if not provided by users
     # in the order: WV low high z1 z2
