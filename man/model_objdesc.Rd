@@ -16,9 +16,9 @@ A \code{field<vec>} that contains the object description of each process.
 Creates the ts.model's obj.desc value
 }
 \details{
-This function currently does NOT support ARMA models. 
-That is, there is no support for ARMA, AR, or MA.
-There is support for AR1, GM, WN, DR, QN, and RW.
+This function currently does NOT support ARMA(P,Q) models. 
+That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
+There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 }
 \keyword{internal}
 
