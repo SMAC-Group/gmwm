@@ -361,11 +361,7 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   
   num.desc = length(process)
   #A data frame doesn't allow columns to have the same name, but the decomposed processes might be same
-  if( any(table(process)>1) ){
-    for(i in 1:num.desc) {
-      process[i] = paste0(process[i], paste0(rep(' ',times = (i-1)), collapse = ''))
-    }
-  }
+  process = addSpaceIfDuplicate(process)
   
   # prepare data frame to plot
   df = as.data.frame(object)

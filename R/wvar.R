@@ -144,7 +144,7 @@ wvar.default = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, al
 
 #' @rdname wvar
 #' @export
-wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6, to.unit = NULL, ...){
+wvar.imu = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = F, eff = 0.6, to.unit = NULL, ...){
 
   if(!is.imu(x)){
     stop("`wvar.imu()` requires an IMU Object")
@@ -184,48 +184,30 @@ wvar.imu = function(x, decomp = "modwt", nlevels = NULL, alpha = 0.05, robust = 
     }
   }
   
-  obj.list = .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
+  obj.mat = .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
                    x, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
-
-  total.len = nlevels*ncol(x)
-  
-  # Initialize empty data frame with right number of rows
-  obj = data.frame(WV = numeric(total.len),
-                   scales = numeric(total.len),
-                   low = numeric(total.len),
-                   high = numeric(total.len),
-                   axis = character(total.len),
-                   sensor = character(total.len), stringsAsFactors=FALSE)
-  
-  # Axis length
-  x.axis = attr(x, 'axis')
-  naxis = length(x.axis)
   
   # The correct unit
   if(!is.null(from.unit) && !is.null(to.unit)){ 
     unit = to.unit
   }else{
     unit = from.unit}
-  
-  # Put data into data frame
-  t = 1
-  for (i in 1:ncol(x)){
-    # Cast for Analytical IMU Results
-    obj.list[[i]] = create_wvar(obj.list[[i]], decomp, filter, robust, eff, alpha, scales, unit)
 
-    # Cast for Graphing IMU Results
-    sensor = attr(x, 'sensor')
-    obj[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
-                                       scales = scales,
-                                       low = obj.list[[i]]$ci_low,
-                                       high = obj.list[[i]]$ci_high,
-                                       axis = x.axis[i], 
-                                       sensor = sensor[i],
-                                       stringsAsFactors=FALSE)
-    t = t + nlevels
-  }
+  # put data into the expected format
+  obj.list = lapply(obj.mat, FUN = create_wvar, 
+                    decomp = decomp, filter = filter, 
+                    robust = robust, eff = eff, 
+                    alpha = alpha, scales = scales, unit = unit)
   
-  out = structure(list(dataobj=obj.list, plotobj=obj, unit = unit), class="wvar.imu")
+  sensor = attr(x, 'sensor')
+  x.axis = attr(x, 'axis')
+  stype = attr(x, 'stype')
+  
+  out = structure(list(dataobj = obj.list, #most info is stored in obj.list
+                       axis = x.axis,
+                       sensor = sensor,
+                       stype = stype,
+                       freq = x.freq), class="wvar.imu")
   
   out
 }
@@ -286,6 +268,54 @@ print.wvar = function(x, ...){
   print(mat)
 }
 
+
+#' @title Print Wavelet Variances for \code{imu} Object
+#' @description Displays the summary table of wavelet variance for \code{imu} Object.
+#' @method print wvar.imu
+#' @export
+#' @keywords internal
+#' @param x A \code{wvar.imu} object.
+#' @param ... further arguments passed to or from other methods.
+#' @return Summary table
+#' @examples
+#' \dontrun{
+#' if(!require("imudata")){
+#' install_imudata()
+#' library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' 
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('x', 'y', 'z'), freq = 100)
+#' x = wvar(test)
+#' print( x )
+#' }
+print.wvar.imu = function(x, ...){
+  dataobj = x$dataobj
+  n.obj = length(dataobj)
+  
+  cat('Level of Decomposition: ', length(x$dataobj[[1]]$scales),", Number of Signals: ", length(x$axis), '\n', sep = '')
+  
+  if(!is.null(x$stype)){
+    cat("Sensor:", x$stype,"@", x$freq,"Hz\n")
+    
+  }else{
+    cat("Freq:", x$freq,"Hz\n")
+  }
+  
+  sensor = x$sensor
+  axis = x$axis
+  comb = paste(sensor, axis)
+  
+  for(i in 1:n.obj){
+    cat(comb[i], ":\n", sep = "")
+    print.wvar(dataobj[[i]])
+    
+    if(i!=n.obj){cat('\n')}
+  }
+}
+
+
 #' @title Summary of Wavelet Variances
 #' @description Displays the summary table of wavelet variance in addition to CI values and supplied efficiency.
 #' @method summary wvar
@@ -311,7 +341,44 @@ summary.wvar = function(object, ...){
     cat("Robust was created using efficiency=",object$eff,"\n",sep="")
   }
   
-  cat("The confidence interval was generated using (1-",object$p*2,")*100 \n",sep="")
+  cat("The confidence interval was generated using (1-",object$alpha,")*100 \n",sep="")
+  
+  print(object)
+}
+
+#' @title Summary of Wavelet Variances for \code{imu} Object
+#' @description Displays the summary table of wavelet variance in addition to CI values and supplied efficiency for \code{imu} Object.
+#' @method summary wvar.imu
+#' @export
+#' @keywords internal
+#' @param object A \code{wvar.imu} object.
+#' @return Summary table and other properties of the object.
+#' @param ... additional arguments affecting the summary produced.
+#' @examples
+#' \dontrun{
+#' if(!require("imudata")){
+#' install_imudata()
+#' library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' 
+#' test = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('x', 'y', 'z'), freq = 100)
+#' x = wvar(test)
+#' summary(x)
+#' }
+summary.wvar.imu = function(object, ...){
+  name = if(object$dataobj[[1]]$robust){
+    "robust" 
+  }else{
+    "classical"
+  }
+  cat("Results of the wavelet variance calculation using the ",name, " method.\n",sep="")
+  if(object$dataobj[[1]]$robust){
+    cat("Robust was created using efficiency=",object$dataobj[[1]]$eff,"\n",sep="")
+  }
+  
+  cat("The confidence interval was generated using (1-",object$dataobj[[1]]$alpha,")*100 \n",sep="")
   
   print(object)
 }
@@ -478,7 +545,6 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 
 #' @title Detail Implementation to Compare Wavelet Variances
 #' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
-#' @method autoplot wvarComp
 #' @export
 #' @keywords internal
 #' @param object A \code{data frame} that contains data in order to plot
@@ -498,6 +564,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
 #' @param axis.x.label A \code{string} that indicates the label on x axis
 #' @param axis.y.label A \code{string} that indicates the label on y axis
 #' @param facet.label.size An \code{integer} that indicates the size of facet label
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param legend.title A \code{string} that indicates the title of legend
 #' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend
@@ -513,7 +580,7 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
                              axis.label.size = 13, axis.tick.size = 11, 
                              axis.x.label = expression(paste("Scale ", tau)),
                              axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                             facet.label.size = 13,
+                             facet.label.size = 13, facet.label.background = "#003C7D33",
                              legend.label = NULL,
                              legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
                              legend.text.size = 13, nrow = 1, ...){
@@ -570,7 +637,8 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
       legend.text = element_text(size = legend.text.size),  
       legend.title = element_text(size = legend.title.size),
       legend.background = element_rect(fill="transparent"),
-      strip.text = element_text(size = facet.label.size)) 
+      strip.text = element_text(size = facet.label.size),
+      strip.background = element_rect(fill= facet.label.background) )
   
   p
 }
@@ -578,73 +646,77 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 
 #' @title Compare Wavelet Variances
 #' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
-#' @param ... Any number of \code{wvar} objects can be passed in.
+#' @param ... Any number of \code{wvar} or \code{wvar.imu} objects.
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
-#' @param auto.label.wvar A \code{boolean} that indicates whether legend label should indicate the \code{wvar} objects are robust or classical
+#' @param auto.label.wvar A \code{boolean} that indicates whether legend label should indicate the objects are robust or classical.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph
-#' @param line.color A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
-#' @param CI.color A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
-#' @param line.type A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2.
-#' @param point.size A \code{vector} of \code{integer} that indicates the size of point
-#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of point 
-#' @param title A \code{string} that indicates the title of the graph
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines.
+#' @param CI.color A \code{vector} of \code{string} that indicates the color of confidence interval.
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines.
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of point.
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of point. 
+#' @param title A \code{string} that indicates the title of the graph.
 #' @param title.size An \code{integer} that indicates the size of title.
 #' @param axis.label.size An \code{integer} that indicates the size of label
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param axis.x.label A \code{string} that indicates the label on x axis
 #' @param axis.y.label A \code{string} that indicates the label on y axis
 #' @param facet.label.size An \code{integer} that indicates the size of facet label
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label
 #' @param legend.title A \code{string} that indicates the title of legend
-#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend.
 #' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend
 #' @param legend.title.size An \code{integer} that indicates the size of title on legend
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend
 #' @param nrow An \code{integer} that indicates number of rows
 #' @author JJB, Wenchao
-#' @note 
-#' Common error "Error in grid.Call(L_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  : polygon edge not found"
-#' Just run your code again or open R using the R GUI instead of RStudio.
+#' @note
+#' If you meet the error "polygon edge not found", RStudio is complaining that you don't have enough 
+#' space to plot the graph. You can adjust the graphics window, or open an external window. The 
+#' function \code{\link{external_graphs}} can be used and it works for all operating systems.
+#' 
+#' When \code{wvar.imu} objects are supplied, some parameters, e.g. \code{split} and \code{nrow}, are 
+#' invalid, since the graph is plot seperately and put in 2 rows by default.
+#' 
 #' @examples
 #' \dontrun{
-#' #1. Compare two objects
-#' N1 = 1000
-#' N2 = 2000
-#' data.ar = gen.gts(AR1(phi = .32, sigma2=.01), N1)
-#' data.arma = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
-#' wvar1 = wvar(data.ar)
-#' wvar2 = wvar(data.arma, robust = T)
-#' compare.wvar(wvar1, wvar2)
-#' compare.wvar(wvar1, wvar2, split=F)
-#' compare.wvar(wvar1, wvar2, CI = F)
-#' compare.wvar(wvar1, wvar2, split=F, CI = F)
-#' #2. Compare multiple objects
-#' N1 = 1000
-#' N2 = 2000
-#' N3 = 4000
-#' N4 = 3500
-#' data1 = gen.gts(AR1(phi = .32, sigma2=.01), N1)
-#' data2 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
-#' data3 = gen.gts(AR1(phi = .32, sigma2=1), N3)
-#' data4 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.5), sigma2=1), N4)
-#' wvar1 = wvar(data1)
-#' #wvar1 = wvar(data1, robust = T)
-#' wvar2 = wvar(data2)
-#' wvar3 = wvar(data3)
-#' wvar4 = wvar(data4)
-#' compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
-#' compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
-#' #3. Change default setting
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'))
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-#' facet.label.size = 9)
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-#' legend.label = c('1','2','3','4'))
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-#' legend.label = c('1','2','3','4'), split = F)
-#' compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-#' legend.label = c('1','2','3','4'), split = F, CI = F)
+#' ## Case1: Supplied objects are \code{wvar}:
+#' data1 = gen.gts(AR1(phi = .32, sigma2=.01), N = 1000)
+#' data2 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N = 2000)
+#' data3 = gen.gts(AR1(phi = .32, sigma2=1), N = 4000)
+#' 
+#' wv1 = wvar(data1, robust = T)
+#' wv2 = wvar(data2)
+#' wv3 = wvar(data3)
+#' 
+#' compare.wvar(wv1, wv2)
+#' compare.wvar(wv1, wv2, CI = F)
+#' compare.wvar(wv1, wv2, split=F)
+#' compare.wvar(wv1, wv2, wv3, split = F)
+#' 
+#' # Change default setting
+#' color = c('green','red','blue')
+#' label = c('1','2','3')
+#' compare.wvar(wv1, wv2, wv3, line.color = color, CI.color = color, legend.label = label)
+#' compare.wvar(wv1, wv2, wv3, line.color = color, CI.color = color, legend.label = label, split = F)
+#' 
+#' ## Case2: Supplied objects are \code{wvar.imu}:
+#' if(!require("imudata")){
+#'    install_imudata()
+#'    library("imudata")
+#' }
+#' 
+#' data(imu6)
+#' test1 = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+#' wv1 = wvar(test1)
+#' 
+#' test2 = imu(imu6, gyros = 1, accels = 3:4, axis = c('X','X','Y'), freq = 100)
+#' wv2 = wvar(test2, robust = T)
+#' 
+#' compare.wvar(wv1, wv2)
+#' compare.wvar(wv1, wv2, auto.label.wvar = F, legend.label = c('data1', 'data2'))
 #' }
 compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
                         CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
@@ -652,7 +724,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
                         axis.label.size = 13, axis.tick.size = 11, 
                         axis.x.label = expression(paste("Scale ", tau)),
                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                        facet.label.size = 13,
+                        facet.label.size = 13, facet.label.background = "#003C7D33",
                         legend.label = NULL,
                         legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
                         legend.text.size = 13, nrow = 1 ){
@@ -663,45 +735,88 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
   }
   
   obj_list = list(...)
+  object.names = as.character(substitute(...()))
   numObj = length(obj_list)
-  
-  # check parameter
-  params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape', 'legend.label')
-  requireLength = c(2, numObj, numObj, numObj, numObj, numObj)
-  default = list(c('solid','dotted'), NULL,  NULL, rep(5, numObj), rep(20, numObj), NULL)
-  nullIsFine = c(rep(T,6))
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
-  }
   
   if (numObj == 0){
     stop('At least one wvar object should be given')
-  }
-  else if (numObj == 1){
+    
+  }else if (numObj == 1){
     ## just plot
     plot(...)
-  }
-  else  {
     
-    if(is.null(legend.label)){
-      legend.label = c()
-      for (i in 1:numObj){
-        legend.label[i] = paste('Dataset',i)
+  }else{
+    
+    # Case1: Supplied objects are 'wvar.imu'
+    is.wvar.imu = sapply(obj_list, FUN = is, class2 = 'wvar.imu')
+    
+    # Case2: Supplied objects are 'wvar'
+    is.wvar = sapply(obj_list, FUN = is, class2 = 'wvar')
+    
+    if(!all(is.wvar == T) && !all(is.wvar.imu == T)  ){
+      stop("Supplied objects must be either 'wvar' or 'wvar.imu' objects.")
+    }
+    
+    # check parameter
+    if(all(is.wvar.imu == T)){
+      # Case1: Supplied objects are 'wvar.imu'
+      if(CI){
+        params = c('line.color', 'line.type', 'CI.color', 'point.size', 'point.shape', 'legend.label')
+        requireLength = c(3*numObj, 3*numObj, numObj, 3*numObj, 3*numObj, numObj)
+        default = list(NULL, NULL,  NULL, NULL, NULL, NULL)
+        nullIsFine = c(rep(T,6))
+        
+      }else{
+        params = c('line.color', 'line.type', 'point.size', 'point.shape', 'legend.label')
+        requireLength = c(numObj, numObj, numObj, numObj, numObj)
+        default = list(NULL, NULL, NULL, NULL, NULL)
+        nullIsFine = c(rep(T,5))
       }
+    }else{
+      # Case2: Supplied objects are 'wvar'
+      # line.type is set here
+      params = c('line.type', 'line.color', 'CI.color', 'point.size', 'point.shape', 'legend.label')
+      requireLength = c(2, numObj, numObj, numObj, numObj, numObj)
+      default = list(c('solid','dotted'), NULL,  NULL, rep(5, numObj), rep(20, numObj), NULL)
+      nullIsFine = c(rep(T,6))
+    }
+    checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
+    
+    # legend.label
+    if(is.null(legend.label)){
+      legend.label = object.names
     }
     
     if(auto.label.wvar){
-      for (i in 1:numObj){
-        legend.label[i] = paste(legend.label[i], if(obj_list[[i]]$robust) '(Robust)' else '(Classical)')
-      }
+      
+      rob = sapply( obj_list, FUN = function(x){
+        if(is(x, 'wvar.imu')){
+          control = x$dataobj[[1]]$robust
+        }else{control = x$robust }
+         
+        if(control){'(Robust)'}else{'(Classical)'} }
+      )
+      
+      legend.label = paste(legend.label, rob)
+    }
+    # make sure legend.label does not have duplicates
+    legend.label = addSpaceIfDuplicate(legend.label)
+    
+    
+    if(all(is.wvar.imu == T)){
+      
+      return( compare.wvar.imu(obj.list = obj_list,
+                       background = background, CI = CI, auto.label.wvar = auto.label.wvar, transparence = transparence, 
+                       line.color = line.color, CI.color = CI.color, line.type = line.type, point.size = point.size, point.shape = point.shape,
+                       title = title, title.size = title.size, 
+                       axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                       axis.x.label = axis.x.label,
+                       axis.y.label = axis.y.label,
+                       facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                       legend.label = legend.label,
+                       legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                       legend.text.size = legend.text.size ) )
+      
     }
     
     total.len = 0
@@ -729,7 +844,6 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
       t = t +d
     }
     
-    
     if (numObj == 2 ){
       if(is.null(line.color)){
         line.color = c("#003C7D","#F47F24")
@@ -737,39 +851,241 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
       if(is.null(CI.color)){
         CI.color = c("#003C7D","#F47F24")
       }
-#       if(is.null(line.type)){
-#         line.type = c('solid','dotted')
-#       }
-      
-      autoplot.wvarComp(obj, split = split, CI = CI, background = background, transparence = transparence, line.color =line.color, 
-                        CI.color = CI.color, line.type = line.type,  point.size = point.size, point.shape = point.shape,
-                        title = title, title.size= title.size, 
-                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-                        axis.x.label = axis.x.label,
-                        axis.y.label = axis.y.label,
-                        facet.label.size = facet.label.size,
-                        legend.label = legend.label,
-                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-                        legend.text.size = legend.text.size,
-                        nrow = nrow)
-    }
-    else{
-#       if(is.null(line.type)){
-#         line.type = c('solid','dotted')
-#       }
-      autoplot.wvarComp(obj, split = split, CI = CI, background = background, transparence = transparence, line.color = line.color, 
-                        CI.color = CI.color, line.type = line.type,  point.size = point.size, point.shape = point.shape,
-                        title = title, title.size= title.size, 
-                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
-                        axis.x.label = axis.x.label,
-                        axis.y.label = axis.y.label,
-                        facet.label.size = facet.label.size,
-                        legend.label = legend.label,
-                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-                        legend.text.size = legend.text.size,
-                        nrow = nrow)
     }
     
+    autoplot.wvarComp(obj, split = split, CI = CI, background = background, transparence = transparence, line.color =line.color, 
+                        CI.color = CI.color, line.type = line.type,  point.size = point.size, point.shape = point.shape,
+                        title = title, title.size= title.size, 
+                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                        axis.x.label = axis.x.label,
+                        axis.y.label = axis.y.label,
+                        facet.label.size = facet.label.size, facet.label.background = facet.label.background,
+                        legend.label = legend.label,
+                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                        legend.text.size = legend.text.size,
+                        nrow = nrow)
   }
   
 }
+
+
+#' @title Compare Wavelet Variances for \code{imu} Object
+#' @description Internal Function to compare the wavelet variance for \code{imu} object.
+#' @param obj.list A \code{list} of \code{wvar.imu} objects.
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
+#' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
+#' @param auto.label.wvar A \code{boolean} that indicates whether legend label should indicate the objects are robust or classical.
+#' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.
+#' @param line.color A \code{vector} of \code{string} that indicates the color of lines.
+#' @param CI.color A \code{vector} of \code{string} that indicates the color of confidence interval. 
+#' @param line.type A \code{vector} of \code{string} that indicates the type of lines.
+#' @param point.size A \code{vector} of \code{integer} that indicates the size of point.
+#' @param point.shape A \code{vector} of \code{integer} that indicates the shape of point. 
+#' @param title A \code{string} that indicates the title of the graph.
+#' @param title.size An \code{integer} that indicates the size of title.
+#' @param axis.label.size An \code{integer} that indicates the size of label.
+#' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
+#' @param axis.x.label A \code{string} that indicates the label on x axis.
+#' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param facet.label.size An \code{integer} that indicates the size of facet label.
+#' @param facet.label.background A \code{string} that indicates the background color of the facet label.
+#' @param legend.title A \code{string} that indicates the title of legend.
+#' @param legend.label A \code{vector} of \code{string} that indicates the labels on legend.
+#' @param legend.key.size A \code{double} that indicates the size of key (in centermeters) on legend.
+#' @param legend.title.size An \code{integer} that indicates the size of title on legend.
+#' @param legend.text.size An \code{integer} that indicates the size of key label on legend.
+#' @author Wenchao
+#' @keywords internal
+#' @seealso \code{\link{compare.wvar}}
+compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
+                        CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
+                        title = "Haar Wavelet Variance Representation", title.size= 15, 
+                        axis.label.size = 13, axis.tick.size = 11, 
+                        axis.x.label = expression(paste("Scale ", tau)),
+                        axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                        facet.label.size = 13, facet.label.background = "#003C7D33",
+                        legend.label = NULL,
+                        legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
+                        legend.text.size = 13) {
+  scales=comb=low=high=dataset=.x=NULL
+  
+  n.obj = length(obj.list)
+  
+  # 1. Check each graphical parameter. Reset it to default setting if user passes wrong values.
+  # checking statements are moved to compare.wvar.
+  
+  # line.color
+  if(is.null(line.color)){
+    if(n.obj == 2){ line.color = c("#003C7D","#F47F24") }else{ line.color = ggColor(n.obj) }
+  }
+  # CI.color
+  if(CI && is.null(CI.color)){
+    CI.color = line.color
+  }
+  # go back to line.color
+  if(CI && length(line.color) == n.obj){
+    line.color = rep(line.color, each = 3)
+  }
+  
+  # line.type 
+  if(is.null(line.type)){
+    if(CI){ 
+      line.type = rep( c('solid','dotted', 'dotted'), times = n.obj) 
+    }else{
+      line.type = rep( 'solid', times = n.obj)
+    }
+  }
+  
+  # point.size 
+  if(is.null(point.size)){
+    if(CI){ 
+      point.size = rep( c(0, 0, 0), times = n.obj) 
+    }else{
+      point.size = rep(0, times = n.obj)}
+  }
+  
+  # point.shape 
+  if(is.null(point.shape)){
+    if(CI){ 
+      point.shape = rep( c(20, 20, 20), times = n.obj) 
+    }else{
+      point.shape = rep(20, times = n.obj)}
+  }
+  
+  # breaks
+  breaks = paste('emp', legend.label)
+  
+  # 2. Rearrange the data into a data frame which can be passed to next step.
+  #how large the data frame should be
+  
+  total.len = 0
+  each.len = vector('list', length = n.obj )
+  
+  for (i in 1:n.obj ){
+    
+    each.wvar.len = length(obj.list[[i]]$dataobj[[1]]$variance)
+    n.wvar = length(obj.list[[i]]$dataobj)
+    each.len[[i]] = rep(each.wvar.len, times = n.wvar) 
+    #assume: all 'wvar' in one 'wvar.imu' have same 'scales'
+    
+  }
+  
+  total.len = sum( sapply(each.len, FUN = sum) )
+  
+  #initialize empty data frame with right number of rows
+  if (CI) {
+    obj = data.frame(scales = numeric(total.len),
+                     emp = numeric(total.len), 
+                     low = numeric(total.len),
+                     high = numeric(total.len),
+                     axis = character(total.len),
+                     sensor = character(total.len),
+                     dataset = character(total.len), stringsAsFactors=FALSE)
+  }else{
+    obj = data.frame(scales = numeric(total.len),
+                     emp = numeric(total.len), 
+                     axis = character(total.len),
+                     sensor = character(total.len),
+                     dataset = character(total.len), stringsAsFactors=FALSE)
+  }
+  
+  t = 1
+  for (i in 1:n.obj ){
+    
+    data.obj = obj.list[[i]]$dataobj
+    axis = obj.list[[i]]$axis
+    sensor = obj.list[[i]]$sensor
+    
+    for( j in 1:length(each.len[[i]])){
+      
+      d = each.len[[i]][j]
+      
+      if(CI){
+        
+        obj[t:(t+d-1),] = data.frame(scales = data.obj[[j]]$scales, 
+                                     emp = data.obj[[j]]$variance,
+                                     low = data.obj[[j]]$ci_low,
+                                     high = data.obj[[j]]$ci_high,
+                                     axis = axis[j], 
+                                     sensor = sensor[j],
+                                     dataset = legend.label[i], stringsAsFactors=FALSE)
+      }else{
+        
+        obj[t:(t+d-1),] = data.frame(scales = data.obj[[j]]$scales, 
+                                     emp = data.obj[[j]]$variance,
+                                     axis = axis[j], 
+                                     sensor = sensor[j],
+                                     dataset = legend.label[i], stringsAsFactors=FALSE)
+        
+      }
+      
+      t = t +d
+    }
+  }
+  
+  
+  # 3. Convert data from a wide format to a long format.
+  melt.obj = melt(obj, id.vars = c('scales', 'axis', 'sensor', 'dataset'))
+  
+  # order that line.type/point.size should be supplied
+  if(CI){ lines = c('emp', 'low', 'high') } else{ lines = c('emp') }
+  combination = expand.grid(lines, legend.label)
+  order = paste(combination[,1], combination[,2])
+  
+  # combine 'dataset' and 'variable' to set line type, point size, etc
+  melt.obj = cbind(melt.obj, 
+                   comb = 
+                     factor( paste(melt.obj$variable, melt.obj$dataset), levels = order) )
+  
+  # 4. Call graphical functions in ggplot2 to generate the graph.
+  p = ggplot() +
+    geom_line(data = melt.obj, mapping = aes(x = scales, y = value, linetype = comb, color = comb) ) +
+    geom_point(data = melt.obj, mapping = aes(x = scales, y = value, size = comb, shape = comb, color = comb) ) +
+    
+    scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label ) +
+    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label) +
+    scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
+    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
+  
+  if(CI){
+    CI.breaks = legend.label
+    
+    # change the order to plot CI
+    obj$dataset = factor(obj$dataset, levels = legend.label)
+      
+    p = p + 
+      geom_ribbon(data = obj, 
+                  mapping = aes(x = scales, ymin = low, ymax = high, fill = dataset), alpha = transparence) +
+      scale_fill_manual(name = legend.title, values = c(CI.color), breaks = CI.breaks, labels = legend.label) 
+  }
+  
+  if( background == 'white'){
+    p = p + theme_bw() 
+  }
+  
+  p = p + facet_grid(sensor ~ axis, scales = 'free_y') +
+    
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    
+    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
+    theme(
+      plot.title = element_text(size= title.size),
+      axis.title.y = element_text(size= axis.label.size),
+      axis.text.y  = element_text(size= axis.tick.size),
+      axis.title.x = element_text(size= axis.label.size),
+      axis.text.x  = element_text(size= axis.tick.size),
+      legend.key.size = unit(legend.key.size, "cm"),
+      legend.text = element_text(size = legend.text.size),  
+      legend.title = element_text(size = legend.title.size),
+      legend.background = element_rect(fill="transparent"),
+      legend.text.align = 0, 
+      strip.text = element_text(size = facet.label.size), 
+      strip.background = element_rect(fill= facet.label.background) )
+  
+  p
+  
+}
+

@@ -459,8 +459,37 @@ autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'whit
     stop("This function can only operate on the wvar.imu object. Please use wvar.imu() to create it.")
   }
   
-  # Handle new wvar.imu data structure
-  object=object$plotobj 
+  # Put data in the format that can be supplied to ggplot2
+  obj.list = object$dataobj
+  
+  axis = object$axis
+  n.axis = length(axis)
+  sensor = object$sensor
+  tau = obj.list[[1]]$scales #this is 'tau' - different from scales = "free_y"
+  
+  nlevels = length(tau)
+  total.len = nlevels*n.axis
+  
+  # Initialize empty data frame with right number of rows
+  object = data.frame(WV = numeric(total.len),
+                   scales = numeric(total.len),
+                   low = numeric(total.len),
+                   high = numeric(total.len),
+                   axis = character(total.len),
+                   sensor = character(total.len), stringsAsFactors=FALSE)
+  
+  t = 1
+  for (i in 1:n.axis){
+    # Cast for Graphing IMU Results
+    object[t:(t+nlevels-1),] = data.frame(WV = obj.list[[i]]$variance,
+                                       scales = tau,
+                                       low = obj.list[[i]]$ci_low,
+                                       high = obj.list[[i]]$ci_high,
+                                       axis = axis[i], 
+                                       sensor = sensor[i],
+                                       stringsAsFactors=FALSE)
+    t = t + nlevels
+  }
   
   if (split){
     if(is.null(CI.color)){
