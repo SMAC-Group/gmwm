@@ -11,12 +11,12 @@ compare.wvar(..., background = "white", split = TRUE, CI = TRUE,
   title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
-  facet.label.size = 13, legend.label = NULL, legend.title = "",
-  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
-  nrow = 1)
+  facet.label.size = 13, facet.label.background = "#003C7D33",
+  legend.label = NULL, legend.title = "", legend.key.size = 1.3,
+  legend.title.size = 13, legend.text.size = 13, nrow = 1)
 }
 \arguments{
-\item{...}{Any number of \code{wvar} objects can be passed in.}
+\item{...}{Any number of \code{wvar} or \code{wvar.imu} objects.}
 
 \item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
@@ -24,21 +24,21 @@ compare.wvar(..., background = "white", split = TRUE, CI = TRUE,
 
 \item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
 
-\item{auto.label.wvar}{A \code{boolean} that indicates whether legend label should indicate the \code{wvar} objects are robust or classical}
+\item{auto.label.wvar}{A \code{boolean} that indicates whether legend label should indicate the objects are robust or classical.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph}
 
-\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+\item{line.color}{A \code{vector} of \code{string} that indicates the color of lines.}
 
-\item{CI.color}{A \code{vector} of \code{string} that indicates the color of confidence interval. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+\item{CI.color}{A \code{vector} of \code{string} that indicates the color of confidence interval.}
 
-\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines for wavelet variance and the edge of confidence interval, respectively. If not \code{NULL}, length of vector must equal to 2.}
+\item{line.type}{A \code{vector} of \code{string} that indicates the type of lines.}
 
-\item{point.size}{A \code{vector} of \code{integer} that indicates the size of point}
+\item{point.size}{A \code{vector} of \code{integer} that indicates the size of point.}
 
-\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of point}
+\item{point.shape}{A \code{vector} of \code{integer} that indicates the shape of point.}
 
-\item{title}{A \code{string} that indicates the title of the graph}
+\item{title}{A \code{string} that indicates the title of the graph.}
 
 \item{title.size}{An \code{integer} that indicates the size of title.}
 
@@ -52,7 +52,9 @@ compare.wvar(..., background = "white", split = TRUE, CI = TRUE,
 
 \item{facet.label.size}{An \code{integer} that indicates the size of facet label}
 
-\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend. If not \code{NULL}, length of vector must equal to the number of \code{wvar} objects that are passed in.}
+\item{facet.label.background}{A \code{string} that indicates the background color of the facet label}
+
+\item{legend.label}{A \code{vector} of \code{string} that indicates the labels on legend.}
 
 \item{legend.title}{A \code{string} that indicates the title of legend}
 
@@ -68,48 +70,50 @@ compare.wvar(..., background = "white", split = TRUE, CI = TRUE,
 Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
 }
 \note{
-Common error "Error in grid.Call(L_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  : polygon edge not found"
-Just run your code again or open R using the R GUI instead of RStudio.
+If you meet the error "polygon edge not found", RStudio is complaining that you don't have enough 
+space to plot the graph. You can adjust the graphics window, or open an external window. The 
+function \code{\link{external_graphs}} can be used and it works for all operating systems.
+
+When \code{wvar.imu} objects are supplied, some parameters, e.g. \code{split} and \code{nrow}, are 
+invalid, since the graph is plot seperately and put in 2 rows by default.
 }
 \examples{
 \dontrun{
-#1. Compare two objects
-N1 = 1000
-N2 = 2000
-data.ar = gen.gts(AR1(phi = .32, sigma2=.01), N1)
-data.arma = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
-wvar1 = wvar(data.ar)
-wvar2 = wvar(data.arma, robust = T)
-compare.wvar(wvar1, wvar2)
-compare.wvar(wvar1, wvar2, split=F)
-compare.wvar(wvar1, wvar2, CI = F)
-compare.wvar(wvar1, wvar2, split=F, CI = F)
-#2. Compare multiple objects
-N1 = 1000
-N2 = 2000
-N3 = 4000
-N4 = 3500
-data1 = gen.gts(AR1(phi = .32, sigma2=.01), N1)
-data2 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N2)
-data3 = gen.gts(AR1(phi = .32, sigma2=1), N3)
-data4 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.5), sigma2=1), N4)
-wvar1 = wvar(data1)
-#wvar1 = wvar(data1, robust = T)
-wvar2 = wvar(data2)
-wvar3 = wvar(data3)
-wvar4 = wvar(data4)
-compare.wvar(wvar1,wvar2,wvar3,wvar4, nrow = 2)
-compare.wvar(wvar1,wvar2,wvar3,wvar4, split = F , CI = F)
-#3. Change default setting
-compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'))
-compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-facet.label.size = 9)
-compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-legend.label = c('1','2','3','4'))
-compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-legend.label = c('1','2','3','4'), split = F)
-compare.wvar(wvar1, wvar2, wvar3,wvar4, CI.color = c('green','red','blue','black'), 
-legend.label = c('1','2','3','4'), split = F, CI = F)
+## Case1: Supplied objects are \\code{wvar}:
+data1 = gen.gts(AR1(phi = .32, sigma2=.01), N = 1000)
+data2 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N = 2000)
+data3 = gen.gts(AR1(phi = .32, sigma2=1), N = 4000)
+
+wv1 = wvar(data1, robust = T)
+wv2 = wvar(data2)
+wv3 = wvar(data3)
+
+compare.wvar(wv1, wv2)
+compare.wvar(wv1, wv2, CI = F)
+compare.wvar(wv1, wv2, split=F)
+compare.wvar(wv1, wv2, wv3, split = F)
+
+# Change default setting
+color = c('green','red','blue')
+label = c('1','2','3')
+compare.wvar(wv1, wv2, wv3, line.color = color, CI.color = color, legend.label = label)
+compare.wvar(wv1, wv2, wv3, line.color = color, CI.color = color, legend.label = label, split = F)
+
+## Case2: Supplied objects are \\code{wvar.imu}:
+if(!require("imudata")){
+   install_imudata()
+   library("imudata")
+}
+
+data(imu6)
+test1 = imu(imu6, gyros = 1:3, accels = 4:6, axis = c('X', 'Y', 'Z'), freq = 100)
+wv1 = wvar(test1)
+
+test2 = imu(imu6, gyros = 1, accels = 3:4, axis = c('X','X','Y'), freq = 100)
+wv2 = wvar(test2, robust = T)
+
+compare.wvar(wv1, wv2)
+compare.wvar(wv1, wv2, auto.label.wvar = F, legend.label = c('data1', 'data2'))
 }
 }
 \author{

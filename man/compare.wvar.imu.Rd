@@ -4,7 +4,7 @@
 \alias{compare.wvar.imu}
 \title{Compare Wavelet Variances for \code{imu} Object}
 \usage{
-compare.wvar.imu(obj.list, object.names, background = "white", CI = TRUE,
+compare.wvar.imu(obj.list, background = "white", CI = TRUE,
   auto.label.wvar = T, transparence = 0.1, line.color = NULL,
   CI.color = NULL, line.type = NULL, point.size = NULL,
   point.shape = NULL, title = "Haar Wavelet Variance Representation",
@@ -17,8 +17,6 @@ compare.wvar.imu(obj.list, object.names, background = "white", CI = TRUE,
 }
 \arguments{
 \item{obj.list}{A \code{list} of \code{wvar.imu} objects.}
-
-\item{object.names}{A \code{character vector} that contains the names of objects to be compared.}
 
 \item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
@@ -73,4 +71,5 @@ Wenchao
 \seealso{
 \code{\link{compare.wvar}}
 }
+\keyword{internal}
 
