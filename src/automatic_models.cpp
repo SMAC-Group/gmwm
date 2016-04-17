@@ -309,6 +309,7 @@ arma::rowvec asympt_calc(const arma::vec& theta,
   // Take derivatives
   arma::mat A = derivative_first_matrix(theta, desc, objdesc, scales);
   
+
   /* A note to someone in the future...
   * Yes, there is a difference in order between the diff (wv_empir-theo) for D_matrix
   *  and the model_score diff (theo-wv_empir).
@@ -359,7 +360,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   std::vector<std::string> desc = full_model;
   
   // Find where the results should be input. (No protection needed, we know it is in the matrix)
-  unsigned int full_model_index = std::distance(models.begin(),models.find(full_model));
+  unsigned int full_model_index = std::distance(models.begin(), models.find(full_model)) - 1;
   
   // Build the fields off of the first model's description
   arma::vec theta = model_theta(desc);
