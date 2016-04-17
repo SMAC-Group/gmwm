@@ -32,7 +32,7 @@ arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau);
 
 arma::vec ma1_to_wv(double theta, double sig2, const arma::vec& tau);
 
-arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& tau);
+arma::vec arma11_to_wv(double phi, double theta, double sigma2, const arma::vec& tau);
 
 arma::vec theoretical_wv(const arma::vec& theta, 
                          const std::vector<std::string>& desc,
