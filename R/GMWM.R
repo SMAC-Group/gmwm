@@ -190,14 +190,10 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   # For reproducibility
   set.seed(seed)
   
-  
-  # Information used in summary.gmwm:
-  summary.desc = model$desc
-  
   num.models = count_models(desc)
   
   # Identifiability issues
-  if(any(num.models[c("DR","QN","RW","WN")]  >1)){
+  if(any(num.models[c("DR","QN","RW","WN")]  > 1)){
     stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
   }
   
