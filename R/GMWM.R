@@ -678,7 +678,9 @@ summary.gmwm = function(object, inference = NULL,
                                                     B)
     # Convert from AR1 to GM
     if(any(object$model$desc == "GM")){
-      object$estimate[,1] = conv.ar1.to.gm(object$estimate[,1], object$model$process.desc, object$freq)
+      object$estimate[,1:3] = apply(object$estimate[,1:3], 2, FUN = conv.ar1.to.gm,
+                                    process.desc = object$model$process.desc, 
+                                    freq = object$freq)
     }
     
     
