@@ -134,7 +134,7 @@
 #'                 data, model.type="ssm")
 gmwm = function(model, data, model.type="ssm", compute.v="auto", 
                 robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
-                freq = NULL){
+                freq = 1){
   
 
   # Check data object
@@ -142,22 +142,19 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
     freq = attr(data, 'freq')
     data = data[,1]
     
-  }else if(is.lts(data)){
+  } else if(is.lts(data)){
     freq = attr(data, 'freq')
     data = data[ ,ncol(data)]
     
-  }else if((is.imu(data) || is.data.frame(data) || is.matrix(data))){
+  } else if((is.imu(data) || is.data.frame(data) || is.matrix(data))){
     if(ncol(data) > 1){
       stop("`gmwm` and `gmwm.imu` can only process one signal at a time.")
     }
     if(is.imu(data)){
       freq = attr(data, 'freq')
     }
-  }
-  
-  if(is.null(freq)){
-    freq = 1
-    warning("'freq' is set to 1 by default.")
+  } else if(is.ts(data)){
+    freq = attr(data,'tsp')[3]
   }
   
   # Do we have a valid model?
@@ -233,6 +230,10 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   theta = model$theta
   
   detected_gm = any(model$desc == "GM")
+  
+  if(detected_gm && freq == 1){
+    warning("'freq' is set to 1 by default this impacts the `GM()` parameters. See ?GM for more details.")
+  }
   
   # Convert from GM to AR1
   if(!starting && detected_gm){

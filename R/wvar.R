@@ -89,6 +89,15 @@ wvar.gts = function(x, decomp="modwt", filter = "haar", nlevels = NULL, alpha = 
 
 #' @rdname wvar
 #' @export
+wvar.ts = function(x, decomp="modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...){
+  freq = attr(x, 'tsp')[3]
+  unit = NULL
+
+  wvar.default(x, decomp, filter, nlevels, alpha, robust, eff, freq = freq, from.unit = unit, to.unit = to.unit)
+}
+
+#' @rdname wvar
+#' @export
 wvar.default = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL, ...){
   if(is.null(x)){
     stop("`x` must contain a value")

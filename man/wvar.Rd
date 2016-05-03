@@ -6,6 +6,7 @@
 \alias{wvar.gts}
 \alias{wvar.imu}
 \alias{wvar.lts}
+\alias{wvar.ts}
 \title{Wavelet Variance}
 \usage{
 wvar(x, ...)
@@ -14,6 +15,9 @@ wvar(x, ...)
   alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
 \method{wvar}{gts}(x, decomp = "modwt", filter = "haar", nlevels = NULL,
+  alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...)
+
+\method{wvar}{ts}(x, decomp = "modwt", filter = "haar", nlevels = NULL,
   alpha = 0.05, robust = FALSE, eff = 0.6, to.unit = NULL, ...)
 
 \method{wvar}{default}(x, decomp = "modwt", filter = "haar",
