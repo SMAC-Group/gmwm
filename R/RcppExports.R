@@ -1289,6 +1289,52 @@ bootstrap_gof_test <- function(obj_value, bs_obj_values, alpha, bs_gof_p_ci) {
     .Call('gmwm_bootstrap_gof_test', PACKAGE = 'gmwm', obj_value, bs_obj_values, alpha, bs_gof_p_ci)
 }
 
+#' MLR in Armadillo
+#' 
+#' Perform Multiple Linear Regression using armadillo in C++
+#' 
+#' @param y A \code{vec} of length \eqn{N\times 1}{N x 1} containing the responses.
+#' @param X A \code{mat} with dimensions \eqn{N \times p}{N x p}, which is the design matrix.
+#' @return A \code{field<vec>} with:
+#' \describe{
+#'   \item{coef}{Coefficients}
+#'   \item{resid}{Residuals}
+#'   \item{sigma2}{Sigma^2}
+#' }
+#' @examples
+#' x = cbind(1,1:10)
+#' y = cumsum(rep(.45,10))
+#' 
+#' lm_arma(y, x)[[1]]
+#' 
+#' coef(lm(y~x-1))
+lm_arma <- function(y, X) {
+    .Call('gmwm_lm_arma', PACKAGE = 'gmwm', y, X)
+}
+
+#' Linear Regression with Drift
+#' 
+#' Perform a linear regression with drift.
+#' 
+#' @param x A \code{vec} of length \eqn{N\times 1}{N x 1} containing the responses.
+#' @return A \code{field<vec>} with:
+#' \describe{
+#'   \item{coef}{Coefficients}
+#'   \item{resid}{Residuals}
+#'   \item{sigma2}{Sigma^2}
+#' }
+#' @examples
+#' x = 1:10
+#' y = cumsum(rep(.7,10))
+#' 
+#' lm_dr(y)[[1]]
+#' 
+#' coef(lm(y~x-1))
+#' 
+lm_dr <- function(x) {
+    .Call('gmwm_lm_dr', PACKAGE = 'gmwm', x)
+}
+
 #' @title B Matrix
 #' @description B Matrix
 #' @param A A \code{mat} containing the first derivatives of the process.
