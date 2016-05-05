@@ -1030,6 +1030,29 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// lm_arma
+arma::field<arma::vec> lm_arma(const arma::vec& y, const arma::mat& X);
+RcppExport SEXP gmwm_lm_arma(SEXP ySEXP, SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    __result = Rcpp::wrap(lm_arma(y, X));
+    return __result;
+END_RCPP
+}
+// lm_dr
+arma::field<arma::vec> lm_dr(const arma::vec& x);
+RcppExport SEXP gmwm_lm_dr(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    __result = Rcpp::wrap(lm_dr(x));
+    return __result;
+END_RCPP
+}
 // B_matrix
 arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega);
 RcppExport SEXP gmwm_B_matrix(SEXP ASEXP, SEXP at_omegaSEXP) {
