@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include "sarma.h"
 
-arma::vec {
+arma::vec scomponents(const arma::vec& objdesc){
   // Number of ARMA(p,q) parameters
   unsigned int np = objdesc(0), nq = objdesc(1);
   
@@ -10,6 +10,12 @@ arma::vec {
   
   // Find the total number of parameters to expand
   unsigned int p = np + ns * nsp, q = nq + ns * nsq;
+  
+  
+  arma::vec o(7);
+  o(0) = np, o(1) = nq, o(2) = nsp, o(3) = nsq, o(4) = ns, o(5) = p, o(6) = q;
+  
+  return o;
 }
 
 //' Expand Parameters for an SARMA object
@@ -37,8 +43,16 @@ arma::vec {
 // [[Rcpp::export]]
 arma::field<arma::vec> expand_sarma(const arma::vec& params, const arma::vec& objdesc) {
 
+    // Number of ARMA(p,q) parameters
+    unsigned int np = objdesc(0), nq = objdesc(1);
     
+    // Number of Seasonal (P,Q)
+    unsigned int nsp = objdesc(2), nsq = objdesc(3), ns = objdesc(4);
     
+    // Find the total number of parameters to expand
+    unsigned int p = np + ns * nsp, q = nq + ns * nsq;
+  
+
     // Loop variables
     unsigned int i, j;
     
