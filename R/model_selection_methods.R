@@ -142,8 +142,8 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' @title Automatically select appropriate model for a set of models
 #' @description 
 #' Runs through a model selection algorithm to determine the best model in a given set
-#' @param data       A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.
 #' @param ...        Different \code{ts.model}s to be compared.
+#' @param data       A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.
 #' @param nested     A \code{bool} that indicates whether the ts.model objects are nested within a large object given within the list. If not, the a full model will be created.
 #' @param bootstrap  A \code{bool} that is either true or false to indicate whether we use bootstrap or asymptotic By default, we use asymptotic.
 #' @param model.type A \code{string} indicating whether the model should be a \code{"ssm"} or \code{"imu"}.
@@ -167,8 +167,12 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' Due to the structure of \code{rank.models}, you cannot mix and match \code{AR1()} and \code{GM()} objects.
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
-rank.models = function(data, ..., nested = F, bootstrap = F, 
+rank.models = function(..., data = NULL, nested = F, bootstrap = F, 
                        model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
+  
+  if(is.null(data)){
+    stop("`data` must not be `NULL`.")
+  }
   
   models = list(...)
   numObj = length(models)
@@ -210,14 +214,26 @@ rank.models = function(data, ..., nested = F, bootstrap = F,
   }
   
   if(nested == F){
+    
+    # Figure out the full string
     full.str = .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
     
+    # Get the breakdown of each component.
     n.full = count_models(full.str)
+  
+    # Determine if there is a containment of the full model within supplied parameters.
+    model_containment = sapply(desc, function(x, n.full) isTRUE(all.equal(count_models(x), n.full)),  n.full)
     
-    if(!any(sapply(desc, function(x, n.full) isTRUE(all.equal(count_models(x), n.full)),  n.full)) ){
+    # If not, add the full.str as a CDM model.
+    if(!any(model_containment) ){
       message("Creating a Common Denominator Model!")
       desc[[length(desc)+1]] = full.str
+    }else{
+      # Make sure to update the full string to the contained model.
+      # As these values may change... (*Grr*)
+      full.str = desc[[which(model_containment)]]
     }
+    
     desc = vector_to_set(desc)
   }else{
     
@@ -417,3 +433,24 @@ summary.rank.models = function(object, digits = 4, ...){
   
   print(round(out,digits))
 }
+
+
+#' Graph `rank.models` object
+#' 
+#' Creates a `rank.models` graph.
+#' @inheritParams plot.gmwm
+plot.rank.models = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
+                            CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                            point.size = NULL,point.shape = NULL,
+                            title = NULL, title.size= 15, 
+                            axis.label.size = 13, axis.tick.size = 11, 
+                            axis.x.label = expression(paste("Scale ", tau)),
+                            axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                            legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
+                            legend.text.size = 13, ... ){
+  
+  plot.gmwm(x[[1]][[2]])
+}
+
+
+
