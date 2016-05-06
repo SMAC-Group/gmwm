@@ -360,7 +360,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   std::vector<std::string> desc = full_model;
   
   // Find where the results should be input. (No protection needed, we know it is in the matrix)
-  unsigned int full_model_index = std::distance(models.begin(), models.find(full_model)) - 1;
+  unsigned int full_model_index = std::distance(models.begin(), models.find(full_model));
   
   // Build the fields off of the first model's description
   arma::vec theta = model_theta(desc);

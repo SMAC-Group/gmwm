@@ -4,14 +4,14 @@
 \alias{rank.models}
 \title{Automatically select appropriate model for a set of models}
 \usage{
-rank.models(data, ..., nested = F, bootstrap = F, model.type = "ssm",
-  alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e+06, freq = 1,
-  seed = 1337)
+rank.models(..., data = NULL, nested = F, bootstrap = F,
+  model.type = "ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50,
+  G = 1e+06, freq = 1, seed = 1337)
 }
 \arguments{
-\item{data}{A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.}
-
 \item{...}{Different \code{ts.model}s to be compared.}
+
+\item{data}{A \code{vector}, \code{data.frame}, \code{matrix}, or \code{gts} object with 1 column.}
 
 \item{nested}{A \code{bool} that indicates whether the ts.model objects are nested within a large object given within the list. If not, the a full model will be created.}
 
