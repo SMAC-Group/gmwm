@@ -1505,15 +1505,15 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// expand_sarima
-arma::field<arma::vec> expand_sarima(const arma::vec& params, const arma::vec& objdesc);
-RcppExport SEXP gmwm_expand_sarima(SEXP paramsSEXP, SEXP objdescSEXP) {
+// expand_sarma
+arma::field<arma::vec> expand_sarma(const arma::vec& params, const arma::vec& objdesc);
+RcppExport SEXP gmwm_expand_sarma(SEXP paramsSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::vec& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type objdesc(objdescSEXP);
-    __result = Rcpp::wrap(expand_sarima(params, objdesc));
+    __result = Rcpp::wrap(expand_sarma(params, objdesc));
     return __result;
 END_RCPP
 }

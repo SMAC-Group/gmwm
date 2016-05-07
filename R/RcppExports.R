@@ -1878,7 +1878,7 @@ diff_inv <- function(x, lag, d) {
     .Call('gmwm_diff_inv', PACKAGE = 'gmwm', x, lag, d)
 }
 
-#' Expand Parameters for an SARIMA object
+#' Expand Parameters for an SARMA object
 #' 
 #' Creates an expanded PHI and THETA vector for use in other objects. 
 #' @param params  A \code{vec} containing the theta values of the parameters.
@@ -1897,10 +1897,11 @@ diff_inv <- function(x, lag, d) {
 #' \item SMA(Q)
 #' \item Seasons
 #' }
+#' @keywords internal
 #' @examples
 #' m = expand_sarima(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
-expand_sarima <- function(params, objdesc) {
-    .Call('gmwm_expand_sarima', PACKAGE = 'gmwm', params, objdesc)
+expand_sarma <- function(params, objdesc) {
+    .Call('gmwm_expand_sarma', PACKAGE = 'gmwm', params, objdesc)
 }
 
 #' @title Routing function for summary info
