@@ -39,7 +39,7 @@ arma::vec scomponents(const arma::vec& objdesc){
 //' }
 //' @keywords internal
 //' @examples
-//' m = expand_sarima(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+//' m = expand_sarma(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
 // [[Rcpp::export]]
 arma::field<arma::vec> expand_sarma(const arma::vec& params, const arma::vec& objdesc) {
 

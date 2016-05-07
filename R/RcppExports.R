@@ -1899,7 +1899,7 @@ diff_inv <- function(x, lag, d) {
 #' }
 #' @keywords internal
 #' @examples
-#' m = expand_sarima(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+#' m = expand_sarma(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
 expand_sarma <- function(params, objdesc) {
     .Call('gmwm_expand_sarma', PACKAGE = 'gmwm', params, objdesc)
 }

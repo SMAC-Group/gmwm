@@ -439,9 +439,11 @@ summary.rank.models = function(object, digits = 4, ...){
 #' 
 #' Creates a `rank.models` graph.
 #' @inheritParams plot.gmwm
+#' @method plot rank.models
+#' @export
 plot.rank.models = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                             CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-                            point.size = NULL,point.shape = NULL,
+                            point.size = NULL, point.shape = NULL,
                             title = NULL, title.size= 15, 
                             axis.label.size = 13, axis.tick.size = 11, 
                             axis.x.label = expression(paste("Scale ", tau)),
@@ -449,7 +451,18 @@ plot.rank.models = function(x, process.decomp = FALSE, background = 'white', CI 
                             legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                             legend.text.size = 13, ... ){
   
-  plot.gmwm(x[[1]][[2]])
+  # Gets the best gmwm object for the first data set and sends it to the gmwm function for plotting.
+  plot.gmwm(x[[1]][[2]], process.decomp = process.decomp, background = background,
+            CI = CI, transparence = transparence, bw = bw, 
+            CI.color = CI.color, line.type = line.type, line.color = line.color,
+            point.size = point.size, point.shape = point.shape,
+            title = title, title.size= title.size, 
+            axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+            axis.x.label = axis.x.label,
+            axis.y.label = axis.y.label,
+            legend.title = legend.title,  legend.label = legend.label,
+            legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+            legend.text.size = legend.text.size, ... )
 }
 
 
