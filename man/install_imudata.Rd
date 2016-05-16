@@ -5,18 +5,26 @@
 \title{Install IMU Data Package}
 \usage{
 install_imudata(type = "ONL", loc = NULL)
+
+install_imudata(type = "ONL", loc = NULL)
 }
 \arguments{
+\item{type}{A \code{string} with value \code{"ONL"} or \code{"LOCAL"}}
+
+\item{loc}{A \code{string} that contains the file location.}
+
 \item{type}{A \code{string} with value \code{"ONL"} or \code{"LOCAL"}}
 
 \item{loc}{A \code{string} that contains the file location.}
 }
 \description{
 Downloads and Install the IMU Data Package to use with the GMWM Package
+
+Downloads and Install the Data Package to use with the GMWM Package
 }
 \details{
 The IMU Data Package contains data from real life IMUs and is approximately a
- 13.8 MB download.
+ 20 MB download.
 }
 \examples{
 \dontrun{
@@ -26,8 +34,17 @@ install_imudata()
 # Local install
 install_imudata("LOCAL","C:/Users/James/Documents/imudata_x.y.z.tar.gz")
 }
+\dontrun{
+# Online install
+install_datapkg()
+
+# Local install
+install_datapkg("LOCAL","C:/Users/James/Documents/datapkg_x.y.z.tar.gz")
+}
 }
 \author{
+JJB
+
 JJB
 }
 
