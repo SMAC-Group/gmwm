@@ -109,7 +109,7 @@ arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alph
       if(lci > 0){
         out(i,1) = lci;        
       }else{
-        out(i,1) = wv_ci_class(i,1)/2; // mean of (low_ci, 0) /2
+        out(i,1) = DBL_EPSILON; // Replaced. (Drop interval to 0)
       }
 
       out(i,2) = wv_ri + uci*coef*wv_ri;
