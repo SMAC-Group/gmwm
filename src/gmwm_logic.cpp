@@ -327,7 +327,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   // Guess starting values for the theta parameters
   if(starting){
-    if(desc[0] == "ARMA" && desc.size() == 1){
+    if(desc[0] == "ARMA" && desc.size() == 1 && !robust){
       
       theta = Rcpp_ARIMA(data, objdesc(0)); 
       starting = false;
