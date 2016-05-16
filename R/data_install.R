@@ -46,7 +46,7 @@ install_imudata = function(type="ONL",loc=NULL){
 #' # Local install
 #' install_datapkg("LOCAL","C:/Users/James/Documents/datapkg_x.y.z.tar.gz")
 #' }
-install_imudata = function(type="ONL",loc=NULL){
+install_datapkg = function(type="ONL",loc=NULL){
   install_data_package("datapkg", type, loc)
 }
 
