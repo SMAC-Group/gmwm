@@ -2,7 +2,7 @@
 % Please edit documentation in src/gen_process.cpp, src/gen_process.h
 \name{gen_qn}
 \alias{gen_qn}
-\title{Generate a Quantisation Noise (QN) sequence}
+\title{Generate a Quantisation Noise (QN) or Rounding Error Sequence}
 \usage{
 gen_qn(N, q2 = 0.1)
 }
@@ -15,9 +15,19 @@ gen_qn(N, q2 = 0.1)
 A \code{vec} containing the QN process.
 }
 \description{
-Generate an QN sequence given \eqn{Q^2}
+Simulates a QN sequence given \eqn{Q^2}.
 }
-\details{
+\section{Process Definition}{
+ 
+Quantization Noise (QN) with parameter \eqn{Q^2 \in R^{+}}{Q^2 in R^{+}}. 
+With i.i.d \eqn{Y_t \sim U(0,1)} (i.e. a standard uniform variable), this process is
+defined as:
+
+\deqn{X_t = \sqrt{12Q^2}(Y_{t}-Y_{t-1})}{X_t = sqrt(12*Q^2)*(Y[t]-Y[t-1])}
+}
+
+\section{Generation Algorithm}{
+
 To generate the quantisation noise, we follow this recipe:
 First, we generate using a random uniform distribution:
 \deqn{U_k^*\sim U\left[ {0,1} \right]}{U_k^*~U[0,1]}

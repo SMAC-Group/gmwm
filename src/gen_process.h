@@ -20,7 +20,7 @@
 
 arma::vec gen_wn(const unsigned int N, const double sigma2);
 
-arma::vec gen_dr(const unsigned int N, const double slope);
+arma::vec gen_dr(const unsigned int N, const double omega);
 
 arma::vec gen_qn(const unsigned int N, double q2);
 

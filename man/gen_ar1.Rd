@@ -2,8 +2,7 @@
 % Please edit documentation in src/gen_process.cpp, src/gen_process.h
 \name{gen_ar1}
 \alias{gen_ar1}
-\title{Generate an Autoregressive Order 1 ( AR(1) ) sequence
-Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.}
+\title{Generate an Autoregressive Order 1 ( AR(1) ) sequence}
 \usage{
 gen_ar1(N, phi = 0.3, sigma2 = 1)
 }
@@ -18,16 +17,27 @@ gen_ar1(N, phi = 0.3, sigma2 = 1)
 A \code{vec} containing the AR(1) process.
 }
 \description{
-Generate an Autoregressive Order 1 ( AR(1) ) sequence
 Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.
 }
 \details{
-The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values without calling the general ARMA function.
-The autoregressive order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} }{x[t] = phi[1]x[t-1]  + w[t]},
- where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values \emph{without} calling the general ARMA function.
+Thus, the function is able to generate values much faster than \code{\link{gen_arma}}.
+}
+\section{Process Definition}{
 
-The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
-AR values under the above equation.
+The Autoregressive order 1 (AR1) process with non-zero parameter \eqn{\phi \in (-1,+1)}{phi in (-1,1)} and \eqn{\sigma^2 \in {\rm I\!R}^{2}}{sigma^2 in R^{+}}.
+This process is defined as: 
+\deqn{{X_t} = {\phi _1}{X_{t - 1}} + {\varepsilon_t} }{X[t] = phi[1]X[t-1]  + W[t]},
+ where \deqn{{\varepsilon_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma^2} \right)}{W[t] ~ N(0,sigma^2) iid}
+AR(1) processes are sometimes used as an approximation for Bias Instability noises.
+}
+
+\section{Generation Algorithm}{
+
+The function first generates a vector of White Noise with length \eqn{N+1} using \code{\link{gen_wn}} and then obtains the
+autoregressive values under the above process definition.
+
+The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 }
 \examples{
 gen_ar1(10, 5, 1.2)

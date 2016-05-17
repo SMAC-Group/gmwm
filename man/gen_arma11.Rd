@@ -23,11 +23,23 @@ Generate an ARMA(1,1) sequence given \eqn{\phi}, \eqn{\theta}, and \eqn{\sigma^2
 }
 \details{
 The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
-The autoregressive order 1 and moving average order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} + {\theta _1}{w_{t - 1}} }{x[t] = phi*x[t-1] + w[t] + theta*w[t-1]},
- where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+}
+\section{Process Definition}{
+
+The Autoregressive order 1 and Moving Average order 1 (ARMA(1,1)) process with non-zero parameters \eqn{\phi \in (-1,+1)}{phi in (-1,1)} for the AR component,
+ \eqn{\theta \in (-1,+1)}{theta in (-1,+1)} for the MA component, and \eqn{\sigma^2 \in {\rm I\!R}^{+}}{sigma^2 in R^{+}}.
+This process is defined as:
+ \deqn{{X_t} = {\phi _1}{X_{t - 1}} + {\theta _1}{\varepsilon_{t - 1}} + {\varepsilon_t}}{W[t] = phi*W[t-1] + theta*W[t-1] + W[t]},
+ where
+  \deqn{{\varepsilon_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma^2} \right)}{W[t] ~ N(0,sigma^2) iid}
+}
+
+\section{Generation Algorithm}{
 
 The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
 ARMA values under the above equation.
+
+The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 }
 \examples{
 gen_ma1(10, .2, 1.2)

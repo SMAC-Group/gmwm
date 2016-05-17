@@ -639,14 +639,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // gen_dr
-arma::vec gen_dr(const unsigned int N, const double slope);
-RcppExport SEXP gmwm_gen_dr(SEXP NSEXP, SEXP slopeSEXP) {
+arma::vec gen_dr(const unsigned int N, const double omega);
+RcppExport SEXP gmwm_gen_dr(SEXP NSEXP, SEXP omegaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< const double >::type slope(slopeSEXP);
-    __result = Rcpp::wrap(gen_dr(N, slope));
+    Rcpp::traits::input_parameter< const double >::type omega(omegaSEXP);
+    __result = Rcpp::wrap(gen_dr(N, omega));
     return __result;
 END_RCPP
 }

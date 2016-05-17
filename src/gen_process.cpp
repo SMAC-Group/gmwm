@@ -25,15 +25,21 @@
 // For invertibility check in ARMA
 #include "ts_checks.h"
 
-/* ------------------------------ Start Process Generation Functions ------------------------------ */
+/* ------------------------------ START Individual Process Generation Functions ------------------------------ */
 
-//' Generate a White Noise Process (\eqn{WN(\sigma^2)})
-//' Generates a White Noise Process with variance parameter \eqn{\sigma ^2}.
+//' Generate a Gaussian White Noise Process (WN(\eqn{\sigma ^2}{sigma^2}))
+//' 
+//' Simulates a Gaussian White Noise Process with variance parameter \eqn{\sigma ^2}{sigma^2}.
 //' @param N      An \code{integer} for signal length.
 //' @param sigma2 A \code{double} that contains process variance.
 //' @return wn A \code{vec} containing the white noise.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
+//' @template processes_defined/process_wn
+//' @section Generation Algorithm:
+//' To generate the Gaussian White Noise (WN) process, we first obtain the 
+//' standard deviation from the variance by taking a square root. Then, we 
+//' sample \eqn{N} times from a \eqn{N(0,\sigma ^2)}{N(0,sigma^2)} distribution.
 //' @keywords internal
 //' @examples
 //' gen_wn(10, 1.5)
@@ -43,39 +49,44 @@ arma::vec gen_wn(const unsigned int N, const double sigma2 = 1)
   arma::vec wn(N);
   double sigma = sqrt(sigma2);
   for(unsigned int i = 0; i < N; i++){
-      wn(i) = R::rnorm(0.0, sigma);
+    wn(i) = R::rnorm(0.0, sigma);
   }
-
-	return wn;
+  
+  return wn;
 }
 
 //' Generate a Drift Process
 //' 
-//' Generates a Drift Process with a given slope, \eqn{\omega}.
+//' Simulates a Drift Process with a given slope, \eqn{\omega}.
 //' @param N     An \code{integer} for signal length.
-//' @param slope A \code{double} that contains drift slope
+//' @param omega A \code{double} that contains drift slope
 //' @return A \code{vec} containing the drift.
+//' @template processes_defined/process_dr
+//' @section Generation Algorithm:
+//' To generate the Drift process, we first fill a \code{vector} with the \eqn{\omega}{omega} parameter.
+//' After, we take the cumulative sum along the vector. 
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
 //' @examples
 //' gen_dr(10, 8.2)
 // [[Rcpp::export]]
-arma::vec gen_dr(const unsigned int N, const double slope = 5)
+arma::vec gen_dr(const unsigned int N, const double omega = 5)
 {
   arma::vec gd(N);
-  gd.fill(slope);
-	return cumsum(gd);
+  gd.fill(omega);
+  return cumsum(gd);
 }
 
-//' Generate a Quantisation Noise (QN) sequence
+//' Generate a Quantisation Noise (QN) or Rounding Error Sequence
 //' 
-//' Generate an QN sequence given \eqn{Q^2}
+//' Simulates a QN sequence given \eqn{Q^2}.
 //' @param N  An \code{integer} for signal length.
 //' @param q2 A \code{double} that contains autocorrection.
 //' @return A \code{vec} containing the QN process.
 //' @keywords internal
-//' @details 
+//' @template processes_defined/process_qn
+//' @section Generation Algorithm:
 //' To generate the quantisation noise, we follow this recipe:
 //' First, we generate using a random uniform distribution:
 //' \deqn{U_k^*\sim U\left[ {0,1} \right]}{U_k^*~U[0,1]}
@@ -104,28 +115,31 @@ arma::vec gen_qn(const unsigned int N, double q2 = .1)
   
   arma::vec gu(N+1);
   
-	for(unsigned int i=0; i <= N; i++ )
-	{		
-		gu(i) = sqrt12*R::runif(0.0,1.0);
-	}
-
-	return sqrt(q2)*diff_cpp(gu);
+  for(unsigned int i=0; i <= N; i++ )
+  {		
+    gu(i) = sqrt12*R::runif(0.0,1.0);
+  }
+  
+  return sqrt(q2)*diff_cpp(gu);
 }
 
 
 //' Generate an Autoregressive Order 1 ( AR(1) ) sequence
+//' 
 //' Generate an Autoregressive Order 1 sequence given \eqn{\phi} and \eqn{\sigma^2}.
 //' @param N      An \code{unsigned integer} for signal length.
 //' @param phi    A \code{double} that contains autocorrection.
 //' @param sigma2 A \code{double} that contains process variance.
 //' @return A \code{vec} containing the AR(1) process.
 //' @details
-//' The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values without calling the general ARMA function.
-//' The autoregressive order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} }{x[t] = phi[1]x[t-1]  + w[t]},
-//'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+//' The function implements a way to generate the AR(1)'s \eqn{x_t}{x[t]} values \emph{without} calling the general ARMA function.
+//' Thus, the function is able to generate values much faster than \code{\link{gen_arma}}.
+//' @template processes_defined/process_ar1
+//' @section Generation Algorithm:
+//' The function first generates a vector of White Noise with length \eqn{N+1} using \code{\link{gen_wn}} and then obtains the
+//' autoregressive values under the above process definition.
 //' 
-//' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
-//' AR values under the above equation.
+//' The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -151,6 +165,11 @@ arma::vec gen_ar1(const unsigned int N, const double phi = .3, const double sigm
 //' @param N      An \code{integer} for signal length.
 //' @param sigma2 A \code{double} that contains process variance.
 //' @return grw A \code{vec} containing the random walk without drift.
+//' @template processes_defined/process_rw
+//' @section Generation Algorithm:
+//' To generate we first obtain the standard deviation from the variance by taking a square root. Then, we 
+//' sample \eqn{N} times from a \eqn{N(0,\sigma^2)}{N(0,sigma^2)} distribution. Lastly, we take the
+//' cumulative sum over the vector. 
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -177,12 +196,12 @@ arma::vec gen_rw(const unsigned int N, const double sigma2 = 1)
 //' @return A \code{vec} containing the MA(1) process.
 //' @details
 //' The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
-//' The moving average process is defined as \eqn{{x_t} = {w_t} + {\theta _1}{w_{t - 1}}}{x[t] = w[t] + theta*w[t-1]},
-//'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+//' @template processes_defined/process_ma1
+//' @section Generation Algorithm:
+//' The function first generates a vector of white noise using \code{\link{gen_wn}} and then obtains the
+//' MA values under the above equation. 
 //' 
-//' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
-//' MA values under the above equation.
-//' 
+//' The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -212,12 +231,12 @@ arma::vec gen_ma1(const unsigned int N, const double theta = .3, const double si
 //' @return A \code{vec} containing the MA(1) process.
 //' @details
 //' The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
-//' The autoregressive order 1 and moving average order 1 process is defined as \eqn{{x_t} = {\phi _1}{x_{t - 1}} + {w_t} + {\theta _1}{w_{t - 1}} }{x[t] = phi*x[t-1] + w[t] + theta*w[t-1]},
-//'  where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
-//' 
+//' @template processes_defined/process_arma11
+//' @section Generation Algorithm:
 //' The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
 //' ARMA values under the above equation.
 //' 
+//' The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -237,21 +256,23 @@ arma::vec gen_arma11(const unsigned int N, const double phi = .1, const double t
   return arma.rows(1,N);
 }
 
-//' Generate Autoregressive Order P - Moving Average Order Q (ARMA(P,Q)) Model
+//' Generate Autoregressive Order \eqn{p} - Moving Average Order \eqn{q} (ARMA(\eqn{p},\eqn{q})) Model
 //' 
-//' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+//' Generate an ARMA(\eqn{p},\eqn{q}) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
 //' @param N       An \code{integer} for signal length.
 //' @param ar      A \code{vec} that contains the AR coefficients.
 //' @param ma      A \code{vec} that contains the MA coefficients.
 //' @param sigma2  A \code{double} that contains process variance.
 //' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
 //' @return A \code{vec} that contains the generated observations.
-//' @details 
+//' @details
+//' For \code{\link[=gen_ar1]{AR(1)}}, \code{\link[=gen_ma1]{MA(1)}}, and \code{\link[=gen_arma11]{ARMA(1,1)}} please use their functions if speed is important
+//' as this function is designed to generate generic ARMA processes.
+//' @template processes_defined/process_arma
+//' @section Generation Algorithm: 
 //' The innovations are generated from a normal distribution.
 //' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
 //' This differs from R's use of the standard deviation, \eqn{\sigma}.
-//' 
-//' For AR(1), MA(1), and ARMA(1,1) please use their functions if speed is important.
 //' @backref src/gen_process.cpp
 //' @backref src/gen_process.h
 //' @keywords internal
@@ -352,6 +373,11 @@ arma::vec gen_arma(const unsigned int N,
   
   return x;
 }
+
+/* --------------------- END Individual Process Generation Functions --------------------------- */
+
+
+/* --------------------- START Composite Process Generation Functions -------------------------- */
 
 //' Generate Time Series based on Model (Internal)
 //' 
@@ -569,4 +595,4 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
 
 
 
-/* --------------------- END Process Generation Functions -------------------------- */
+/* --------------------- END Composite Process Generation Functions -------------------------- */

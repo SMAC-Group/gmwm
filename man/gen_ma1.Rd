@@ -21,11 +21,22 @@ Generate an MA(1) Process given \eqn{\theta} and \eqn{\sigma^2}.
 }
 \details{
 The function implements a way to generate the \eqn{x_t}{x[t]} values without calling the general ARMA function.
-The moving average process is defined as \eqn{{x_t} = {w_t} + {\theta _1}{w_{t - 1}}}{x[t] = w[t] + theta*w[t-1]},
- where \eqn{{w_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma _w^2} \right)}{w[t] ~ N(0,sigma^2) iid}
+}
+\section{Process Definition}{
 
-The function first generates a vector of white noise using \code{\link[gmwm]{gen_wn}} and then obtains the
-MA values under the above equation.
+The Moving Average order 1 (MA(1)) process with non-zero parameter \eqn{\theta \in (-1,+1)}{theta in (-1,+1)} 
+and \eqn{\sigma^2 \in {\rm I\!R}^{+}}{sigma^2 in R^{+}}. This process is defined as:
+\deqn{{x_t} = {\varepsilon_t} + {\theta _1}{\varepsilon_{t - 1}}}{x[t] = W[t] + theta*W[t-1]},
+ where 
+ \deqn{{\varepsilon_t}\mathop  \sim \limits^{iid} N\left( {0,\sigma^2} \right)}{W[t] ~ N(0,sigma^2) iid}
+}
+
+\section{Generation Algorithm}{
+
+The function first generates a vector of white noise using \code{\link{gen_wn}} and then obtains the
+MA values under the above equation. 
+
+The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 }
 \examples{
 gen_ma1(10, .2, 1.2)

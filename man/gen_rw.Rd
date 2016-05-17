@@ -17,6 +17,19 @@ grw A \code{vec} containing the random walk without drift.
 \description{
 Generates a random walk without drift.
 }
+\section{Process Definition}{
+ 
+Random Walk (RW) with parameter \eqn{\gamma^2 \in {\rm I\!R}^{+}}{gamma in R^{+}}. This process is defined as:
+\deqn{{X_t} = \sum\limits_{t = 1}^T {\gamma {Z_t}} }{X[t] = sum(gamma*Z[t])}
+and is often called \emph{Rate Random Walk} in the engineering literature.
+}
+
+\section{Generation Algorithm}{
+
+To generate we first obtain the standard deviation from the variance by taking a square root. Then, we 
+sample \eqn{N} times from a \eqn{N(0,\sigma^2)}{N(0,sigma^2)} distribution. Lastly, we take the
+cumulative sum over the vector.
+}
 \examples{
 gen_rw(10, 8.2)
 }

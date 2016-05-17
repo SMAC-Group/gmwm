@@ -4,18 +4,30 @@
 \alias{gen_dr}
 \title{Generate a Drift Process}
 \usage{
-gen_dr(N, slope = 5)
+gen_dr(N, omega = 5)
 }
 \arguments{
 \item{N}{An \code{integer} for signal length.}
 
-\item{slope}{A \code{double} that contains drift slope}
+\item{omega}{A \code{double} that contains drift slope}
 }
 \value{
 A \code{vec} containing the drift.
 }
 \description{
-Generates a Drift Process with a given slope, \eqn{\omega}.
+Simulates a Drift Process with a given slope, \eqn{\omega}.
+}
+\section{Process Definition}{
+ 
+Drift with parameter \eqn{\omega \in \Omega}{omega in Omega} where \eqn{\Omega}{Omega} is in
+\eqn{{\rm I\!R}^{+}}{R^+} or \eqn{{\rm I\!R}^{-}}{R^-}. This process is defined as:
+\eqn{X_t = \omega t}{X[t] = omega*t} and is occasionally referred to as Rate Ramp.
+}
+
+\section{Generation Algorithm}{
+
+To generate the Drift process, we first fill a \code{vector} with the \eqn{\omega}{omega} parameter.
+After, we take the cumulative sum along the vector.
 }
 \examples{
 gen_dr(10, 8.2)
