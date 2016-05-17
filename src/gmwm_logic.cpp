@@ -327,13 +327,36 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   
   // Guess starting values for the theta parameters
   if(starting){
-    if(desc[0] == "ARMA" && desc.size() == 1 && !robust){
+    
+    // Always run guessing algorithm
+    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wvar, scales, ranged, G);
+    
+    // If under ARMA case and only ARMA is in the model, 
+    // then see how well these values are.
+    if(desc[0] == "ARMA" && desc.size() == 1){
       
-      theta = Rcpp_ARIMA(data, objdesc(0)); 
-      starting = false;
+      // Use R's ARIMA function to estimate parameter space
+      arma::vec theta2 = Rcpp_ARIMA(data, objdesc(0)); // Only 1 objdesc in the available.
       
-    }else{     
-      theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wvar, scales, ranged, G);
+      // Obtain the obj function under omega with these initial guesses
+      // DO >>NOT<< USE Yannick's to optimize starting values!!!!
+      double mle_css_obj = getObjFun(theta2, desc, objdesc,  model_type, omega, wv_empir, scales); 
+      
+      // Obtain the objective function under Yannick's starting algorithm
+      double init_guess_obj = getObjFunStarting(theta, desc, objdesc,  model_type, wv_empir, scales);
+      
+      // What performs better? 
+      if(mle_css_obj < init_guess_obj){
+        // Disable starting value optimization if using MLE. 
+        theta = theta2;
+        starting = false;
+        
+        // Added diag for Roberto, remove when done.
+        Rcpp::Rcout << "MLE is better than SVT!" << std::endl;
+      }else{
+        Rcpp::Rcout << "SVT is used instead of MLE!" << std::endl;
+      }
+      
     }
     
     guessed_theta = theta;
