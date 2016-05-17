@@ -350,13 +350,8 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
         // Disable starting value optimization if using MLE. 
         theta = theta2;
         starting = false;
-        
-        // Added diag for Roberto, remove when done.
-        Rcpp::Rcout << "MLE is better than SVT!" << std::endl;
-      }else{
-        Rcpp::Rcout << "SVT is used instead of MLE!" << std::endl;
       }
-      
+
     }
     
     guessed_theta = theta;
