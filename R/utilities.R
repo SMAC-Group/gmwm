@@ -25,6 +25,7 @@
 #' \item the verison of the package on cran
 #' \item release date of the package on cran
 #' }
+#' @keywords internal
 #' @examples 
 #' library(gmwm)
 #' packageVersion("gmwm")
@@ -60,6 +61,7 @@ packageVersionCRAN = function(pkg, cran_url="http://cran.r-project.org/web/packa
 #' @return 
 #' A \code{logical} value that indicates whether R is open in RStudio.
 #' @author JJB
+#' @keywords internal
 #' @examples 
 #' is.rstudio()
 is.rstudio = function(){

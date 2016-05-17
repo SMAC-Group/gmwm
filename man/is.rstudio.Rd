@@ -18,4 +18,5 @@ is.rstudio()
 \author{
 JJB
 }
+\keyword{internal}
 

@@ -30,4 +30,5 @@ packageVersionCRAN("gmwm")
 \author{
 JJB
 }
+\keyword{internal}
 
