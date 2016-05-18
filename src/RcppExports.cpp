@@ -1192,29 +1192,42 @@ BEGIN_RCPP
 END_RCPP
 }
 // arma11_to_wv
-arma::vec arma11_to_wv(double phi, double theta, double sig2, const arma::vec& tau);
-RcppExport SEXP gmwm_arma11_to_wv(SEXP phiSEXP, SEXP thetaSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+arma::vec arma11_to_wv(double phi, double theta, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_arma11_to_wv(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
-    __result = Rcpp::wrap(arma11_to_wv(phi, theta, sig2, tau));
+    __result = Rcpp::wrap(arma11_to_wv(phi, theta, sigma2, tau));
+    return __result;
+END_RCPP
+}
+// ar1_to_wv
+arma::vec ar1_to_wv(double phi, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_ar1_to_wv(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    __result = Rcpp::wrap(ar1_to_wv(phi, sigma2, tau));
     return __result;
 END_RCPP
 }
 // ma1_to_wv
-arma::vec ma1_to_wv(double theta, double sig2, const arma::vec& tau);
-RcppExport SEXP gmwm_ma1_to_wv(SEXP thetaSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+arma::vec ma1_to_wv(double theta, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_ma1_to_wv(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
-    __result = Rcpp::wrap(ma1_to_wv(theta, sig2, tau));
+    __result = Rcpp::wrap(ma1_to_wv(theta, sigma2, tau));
     return __result;
 END_RCPP
 }
@@ -1231,26 +1244,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // wn_to_wv
-arma::vec wn_to_wv(double sig2, arma::vec tau);
-RcppExport SEXP gmwm_wn_to_wv(SEXP sig2SEXP, SEXP tauSEXP) {
+arma::vec wn_to_wv(double sigma2, arma::vec tau);
+RcppExport SEXP gmwm_wn_to_wv(SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    __result = Rcpp::wrap(wn_to_wv(sig2, tau));
+    __result = Rcpp::wrap(wn_to_wv(sigma2, tau));
     return __result;
 END_RCPP
 }
 // rw_to_wv
-arma::vec rw_to_wv(double sig2, const arma::vec& tau);
-RcppExport SEXP gmwm_rw_to_wv(SEXP sig2SEXP, SEXP tauSEXP) {
+arma::vec rw_to_wv(double gamma2, const arma::vec& tau);
+RcppExport SEXP gmwm_rw_to_wv(SEXP gamma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< double >::type gamma2(gamma2SEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
-    __result = Rcpp::wrap(rw_to_wv(sig2, tau));
+    __result = Rcpp::wrap(rw_to_wv(gamma2, tau));
     return __result;
 END_RCPP
 }
@@ -1263,19 +1276,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type omega(omegaSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     __result = Rcpp::wrap(dr_to_wv(omega, tau));
-    return __result;
-END_RCPP
-}
-// ar1_to_wv
-arma::vec ar1_to_wv(double phi, double sig2, const arma::vec& tau);
-RcppExport SEXP gmwm_ar1_to_wv(SEXP phiSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
-    __result = Rcpp::wrap(ar1_to_wv(phi, sig2, tau));
     return __result;
 END_RCPP
 }

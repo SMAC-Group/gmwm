@@ -15,12 +15,16 @@ A \code{vec} containing the wavelet variance of the process for the overall mode
 \description{
 This function computes the combined processes to WV (haar) in a given model.
 }
+\section{Haar Wavelet Derivation Information}{
+
+For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
+}
 \examples{
-x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
-ntau = floor(log(length(x.sim),2))
+model = AR1(.3,2) + DR(.001)
+ntau = 8
 tau = 2^(1:ntau)
-wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
-plot(tau, wv.theo, col = "red")
+wv.theo = decomp_theoretical_wv(model$theta, model$desc, model$objdesc, tau)
+wv.total = decomp_to_theo_wv(wv.theo)
 }
 \keyword{internal}
 

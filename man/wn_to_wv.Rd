@@ -2,26 +2,34 @@
 % Please edit documentation in R/RcppExports.R
 \name{wn_to_wv}
 \alias{wn_to_wv}
-\title{White Noise to WV}
+\title{Gaussian White Noise to WV}
 \usage{
-wn_to_wv(sig2, tau)
+wn_to_wv(sigma2, tau)
 }
 \arguments{
-\item{sig2}{A \code{double} corresponding to variance of WN}
+\item{sigma2}{A \code{double} corresponding to variance of WN}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
 A \code{vec} containing the wavelet variance of the white noise.
 }
 \description{
-This function compute the WV (haar) of a White Noise process
+This function compute the Haar WV of a Gaussian White Noise process
+}
+\section{Process Haar Wavelet Variance Formula}{
+
+The Gaussian White Noise (WN) process has a Haar Wavelet Variance given by:
+\deqn{\nu _j^2\left( {{\sigma ^2}} \right) = \frac{{{\sigma ^2}}}{{\tau _j^2}}}{nu[j]^2 (sigma2) = (sigma2)/(tau[j]^2)}
+}
+
+\section{Haar Wavelet Derivation Information}{
+
+For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
 }
 \examples{
-x.sim = cumsum(rnorm(100000))
-ntau = floor(log(length(x.sim),2))
+ntau = 8
 tau = 2^(1:ntau)
 wv.theo = wn_to_wv(1, tau)
-plot(tau, wv.theo, col = "red")
 }
 

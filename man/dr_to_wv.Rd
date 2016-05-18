@@ -7,9 +7,9 @@
 dr_to_wv(omega, tau)
 }
 \arguments{
-\item{omega}{A \code{double} corresponding to variance of drift}
+\item{omega}{A \code{double} corresponding to the slope of the drift}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
 A \code{vec} containing the wavelet variance of the drift.
@@ -17,11 +17,19 @@ A \code{vec} containing the wavelet variance of the drift.
 \description{
 This function compute the WV (haar) of a Drift process
 }
+\section{Process Haar Wavelet Variance Formula}{
+
+The Drift (DR) process has a Haar Wavelet Variance given by:
+\deqn{ \nu _j^2\left( {{\omega }} \right) = \frac{{\tau _j^2{\omega ^2}}}{{16}}  }{nu[j]^2 (omega) = (tau[j]^2 * omega^2)/16}
+}
+
+\section{Haar Wavelet Derivation Information}{
+
+For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
+}
 \examples{
-x.sim = 1:1000
-ntau = floor(log(length(x.sim),2))
+ntau = 8
 tau = 2^(1:ntau)
-wv.theo = dr_to_wv(1, tau)
-plot(tau, wv.theo, col = "red")
+wv.theo = dr_to_wv(-2.3, tau)
 }
 

@@ -4,12 +4,12 @@
 \alias{rw_to_wv}
 \title{Random Walk to WV}
 \usage{
-rw_to_wv(sig2, tau)
+rw_to_wv(gamma2, tau)
 }
 \arguments{
-\item{sig2}{A \code{double} corresponding to variance of RW}
+\item{gamma2}{A \code{double} corresponding to variance of RW}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^tau}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
 A \code{vec} containing the wavelet variance of the random walk.
@@ -17,11 +17,19 @@ A \code{vec} containing the wavelet variance of the random walk.
 \description{
 This function compute the WV (haar) of a Random Walk process
 }
+\section{Process Haar Wavelet Variance Formula}{
+
+The Random Walk (RW) process has a Haar Wavelet Variance given by:
+\deqn{\nu _j^2\left( {{\gamma ^2}} \right) = \frac{{\left( {\tau _j^2 + 2} \right){\gamma ^2}}}{{12{\tau _j}}} }{nu[j]^2 (gamma2) = ((tau[j]^2 + 2)*gamma2)/(12*tau[j])}
+}
+
+\section{Haar Wavelet Derivation Information}{
+
+For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
+}
 \examples{
-x.sim = cumsum(rnorm(100000))
-ntau = floor(log(length(x.sim),2))
+ntau = 8
 tau = 2^(1:ntau)
-wv.theo = rw_to_wv(1,tau)
-plot(tau, wv.theo, col = "red")
+wv.theo = rw_to_wv(.37, tau)
 }
 

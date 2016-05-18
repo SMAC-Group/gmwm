@@ -13,7 +13,7 @@ theoretical_wv(theta, desc, objdesc, tau)
 
 \item{objdesc}{A \code{field<vec>} containing a list of object descriptors.}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^(1:J)}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
 A \code{vec} containing the wavelet variance of the model.
@@ -21,12 +21,15 @@ A \code{vec} containing the wavelet variance of the model.
 \description{
 This function computes the summation of all Processes to WV (haar) in a given model
 }
+\section{Haar Wavelet Derivation Information}{
+
+For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
+}
 \examples{
-x.sim = gen_ar1( N = 10000, phi = 0.9, sigma2 = 4 )
-ntau = floor(log(length(x.sim),2))
+model = AR1(.3,2) + RW(.21) + DR(.001)
+ntau = 8
 tau = 2^(1:ntau)
-wv.theo = ar1_to_wv(phi = 0.9, sig2 = 16, tau)
-plot(tau, wv.theo, col = "red")
+wv.theo = theoretical_wv(model$theta, model$desc, model$objdesc, tau)
 }
 \keyword{internal}
 
