@@ -25,7 +25,7 @@ Sets up the necessary backend for the WN process.
 }
 \examples{
 WN()
-WN(sigma=3.4)
+WN(sigma2=3.4)
 }
 \author{
 JJB

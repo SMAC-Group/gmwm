@@ -4,10 +4,10 @@
 \alias{RW}
 \title{Create an Random Walk (RW) Process}
 \usage{
-RW(sigma2 = NULL)
+RW(gamma2 = NULL)
 }
 \arguments{
-\item{sigma2}{A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.}
+\item{gamma2}{A \code{double} value for the variance \eqn{\gamma ^2}{gamma^2}}
 }
 \value{
 An S3 object with called ts.model with the following structure:
@@ -25,7 +25,7 @@ Sets up the necessary backend for the RW process.
 }
 \examples{
 RW()
-RW(sigma=3.4)
+RW(gamma2=3.4)
 }
 \author{
 JJB

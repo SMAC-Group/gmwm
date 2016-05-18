@@ -4,10 +4,10 @@
 \alias{DR}
 \title{Create an Drift (DR) Process}
 \usage{
-DR(slope = NULL)
+DR(omega = NULL)
 }
 \arguments{
-\item{slope}{A \code{double} value for the slope of a DR process.}
+\item{omega}{A \code{double} value for the slope of a DR process.}
 }
 \value{
 An S3 object with called ts.model with the following structure:
@@ -25,7 +25,7 @@ Sets up the necessary backend for the DR process.
 }
 \examples{
 DR()
-DR(slope=3.4)
+DR(omega=3.4)
 }
 \author{
 JJB

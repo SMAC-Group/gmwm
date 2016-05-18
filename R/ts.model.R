@@ -1,4 +1,4 @@
-# Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+# Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
 #
 # This file is part of GMWM R Methods Package
 #
@@ -13,8 +13,9 @@
 # You should have received a copy of the Attribution-NonCommercial-ShareAlike 4.0 International 
 # (CC BY-NC-SA 4.0) along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
 
-#' @title Create an Autoregressive 1 [AR(1)] Process
-#' @description Setups the necessary backend for the AR1 process.
+#' Create an Autoregressive 1 [AR(1)] Process
+#'
+#' Setups the necessary backend for the AR1 process.
 #' @param phi A \code{double} value for the \eqn{\phi}{phi} of an AR1 process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
@@ -87,8 +88,9 @@ MA1 = function(theta = NULL, sigma2 = 1) {
 }
 
 
-#' @title Create an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) Process
-#' @description Sets up the necessary backend for the ARMA(1,1) process.
+#' Create an Autoregressive Order 1 - Moving Average Order 1 (ARMA(1,1)) Process
+#' 
+#' Sets up the necessary backend for the ARMA(1,1) process.
 #' @param phi    A \code{double} containing the coefficients for \eqn{\phi _1}{phi[1]}'s for the Autoregressive 1 (AR1) term.
 #' @param theta  A \code{double} containing  the coefficients for \eqn{\theta _1}{theta[1]}'s for the Moving Average 1 (MA1) term.
 #' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARMA process.
@@ -134,8 +136,9 @@ ARMA11 = function(phi = NULL, theta = NULL, sigma2 = 1.0) {
 
 
 
-#' @title Create a Gauss-Markov (GM) Process
-#' @description Setups the necessary backend for the GM process.
+#' Create a Gauss-Markov (GM) Process
+#' 
+#' Setups the necessary backend for the GM process.
 #' @param beta A \code{double} value for the \eqn{\beta}{beta} of an GM process.
 #' @param sigma2_gm A \code{double} value for the variance, \eqn{\sigma ^2_{gm}}{sigma^2[gm]}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
@@ -153,8 +156,8 @@ ARMA11 = function(phi = NULL, theta = NULL, sigma2 = 1.0) {
 #' do not supply AR1 parameters such as \eqn{\phi}{phi}, \eqn{\sigma^2}{sigma^2}.
 #' 
 #' Internally, GM parameters are converted to AR1 using the `freq` 
-#' supplied when creating data objects (\link[gmwm]{imu}, \link[gmwm]{gts})
-#' or specifying a `freq` parameter in \link[gmwm]{gmwm} or \link[gmwm]{gmwm.imu}.
+#' supplied when creating data objects (\link{imu}, \link{gts})
+#' or specifying a `freq` parameter in \link{gmwm} or \link{gmwm.imu}.
 #' 
 #' The `freq` of a data object takes precedence over the `freq` set when modeling.
 #' @author JJB
@@ -180,8 +183,9 @@ GM = function(beta = NULL, sigma2_gm = 1) {
   invisible(out)
 }
 
-#' @title Create an Quantisation Noise (QN) Process
-#' @description Sets up the necessary backend for the QN process.
+#' Create an Quantisation Noise (QN) Process
+#' 
+#' Sets up the necessary backend for the QN process.
 #' @param q2 A \code{double} value for the \eqn{Q^2}{Q^2} of a QN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \describe{
@@ -214,8 +218,9 @@ QN = function(q2 = NULL) {
   invisible(out)
 }
 
-#' @title Create an White Noise (WN) Process
-#' @description Sets up the necessary backend for the WN process.
+#' Create an White Noise (WN) Process
+#' 
+#' Sets up the necessary backend for the WN process.
 #' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \describe{
@@ -229,7 +234,7 @@ QN = function(q2 = NULL) {
 #' @author JJB
 #' @examples
 #' WN()
-#' WN(sigma=3.4)
+#' WN(sigma2=3.4)
 WN = function(sigma2 = NULL) {
   starting = FALSE
   if(is.null(sigma2)){
@@ -248,9 +253,10 @@ WN = function(sigma2 = NULL) {
   invisible(out)
 }
 
-#' @title Create an Random Walk (RW) Process
-#' @description Sets up the necessary backend for the RW process.
-#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' Create an Random Walk (RW) Process
+#' 
+#' Sets up the necessary backend for the RW process.
+#' @param gamma2 A \code{double} value for the variance \eqn{\gamma ^2}{gamma^2}
 #' @return An S3 object with called ts.model with the following structure:
 #' \describe{
 #'  \item{process.desc}{Used in summary: "RW"}
@@ -263,18 +269,18 @@ WN = function(sigma2 = NULL) {
 #' @author JJB
 #' @examples
 #' RW()
-#' RW(sigma=3.4)
-RW = function(sigma2 = NULL) {
+#' RW(gamma2=3.4)
+RW = function(gamma2 = NULL) {
   starting = FALSE
-  if(is.null(sigma2)){
-    sigma2 = 4
+  if(is.null(gamma2)){
+    gamma2 = 4
     starting = TRUE
   }
-  if(length(sigma2) != 1){
+  if(length(gamma2) != 1){
     stop("Bad RW model submitted. Must be a double that indicates the standard deviation.")
   }
   out = structure(list(process.desc = "RW",
-                       theta = sigma2,
+                       theta = gamma2,
                        plength = 1,
                        desc = "RW",
                        obj.desc = list(1),
@@ -282,9 +288,10 @@ RW = function(sigma2 = NULL) {
   invisible(out)
 }
 
-#' @title Create an Drift (DR) Process
-#' @description Sets up the necessary backend for the DR process.
-#' @param slope A \code{double} value for the slope of a DR process.
+#' Create an Drift (DR) Process
+#' 
+#' Sets up the necessary backend for the DR process.
+#' @param omega A \code{double} value for the slope of a DR process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \describe{
 #'  \item{process.desc}{Used in summary: "DR"}
@@ -297,18 +304,18 @@ RW = function(sigma2 = NULL) {
 #' @author JJB
 #' @examples
 #' DR()
-#' DR(slope=3.4)
-DR = function(slope = NULL) {
+#' DR(omega=3.4)
+DR = function(omega = NULL) {
   starting = FALSE
-  if(is.null(slope)){
-    slope = 5
+  if(is.null(omega)){
+    omega = 5
     starting = TRUE
   }
-  if(length(slope) != 1){
+  if(length(omega) != 1){
     stop("Bad Drift model submitted. Must be a double that indicates a slope.")
   }
   out = structure(list(process.desc = "DR",
-                       theta = slope,
+                       theta = omega,
                        plength = 1,
                        desc = "DR",
                        obj.desc = list(1),
