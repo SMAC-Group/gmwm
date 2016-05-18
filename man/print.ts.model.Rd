@@ -22,11 +22,17 @@ An S3 object with called ts.model with the following structure:
 Sets up the necessary backend for creating multiple model objects.
 }
 \examples{
+# Creates a parameter space for guessing
 QN() + DR() + WN() + RW() + AR1() + ARMA(1,2)
-AR1(phi=.9,sigma2=.1) + WN(sigma2=1) + 
-RW(sigma2=.3) + DR(slope=.5) + QN(q2=.9) + ARMA(ar=c(.3,.1),ma=c(.3,.2), sigma2= .99)
 
-AR1(.9,.1) + WN(1) + RW(.3) + DR(.5) + QN(.9) + ARMA(c(.3,.1),c(.3,.2), .99)
+# Creates a user-specified starting value model
+AR1(phi = .9, sigma2 = .1) + WN(sigma2 = 1) 
+
+# Similarly, with the addition of a generic ARMA
+RW(gamma2 = .3) + DR(omega = .5) + QN(q2 = .9) + ARMA(ar = c(.3,.1), ma = c(.3,.2), sigma2 = .99)
+
+# In a similar vein, this example highlights the lack of need for specifying parameters. 
+AR1(.9,.1) + WN(1) + RW(.3) + DR(.5) + QN(.9) + ARMA(c(.3,.1), c(.3,.2), .99)
 }
 \author{
 JJB
