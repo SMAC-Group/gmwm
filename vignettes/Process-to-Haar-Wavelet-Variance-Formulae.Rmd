@@ -11,7 +11,7 @@ vignette: >
   
 The following equations are derivations used within the package as they relate to the Haar Wavelet Variance (WV) theoretical quantities. The initial WV formula, $\nu _j^2$, are used to calculate process to wavelet variance. The later are used within the asymptotic model selection calculations. 
 
-The initial equations, marked by $AVa{r_n}\left[ {X\left( t \right)} \right]$, come from *Allan variance of time series models for measurement data* by Nien Fan Zhang published in Metrologia and *Analysis and Modeling of Inertial Sensors Using Allan Variance* by El-Sheimy, et. al. in IEEE Transactions on Instrumentation and Measurement. That is, these equations are derived using the Allan Variance. The relationship between the Allan variance to the Wavelet Variance is $\frac{1}{2} AVa{r_n}\left[ {X\left( t \right)} \right] = \nu _j^2$. Note, the $n$ used in the Allan variance is equivalent to $\frac{\tau_j}{2}$.
+The initial equations, marked by $AVa{r_n}\left[ {X\left( t \right)} \right]$, come from [*Allan variance of time series models for measurement data*](http://iopscience.iop.org/article/10.1088/0026-1394/45/5/009/meta) by Nien Fan Zhang published in Metrologia and [*Analysis and Modeling of Inertial Sensors Using Allan Variance*](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4404126&tag=1) by El-Sheimy, et. al. in IEEE Transactions on Instrumentation and Measurement. That is, these equations are derived using the Allan Variance (AV). The relationship between the Allan Variance to the Wavelet Variance is $\frac{1}{2} AVa{r_n}\left[ {X\left( t \right)} \right] = \nu _j^2$. Note, the $n$ used in the Allan Variance is equivalent to $\frac{\tau_j}{2}$.
 
 The derivations below were done using [Mathematica](https://www.wolfram.com/mathematica/). The derivation file is available at: [http://smac-group.com/assets/supporting_docs/haar_analytical_derivatives_complete.nb](http://smac-group.com/assets/supporting_docs/haar_analytical_derivatives_complete.nb)
 
@@ -23,8 +23,8 @@ $$\begin{aligned}
 AVa{r_n}\left[ {X\left( t \right)} \right] &= \frac{{\sigma _X^2}}{n} \\
 \nu _j^2\left( {{\sigma ^2}} \right) &= \frac{1}{2}\frac{{{\sigma ^2}}}{{\left( {\frac{{{\tau _j}}}{2}} \right)}} \\
 &= \frac{{{\sigma ^2}}}{{{\tau _j}}} \\ 
-\nu _j^2\left( {{\sigma ^2}} \right)  &= \frac{1}{\tau _j} \\
-\nu _j^2\left( {{\sigma ^2}} \right)  &= 0 \\
+  \frac{\partial }{{\partial {\sigma ^2}}}\nu _j^2\left( {{\sigma ^2}} \right) &= \frac{1}{{{\tau _j}}} \\
+  \frac{{{\partial ^2}}}{{\partial {\sigma ^4}}}\nu _j^2\left( {{\sigma ^2}} \right) &= 0  \\ 
 \end{aligned}$$
   
 **Random Walk:**
@@ -44,18 +44,18 @@ $$\begin{aligned}
   AVa{r_n}\left[ {X\left( t \right)} \right] &= \frac{{{n^2}{\omega ^2}}}{2} \\
   \nu _j^2\left( \omega  \right) &= \frac{1}{2}\frac{{{{\left( {\frac{{{\tau _j}}}{2}} \right)}^2}{\omega ^2}}}{2} \\
    &= \frac{{\tau _j^2{\omega ^2}}}{{16}} \\
-  \frac{\partial }{{\partial {\omega ^2}}}{\nu _j^2}(\omega ) &= \frac{{{\tau _j^2}}}{{16}}\\
-  \frac{\partial }{{\partial {\omega ^4}}}{\nu _j^2}(\omega ) &= 0
+  \frac{\partial }{{\partial \omega }}\nu _j^2\left( \omega  \right) &= \frac{{\tau _j^2\omega }}{8} \\
+  \frac{{{\partial ^2}}}{{\partial {\omega ^2}}}\nu _j^2\left( \omega  \right) &= \frac{{\tau _j^2}}{8} 
 \end{aligned}$$
 
 **Quantization Noise (QN):**
 
 $$\begin{aligned}
   AVa{r_n}\left[ {X\left( t \right)} \right] &= \frac{{3{Q^2}}}{{{n^2}}} \\
-  \nu _j^2\left( \omega  \right) &= \frac{1}{2}\frac{{3{Q^2}}}{{{{\left( {\frac{{{\tau _j}}}{2}} \right)}^2}}} \\
+  \nu _j^2\left( Q^2 \right) &= \frac{1}{2}\frac{{3{Q^2}}}{{{{\left( {\frac{{{\tau _j}}}{2}} \right)}^2}}} \\
    &= \frac{{6{Q^2}}}{{\tau _j^2}} \\ 
-   \frac{\partial }{{\partial Q_0^2}}{\nu _j^2}\left( \tau  \right) &= \frac{6}{{{\tau _j^2}}} \\
-  \frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu _j^2}\left( \tau  \right) &= 0
+   \frac{\partial }{{\partial Q^2}}{\nu _j^2}\left( Q^2  \right) &= \frac{6}{{{\tau _j^2}}} \\
+  \frac{{{\partial ^2}}}{{\partial Q^4}}{\nu _j^2}\left( Q^2  \right) &= 0
 \end{aligned}$$
 
 **AR 1 Process:**
@@ -115,57 +115,42 @@ $$\begin{aligned}
 \end{aligned}$$
 
 
+*>* **NOTE** For the ARMA(1,1) process listed in Zhang on Page 553, he references [Time Series Analysis:
+Forecasting and Control](http://www.wiley.com/WileyCDA/WileyTitle/productCd-0470272848.html) by Box G E P and Jenkins G M 1976 that contains an error when describing both the process variance and autocorrelation function (ACF).
+
+In this case, the ARMA(1,1) process variance, $\gamma \left( 0 \right)$, and first autocovariance,$\gamma \left( 1 \right)$, is given by:
+
+\[\begin{aligned}
+  Var\left( {X\left( t \right)} \right) &= \gamma \left( 0 \right) \\
+  &= {\sigma ^2}\frac{{\left( {1 + 2\theta \phi  + {\theta ^2}} \right)}}{{\left( {1 - {\phi ^2}} \right)}}  \\
+  \gamma \left( 1 \right) &= {\sigma ^2}\frac{{\left( {1 + \theta \phi } \right)\left( {\phi  + \theta } \right)}}{{\left( {1 - {\phi ^2}} \right)}} 
+\end{aligned} \]
+
+And the ARMA(1,1) ACF is given by:
+
+\[\begin{aligned}
+  \rho \left( 1 \right) &= \frac{{\gamma \left( 1 \right)}}{{\gamma \left( 0 \right)}} = \frac{{\left( {\phi  + \theta } \right)\left( {1 + \phi \theta } \right)}}{{1 + 2\phi \theta  + {\theta ^2}}} \\
+  \rho \left( k \right) &= {\phi ^{k - 1}}\rho \left( 1 \right)
+\end{aligned} \]
+
+for $k \ge 1$. 
+
+With this in mind, we rederive the Allan Variance for an ARMA(1,1) using Equation 11 on page 551.
+
+
 **ARMA(1,1) Process:**
 
-$$\begin{aligned}
-  AVa{r_n}\left[ {X\left( t \right)} \right] &= \frac{{\left( {n{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - 2{\phi _1}{\theta _1} + \theta _1^2} \right) + \left( {{\phi _1} - {\theta _1}} \right)\left( {1 - {\phi _1}{\theta _1}} \right)\left( {2n - 3 - 2n{\phi _1} + 4\phi _1^n - \phi _1^{2n}} \right)} \right){\sigma ^2}}}{{{n^2}{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - \phi _1^2} \right)}} \\
-  \nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= \frac{1}{2}\frac{{\left( {\left( {\frac{{{\tau _j}}}{2}} \right){{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - 2{\phi _1}{\theta _1} + \theta _1^2} \right) + \left( {{\phi _1} - {\theta _1}} \right)\left( {1 - {\phi _1}{\theta _1}} \right)\left( {2\left( {\frac{{{\tau _j}}}{2}} \right) - 3 - 2\left( {\frac{{{\tau _j}}}{2}} \right){\phi _1} + 4\phi _1^{\left( {\frac{{{\tau _j}}}{2}} \right)} - \phi _1^{2\left( {\frac{{{\tau _j}}}{2}} \right)}} \right)} \right){\sigma ^2}}}{{{{\left( {\frac{{{\tau _j}}}{2}} \right)}^2}{{\left( {1 - {\phi _1}} \right)}^2}\left( {1 - \phi _1^2} \right)}} \\
-   &= \frac{{2{\sigma ^2}\left( {\frac{1}{2}{{\left( {{\phi _1} - 1} \right)}^2}\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} - \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right)}}{{{{\left( {{\phi _1} - 1} \right)}^2}\left( {1 - \phi _1^2} \right)\tau _j^2}} \\ 
-\end{aligned}
-$$
+Update ...
 
 **Derivative w.r.t.$\sigma^2$:**
 
-\[\begin{aligned}
-  \frac{\partial }{{\partial {\sigma ^2}}}\nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= \frac{{2\left( {\frac{1}{2}{{\left( {{\phi _1} - 1} \right)}^2}\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} - \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right)}}{{{{\left( {{\phi _1} - 1} \right)}^2}\left( {1 - \phi _1^2} \right)\tau _j^2}} \\
-  \frac{\partial }{{\partial {\sigma ^4}}}\nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= 0 \\
-\end{aligned} \]
+Update ...
 
 **Derivative w.r.t $\theta _1$:**
 
-$$\begin{aligned}
-  \frac{\partial }{{\partial {\theta _1}}}\nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= \frac{{2{\sigma ^2}\left( {\frac{1}{2}{{\left( {{\phi _1} - 1} \right)}^2}\left( {2{\theta _1} - 2{\phi _1}} \right){\tau _j} - {\phi _1}\left( {{\theta _1} - {\phi _1}} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right) - \left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right)}}{{{{\left( {{\phi _1} - 1} \right)}^2}\left( {1 - \phi _1^2} \right)\tau _j^2}} \\
-  \frac{\partial }{{\partial \theta _1^2}}\nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= \frac{{2{\sigma ^2}\left( {{{\left( {{\phi _1} - 1} \right)}^2}{\tau _j} - 2{\phi _1}\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right)}}{{{{\left( {{\phi _1} - 1} \right)}^2}\left( {1 - \phi _1^2} \right)\tau _j^2}} \\ 
-\end{aligned}$$
-
+Update ...
 
 **Derivative w.r.t $\phi _1$**:
 
-$$\begin{aligned}
-  \frac{\partial }{{\partial {\phi _1}}}\nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= \frac{{4{\sigma ^2}{\phi _1}\left( {\frac{1}{2}{{\left( {{\phi _1} - 1} \right)}^2}\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} - \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right)}}{{{{\left( {{\phi _1} - 1} \right)}^2}{{\left( {1 - \phi _1^2} \right)}^2}\tau _j^2}} \\
-   &- \frac{{4{\sigma ^2}\left( {\frac{1}{2}{{\left( {{\phi _1} - 1} \right)}^2}\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} - \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right)}}{{{{\left( {{\phi _1} - 1} \right)}^3}\left( {1 - \phi _1^2} \right)\tau _j^2}} \\
-   &+ \frac{{2{\sigma ^2}\left( \begin{aligned}
-   &- {\theta _1}{\left( {{\phi _1} - 1} \right)^2}{\tau _j} + \left( {{\phi _1} - 1} \right)\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} \\
-   &- \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 2{\tau _j}\phi _1^{\frac{{{\tau _j}}}{2} - 1} + {\tau _j}\phi _1^{{\tau _j} - 1} + {\tau _j}} \right) \\
-   &- {\theta _1}\left( {{\theta _1} - {\phi _1}} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right) \\
-   &+ \left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right) \\ 
-\end{aligned}  \right)}}{{{{\left( {{\phi _1} - 1} \right)}^2}\left( {1 - \phi _1^2} \right)\tau _j^2}} \\
-   \\
-   \\
-  \frac{\partial }{{\partial \phi _1^2}}\nu _j^2\left( {{\theta _1},{\phi _1},{\sigma ^2}} \right) &= \frac{{2{\sigma ^2}}}{{\tau _j^2}}\left( \begin{aligned}
-  &2\left( {\frac{{2{\phi _1}}}{{{{\left( {{\phi _1} - 1} \right)}^2}{{\left( {1 - \phi _1^2} \right)}^2}}} - \frac{2}{{{{\left( {{\phi _1} - 1} \right)}^3}\left( {1 - \phi _1^2} \right)}}} \right)\left( \begin{aligned}
-   &- {\theta _1}{\left( {{\phi _1} - 1} \right)^2}{\tau _j} + \left( {{\phi _1} - 1} \right)\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} - \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 2{\tau _j}\phi _1^{\frac{{{\tau _j}}}{2} - 1} + {\tau _j}\phi _1^{{\tau _j} - 1} + {\tau _j}} \right) \\
-   &- {\theta _1}\left( {{\theta _1} - {\phi _1}} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right) + \left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right) \\ 
-\end{aligned}  \right) \\
-   &+ \left( { - \frac{{8{\phi _1}}}{{{{\left( {{\phi _1} - 1} \right)}^3}{{\left( {1 - \phi _1^2} \right)}^2}}} + \frac{{\frac{{8\phi _1^2}}{{{{\left( {1 - \phi _1^2} \right)}^3}}} + \frac{2}{{{{\left( {1 - \phi _1^2} \right)}^2}}}}}{{{{\left( {{\phi _1} - 1} \right)}^2}}} + \frac{6}{{{{\left( {{\phi _1} - 1} \right)}^4}\left( {1 - \phi _1^2} \right)}}} \right)\left( \begin{aligned}
-  &\frac{1}{2}{\left( {{\phi _1} - 1} \right)^2}\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right){\tau _j} \\
-   &- \left( {{\theta _1} - {\phi _1}} \right)\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right) \\ 
-\end{aligned}  \right) \\
-   &+ \frac{1}{{{{\left( {{\phi _1} - 1} \right)}^2}\left( {1 - \phi _1^2} \right)}}\left( \begin{aligned}
-  &\frac{1}{2}\left( {2\left( { - 2{\theta _1}{\phi _1} + \theta _1^2 + 1} \right) - 8{\theta _1}\left( {{\phi _1} - 1} \right)} \right){\tau _j} \\
-   &- \left( {{\theta _1} - {\phi _1}} \right)\left( {\left( {{\theta _1}{\phi _1} - 1} \right)\left( {\left( {{\tau _j} - 1} \right){\tau _j}\phi _1^{{\tau _j} - 2} - 2\left( {\frac{{{\tau _j}}}{2} - 1} \right){\tau _j}\phi _1^{\frac{{{\tau _j}}}{2} - 2}} \right) + 2{\theta _1}\left( { - 2{\tau _j}\phi _1^{\frac{{{\tau _j}}}{2} - 1} + {\tau _j}\phi _1^{{\tau _j} - 1} + {\tau _j}} \right)} \right) \\
-   &+ 2\left( {\left( {{\theta _1}{\phi _1} - 1} \right)\left( { - 2{\tau _j}\phi _1^{\frac{{{\tau _j}}}{2} - 1} + {\tau _j}\phi _1^{{\tau _j} - 1} + {\tau _j}} \right) + {\theta _1}\left( { - 4\phi _1^{\frac{{{\tau _j}}}{2}} + \phi _1^{{\tau _j}} + \left( {{\phi _1} - 1} \right){\tau _j} + 3} \right)} \right) \\ 
-\end{aligned}  \right) \\ 
-\end{aligned}  \right) \\ 
-\end{aligned} $$
+Update ...
 
