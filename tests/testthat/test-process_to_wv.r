@@ -1,8 +1,8 @@
 context("Process to WV Haar - Unit Tests")
 
 # Create a fake "zero" length vector
-a = 1
-a = a[0]
+a = numeric()
+
 
 # Overall taus
 tau = 2^(1:4)
