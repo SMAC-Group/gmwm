@@ -115,13 +115,14 @@ avar_mo_cpp <- function(x) {
 #' @param theta A \code{vec} that contains all the parameter estimates.
 #' @param p     A \code{int} that indicates the number of AR coefficients
 #' @param q     A \code{int} that indicates the number of MA coefficients.
-#' @param tau   A \code{vec} that lists the scales of the process e.g. 2^(1:J)
+#' @template misc/tau
 #' @return A \code{vec} containing the ARMA to WV results
 #' @details 
 #' The data conversion is more or less a rearrangement of values without using the obj desc. 
 #' @keywords internal
 #' @backref src/analytical_matrix_derivatives.cpp
 #' @backref src/analytical_matrix_derivatives.h
+#' @template author/jjb
 arma_adapter <- function(theta, p, q, tau) {
     .Call('gmwm_arma_adapter', PACKAGE = 'gmwm', theta, p, q, tau)
 }
@@ -129,14 +130,12 @@ arma_adapter <- function(theta, p, q, tau) {
 #' Calculates the Jacobian for the ARMA process
 #' 
 #' Take the numerical derivative for the first derivative of an ARMA using the 2 point rule.
-#' @param theta A \code{vec} that contains all the parameter estimates.
-#' @param p     A \code{int} that indicates the number of AR coefficients
-#' @param q     A \code{int} that indicates the number of MA coefficients.
-#' @param tau   A \code{vec} that lists the scales of the process e.g. 2^(1:J)
-#' @return A \code{mat} that returns the numerical jacobian of the ARMA process.
+#' @inheritParams arma_adapter
+#' @return A \code{mat} that returns the first numerical derivative of the ARMA process.
 #' @keywords internal
 #' @backref src/analytical_matrix_derivatives.cpp
 #' @backref src/analytical_matrix_derivatives.h
+#' @template author/jjb
 jacobian_arma <- function(theta, p, q, tau) {
     .Call('gmwm_jacobian_arma', PACKAGE = 'gmwm', theta, p, q, tau)
 }
@@ -144,77 +143,78 @@ jacobian_arma <- function(theta, p, q, tau) {
 #' Analytic D matrix for AR(1) process
 #' 
 #' Obtain the first derivative of the AR(1) process. 
-#' @param phi  A \code{double} corresponding to the phi coefficient of an AR(1) process.
-#' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
-#' @param tau  A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\phi ^2}{sigma^2} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
-#' @details
-#' See the supporting vignette documentation.
-#' @author JJB
+#' @param phi    A \code{double} corresponding to the phi coefficient of an AR(1) process.
+#' @param sigma2 A \code{double} corresponding to the error term of an AR(1) process.
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\phi}{phi} 
+#' and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+#' @template deriv_wv/1st/deriv1_ar1
+#' @template author/jjb
 #' @examples
 #' deriv_ar1(.3, 1, 2^(1:5))
-deriv_ar1 <- function(phi, sig2, tau) {
-    .Call('gmwm_deriv_ar1', PACKAGE = 'gmwm', phi, sig2, tau)
+deriv_ar1 <- function(phi, sigma2, tau) {
+    .Call('gmwm_deriv_ar1', PACKAGE = 'gmwm', phi, sigma2, tau)
 }
 
 #' Analytic second derivative matrix for AR(1) process
-#' @param phi A \code{double} corresponding to the phi coefficient of an AR(1) process.
-#' @param sig2 A \code{double} corresponding to the error term of an AR(1) process.
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\phi}{\phi} and the second column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
-#' @details
-#' The haar wavelet variance is given as \eqn{\frac{{\left( {\frac{\tau }{2} - 3{\rho _0} - \frac{{\tau \rho _0^2}}{2} + 4\rho _0^{\frac{\tau }{2} + 1} - \rho _0^{\tau  + 1}} \right)\nu _0^2}}{{\frac{{{\tau ^2}}}{8}{{\left( {1 - {\rho _0}} \right)}^2}\left( {1 - \rho _0^2} \right)}}}{See PDF Manual for equation}
-#' Note: \eqn{\phi = \rho}{phi = rho} and \eqn{V _0^2 = \sigma _0^2}{V[0]^2 = sigma[0]^2}.
-#' Due to length, the analytical derivations of the AR(1) haar wavelet variance are given in a supplied file within vignette.
-#' @author JJB
+#' 
+#' Calculates the second derivative for the AR(1) process and places it into a matrix form.
+#' The matrix form in this case is for convenience of the calculation. 
+#' @param phi    A \code{double} corresponding to the phi coefficient of an AR(1) process.
+#' @param sigma2 A \code{double} corresponding to the error term of an AR(1) process.
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing the
+#'  second partial derivative with respect to \eqn{\phi}{phi} and
+#'   the second column contains the second partial derivative with 
+#'   respect to \eqn{\sigma ^2}{sigma^2}
+#' @template author/jjb
 #' @examples
 #' deriv_2nd_ar1(.3, 1, 2^(1:5))
-deriv_2nd_ar1 <- function(phi, sig2, tau) {
-    .Call('gmwm_deriv_2nd_ar1', PACKAGE = 'gmwm', phi, sig2, tau)
+deriv_2nd_ar1 <- function(phi, sigma2, tau) {
+    .Call('gmwm_deriv_2nd_ar1', PACKAGE = 'gmwm', phi, sigma2, tau)
 }
 
 #' Analytic D matrix for MA(1) process
 #' 
 #' Obtain the first derivative of the MA(1) process. 
-#' @param theta  A \code{double} corresponding to the phi coefficient of an MA(1) process.
-#' @param sig2   A \code{double} corresponding to the error term of an MA(1) process.
-#' @param tau    A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\theta} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
-#' @details
-#' See the supporting vignette documentation.
-#' @author JJB
+#' @param theta  A \code{double} corresponding to the theta coefficient of an MA(1) process.
+#' @param sigma2 A \code{double} corresponding to the error term of an MA(1) process.
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\theta}{theta}
+#'  and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+#' @template deriv_wv/1st/deriv1_ma1
+#' @template author/jjb
 #' @examples
 #' deriv_ma1(.3, 1, 2^(1:5))
-deriv_ma1 <- function(theta, sig2, tau) {
-    .Call('gmwm_deriv_ma1', PACKAGE = 'gmwm', theta, sig2, tau)
+deriv_ma1 <- function(theta, sigma2, tau) {
+    .Call('gmwm_deriv_ma1', PACKAGE = 'gmwm', theta, sigma2, tau)
 }
 
 #' Analytic second derivative for MA(1) process
 #' 
-#' To easy calculation, we assume a matrix structure. 
-#' @param theta A \code{double} corresponding to the phi coefficient of an MA(1) process.
-#' @param sig2  A \code{double} corresponding to the error term of an MA(1) process.
-#' @param tau   A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{\theta},
-#'  the second column contains the partial derivative with respect to \eqn{\theta}{\theta} and \eqn{\sigma ^2}{sigma^2},
+#' To ease a later calculation, we place the result into a matrix structure. 
+#' @param theta  A \code{double} corresponding to the theta coefficient of an MA(1) process.
+#' @param sigma2 A \code{double} corresponding to the error term of an MA(1) process.
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{theta},
+#'  the second column contains the partial derivative with respect to \eqn{\theta}{theta} and \eqn{\sigma ^2}{sigma^2},
 #'  and lastly we have the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
-#' @details
-#' See the supporting vignette documentation.
-#' @author JJB
+#' @template author/jjb
 #' @examples
 #' deriv_2nd_ma1(.3, 1, 2^(1:5))
-deriv_2nd_ma1 <- function(theta, sig2, tau) {
-    .Call('gmwm_deriv_2nd_ma1', PACKAGE = 'gmwm', theta, sig2, tau)
+deriv_2nd_ma1 <- function(theta, sigma2, tau) {
+    .Call('gmwm_deriv_2nd_ma1', PACKAGE = 'gmwm', theta, sigma2, tau)
 }
 
-#' Analytic D matrix for drift process
+#' Analytic D matrix for Drift (DR) Process
+#' 
+#' Obtain the first derivative of the Drift (DR) process. 
 #' @param omega A \code{double} that is the slope of the drift.
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\omega _0}{omega[0]}.
-#' @details
-#' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{{\tau ^2}\omega _0^2}}{2}}{nu^2(tau) = tau^2 omega_0^2 / 2}.
-#' Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
-#' @author JJB
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing the partial derivative 
+#' with respect to \eqn{\omega}{omega}.
+#' @template deriv_wv/1st/deriv1_dr
+#' @template author/jjb
 #' @examples
 #' deriv_dr(5.3, 2^(1:5))
 deriv_dr <- function(omega, tau) {
@@ -222,54 +222,54 @@ deriv_dr <- function(omega, tau) {
 }
 
 #' Analytic second derivative matrix for drift process
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\omega _0}{omega[0]}.
-#' @details
-#' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{{\tau ^2}\omega _0^2}}{2}}{nu^2(tau) = tau^2 omega_0^2 / 2}.
-#' Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
-#' Taking second derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{{{\partial ^2}}}{{\partial \omega _0^2}}{\nu ^2}\left( \tau  \right) = {\tau ^2}}{tau^2}
-#' @author JJB
+#' 
+#' To ease a later calculation, we place the result into a matrix structure. 
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing 
+#' the second partial derivative with respect to \eqn{\omega}{omega}.
+#' @template author/jjb
 #' @examples
 #' deriv_2nd_dr(2^(1:5))
 deriv_2nd_dr <- function(tau) {
     .Call('gmwm_deriv_2nd_dr', PACKAGE = 'gmwm', tau)
 }
 
-#' Analytic D matrix quantisation noise process
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{Q _0^2}{Q[0]^2}.
-#' @details
-#' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{3Q_0^2}}{{2{\tau ^2}}}}{nu^2(tau) = 3*Q[0]^2 / 2*tau^2}.
-#' Taking the derivative with respect to \eqn{Q _0^2}{Q[0]^2} yields: \deqn{\frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) = \frac{3}{{2{\tau ^2}}}}{3/(2*tau^2)}.
-#' The second derivative derivative with respect to \eqn{Q _0^2}{Q[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
-#' @author JJB
+#' Analytic D matrix for Quantization Noise (QN) Process
+#' 
+#' Obtain the first derivative of the Quantization Noise (QN) process. 
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing 
+#' the partial derivative with respect to \eqn{Q^2}{Q^2}.
+#' @template deriv_wv/1st/deriv1_qn
+#' @template author/jjb
 #' @examples
 #' deriv_qn(2^(1:5))
 deriv_qn <- function(tau) {
     .Call('gmwm_deriv_qn', PACKAGE = 'gmwm', tau)
 }
 
-#' Analytic D matrix random walk process
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2}.
-#' @details
-#' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{\left( {2{\tau ^2} + 1} \right)\gamma _0^2}}{{24\tau }}}{nu^2(tau) = (2*tau^2+1)*gamma^2 / (24*tau)}.
-#' Taking the first derivative with respect to \eqn{\gamma _0^2}{gamma_0^2} yields: \deqn{\frac{{{\partial ^2}}}{{\partial \gamma _0^4}}{\nu ^2}\left( \tau  \right) = 0}{(2*tau^2+1) / (24*tau)}
-#' The second derivative derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial \sigma_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
-#' @author JJB
+#' Analytic D matrix Random Walk (RW) Process
+#' 
+#' Obtain the first derivative of the Random Walk (RW) process. 
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing
+#'  the partial derivative with respect to \eqn{\gamma^2}{gamma^2}.
+#' @template deriv_wv/1st/deriv1_rw
+#' @template author/jjb
 #' @examples
 #' deriv_rw(2^(1:5))
 deriv_rw <- function(tau) {
     .Call('gmwm_deriv_rw', PACKAGE = 'gmwm', tau)
 }
 
-#' Analytic D matrix white noise process
-#' @param tau A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))
-#' @return A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\sigma _0^2}{sigma[0]^2}.
-#' @details
-#' The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{\sigma _0^2}}{\tau }}{nu^2(tau) = sigma_0^2 / tau}.
-#' Taking the derivative with respect to \eqn{\sigma _0^2}{sigma_0^2} yields: \eqn{\frac{\partial }{{\partial \sigma _0^2}}{\nu ^2}\left( \tau  \right) = \frac{1}{\tau }}{1/tau}
-#' @author JJB
+#' Analytic D Matrix for a Gaussian White Noise (WN) Process
+#' 
+#' Obtain the first derivative of the Gaussian White Noise (WN) process. 
+#' @template misc/tau
+#' @return A \code{matrix} with the first column containing 
+#' the partial derivative with respect to \eqn{\sigma^2}{sigma^2}.
+#' @template deriv_wv/1st/deriv1_wn
+#' @template author/jjb
 #' @examples
 #' deriv_wn(2^(1:5))
 deriv_wn <- function(tau) {
@@ -282,11 +282,11 @@ deriv_wn <- function(tau) {
 #' @param theta   A \code{vec} containing the list of estimated parameters.
 #' @param desc    A \code{vector<string>} containing a list of descriptors.
 #' @param objdesc A \code{field<vec>} containing a list of object descriptors.
-#' @param tau     A \code{vec} containing the scales e.g. 2^(1:J)
+#' @template misc/tau
 #' @return A \code{matrix} with the process derivatives going down the column
 #' @details
 #' Function returns the matrix effectively known as "D"
-#' @author JJB
+#' @template author/jjb
 #' @examples
 #' mod = AR1(.4,1) + WN(.2) + DR(.005)
 #' derivative_first_matrix(mod$theta, mod$desc, mod$obj.desc, 2^(1:9))
@@ -300,14 +300,14 @@ derivative_first_matrix <- function(theta, desc, objdesc, tau) {
 #' @param theta     A \code{vec} containing the list of estimated parameters.
 #' @param desc      A \code{vector<string>} containing a list of descriptors.
 #' @param objdesc   A \code{field<vec>} containing a list of object descriptors.
-#' @param tau       A \code{vec} containing the scales e.g. 2^(1:J)
+#' @template misc/tau
 #' @param omegadiff A \code{vec} that contains the result of Omega * (wv_empir - wv_theo)
 #' @return A \code{matrix} with the process derivatives going down the column
 #' @details
 #' Function returns the matrix effectively known as "D"
-#' @author JJB
+#' @template author/jjb
 #' @examples
-#' #TBA
+#' # TBA
 #' @keywords internal
 D_matrix <- function(theta, desc, objdesc, tau, omegadiff) {
     .Call('gmwm_D_matrix', PACKAGE = 'gmwm', theta, desc, objdesc, tau, omegadiff)

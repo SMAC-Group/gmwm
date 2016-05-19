@@ -2,28 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{deriv_qn}
 \alias{deriv_qn}
-\title{Analytic D matrix quantisation noise process}
+\title{Analytic D matrix for Quantization Noise (QN) Process}
 \usage{
 deriv_qn(tau)
 }
 \arguments{
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the partial derivative with respect to \eqn{Q _0^2}{Q[0]^2}.
+A \code{matrix} with the first column containing 
+the partial derivative with respect to \eqn{Q^2}{Q^2}.
 }
 \description{
-Analytic D matrix quantisation noise process
+Obtain the first derivative of the Quantization Noise (QN) process.
 }
-\details{
-The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{3Q_0^2}}{{2{\tau ^2}}}}{nu^2(tau) = 3*Q[0]^2 / 2*tau^2}.
-Taking the derivative with respect to \eqn{Q _0^2}{Q[0]^2} yields: \deqn{\frac{\partial }{{\partial Q_0^2}}{\nu ^2}\left( \tau  \right) = \frac{3}{{2{\tau ^2}}}}{3/(2*tau^2)}.
-The second derivative derivative with respect to \eqn{Q _0^2}{Q[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial Q_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
+\section{Process Haar WV First Derivative}{
+
+Taking the derivative with respect to \eqn{Q^2}{Q^2} yields:
+\deqn{\frac{\partial }{{\partial {Q^2}}}\nu _j^2\left( {{Q^2}} \right) = \frac{6}{{\tau _j^2}}}{d/dQ2 nu[j]^2 (Q2) = (6) / (tau[j]^2)}
 }
 \examples{
 deriv_qn(2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

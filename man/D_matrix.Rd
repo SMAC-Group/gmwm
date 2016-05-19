@@ -13,7 +13,7 @@ D_matrix(theta, desc, objdesc, tau, omegadiff)
 
 \item{objdesc}{A \code{field<vec>} containing a list of object descriptors.}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^(1:J)}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 
 \item{omegadiff}{A \code{vec} that contains the result of Omega * (wv_empir - wv_theo)}
 }
@@ -27,10 +27,10 @@ This function computes each process to WV (haar) in a given model.
 Function returns the matrix effectively known as "D"
 }
 \examples{
-#TBA
+# TBA
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 \keyword{internal}
 

@@ -1,0 +1,6 @@
+#' @section Process Haar WV First Derivative:
+#' Taking the derivative with respect to \eqn{\phi}{phi} yields:
+#' \deqn{\frac{\partial }{{\partial \phi }}\nu _j^2\left( {\phi ,{\sigma ^2}} \right) = \frac{{2{\sigma ^2}\left( {\left( {{\phi ^2} - 1} \right){\tau _j}\left( { - 2{\phi ^{\frac{{{\tau _j}}}{2}}} + {\phi ^{{\tau _j}}} - \phi  - 1} \right) - \left( {\phi \left( {3\phi  + 2} \right) + 1} \right)\left( { - 4{\phi ^{\frac{{{\tau _j}}}{2}}} + {\phi ^{{\tau _j}}} + 3} \right)} \right)}}{{{{\left( {\phi  - 1} \right)}^4}{{\left( {\phi  + 1} \right)}^2}\tau _j^2}}}{d/dphi nu[j]^2(phi,sigma2) = (2*sigma2)/((phi-1)^4*(phi+1)^2 * tau[j]^2)*((phi^2-1)*tau[j]*(-2*phi^(tau[j]/2)+phi^(tau[j]) - phi - 1) - (phi*(3*phi+2)+1)*(-4*phi^(tau[j]/2)+phi^(tau[j])+3))}
+#'
+#' Taking the derivative with respect to \eqn{\sigma ^2}{sigma^2} yields:
+#' \deqn{\frac{\partial }{{\partial {\sigma ^2}}}\nu _j^2\left( {\phi ,{\sigma ^2}} \right) = \frac{{\left( {{\phi ^2} - 1} \right){\tau _j} + 2\phi \left( { - 4{\phi ^{\frac{{{\tau _j}}}{2}}} + {\phi ^{{\tau _j}}} + 3} \right)}}{{{{\left( {\phi  - 1} \right)}^3}\left( {\phi  + 1} \right)\tau _j^2}}}{d/dsigma2 nu[j]^2(phi,sigma2) = ((phi^2-1)*tau[j]+2*phi*(-4*phi^(tau[j]/2) + phi^(tau[j]) + 3))/((phi-1)^3*(phi+1)*tau[j]^2)}

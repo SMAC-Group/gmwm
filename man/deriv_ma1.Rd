@@ -4,28 +4,34 @@
 \alias{deriv_ma1}
 \title{Analytic D matrix for MA(1) process}
 \usage{
-deriv_ma1(theta, sig2, tau)
+deriv_ma1(theta, sigma2, tau)
 }
 \arguments{
-\item{theta}{A \code{double} corresponding to the phi coefficient of an MA(1) process.}
+\item{theta}{A \code{double} corresponding to the theta coefficient of an MA(1) process.}
 
-\item{sig2}{A \code{double} corresponding to the error term of an MA(1) process.}
+\item{sigma2}{A \code{double} corresponding to the error term of an MA(1) process.}
 
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\theta} and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
+A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\theta}{theta}
+ and the second column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}
 }
 \description{
 Obtain the first derivative of the MA(1) process.
 }
-\details{
-See the supporting vignette documentation.
+\section{Process Haar WV First Derivative}{
+
+Taking the derivative with respect to \eqn{\theta}{theta} yields:
+\deqn{\frac{\partial }{{\partial \theta }}\nu _j^2\left( {\theta ,{\sigma ^2}} \right) = \frac{{{\sigma ^2}\left( {2\left( {\theta  + 1} \right){\tau _j} - 6} \right)}}{{\tau _j^2}}}{d/dtheta v[j]^2 (theta, sigma2) = (sigma2*(2*(theta+1)*tau[j]-6))/(tau[j]^2)}
+
+Taking the derivative with respect to \eqn{\sigma^2}{sigma^2} yields:
+\deqn{\frac{\partial }{{\partial {\sigma ^2}}}\nu _j^2\left( {\theta ,{\sigma ^2}} \right) = \frac{{{{\left( {\theta  + 1} \right)}^2}{\tau _j} - 6\theta }}{{\tau _j^2}}}{d/dsigma2 v[j]^2 (theta, sigma2) = ((theta+1)^2*tau[j]-6*theta)/(tau[j]^2)}
 }
 \examples{
 deriv_ma1(.3, 1, 2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

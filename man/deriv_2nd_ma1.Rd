@@ -4,30 +4,27 @@
 \alias{deriv_2nd_ma1}
 \title{Analytic second derivative for MA(1) process}
 \usage{
-deriv_2nd_ma1(theta, sig2, tau)
+deriv_2nd_ma1(theta, sigma2, tau)
 }
 \arguments{
-\item{theta}{A \code{double} corresponding to the phi coefficient of an MA(1) process.}
+\item{theta}{A \code{double} corresponding to the theta coefficient of an MA(1) process.}
 
-\item{sig2}{A \code{double} corresponding to the error term of an MA(1) process.}
+\item{sigma2}{A \code{double} corresponding to the error term of an MA(1) process.}
 
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{\theta},
- the second column contains the partial derivative with respect to \eqn{\theta}{\theta} and \eqn{\sigma ^2}{sigma^2},
+A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{theta},
+ the second column contains the partial derivative with respect to \eqn{\theta}{theta} and \eqn{\sigma ^2}{sigma^2},
  and lastly we have the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
 }
 \description{
-To easy calculation, we assume a matrix structure.
-}
-\details{
-See the supporting vignette documentation.
+To ease a later calculation, we place the result into a matrix structure.
 }
 \examples{
 deriv_2nd_ma1(.3, 1, 2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

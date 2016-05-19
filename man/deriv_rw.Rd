@@ -2,28 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{deriv_rw}
 \alias{deriv_rw}
-\title{Analytic D matrix random walk process}
+\title{Analytic D matrix Random Walk (RW) Process}
 \usage{
 deriv_rw(tau)
 }
 \arguments{
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2}.
+A \code{matrix} with the first column containing
+ the partial derivative with respect to \eqn{\gamma^2}{gamma^2}.
 }
 \description{
-Analytic D matrix random walk process
+Obtain the first derivative of the Random Walk (RW) process.
 }
-\details{
-The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{\left( {2{\tau ^2} + 1} \right)\gamma _0^2}}{{24\tau }}}{nu^2(tau) = (2*tau^2+1)*gamma^2 / (24*tau)}.
-Taking the first derivative with respect to \eqn{\gamma _0^2}{gamma_0^2} yields: \deqn{\frac{{{\partial ^2}}}{{\partial \gamma _0^4}}{\nu ^2}\left( \tau  \right) = 0}{(2*tau^2+1) / (24*tau)}
-The second derivative derivative with respect to \eqn{\gamma _0^2}{gamma[0]^2} is then: \deqn{\frac{{{\partial ^2}}}{{\partial \sigma_0^4}}{\nu ^2}\left( \tau  \right) = 0}{0}.
+\section{Process Haar WV First Derivative}{
+
+Taking the derivative with respect to \eqn{\gamma ^2}{gamma^2} yields:
+\deqn{ \frac{\partial }{{\partial {\gamma ^2}}}\nu _j^2\left( {{\gamma ^2}} \right) = \frac{{\tau _j^2 + 2}}{{12{\tau _j}}} }{d/dgamma2 nu[j]^2 (gamma2) = (tau[j]^2 + 2)/(12*tau[j])}
 }
 \examples{
 deriv_rw(2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

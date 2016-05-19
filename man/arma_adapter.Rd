@@ -13,7 +13,7 @@ arma_adapter(theta, p, q, tau)
 
 \item{q}{A \code{int} that indicates the number of MA coefficients.}
 
-\item{tau}{A \code{vec} that lists the scales of the process e.g. 2^(1:J)}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
 A \code{vec} containing the ARMA to WV results
@@ -23,6 +23,9 @@ Molds the data so that it works with the arma_to_wv function.
 }
 \details{
 The data conversion is more or less a rearrangement of values without using the obj desc.
+}
+\author{
+James Joseph Balamuta (JJB)
 }
 \keyword{internal}
 

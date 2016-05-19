@@ -2,27 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{deriv_wn}
 \alias{deriv_wn}
-\title{Analytic D matrix white noise process}
+\title{Analytic D Matrix for a Gaussian White Noise (WN) Process}
 \usage{
 deriv_wn(tau)
 }
 \arguments{
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\sigma _0^2}{sigma[0]^2}.
+A \code{matrix} with the first column containing 
+the partial derivative with respect to \eqn{\sigma^2}{sigma^2}.
 }
 \description{
-Analytic D matrix white noise process
+Obtain the first derivative of the Gaussian White Noise (WN) process.
 }
-\details{
-The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{\sigma _0^2}}{\tau }}{nu^2(tau) = sigma_0^2 / tau}.
-Taking the derivative with respect to \eqn{\sigma _0^2}{sigma_0^2} yields: \eqn{\frac{\partial }{{\partial \sigma _0^2}}{\nu ^2}\left( \tau  \right) = \frac{1}{\tau }}{1/tau}
+\section{Process Haar WV First Derivative}{
+
+Taking the derivative with respect to \eqn{\sigma^2}{sigma^2} yields:
+\deqn{\frac{\partial }{{\partial {\sigma ^2}}}\nu _j^2\left( {{\sigma ^2}} \right) = \frac{1}{{{\tau _j}}}}{d/dsigma2 nu[j]^2(sigma2) = 1/tau[j]}
 }
 \examples{
 deriv_wn(2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

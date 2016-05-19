@@ -18,19 +18,23 @@
 #ifndef ANALYTICAL_MATRIX_DERIVATIVES
 #define ANALYTICAL_MATRIX_DERIVATIVES
 
-arma::mat deriv_AR1(double phi, double sig2, arma::vec tau);
+arma::mat deriv_AR1(double phi, double sigma2, const arma::vec& tau);
 
-arma::mat deriv_2nd_AR1(double phi, double sig2, arma::vec tau);
+arma::mat deriv_2nd_AR1(double phi, double sigma2, const arma::vec& tau);
 
-arma::mat deriv_DR(double omega, arma::vec tau);
+arma::mat deriv_MA1(double theta, double sigma2, const arma::vec& tau);
 
-arma::mat deriv_2nd_DR(arma::vec tau);
+arma::mat deriv_2nd_MA1(double theta, double sigma2, const arma::vec& tau);
 
-arma::mat deriv_QN(arma::vec tau);
+arma::mat deriv_DR(double omega, const arma::vec& tau);
 
-arma::mat deriv_RW(arma::vec tau);
+arma::mat deriv_2nd_DR(const arma::vec& tau);
 
-arma::mat deriv_WN(arma::vec tau);
+arma::mat deriv_QN(const arma::vec& tau);
+
+arma::mat deriv_RW(const arma::vec& tau);
+
+arma::mat deriv_WN(const arma::vec& tau);
 
 arma::mat derivative_first_matrix(const arma::vec& theta, 
                                   const std::vector<std::string>& desc,

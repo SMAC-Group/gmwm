@@ -7,23 +7,19 @@
 deriv_2nd_dr(tau)
 }
 \arguments{
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\omega _0}{omega[0]}.
+A \code{matrix} with the first column containing 
+the second partial derivative with respect to \eqn{\omega}{omega}.
 }
 \description{
-Analytic second derivative matrix for drift process
-}
-\details{
-The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{{\tau ^2}\omega _0^2}}{2}}{nu^2(tau) = tau^2 omega_0^2 / 2}.
-Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
-Taking second derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{{{\partial ^2}}}{{\partial \omega _0^2}}{\nu ^2}\left( \tau  \right) = {\tau ^2}}{tau^2}
+To ease a later calculation, we place the result into a matrix structure.
 }
 \examples{
 deriv_2nd_dr(2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

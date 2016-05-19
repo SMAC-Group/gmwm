@@ -93,109 +93,109 @@ BEGIN_RCPP
 END_RCPP
 }
 // deriv_ar1
-arma::mat deriv_ar1(double phi, double sig2, arma::vec tau);
-RcppExport SEXP gmwm_deriv_ar1(SEXP phiSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+arma::mat deriv_ar1(double phi, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_deriv_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    __result = Rcpp::wrap(deriv_ar1(phi, sig2, tau));
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_ar1(phi, sigma2, tau));
     return __result;
 END_RCPP
 }
 // deriv_2nd_ar1
-arma::mat deriv_2nd_ar1(double phi, double sig2, arma::vec tau);
-RcppExport SEXP gmwm_deriv_2nd_ar1(SEXP phiSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+arma::mat deriv_2nd_ar1(double phi, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_deriv_2nd_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    __result = Rcpp::wrap(deriv_2nd_ar1(phi, sig2, tau));
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_2nd_ar1(phi, sigma2, tau));
     return __result;
 END_RCPP
 }
 // deriv_ma1
-arma::mat deriv_ma1(double theta, double sig2, arma::vec tau);
-RcppExport SEXP gmwm_deriv_ma1(SEXP thetaSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+arma::mat deriv_ma1(double theta, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_deriv_ma1(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    __result = Rcpp::wrap(deriv_ma1(theta, sig2, tau));
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_ma1(theta, sigma2, tau));
     return __result;
 END_RCPP
 }
 // deriv_2nd_ma1
-arma::mat deriv_2nd_ma1(double theta, double sig2, arma::vec tau);
-RcppExport SEXP gmwm_deriv_2nd_ma1(SEXP thetaSEXP, SEXP sig2SEXP, SEXP tauSEXP) {
+arma::mat deriv_2nd_ma1(double theta, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_deriv_2nd_ma1(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    __result = Rcpp::wrap(deriv_2nd_ma1(theta, sig2, tau));
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_2nd_ma1(theta, sigma2, tau));
     return __result;
 END_RCPP
 }
 // deriv_dr
-arma::mat deriv_dr(double omega, arma::vec tau);
+arma::mat deriv_dr(double omega, const arma::vec& tau);
 RcppExport SEXP gmwm_deriv_dr(SEXP omegaSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< double >::type omega(omegaSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     __result = Rcpp::wrap(deriv_dr(omega, tau));
     return __result;
 END_RCPP
 }
 // deriv_2nd_dr
-arma::mat deriv_2nd_dr(arma::vec tau);
+arma::mat deriv_2nd_dr(const arma::vec& tau);
 RcppExport SEXP gmwm_deriv_2nd_dr(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     __result = Rcpp::wrap(deriv_2nd_dr(tau));
     return __result;
 END_RCPP
 }
 // deriv_qn
-arma::mat deriv_qn(arma::vec tau);
+arma::mat deriv_qn(const arma::vec& tau);
 RcppExport SEXP gmwm_deriv_qn(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     __result = Rcpp::wrap(deriv_qn(tau));
     return __result;
 END_RCPP
 }
 // deriv_rw
-arma::mat deriv_rw(arma::vec tau);
+arma::mat deriv_rw(const arma::vec& tau);
 RcppExport SEXP gmwm_deriv_rw(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     __result = Rcpp::wrap(deriv_rw(tau));
     return __result;
 END_RCPP
 }
 // deriv_wn
-arma::mat deriv_wn(arma::vec tau);
+arma::mat deriv_wn(const arma::vec& tau);
 RcppExport SEXP gmwm_deriv_wn(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
     __result = Rcpp::wrap(deriv_wn(tau));
     return __result;
 END_RCPP

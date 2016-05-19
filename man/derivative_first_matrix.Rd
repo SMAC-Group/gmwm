@@ -13,7 +13,7 @@ derivative_first_matrix(theta, desc, objdesc, tau)
 
 \item{objdesc}{A \code{field<vec>} containing a list of object descriptors.}
 
-\item{tau}{A \code{vec} containing the scales e.g. 2^(1:J)}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
 A \code{matrix} with the process derivatives going down the column
@@ -29,6 +29,6 @@ mod = AR1(.4,1) + WN(.2) + DR(.005)
 derivative_first_matrix(mod$theta, mod$desc, mod$obj.desc, 2^(1:9))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

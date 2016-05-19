@@ -2,29 +2,33 @@
 % Please edit documentation in R/RcppExports.R
 \name{deriv_dr}
 \alias{deriv_dr}
-\title{Analytic D matrix for drift process}
+\title{Analytic D matrix for Drift (DR) Process}
 \usage{
 deriv_dr(omega, tau)
 }
 \arguments{
 \item{omega}{A \code{double} that is the slope of the drift.}
 
-\item{tau}{A \code{vec} that contains the scales to be processed (e.g. 2^(1:J))}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{matrix} with the first column containing the partial derivative with respect to \eqn{\omega _0}{omega[0]}.
+A \code{matrix} with the first column containing the partial derivative 
+with respect to \eqn{\omega}{omega}.
 }
 \description{
-Analytic D matrix for drift process
+Obtain the first derivative of the Drift (DR) process.
 }
-\details{
-The haar wavelet variance is given as \eqn{{\nu ^2}\left( \tau  \right) = \frac{{{\tau ^2}\omega _0^2}}{2}}{nu^2(tau) = tau^2 omega_0^2 / 2}.
-Taking the derivative with respect to \eqn{\omega _0^2}{omega_0^2} yields: \eqn{\frac{\partial }{{\partial {\omega _0}}}{\nu ^2}\left( \tau  \right) = {\tau ^2}{\omega _0}}{tau^2 * omega_0}
+\section{Process Haar WV First Derivative}{
+
+Taking the derivative with respect to \eqn{\omega}{omega} yields:
+\deqn{\frac{\partial }{{\partial \omega }}\nu _j^2\left( \omega  \right) = \frac{{\tau _j^2\omega }}{8}}{d/domega nu[j]^2 (omega) = (tau[j]^2 * omega)/8}
+\strong{Note:} We are taking the derivative with respect to \eqn{\omega}{omega} and not \eqn{\omega^2}{omega^2} as the \eqn{\omega}{omega}
+relates to the slope of the process and not the processes variance like RW and WN. As a result, a second derivative exists and is not zero.
 }
 \examples{
 deriv_dr(5.3, 2^(1:5))
 }
 \author{
-JJB
+James Joseph Balamuta (JJB)
 }
 

@@ -13,13 +13,16 @@ jacobian_arma(theta, p, q, tau)
 
 \item{q}{A \code{int} that indicates the number of MA coefficients.}
 
-\item{tau}{A \code{vec} that lists the scales of the process e.g. 2^(1:J)}
+\item{tau}{A \code{vec} containing the scales e.g. \eqn{2^{\tau}}{2^tau}}
 }
 \value{
-A \code{mat} that returns the numerical jacobian of the ARMA process.
+A \code{mat} that returns the first numerical derivative of the ARMA process.
 }
 \description{
 Take the numerical derivative for the first derivative of an ARMA using the 2 point rule.
+}
+\author{
+James Joseph Balamuta (JJB)
 }
 \keyword{internal}
 
