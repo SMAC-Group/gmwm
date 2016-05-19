@@ -672,6 +672,7 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param axis.x.label A \code{string} that indicates the label on x axis
 #' @param axis.y.label A \code{string} that indicates the label on y axis
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label
 #' @param legend.title A \code{string} that indicates the title of legend
@@ -733,6 +734,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
                         axis.label.size = 13, axis.tick.size = 11, 
                         axis.x.label = expression(paste("Scale ", tau)),
                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                        units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                         facet.label.size = 13, facet.label.background = "#003C7D33",
                         legend.label = NULL,
                         legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
@@ -821,6 +823,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                        axis.x.label = axis.x.label,
                        axis.y.label = axis.y.label,
+                       units = units,
                        facet.label.size = facet.label.size, facet.label.background = facet.label.background,
                        legend.label = legend.label,
                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
@@ -896,6 +899,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param legend.title A \code{string} that indicates the title of legend.
@@ -912,6 +916,7 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
                         axis.label.size = 13, axis.tick.size = 11, 
                         axis.x.label = expression(paste("Scale ", tau)),
                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                        units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                         facet.label.size = 13, facet.label.background = "#003C7D33",
                         legend.label = NULL,
                         legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
@@ -1005,6 +1010,9 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
     axis = obj.list[[i]]$axis
     sensor = obj.list[[i]]$sensor
     
+    # add units to sensor
+    sensor = addUnits(units = units, sensor = sensor)
+    
     for( j in 1:length(each.len[[i]])){
       
       d = each.len[[i]][j]
@@ -1072,7 +1080,7 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
     p = p + theme_bw() 
   }
   
-  p = p + facet_grid(sensor ~ axis, scales = 'free_y') +
+  p = p + facet_grid(sensor ~ axis, scales = 'free_y', labeller = label_parsed) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +
