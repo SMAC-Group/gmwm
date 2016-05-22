@@ -92,6 +92,20 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// deriv_arma11
+arma::mat deriv_arma11(double phi, double theta, double sigma2, const arma::vec& tau);
+RcppExport SEXP gmwm_deriv_arma11(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau(tauSEXP);
+    __result = Rcpp::wrap(deriv_arma11(phi, theta, sigma2, tau));
+    return __result;
+END_RCPP
+}
 // deriv_ar1
 arma::mat deriv_ar1(double phi, double sigma2, const arma::vec& tau);
 RcppExport SEXP gmwm_deriv_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {

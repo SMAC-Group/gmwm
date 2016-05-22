@@ -48,6 +48,20 @@ test_that("AR1 to WV", {
   phi = .23
   sigma2 = .2
 
+  # Write a quick R test
+  ar1_to_wv_verR = function(phi,sigma2, tau){
+    as.matrix(
+      (sigma2*(2*phi*(3 - 4*phi^(tau/2) + 
+                      phi^tau) + (-1 + phi^2)*
+               tau))/((-1 + phi)^3*(1 + phi)*
+                        tau^2)
+    )
+  }
+  
+  # Test C++ with R version
+  expect_equal(ar1_to_wv(phi,sigma2,tau),ar1_to_wv_verR(phi,sigma2,tau))
+  
+  # Test C++ with general ARMA(1,0)
   expect_equal(ar1_to_wv(phi,sigma2,tau), arma_to_wv(phi,a,sigma2,tau) )
 })
 
@@ -66,11 +80,25 @@ test_that("ARMA / ARMA(1,1) to WV", {
   # Test Overalls
   phi = .62
   theta = .23
-  sigma2 = .2
+  sigma2 = 1
+  
+  # Quick R implementation
+  arma11_to_wv_r = function(phi, theta, sigma2, tau){
+    as.matrix(
+      (-2*sigma2*((-(theta + phi))*(1 + theta*phi)*
+                    (3 - 4*phi^(tau/2) + phi^tau) - 0.5*(1 + theta)^2*(-1 + phi^2)*tau)) /
+        ((-1 + phi)^3*(1 + phi)*tau^2)
+    )
+  }
+  
 
+  # Test C++ vs. R
+  expect_equal(arma11_to_wv(phi,theta,sigma2,tau), arma11_to_wv_r(phi,theta,sigma2,tau) )
+  
+  # Test C++ vs. Generic C++
   expect_equal(arma11_to_wv(phi,theta,sigma2,tau), arma_to_wv(phi,theta,sigma2,tau) )
   
-  # Test using ma1_to_* or ar1_to_* with arma11_to_wv()
+  # Test individual processes
   expect_equal(arma11_to_wv(0, theta, sigma2,tau), ma1_to_wv(theta,sigma2,tau))
   expect_equal(arma11_to_wv(phi, 0, sigma2,tau), ar1_to_wv(phi,sigma2,tau))
 

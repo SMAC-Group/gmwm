@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -126,6 +126,65 @@ arma::mat jacobian_arma(const arma::vec& theta,
   return out;
 }
 
+
+//' Analytic D matrix for ARMA(1,1) process
+//' 
+//' Obtain the first derivative of the ARMA(1,1) process. 
+//' @param phi    A \code{double} corresponding to the phi coefficient of an ARMA(1,1) process.
+//' @param theta  A \code{double} corresponding to the theta coefficient of an ARMA(1,1) process.
+//' @param sigma2 A \code{double} corresponding to the error term of an ARMA(1,1) process.
+//' @template misc/tau
+//' @return A \code{matrix} with:
+//' \itemize{
+//' \item The \strong{first} column containing the partial derivative with respect to \eqn{\phi}{phi};
+//' \item The \strong{second} column containing the partial derivative with respect to \eqn{\theta}{theta};
+//' \item The \strong{third} column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+//' }
+//' @template deriv_wv/1st/deriv1_arma11
+//' @template author/jjb
+//' @examples
+//' deriv_arma1(.3, .4, 1, 2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_arma11(double phi, double theta, double sigma2, const arma::vec& tau){
+  unsigned int ntau = tau.n_elem;
+  arma::mat D(ntau, 3);
+
+  arma::vec phi_tau(ntau);
+  arma::vec phi_tau_1ov2(ntau);
+  arma::vec phi_tau_1ov2_m1(ntau);
+  arma::vec phi_tau_m1(ntau);
+  
+  arma::vec tausq = arma::square(tau);
+  
+  for(unsigned int i = 0; i<ntau; i++){
+    phi_tau(i) = pow(phi, tau(i)); // phi^(tau)
+    phi_tau_1ov2(i) = pow(phi, tau(i)/2.0); // phi^(tau/2)
+    phi_tau_1ov2_m1(i) = pow(phi, tau(i)/2.0 - 1.0); // phi^(tau/2 - 1)
+    phi_tau_m1(i) = pow(phi, tau(i) - 1.0); // phi^(tau - 1)
+  }
+  
+  // partial derivative with respect to phi
+  D.col(0) = 2.0*sigma2*((-(3.0 - 4.0*phi_tau_1ov2 + phi_tau))*(1 + phi*(2 + 3*phi) + square(theta)*(1 + phi*(2 + 3*phi)) + 2*theta*(1 + phi*(3 + phi + square(phi)))) + 
+    ((-square(1.0 + theta))*(-1.0 + phi)*square(1 + phi) - 
+    2.0*phi_tau_1ov2_m1*(theta + phi)*
+    (1.0 + theta*phi)*(-1.0 + square(phi)) + 
+    phi_tau_m1*(theta + phi)*(1.0 + theta*phi)*(-1.0 + square(phi))) % tau)/
+    (std::pow(-1.0 + phi,4.0)*square(1.0 + phi)*tausq);
+  
+  // partial derivative with respect to theta
+  D.col(1) = (2.0*sigma2*((1.0 + 2.0*theta*phi + square(phi))*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) +
+    (1.0 + theta)*(-1.0 + square(phi))*tau)) / 
+    (std::pow(-1.0 + phi,3.0)*(1.0 + phi)*tausq);
+  
+  // partial derivative with respect to sigma2
+  D.col(2) = ((-2*((-(theta + phi))*(1 + theta*phi)*(3 - 4*phi_tau_1ov2 + phi_tau) - 
+                    0.5*square(1 + theta)*(-1 + square(phi))*tau))/
+                (std::pow((-1.0 + phi),3.0)*(1 + phi)*tausq));
+  
+  return D;
+}
+
+
 //' Analytic D matrix for AR(1) process
 //' 
 //' Obtain the first derivative of the AR(1) process. 
@@ -190,25 +249,28 @@ arma::mat deriv_2nd_ar1(double phi, double sigma2, const arma::vec& tau){
      
      arma::vec phi_tau(ntau);
      arma::vec phi_tau_1ov2(ntau);
+     arma::vec phi_tau_mi(ntau);
+     arma::vec phi_tau_1ov2_mi(ntau);
+     
      arma::vec tausq = arma::square(tau);
      
      for(unsigned int i = 0; i<ntau; i++){
          phi_tau(i) = pow(phi, tau(i)); // phi^(tau)
          phi_tau_1ov2(i) = pow(phi, tau(i)/2.0); // phi^(tau/2)
+         phi_tau_mi(i) = pow(phi, tau(i)-1); // phi^(tau-1)
+         phi_tau_1ov2_mi(i) = pow(phi, tau(i)/2.0-1); // phi^(tau/2 -1)
      }
 
      // partial derivative with respect to phi
-     D.col(0) = (2.0*sigma2)/(pow(phi - 1.0, 5.0)*phi*pow(phi + 1.0, 3.0)*tausq) // common term (8v^2)/[(p-1)^5*p*(p+1)^3*tau^2]
-                % ( -1 * (phi * ( phi * (phi * (tau - 8.0) % (phi * (tau - 6.0) - 8.0) - 2.0 * (tau - 6.0) % tau +64.0 ) + 8.0*(tau+2.0) ) + tau % (tau + 2.0) ) % phi_tau_1ov2
-                      + (phi * (phi * (phi * (tau - 4.0) % (phi * (tau - 3.0) - 4.0) - 2.0 * (tau - 3.0) % tau + 16.0 ) + 4 * (tau + 1) ) + tau % (tau + 1.0) ) % phi_tau
-                      + 3.0 * phi * ( phi * (phi * (square(phi)*tau + 2.0 * phi * (tau + 6.0) + 16.0 ) - 2.0 * (tau - 8.0) ) - tau + 4 )
-                  );
+     D.col(0) = (2*sigma2*(4.0*(1.0 + 3.0*phi)*(1.0 + phi + square(phi))*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) +
+                          (-1.0 + square(phi))*(3.0*square(1.0 + phi) + 2.0*phi_tau_1ov2_mi*(1 + phi*(4 + 7*phi)) - phi_tau_mi*(1 + phi*(4 + 7*phi)))%tau 
+                          + phi_tau_1ov2_mi % (-1.0 + phi_tau_1ov2) % tausq * square(-1.0 + square(phi)))) / (std::pow(-1.0 + phi,5.0)*std::pow(1.0 + phi,3.0)*tausq);
 
      // partial derivative with respect to phi and sigma2
-     D.col(1) = (2.0/(tausq * pow(phi - 1.0, 4.0)*pow(phi + 1.0, 2.0))) % 
-                  (-3.0 + tau - 2.0*phi_tau_1ov2 % (-2.0 - tau + phi * (-4.0 + (-6.0 +tau)*phi)) +
-                    phi_tau % (-1.0 - tau +phi*(-2.0 + (-3.0 + tau)*phi)) - phi * (6.0 - tau + phi*(9.0+tau+phi*tau)) );
-
+     D.col(1) = 2.0*sigma2*
+       ((square(phi) - 1.0)*tau + 2.0*phi*(phi_tau - 4.0*phi_tau_1ov2 + 3.0))%
+       ((square(phi) - 1.0)*tau % (phi_tau - 2.0*phi_tau_1ov2 - phi - 1.0) - (phi*(3.0*phi + 2.0) + 1.0)*(phi_tau - 4.0*phi_tau_1ov2 +3.0))/(std::pow(phi - 1.0,7.0)*std::pow(phi + 1.0, 3.0)*arma::pow(tau,4.0));
+    
      // partial derivative with respect to sigma2
      D.col(2).fill(0);
      
@@ -415,6 +477,19 @@ arma::mat derivative_first_matrix(const arma::vec& theta,
       // Compute theoretical WV
       D.cols(i_theta-1,i_theta) = deriv_ma1(theta_value, sig2, tau);
     }
+    else if(element_type == "ARMA11"){
+      ++i_theta;
+      
+      double th = theta(i_theta);
+      
+      ++i_theta;
+      
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      D.cols(i_theta-2,i_theta) = deriv_arma11(theta_value, th, sig2, tau);
+      
+    }
     // WN
     else if(element_type == "WN"){
       D.col(i_theta) = deriv_wn(tau);
@@ -542,8 +617,8 @@ arma::mat D_matrix(const arma::vec& theta,
       A_i.row(i_theta-1).fill(0);
       
     }
-    else if(element_type == "ARMA"){
-      // implement later      
+    else if(element_type == "ARMA11"){
+      // Implement later      
       
     }
     // DR
@@ -556,6 +631,8 @@ arma::mat D_matrix(const arma::vec& theta,
     }
     else{
       // Already zero! (YAYAYA!)
+      
+      // Or generic SARIMA that is not supported.
     }
     
     ++i_theta;

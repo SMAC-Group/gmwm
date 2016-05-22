@@ -39,8 +39,13 @@ test_that("AR1 Derivative", {
   phi = .23
   sigma2 = .2
   
-  dphi = (2*sigma2)/((phi-1)^4*(phi+1)^2 * tau^2)*((phi^2-1)*tau*(-2*phi^(tau/2)+phi^(tau) - phi - 1) - (phi*(3*phi+2)+1)*(-4*phi^(tau/2)+phi^(tau)+3))
-  dsigma2 = ((phi^2-1)*tau+2*phi*(-4*phi^(tau/2) + phi^(tau) + 3))/((phi-1)^3*(phi+1)*tau^2)
+  dphi = (2*sigma2*((-(3 - 4*phi^(tau/2) + phi^tau))*(1 + phi*(2 + 3*phi)) + 
+                    (-1 + phi^2)*(-1 - phi - 2*phi^(tau/2) + phi^tau)*tau)) /
+         ((-1 + phi)^4*(1 + phi)^2*tau^2)
+  
+  dsigma2 = ((phi^2 - 1)*tau + 
+              2*phi*(phi^tau - 4*phi^(tau/2) + 3)) /
+            ((phi - 1)^3*(phi + 1)*tau^2)
   
   testmat = cbind(dphi, dsigma2)
   
@@ -62,25 +67,37 @@ test_that("MA1 Derivative", {
   expect_equal(deriv_ma1(theta, sigma2, tau), testmat, check.attributes = F)
 })
 
-## Add in when ARMA(1,1) derivative implemented... 
-# test_that("ARMA / ARMA(1,1) to WV", {
-#   
-#   # Test Overalls
-#   phi = .62
-#   theta = .23
-#   sigma2 = .2
-#
-#   dphi    = ...
-#   dtheta  = ...
-#   dsigma2 = ...
-#
-#   testmat = cbind(dphi, dtheta, dsigma2)
-#
-#   # Test using deriv_arma11() to outside build
-#   expect_equal(deriv_arma11(phi, theta, sigma2,tau), deriv_ma1(theta,sigma2,tau))
-# 
-#   # Test using deriv_ma1 or deriv_ar1 with deriv_arma11()
-#   expect_equal(deriv_arma11(0, theta, sigma2,tau), deriv_ma1(theta,sigma2,tau))
-#   expect_equal(deriv_arma11(phi, 0, sigma2,tau), deriv_ar1(phi,sigma2,tau))
-#   
-# })
+test_that("ARMA / ARMA(1,1) to WV", {
+
+  # Test Overalls
+  phi    = 0.23
+  theta  = 0.31
+  sigma2 = 0.20
+
+  # R Coded Values
+  dphi    = (1/((-1 + phi)^4*(1 + phi)^2*tau^2))*2*sigma2*((-(3 - 4*phi^(tau/2) + phi^tau))*(1 + phi*(2 + 3*phi) + theta^2*(1 + phi*(2 + 3*phi)) + 2*theta*(1 + phi*(3 + phi + phi^2))) + 
+              ((-(1 + theta)^2)*(-1 + phi)*(1 + phi)^2 - 
+                 2*phi^(tau/2 - 1)*(theta + phi)*
+                 (1 + theta*phi)*(-1 + phi^2) + 
+                 phi^(tau - 1)*(theta + phi)*
+                 (1 + theta*phi)*(-1 + phi^2))*tau)
+  dtheta  = (2*sigma2*((1 + 2*theta*phi + phi^2)*(3 - 4*phi^(tau/2) + phi^tau) +
+                         (1 + theta)*(-1 + phi^2)*tau)) / 
+                       ((-1 + phi)^3*(1 + phi)*tau^2)
+  dsigma2 = ((-2*((-(theta + phi))*(1 + theta*phi)*(3 - 4*phi^(tau/2) + phi^tau) - 
+                   (1/2)*(1 + theta)^2*(-1 + phi^2)*tau))/
+              ((-1 + phi)^3*(1 + phi)*tau^2))
+
+  testmat = cbind(dphi, dtheta, dsigma2)
+
+  # Test deriv_arma11 using deriv_ar1
+  expect_equal(deriv_arma11(phi, 0, sigma2,tau)[,-2], deriv_ar1(phi,sigma2,tau))
+  
+  # Test deriv_arma11 using deriv_ma
+  expect_equal(deriv_arma11(0, theta, sigma2, tau)[,-1], deriv_ma1(theta,sigma2,tau))
+  
+  # Test deriv_arma11 with R implementation
+  expect_equal(deriv_arma11(phi, theta, sigma2, tau), testmat, check.attributes = F)
+  
+
+})

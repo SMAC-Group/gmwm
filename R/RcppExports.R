@@ -140,6 +140,27 @@ jacobian_arma <- function(theta, p, q, tau) {
     .Call('gmwm_jacobian_arma', PACKAGE = 'gmwm', theta, p, q, tau)
 }
 
+#' Analytic D matrix for ARMA(1,1) process
+#' 
+#' Obtain the first derivative of the ARMA(1,1) process. 
+#' @param phi    A \code{double} corresponding to the phi coefficient of an ARMA(1,1) process.
+#' @param theta  A \code{double} corresponding to the theta coefficient of an ARMA(1,1) process.
+#' @param sigma2 A \code{double} corresponding to the error term of an ARMA(1,1) process.
+#' @template misc/tau
+#' @return A \code{matrix} with:
+#' \itemize{
+#' \item The \strong{first} column containing the partial derivative with respect to \eqn{\phi}{phi};
+#' \item The \strong{second} column containing the partial derivative with respect to \eqn{\theta}{theta};
+#' \item The \strong{third} column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+#' }
+#' @template deriv_wv/1st/deriv1_arma11
+#' @template author/jjb
+#' @examples
+#' deriv_arma1(.3, .4, 1, 2^(1:5))
+deriv_arma11 <- function(phi, theta, sigma2, tau) {
+    .Call('gmwm_deriv_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
+}
+
 #' Analytic D matrix for AR(1) process
 #' 
 #' Obtain the first derivative of the AR(1) process. 

@@ -1,3 +1,64 @@
+# gmwm 3.0.0
+
+The third release of the Generalized Method of Wavelet Moments (GMWM) R package introduces a slew of optimizations, documentation updates, and new features.
+
+## Highlights
+
+* New `ts.model` components `SARIMA(p,d,q,P,D,Q,s)`, `MA1()`, and `ARMA11()`.
+* Support for more Wavelet Variance filters within the `wvar()` function and `hadam()` to calculate the Hadamard Variance (Tau and Maximal Overlap)
+* New robust tools `compare.eff()` and `gmwm.robust()` that help in deciding whether the classical or robust wavelet variance (WV) should be used.
+* Improved documentation across all features and a website featuring examples of package documentation <http://smac-group.com/docs/gmwm>.
+
+## Baseline Requirements
+
+* To gain the new benefit of improved C++11 support on Windows, the dependency on R version has been increased to v3.3.0 from v3.0.0. 
+* Underlying API changes with `ggplot2` have led to the need to add the requirement of at least v2.1.x.
+* Due to changes in the `imu` object structure, we have opted to update the `imudata` to v3.0.0 and, thus, previous functions will not work with this new data set.
+
+## Documentation
+
+* Majority of documentation files were updated to improve clarity behind intent. 
+
+## Signal Decomposition
+
+* Added support for the following Wavelet Variance (WV) filters:
+    * d4 
+    * d6 
+    * d8 
+    * d16
+    * fk4 
+    * fk8 
+    * fk14
+    * fk22
+    * bl14
+    * bl20
+    * la8 
+    * la16
+    * la20
+    * mb4  
+    * mb8  
+    * mb16
+    * mb24
+* Added the `hadam()` function to calculate the Hadamard Variance under:
+    * Maximal Overlap (`"mo"`)
+    * Tau Overlap (`"to"`).
+   
+## Graphical System
+
+* Added `compare.eff()` to compare differences between robust and classical wavelet variance.
+* Made available `external_graphs()` for RStudio users to disable plotting within the RStudio window in favor of a native system solution (e.g. `X11()`, `quartz()`, or `windows()`).
+
+## Unit Tests
+
+* Added unit tests for `deriv_*()`.
+
+## Bug Fixes
+
+* Corrected derivatives associated with DR, QN, and AR1 for better asymptotic calculations.
+* Fixed seed across each model processed within `auto.imu()` and `rank.models()`.
+* `GM()` parameter are now sorted in a similar sense to an `AR1()` (descending `phi`/`beta`).
+
+
 # gmwm 2.0.0
 
 This is the second general release of the Generalized Method of Wavelet Moments (GMWM) R Package. Considerable amount of work has been done to improve the user experience across all disciplines. 
@@ -95,7 +156,7 @@ This is the first general release of the Generalized Method of Wavelet Moments (
 ## Highlights
 
 * High performing C++ routines to calculate wavelet variance, GMWM estimator, and more!
-* Inference and Model Selection for the GMWM estimator,.
+* Inference and Model Selection for the GMWM estimator.
 * Straightforward model specification of state-space model (or latent time series models) via natural inputs.
 * Graphical features that enable the exploration of the Wavelet Variance and GMWM Estimation results.
 
