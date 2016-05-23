@@ -41,7 +41,7 @@ Taking the derivative with respect to \eqn{\sigma^2}{sigma^2} yields:
 \deqn{\frac{\partial }{{\partial \sigma ^2 }}\nu _j^2\left( {\phi ,\theta ,{\sigma ^2}} \right) = \frac{2 \sigma ^2 \left(\left(\phi ^2-1\right) \tau _j+2 \phi  \left(\phi ^{\tau _j}-4 \phi ^{\frac{\tau _j}{2}}+3\right)\right)}{(\phi -1)^3 (\phi +1) \tau _j^2}}{((-2*((-(theta + phi))*(1 + theta*phi)*(3 - 4*phi^(tau[j]/2) + phi^tau[j]) - (1/2)*(1 + theta)^2*(-1 + phi^2)*tau[j]))/((-1 + phi)^3*(1 + phi)*tau[j]^2))}
 }
 \examples{
-deriv_arma1(.3, .4, 1, 2^(1:5))
+deriv_arma11(.3, .4, 1, 2^(1:5))
 }
 \author{
 James Joseph Balamuta (JJB)

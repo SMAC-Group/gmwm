@@ -156,9 +156,33 @@ jacobian_arma <- function(theta, p, q, tau) {
 #' @template deriv_wv/1st/deriv1_arma11
 #' @template author/jjb
 #' @examples
-#' deriv_arma1(.3, .4, 1, 2^(1:5))
+#' deriv_arma11(.3, .4, 1, 2^(1:5))
 deriv_arma11 <- function(phi, theta, sigma2, tau) {
     .Call('gmwm_deriv_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
+}
+
+#' Analytic D matrix for ARMA(1,1) process
+#' 
+#' Obtain the second derivative of the ARMA(1,1) process. 
+#' @param phi    A \code{double} corresponding to the phi coefficient of an ARMA(1,1) process.
+#' @param theta  A \code{double} corresponding to the theta coefficient of an ARMA(1,1) process.
+#' @param sigma2 A \code{double} corresponding to the error term of an ARMA(1,1) process.
+#' @template misc/tau
+#' @return A \code{matrix} with:
+#' \itemize{
+#' \item The \strong{first} column containing the second partial derivative with respect to \eqn{\phi}{phi};
+#' \item The \strong{second} column containing the second partial derivative with respect to \eqn{\theta}{theta};
+#' \item The \strong{third} column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+#' \item The \strong{fourth} column contains the partial derivative with respect to \eqn{\phi}{phi} and \eqn{\theta}{theta}.
+#' \item The \strong{fiveth} column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2} and \eqn{\phi}{phi}.
+#' \item The \strong{sixth} column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2} and \eqn{\theta}{theta}.
+#' }
+#' @template deriv_wv/2nd/deriv2_arma11
+#' @template author/jjb
+#' @examples
+#' deriv_2nd_arma11(.3, .4, 1, 2^(1:5))
+deriv_2nd_arma11 <- function(phi, theta, sigma2, tau) {
+    .Call('gmwm_deriv_2nd_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
 }
 
 #' Analytic D matrix for AR(1) process
@@ -188,6 +212,7 @@ deriv_ar1 <- function(phi, sigma2, tau) {
 #'  second partial derivative with respect to \eqn{\phi}{phi} and
 #'   the second column contains the second partial derivative with 
 #'   respect to \eqn{\sigma ^2}{sigma^2}
+#' @template deriv_wv/2nd/deriv2_ar1
 #' @template author/jjb
 #' @examples
 #' deriv_2nd_ar1(.3, 1, 2^(1:5))
@@ -220,6 +245,7 @@ deriv_ma1 <- function(theta, sigma2, tau) {
 #' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{theta},
 #'  the second column contains the partial derivative with respect to \eqn{\theta}{theta} and \eqn{\sigma ^2}{sigma^2},
 #'  and lastly we have the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+#' @template deriv_wv/2nd/deriv2_ma1
 #' @template author/jjb
 #' @examples
 #' deriv_2nd_ma1(.3, 1, 2^(1:5))

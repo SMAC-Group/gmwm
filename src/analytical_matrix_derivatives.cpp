@@ -143,7 +143,7 @@ arma::mat jacobian_arma(const arma::vec& theta,
 //' @template deriv_wv/1st/deriv1_arma11
 //' @template author/jjb
 //' @examples
-//' deriv_arma1(.3, .4, 1, 2^(1:5))
+//' deriv_arma11(.3, .4, 1, 2^(1:5))
 // [[Rcpp::export]]
 arma::mat deriv_arma11(double phi, double theta, double sigma2, const arma::vec& tau){
   unsigned int ntau = tau.n_elem;
@@ -183,6 +183,87 @@ arma::mat deriv_arma11(double phi, double theta, double sigma2, const arma::vec&
   
   return D;
 }
+
+
+
+//' Analytic D matrix for ARMA(1,1) process
+//' 
+//' Obtain the second derivative of the ARMA(1,1) process. 
+//' @param phi    A \code{double} corresponding to the phi coefficient of an ARMA(1,1) process.
+//' @param theta  A \code{double} corresponding to the theta coefficient of an ARMA(1,1) process.
+//' @param sigma2 A \code{double} corresponding to the error term of an ARMA(1,1) process.
+//' @template misc/tau
+//' @return A \code{matrix} with:
+//' \itemize{
+//' \item The \strong{first} column containing the second partial derivative with respect to \eqn{\phi}{phi};
+//' \item The \strong{second} column containing the second partial derivative with respect to \eqn{\theta}{theta};
+//' \item The \strong{third} column contains the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+//' \item The \strong{fourth} column contains the partial derivative with respect to \eqn{\phi}{phi} and \eqn{\theta}{theta}.
+//' \item The \strong{fiveth} column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2} and \eqn{\phi}{phi}.
+//' \item The \strong{sixth} column contains the partial derivative with respect to \eqn{\sigma ^2}{sigma^2} and \eqn{\theta}{theta}.
+//' }
+//' @template deriv_wv/2nd/deriv2_arma11
+//' @template author/jjb
+//' @examples
+//' deriv_2nd_arma11(.3, .4, 1, 2^(1:5))
+// [[Rcpp::export]]
+arma::mat deriv_2nd_arma11(double phi, double theta, double sigma2, const arma::vec& tau){
+  unsigned int ntau = tau.n_elem;
+  arma::mat D(ntau, 6);
+  
+  arma::vec phi_tau(ntau);
+  arma::vec phi_tau_1ov2(ntau);
+  arma::vec phi_tau_1ov2_m1(ntau);
+  arma::vec phi_tau_1ov2_m2(ntau);
+  arma::vec phi_tau_m1(ntau);
+  
+  arma::vec tausq = arma::square(tau);
+  
+  for(unsigned int i = 0; i<ntau; i++){
+    phi_tau(i) = pow(phi, tau(i)); // phi^(tau)
+    phi_tau_1ov2(i) = pow(phi, tau(i)/2.0); // phi^(tau/2)
+    phi_tau_1ov2_m1(i) = pow(phi, tau(i)/2.0 - 1.0); // phi^(tau/2 - 1)
+    phi_tau_1ov2_m2(i) = pow(phi, tau(i)/2.0 - 2.0); // phi^(tau/2 - 2)
+    phi_tau_m1(i) = pow(phi, tau(i) - 1.0); // phi^(tau - 1)
+  }
+  
+  // partial second derivative with respect to phi
+  D.col(0) = 
+    (2.0*sigma2*(-12.0*square(1.0 + phi)*(
+        (-(theta + phi))*(1.0 + theta*phi)*(3.0 - 4.0*phi_tau_1ov2 +  phi_tau) - (0.5)*square(1+theta)*(-1.0 + square(phi))*tau) + 
+         square(-1.0 + phi)*(-2.0*square(-1.0+theta)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) 
+         + phi_tau_1ov2_m2%(-2.0 + phi_tau_1ov2)%tau*(-1.0 + square(phi))*(-phi - square(theta)*phi + theta*(1.0 + 4.0*phi + square(phi)))
+        + phi_tau_1ov2_m2%(-1.0 + phi_tau_1ov2)%tausq*square(1.0 + phi)*(theta + phi + square(theta)*phi + theta*square(phi))) + 6.0*(-1.0 + phi)*(1.0 + phi)*
+    ((theta + phi)*(1.0 + theta*phi)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) + (0.5)*square(1.0+theta)*(-1.0 + square(phi))*tau + (1.0 + phi)*((-theta)*(theta + phi)*
+    (3.0 - 4.0*phi_tau_1ov2 + phi_tau) - (1.0 + theta*phi)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) - square(1.0+theta)*phi*tau - phi_tau_1ov2_m1%(-2.0 + phi_tau_1ov2)%tau*(theta + phi)*(1.0 + theta*phi))))) / (std::pow(-1.0 + phi,5.0)*std::pow(1.0 + phi,3.0)*tausq);
+  
+  // partial second derivative with respect to theta
+  D.col(1) = (2.0*sigma2*(2.0*phi*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) + (-1.0 + square(phi))*tau))/(std::pow(-1.0 + phi,3.0)*(1.0 + phi)*tausq);
+  
+  // partial second derivative with respect to sigma2
+  D.col(2).fill(0);
+  
+  // partial second derivative with respect to theta and phi
+  D.col(3) = -2.0*sigma2*(2.0*(3.0 - 4*phi_tau_1ov2 + phi_tau)*(1.0 + phi*(3.0 + phi + square(phi)) + theta*(1.0 + phi*(2.0 + 3.0*phi)))
+                            + (2.0*(1.0 + theta)*(-1.0 + phi)*square(1.0 + phi) + 2.0*phi_tau_1ov2_m1*(-1.0 + square(phi))*(1.0 + 2.0*theta*phi + square(phi)) 
+                                 - phi_tau_m1*(-1.0 + square(phi))*(1.0 + 2.0*theta*phi + square(phi)))%tau)/((std::pow(-1.0 + phi,4.0)*square(1.0 + phi)*tausq));
+
+
+  // partial second derivative with respect to sigma2 and phi
+  D.col(4) = (2.0*((-1.0 + phi)*((-(theta + phi))*(1.0 + theta*phi)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) - (0.5)*square(1.0 + theta)*(-1.0 + square(phi))*tau) +
+    3.0*(1.0 + phi)*((-(theta + phi))*(1.0 + theta*phi)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) - (0.5)*square(1.0 + theta)*(-1.0 + square(phi))*tau) - 
+    (-1.0 + phi)*(1.0 + phi)*((-theta)*(theta + phi)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) -
+    (1.0 + theta*phi)*(3.0 - 4.0*phi_tau_1ov2 + phi_tau) - square(1.0 + theta)*phi*tau - phi_tau_1ov2_m1%(-2.0 + phi_tau_1ov2)%tau*(theta + phi)*(1 + theta*phi))))/((std::pow(-1.0 + phi,4.0)*square(1.0 + phi)*tausq));
+  
+  // partial second derivative with respect to sigma2 and theta
+  D.col(5) = (2.0*((theta + 1.0)*(square(phi) - 1.0)*tau + (2.0*theta*phi + square(phi) + 1.0)*(phi_tau - 4.0*phi_tau_1ov2 + 3.0)))/
+  (std::pow(phi - 1.0,3.0)*(phi + 1.0)*tausq);
+  
+  
+  return D;
+}
+
+
 
 
 //' Analytic D matrix for AR(1) process
@@ -237,6 +318,7 @@ arma::mat deriv_ar1(double phi, double sigma2, const arma::vec& tau){
 //'  second partial derivative with respect to \eqn{\phi}{phi} and
 //'   the second column contains the second partial derivative with 
 //'   respect to \eqn{\sigma ^2}{sigma^2}
+//' @template deriv_wv/2nd/deriv2_ar1
 //' @template author/jjb
 //' @examples
 //' deriv_2nd_ar1(.3, 1, 2^(1:5))
@@ -257,8 +339,8 @@ arma::mat deriv_2nd_ar1(double phi, double sigma2, const arma::vec& tau){
      for(unsigned int i = 0; i<ntau; i++){
          phi_tau(i) = pow(phi, tau(i)); // phi^(tau)
          phi_tau_1ov2(i) = pow(phi, tau(i)/2.0); // phi^(tau/2)
-         phi_tau_mi(i) = pow(phi, tau(i)-1); // phi^(tau-1)
-         phi_tau_1ov2_mi(i) = pow(phi, tau(i)/2.0-1); // phi^(tau/2 -1)
+         phi_tau_mi(i) = pow(phi, tau(i)-1.0); // phi^(tau-1)
+         phi_tau_1ov2_mi(i) = pow(phi, tau(i)/2.0-1.0); // phi^(tau/2 -1)
      }
 
      // partial derivative with respect to phi
@@ -267,10 +349,10 @@ arma::mat deriv_2nd_ar1(double phi, double sigma2, const arma::vec& tau){
                           + phi_tau_1ov2_mi % (-1.0 + phi_tau_1ov2) % tausq * square(-1.0 + square(phi)))) / (std::pow(-1.0 + phi,5.0)*std::pow(1.0 + phi,3.0)*tausq);
 
      // partial derivative with respect to phi and sigma2
-     D.col(1) = 2.0*sigma2*
-       ((square(phi) - 1.0)*tau + 2.0*phi*(phi_tau - 4.0*phi_tau_1ov2 + 3.0))%
-       ((square(phi) - 1.0)*tau % (phi_tau - 2.0*phi_tau_1ov2 - phi - 1.0) - (phi*(3.0*phi + 2.0) + 1.0)*(phi_tau - 4.0*phi_tau_1ov2 +3.0))/(std::pow(phi - 1.0,7.0)*std::pow(phi + 1.0, 3.0)*arma::pow(tau,4.0));
-    
+     D.col(1) = (2.0*((-(3.0 - 4.0*phi_tau_1ov2 + phi_tau))*(1.0 + phi*(2.0 + 3.0*phi)) 
+                      + (-1.0 + square(phi))*(-1 - phi - 2*phi_tau_1ov2 + phi_tau)%tau)) /
+                    (std::pow(-1.0 + phi,4.0)*square(1.0 + phi)*tausq);
+     
      // partial derivative with respect to sigma2
      D.col(2).fill(0);
      
@@ -317,6 +399,7 @@ arma::mat deriv_ma1(double theta, double sigma2, const arma::vec& tau){
 //' @return A \code{matrix} with the first column containing the second partial derivative with respect to \eqn{\theta}{theta},
 //'  the second column contains the partial derivative with respect to \eqn{\theta}{theta} and \eqn{\sigma ^2}{sigma^2},
 //'  and lastly we have the second partial derivative with respect to \eqn{\sigma ^2}{sigma^2}.
+//' @template deriv_wv/2nd/deriv2_ma1
 //' @template author/jjb
 //' @examples
 //' deriv_2nd_ma1(.3, 1, 2^(1:5))
@@ -329,9 +412,7 @@ arma::mat deriv_2nd_ma1(double theta, double sigma2, const arma::vec& tau){
   D.col(0) = 2.0*sigma2 / tau;
   
   // partial derivative with respect to phi and sigma2
-  D.col(1) = sigma2 / pow(tau,4.0) % // shared sigma2 / tau^4
-              (2.0 * (theta + 1.0) * tau - 6.0) % // (2*(theta+1)*tau - 6)
-              (square(theta + 1.0) * tau - 6.0 * theta);
+  D.col(1) = (-6.0 + 2.0*(1.0 + theta)*tau)/arma::square(tau);
   
   // partial derivative with respect to sigma2
   D.col(2).fill(0);
@@ -548,22 +629,28 @@ arma::mat D_matrix(const arma::vec& theta,
                    const arma::field<arma::vec>& objdesc,
                    const arma::vec& tau, const arma::vec& omegadiff){
   
+  // Number of Models to iterate over
   unsigned int num_desc = desc.size();
   
-  
+  // Number of Paramters
   unsigned int p = theta.n_elem;
   
+  // Number of Scales
   unsigned int ntau = tau.n_elem;
   
+  // A_i matrix to calculate D
   // P x J
   arma::mat A_i = arma::zeros<arma::mat>(p, ntau); 
   
+  // The D matrix, that we hope is accurate.
   // P x P
   arma::mat D = arma::zeros<arma::mat>(p, p);
   
+  // Begin the process of iterating over the models. 
   unsigned int i_theta = 0;
   for(unsigned int i = 0; i < num_desc; i++){
-    // Add ARMA
+
+    // Pop the first element. 
     
     double theta_value = theta(i_theta);
     
@@ -575,22 +662,25 @@ arma::mat D_matrix(const arma::vec& theta,
       ++i_theta;
       double sig2 = theta(i_theta);
       
-      // Return matrix with d/dtheta^2, d/dthetasig, d/dsig^2
+      // Return matrix with d/dphi^2, d/dphisigma2, d/dsigma2^2
       arma::mat s = deriv_2nd_ar1(theta_value, sig2, tau).t();
       
       // Modify p columns for phi
+      // We have dphi^2 vs. dphisigma2
       A_i.rows(i_theta-1, i_theta) = s.rows(0,1);
       
       // Calculate the D matrix column value for the phi
       D.col(i_theta-1) = A_i * omegadiff;
       
       // Modify p columns for sig
+      // We have dphisigma2 vs. dsigma^4
       A_i.rows(i_theta-1, i_theta) = s.rows(1,2);
       
       // Calculate the D matrix column value for the sigma
       D.col(i_theta) = A_i * omegadiff;
       
       // Clear the Ai matrix
+      // Only need to remove the dphisigma2 row as the other is just 0!
       A_i.row(i_theta-1).fill(0);
       
     }else if(element_type == "MA1"){
@@ -598,27 +688,119 @@ arma::mat D_matrix(const arma::vec& theta,
       ++i_theta;
       double sig2 = theta(i_theta);
       
-      // Return matrix with d/dtheta^2, d/dthetasig, d/dsig^2
+      // Return matrix with d/dtheta^2, d/dthetasigma2, d/dsigma2^2
       arma::mat s = deriv_2nd_ma1(theta_value, sig2, tau).t();
       
       // Modify p columns for theta
+      // We have dtheta^2 vs. dthetasigma2
       A_i.rows(i_theta-1, i_theta) = s.rows(0,1);
       
       // Calculate the D matrix column value for the theta
       D.col(i_theta-1) = A_i * omegadiff;
       
       // Modify p columns for sig
+      // We have dthetasigma2 vs. dsigma^4
       A_i.rows(i_theta-1, i_theta) = s.rows(1,2);
       
       // Calculate the D matrix column value for the sigma
       D.col(i_theta) = A_i * omegadiff;
       
       // Clear the Ai matrix
+      // Only need to remove the dthetasigma2 row as the other is just 0!
       A_i.row(i_theta-1).fill(0);
       
     }
     else if(element_type == "ARMA11"){
-      // Implement later      
+      
+      // We receive the phi value in theta_value 
+      // I know, confusing... Don't blame me, I wrote it in the past (er present?)
+      
+      unsigned int start_i_theta = i_theta;
+      
+      ++i_theta;
+      // theta value
+      double th = theta(i_theta);
+      
+      ++i_theta;
+      // sigma2
+      double sig2 = theta(i_theta);
+      
+      // Return matrix with d/dtheta^2, d/dthetasig, d/dsig^2
+      arma::mat s = deriv_2nd_arma11(theta_value, th, sig2, tau).t();
+      
+      /* We receive from 2nd arma11 the following:
+       * 
+       * phi^2
+       * theta^2
+       * sigma^4
+       * phitheta
+       * sigphi
+       * sigtheta
+       */
+      
+      // To ease the sufferring, let's create a temp matrix
+      arma::mat temp(3,ntau);
+      
+      // ---- Begin to fill for phi
+      
+      // Derivatives w.r.t to phi
+      
+      // Fill with phi^2
+      temp.row(0) = s.row(0);
+      // Fill with dphitheta
+      temp.row(1) = s.row(3);
+      // Fill with dphisigma2
+      temp.row(2) = s.row(4);
+      
+      
+      // Modify p columns for theta
+      // We have dphi^2, dphitheta, dphisigma2
+      A_i.rows(start_i_theta, i_theta) = temp;
+      
+      // Calculate the D matrix column value for the theta
+      D.col(start_i_theta) = A_i * omegadiff;
+      
+      // ---- Begin to fill for theta
+      
+      // Derivatives w.r.t to theta
+      
+      // Fill with dphitheta
+      temp.row(0) = s.row(3);
+      // Fill with dtheta2
+      temp.row(1) = s.row(1);
+      // Fill with dthetasigma2
+      temp.row(2) = s.row(5);
+      
+      // Modify p columns for sig
+      // We have dthetasigma2 vs. dsigma^4
+      A_i.rows(start_i_theta, i_theta) = temp;
+      
+      // Calculate the D matrix column value for the sigma
+      D.col(start_i_theta+1) = A_i * omegadiff;
+      
+      // ---- Begin to fill for sigma2
+      
+      // Derivatives w.r.t to sigma2
+      
+      // Fill with dphisigma
+      temp.row(0) = s.row(4);
+      // Fill with dthetasigma
+      temp.row(1) = s.row(5);
+      // Fill with dsigma2^2
+      temp.row(2) = s.row(2);
+      
+      // Modify p columns for sig
+      // We have dthetasigma2 vs. dsigma^4
+      A_i.rows(start_i_theta, i_theta) = temp;
+      
+      // Calculate the D matrix column value for the sigma
+      D.col(start_i_theta+2) = A_i * omegadiff;
+      
+      
+      // Clear the Ai matrix for next term
+      // Only need to remove the dthetasigma2 row as the other is just 0!
+      A_i.rows(start_i_theta, start_i_theta+1).fill(0);
+      
       
     }
     // DR
