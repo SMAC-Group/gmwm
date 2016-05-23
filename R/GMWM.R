@@ -199,8 +199,9 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   }
   
   # Model type issues
+  model.type = tolower(model.type)
   if(model.type != "imu" && model.type != "ssm"){
-    stop("Model Type must be either sensor or imu!")
+    stop("Model Type must be either `ssm` or `imu`!")
   }
   
   # Verify Scales and Parameter Space

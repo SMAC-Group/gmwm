@@ -371,8 +371,6 @@ arma::vec theoretical_wv(const arma::vec& theta,
     
   unsigned int i_theta = 0;
   for(unsigned int i = 0; i < num_desc; i++){
-    
-    // Add ARMA
   
     double theta_value = theta(i_theta);
     
@@ -387,7 +385,40 @@ arma::vec theoretical_wv(const arma::vec& theta,
       // Compute theoretical WV
       wv_theo += ar1_to_wv(theta_value, sig2, tau);
     }
-    else if(element_type == "ARMA"){
+    else if(element_type == "MA1"){
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      wv_theo += ma1_to_wv(theta_value, sig2, tau);
+    }
+    // WN
+    else if(element_type == "WN"){
+      wv_theo += wn_to_wv(theta_value, tau);
+    }
+    // DR
+    else if(element_type == "DR"){
+      wv_theo += dr_to_wv(theta_value, tau);
+    }
+    // QN
+    else if(element_type == "QN"){
+      wv_theo += qn_to_wv(theta_value, tau);
+    }
+    // RW
+    else if(element_type == "RW"){
+      wv_theo += rw_to_wv(theta_value, tau);
+    }
+    // ARMA11
+    else if(element_type == "ARMA11"){
+      ++i_theta;
+      double th = theta(i_theta);
+      
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      wv_theo += arma11_to_wv(theta_value, th, sig2, tau);
+    }
+    else { // ARMA
       
       arma::vec model_params = objdesc(i);
       
@@ -397,7 +428,6 @@ arma::vec theoretical_wv(const arma::vec& theta,
       arma::vec ar;
       arma::vec ma;
       
-
       if(p == 0){
         ar = arma::zeros<arma::vec>(0);
       }else{
@@ -413,25 +443,9 @@ arma::vec theoretical_wv(const arma::vec& theta,
       }
       
       i_theta += q;
-
+      
       
       wv_theo += arma_to_wv(ar, ma, theta(i_theta), tau);
-    }
-    // DR
-    else if(element_type == "DR"){
-      wv_theo += dr_to_wv(theta_value, tau);
-    }
-    // QN
-    else if(element_type == "QN"){
-      wv_theo += qn_to_wv(theta_value, tau);
-    }
-    // RW
-    else if(element_type == "RW"){
-      wv_theo += rw_to_wv(theta_value, tau);
-    }
-    // WN
-    else{
-      wv_theo += wn_to_wv(theta_value, tau);
     }
     
     ++i_theta;
@@ -463,7 +477,7 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
   
   unsigned int num_desc = desc.size();
   arma::mat wv_theo = arma::zeros<arma::mat>(tau.n_elem, num_desc);
-    
+  
   unsigned int i_theta = 0;
   for(unsigned int i = 0; i < num_desc; i++){
     
@@ -482,7 +496,41 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
       // Compute theoretical WV
       wv_theo.col(i) = ar1_to_wv(theta_value, sig2, tau);
     }
-    else if(element_type == "ARMA"){
+    // MA1 
+    else if(element_type == "MA1"){
+      
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      wv_theo.col(i) = ma1_to_wv(theta_value, sig2, tau);
+    }
+    // WN
+    else if(element_type == "WN"){
+      wv_theo.col(i) = wn_to_wv(theta_value, tau);
+    }// DR
+    else if(element_type == "DR"){
+      wv_theo.col(i) = dr_to_wv(theta_value, tau);
+    }
+    // QN
+    else if(element_type == "QN"){
+      wv_theo.col(i) = qn_to_wv(theta_value, tau);
+    }
+    // RW
+    else if(element_type == "RW"){
+      wv_theo.col(i) = rw_to_wv(theta_value, tau);
+    }
+    // ARMA11
+    else if(element_type == "ARMA11"){
+      ++i_theta;
+      double th = theta(i_theta);
+    
+      ++i_theta;
+      double sig2 = theta(i_theta);
+      
+      wv_theo.col(i) = arma11_to_wv(theta_value, th, sig2, tau);
+    }
+    else { // "ARMA"
       
       arma::vec model_params = objdesc(i);
       
@@ -492,7 +540,6 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
       arma::vec ar;
       arma::vec ma;
       
-
       if(p == 0){
         ar = arma::zeros<arma::vec>(0);
       }else{
@@ -508,25 +555,9 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
       }
       
       i_theta += q;
-
+      
       
       wv_theo.col(i) = arma_to_wv(ar, ma, theta(i_theta), tau);
-    }
-    // DR
-    else if(element_type == "DR"){
-      wv_theo.col(i) = dr_to_wv(theta_value, tau);
-    }
-    // QN
-    else if(element_type == "QN"){
-      wv_theo.col(i) = qn_to_wv(theta_value, tau);
-    }
-    // RW
-    else if(element_type == "RW"){
-      wv_theo.col(i) = rw_to_wv(theta_value, tau);
-    }
-    // WN
-    else{
-      wv_theo.col(i) = wn_to_wv(theta_value, tau);
     }
     
     ++i_theta;

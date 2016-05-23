@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016 James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -72,13 +72,15 @@ std::map<std::string, int> count_models(const std::vector<std::string>& desc){
   std::map<std::string, int> w;	
   
   // We want to see the only the following objects with these initial values
-  w["AR1"]=0;
-  w["GM"]=0;
-  w["ARMA"]=0;
-  w["DR"]=0;		
-  w["RW"]=0;		
-  w["QN"]=0;		
-  w["WN"]=0;		
+  w["AR1"]    = 0;
+  w["MA1"]    = 0;
+  w["GM"]     = 0;
+  w["ARMA"]   = 0;
+  w["ARMA11"] = 0;
+  w["DR"]     = 0;		
+  w["RW"]     = 0;		
+  w["QN"]     = 0;		
+  w["WN"]     = 0;		
   
   for (unsigned int i = 0; i < desc.size(); i++) {		
     ++w[desc[i]];		

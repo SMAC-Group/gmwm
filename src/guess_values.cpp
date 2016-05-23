@@ -263,7 +263,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
         // Second shift at end. (sigma2)
         i_theta++;
         
-      } else if(element_type == "ARMA"){
+      } else if(element_type == "ARMA" || element_type == "ARMA11"){
         
         // Unpackage ARMA model parameter
         arma::vec model_params = objdesc(i);
@@ -537,7 +537,7 @@ arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::fi
         i_theta++; // needed to account for two parameters (e.g. phi + sigma2). Second shift at end.
         AR1_counter++;
       }
-      else if(element_type == "ARMA"){
+      else if(element_type == "ARMA" || element_type == "ARMA11"){
         
         // Unpackage ARMA model parameter
         arma::vec model_params = objdesc(i);
