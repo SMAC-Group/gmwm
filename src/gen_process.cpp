@@ -418,6 +418,17 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    
   	    // Compute theoretical WV
   	    x += gen_ar1(N, theta_value, sig2);
+  	  }
+  	  else if(element_type == "MA1"){
+  	    
+  	    // First value is theta, increment for sigma2
+  	    ++i_theta;
+  	    
+  	    // Get sigma2, this increment is taken care of at the end.
+  	    double sig2 = theta(i_theta);
+  	    
+  	    // Compute theoretical WV
+  	    x += gen_ma1(N, theta_value, sig2);
   	  } 
   	  // WN
   	  else if(element_type == "WN") {
@@ -434,6 +445,22 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
       // RW
   	  else if(element_type == "RW"){
   	    x += gen_rw(N, theta_value);
+  	  } 
+  	  // ARMA11
+  	  else if(element_type == "ARMA11"){
+  	    
+  	    // First value is phi, increment for theta
+  	    ++i_theta;
+  	    
+  	    double th = theta(i_theta);
+  	    
+  	    // Increment for sigma2
+  	    ++i_theta;
+  	    
+  	    // Get sigma2, this increment is taken care of at the end.
+  	    double sig2 = theta(i_theta);
+  	    
+  	    x += gen_arma11(N, theta_value, th, sig2);
   	  } 
   	  // ARMA
   	  else {
@@ -519,10 +546,23 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       double sig2 = theta(i_theta);
       
       // Compute theoretical WV
-      // Store it into cube x
+      // Store it into the last column of x
       x.col(i) = gen_ar1(N, theta_value, sig2);
       x.col(num_desc) += x.col(i);
+    } 
+    // MA1
+    else if(element_type == "MA1"){
       
+      // First value is theta, increment for sigma2
+      ++i_theta;
+      
+      // Get sigma2, this increment is taken care of at the end.
+      double sig2 = theta(i_theta);
+      
+      // Compute theoretical WV
+      // Store it into the last column of x
+      x.col(i) = gen_ma1(N, theta_value, sig2);
+      x.col(num_desc) += x.col(i);
     } 
     // WN
     else if(element_type == "WN") {
@@ -545,6 +585,24 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       x.col(i) = gen_rw(N, theta_value);
       x.col(num_desc) += x.col(i);
     }
+    // ARMA11
+    else if(element_type == "ARMA11"){
+      
+      // First value is phi, increment for theta
+      ++i_theta;
+      
+      double th = theta(i_theta);
+      
+      // Increment for sigma2
+      ++i_theta;
+      
+      // Get sigma2, this increment is taken care of at the end.
+      double sig2 = theta(i_theta);
+      
+      // Modified arima.sim
+      x.col(i) = gen_arma11(N, theta_value, th, sig2);
+      x.col(num_desc) += x.col(i);
+    } 
     // ARMA
     else {
       // Unpackage ARMA model parameter
