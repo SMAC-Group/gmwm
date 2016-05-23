@@ -16,8 +16,26 @@ A \code{vec} containing logit probabilities.
 This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain
 }
 \examples{
-x.sim = rnorm(10)
-pseudo_logit_inv(x.sim)
+# Set seed for reproducibility
+set.seed(1222)
+
+# Simulate data
+x.sim = runif(10, -1, 1)
+
+# Transform
+x.sim.transformed = pseudo_logit(x.sim)
+
+# Untransform
+x.sim.untransformed = pseudo_logit_inv(x.sim.transformed)
+
+# Compare results
+results = cbind(x.sim, x.sim.untransformed)
+}
+\author{
+James Joseph Balamuta (JJB)
+}
+\seealso{
+\code{\link{pseudo_logit}}
 }
 \keyword{internal}
 

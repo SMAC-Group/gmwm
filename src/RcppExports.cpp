@@ -1657,7 +1657,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // untransform_values
-arma::colvec untransform_values(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type);
+arma::vec untransform_values(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type);
 RcppExport SEXP gmwm_untransform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;

@@ -2043,93 +2043,169 @@ get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales
     .Call('gmwm_get_summary', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B)
 }
 
-#' @title Pseudo Logit Inverse Function
-#' @description This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain 
+#' Pseudo Logit Inverse Function
+#' 
+#' This function computes the pseudo inverse of a logit transformation of the parameters in order to constrain them to a positive domain 
 #' @param x A \code{vec} containing real numbers.
 #' @return A \code{vec} containing logit probabilities.
 #' @keywords internal
+#' @seealso \code{\link{pseudo_logit}}
+#' @template author/jjb
 #' @examples
-#' x.sim = rnorm(10)
-#' pseudo_logit_inv(x.sim)
+#' # Set seed for reproducibility
+#' set.seed(1222)
+#' 
+#' # Simulate data
+#' x.sim = runif(10, -1, 1)
+#' 
+#' # Transform
+#' x.sim.transformed = pseudo_logit(x.sim)
+#' 
+#' # Untransform
+#' x.sim.untransformed = pseudo_logit_inv(x.sim.transformed)
+#' 
+#' # Compare results
+#' results = cbind(x.sim, x.sim.untransformed)
 pseudo_logit_inv <- function(x) {
     .Call('gmwm_pseudo_logit_inv', PACKAGE = 'gmwm', x)
 }
 
-#' @title Logit Inverse Function
-#' @description This function computes the inverse of a logit transformation of the parameters.
+#' Logit Inverse Function
+#' 
+#' This function computes the inverse of a logit transformation of the parameters.
 #' @param x A \code{vec} containing real numbers.
 #' @return A \code{vec} containing logit probabilities.
 #' @keywords internal
+#' @seealso \code{\link{logit}}
+#' @template author/jjb
 #' @examples
-#' x.sim = rnorm(10)
-#' logit_inv(x.sim)
+#' # Set seed for reproducibility
+#' set.seed(1412)
+#' 
+#' # Simulate data
+#' x.sim = runif(10, -1, 1)
+#' 
+#' # Transform
+#' x.sim.transformed = logit(x.sim)
+#' 
+#' # Untransform
+#' x.sim.untransformed = logit_inv(x.sim.transformed)
+#' 
+#' # Compare results
+#' results = cbind(x.sim, x.sim.untransformed)
 logit_inv <- function(x) {
     .Call('gmwm_logit_inv', PACKAGE = 'gmwm', x)
 }
 
-#' @title Pseudo Logit Function
-#' @description This function compute the link function to constrain parameters to a positive domain.
+#' Pseudo Logit Function
+#' 
+#' This function compute the link function to constrain parameters to a positive domain.
 #' @param x A \code{vec} containing probabilities (e.g. 0 <= x <= 1)
 #' @return A \code{vec} containing logit terms.
+#' @seealso \code{\link{pseudo_logit_inv}}
 #' @keywords internal
+#' @template author/jjb
 #' @examples
-#' x.sim = runif(10)
-#' pseudo_logit(x.sim)
+#' # Set seed for reproducibility
+#' set.seed(1412)
+#' 
+#' # Simulate data
+#' x.sim = runif(10, -1, 1)
+#' 
+#' # Transform
+#' x.sim.transformed = pseudo_logit(x.sim)
 pseudo_logit <- function(x) {
     .Call('gmwm_pseudo_logit', PACKAGE = 'gmwm', x)
 }
 
-#' @title Logit Function
-#' @description This function computes the logit link function.
+#' Logit Function
+#' 
+#' This function computes the logit link function.
 #' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
 #' @return A \code{vec} containing logit terms.
 #' @keywords internal
+#' @seealso \code{\link{logit_inv}}
+#' @template author/jjb
 #' @examples
+#' # Set seed for reproducibility
+#' set.seed(1142)
+#' 
+#' # Simulate data
 #' x.sim = runif(10)
-#' logit(x.sim)
+#' 
+#' # Transform
+#' x.sim.transformed = logit(x.sim)
 logit <- function(x) {
     .Call('gmwm_logit', PACKAGE = 'gmwm', x)
 }
 
-#' @title Logit Function
-#' @description This function computes the logit link function.
-#' @param x A \code{vec} containing probabilities (e.g. -1 <= x <= 1)
+#' Logit2 Function
+#' 
+#' This function computes the logit2 link function.
+#' @param x A \code{vec} containing probabilities (e.g. -2 <= x <= 2)
 #' @return A \code{vec} containing logit terms.
 #' @keywords internal
+#' @seealso \code{\link{logit2_inv}}
+#' @template author/jjb
 #' @examples
-#' x.sim = runif(10)
-#' logit(x.sim)
+#' # Set seed for reproducibility
+#' set.seed(1142)
+#' 
+#' # Simulate data
+#' x.sim = runif(10, -2, 2)
+#' 
+#' # Transform
+#' x.sim.transformed = logit2(x.sim)
 logit2 <- function(x) {
     .Call('gmwm_logit2', PACKAGE = 'gmwm', x)
 }
 
-#' @title Logit2 Inverse Function
-#' @description This function computes the inverse of a logit transformation of the parameters.
+#' Logit2 Inverse Function
+#' 
+#' This function computes the inverse of a logit transformation of the parameters.
 #' @param x A \code{vec} containing real numbers.
 #' @return A \code{vec} containing logit probabilities.
 #' @keywords internal
+#' @seealso \code{\link{logit2}}
+#' @template author/jjb
 #' @examples
-#' x.sim = rnorm(10)
-#' logit_inv(x.sim)
+#' # Set seed for reproducibility
+#' set.seed(2234)
+#' 
+#' # Simulate data
+#' x.sim = runif(10, -2, 2)
+#' 
+#' # Transform
+#' x.sim.transformed = logit2(x.sim)
+#' 
+#' # Untransform
+#' x.sim.untransformed = logit2_inv(x.sim.transformed)
+#' 
+#' # Compare results
+#' results = cbind(x.sim, x.sim.untransformed)
 logit2_inv <- function(x) {
     .Call('gmwm_logit2_inv', PACKAGE = 'gmwm', x)
 }
 
-#' @title Transform Values for Optimization
-#' @description Transform parameter guesses prior to estimating with GMWM
+#' Transform Values for Optimization
+#' 
+#' Transform parameter guesses prior to estimating with GMWM
 #' @template tsobj_cpp
 #' @param model_type A \code{string} that contains the model type: \code{"imu"} or \code{"ssm"}
 #' @return A \code{vec} containing the transformed guesses.
+#' @template author/jjb
 #' @keywords internal
 transform_values <- function(theta, desc, objdesc, model_type) {
     .Call('gmwm_transform_values', PACKAGE = 'gmwm', theta, desc, objdesc, model_type)
 }
 
-#' @title Revert Transform Values for Display
-#' @description Undo the previous transform of parameter guesses to obtain the GMWM estimates.
+#' Revert Transform Values for Display
+#' 
+#' Undo the previous transform of parameter guesses to obtain the GMWM estimates.
 #' @template tsobj_cpp
 #' @param model_type A \code{string} that contains the model type: \code{"imu"} or \code{"ssm"}
 #' @return A \code{vec} containing the undone transformation of parameters.
+#' @template author/jjb
 #' @keywords internal
 untransform_values <- function(theta, desc, objdesc, model_type) {
     .Call('gmwm_untransform_values', PACKAGE = 'gmwm', theta, desc, objdesc, model_type)

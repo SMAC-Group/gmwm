@@ -2,22 +2,34 @@
 % Please edit documentation in R/RcppExports.R
 \name{logit2}
 \alias{logit2}
-\title{Logit Function}
+\title{Logit2 Function}
 \usage{
 logit2(x)
 }
 \arguments{
-\item{x}{A \code{vec} containing probabilities (e.g. -1 <= x <= 1)}
+\item{x}{A \code{vec} containing probabilities (e.g. -2 <= x <= 2)}
 }
 \value{
 A \code{vec} containing logit terms.
 }
 \description{
-This function computes the logit link function.
+This function computes the logit2 link function.
 }
 \examples{
-x.sim = runif(10)
-logit(x.sim)
+# Set seed for reproducibility
+set.seed(1142)
+
+# Simulate data
+x.sim = runif(10, -2, 2)
+
+# Transform
+x.sim.transformed = logit2(x.sim)
+}
+\author{
+James Joseph Balamuta (JJB)
+}
+\seealso{
+\code{\link{logit2_inv}}
 }
 \keyword{internal}
 

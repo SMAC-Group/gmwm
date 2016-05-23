@@ -16,8 +16,20 @@ A \code{vec} containing logit terms.
 This function computes the logit link function.
 }
 \examples{
+# Set seed for reproducibility
+set.seed(1142)
+
+# Simulate data
 x.sim = runif(10)
-logit(x.sim)
+
+# Transform
+x.sim.transformed = logit(x.sim)
+}
+\author{
+James Joseph Balamuta (JJB)
+}
+\seealso{
+\code{\link{logit_inv}}
 }
 \keyword{internal}
 

@@ -21,5 +21,8 @@ A \code{vec} containing the transformed guesses.
 \description{
 Transform parameter guesses prior to estimating with GMWM
 }
+\author{
+James Joseph Balamuta (JJB)
+}
 \keyword{internal}
 

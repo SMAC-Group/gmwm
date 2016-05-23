@@ -16,8 +16,26 @@ A \code{vec} containing logit probabilities.
 This function computes the inverse of a logit transformation of the parameters.
 }
 \examples{
-x.sim = rnorm(10)
-logit_inv(x.sim)
+# Set seed for reproducibility
+set.seed(1412)
+
+# Simulate data
+x.sim = runif(10, -1, 1)
+
+# Transform
+x.sim.transformed = logit(x.sim)
+
+# Untransform
+x.sim.untransformed = logit_inv(x.sim.transformed)
+
+# Compare results
+results = cbind(x.sim, x.sim.untransformed)
+}
+\author{
+James Joseph Balamuta (JJB)
+}
+\seealso{
+\code{\link{logit}}
 }
 \keyword{internal}
 
