@@ -4,11 +4,10 @@
 \alias{autoplot.wvar}
 \title{Graph Wavelet Variances}
 \usage{
-\method{autoplot}{wvar}(object, transparence = 0.1, background = "white",
-  bw = F, CI.color = "#003C7D", line.type = c("solid", "dotted"),
-  line.color = c("#003C7D", "#999999"), point.size = c(5, 0),
-  point.shape = c(20, 46), title = NA, title.size = 15,
-  axis.label.size = 13, axis.tick.size = 11,
+\method{autoplot}{wvar}(object, CI = T, transparence = 0.1,
+  background = "white", bw = F, CI.color = "#003C7D", line.type = NULL,
+  line.color = NULL, point.size = NULL, point.shape = NULL, title = NA,
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
   legend.title = "", legend.label = NULL, legend.key.size = 1,
@@ -16,6 +15,8 @@
 }
 \arguments{
 \item{object}{A \code{wvar} object.}
+
+\item{CI}{A \code{boolean} that indicates whether the confidence interval should be plotted.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.}
 
@@ -64,7 +65,7 @@ A ggplot2 graph containing the wavelet variances.
 Creates the wavelet variance graph
 }
 \note{
-Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
+Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements if \code{CI = TRUE}.
 }
 \examples{
 set.seed(999)

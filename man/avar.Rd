@@ -60,8 +60,6 @@ av_mat = avar_mo_cpp(combined.ts)
 }
 \author{
 JJB
-
-JJB
 }
 \references{
 Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp

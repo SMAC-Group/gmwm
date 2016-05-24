@@ -326,3 +326,21 @@ checkParams = function(params, require.len, default, null.is.fine, env = parent.
   
 }
 
+
+#' @title Add Units to Sensor
+#' @description Add corresponding units for gyroscope and accelerometer sensors.
+#' @param units \code{NULL} or a two-element vector indicating the units of gyroscope and accelerometer sensors.
+#' @param sensor A \code{character vector} including all sensors in imu objects.
+#' @keywords internal
+#' @details 
+#' This function is used in \code{plot.wvar.imu} and \code{plot.auto.imu}.
+addUnits = function(units, sensor){
+  #add units to sensors
+  if(!is.null(units)){
+    
+    sensor[sensor == "Gyroscope"] = as.character(as.expression( bquote('Gyroscope ' * .(units[[1]])) ))
+    sensor[sensor == "Accelerometer"] = as.character(as.expression( bquote("Accelerometer " * .(units[[2]])) ))
+  }
+  return(sensor)
+}
+

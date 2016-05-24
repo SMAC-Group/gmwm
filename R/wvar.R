@@ -400,7 +400,7 @@ summary.wvar.imu = function(object, ...){
 #' @param x A \code{wvar} object.
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
-#' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
+#' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements if \code{CI = TRUE}.
 #' @author JJB, Wenchao
 #' @seealso \code{\link{autoplot.wvar}}
 #' @examples
@@ -408,9 +408,9 @@ summary.wvar.imu = function(object, ...){
 #' x=rnorm(100)
 #' out = wvar(x)
 #' plot( out )
-plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F, 
-                     CI.color = "#003C7D", line.type = c('solid','dotted'), line.color = c('#003C7D', '#999999'),
-                     point.size = c(5,0), point.shape = c(20,46),
+plot.wvar = function(x, CI = T, transparence = 0.1, background = 'white', bw = F, 
+                     CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                     point.size = NULL, point.shape = NULL,
                      title = NA, title.size= 15, 
                      axis.label.size = 13, axis.tick.size = 11, 
                      axis.x.label = expression(paste("Scale ", tau)),
@@ -418,7 +418,8 @@ plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F,
                      legend.title = '',  legend.label = NULL,
                      legend.key.size = 1, legend.title.size = 13, 
                      legend.text.size = 13, ...){
-  autoplot.wvar(x, transparence = transparence, background = background, bw = bw, 
+  
+  autoplot.wvar(x, CI = CI, transparence = transparence, background = background, bw = bw, 
                 CI.color = CI.color, line.type = line.type, line.color = line.color,
                 point.size = point.size, point.shape = point.shape,
                 title = title, title.size= title.size, 
@@ -438,16 +439,16 @@ plot.wvar = function(x, transparence = 0.1, background = 'white', bw = F,
 #' @param object A \code{wvar} object.
 #' @template CommonParams
 #' @return A ggplot2 graph containing the wavelet variances.
-#' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements.
+#' @note Parameter line.type, line.color, point.size, point.shape, legend.label must contain 2 elements if \code{CI = TRUE}.
 #' @author JJB, Wenchao
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
 #' out = wvar(x)
 #' autoplot( out )
-autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = F, 
-                         CI.color = "#003C7D", line.type = c('solid','dotted'), line.color = c('#003C7D', '#999999'),
-                         point.size = c(5,0), point.shape = c(20,46),
+autoplot.wvar = function(object, CI = T, transparence = 0.1, background = 'white', bw = F, 
+                         CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                         point.size = NULL, point.shape = NULL,
                          title = NA, title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
@@ -455,6 +456,61 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
                          legend.title = '',  legend.label =  NULL,
                          legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
+  
+  #check parameter
+  params = 'legend.label'
+  if(CI){
+    requireLength = 2
+    legend.label.default = c(bquote("Empirical WV"~hat(nu)), bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ))
+  }else{
+    requireLength = 1
+    legend.label.default = c(bquote("Empirical WV"~hat(nu)))
+  }
+  
+  default = list(legend.label.default)
+  nullIsFine = T
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
+  
+  
+  p = graphingVar(object, CI = CI, transparence = transparence, background = background, bw = bw, 
+                CI.color = CI.color, line.type = line.type, line.color = line.color,
+                point.size = point.size, point.shape = point.shape,
+                title = title, title.size= title.size, 
+                axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                axis.x.label = axis.x.label,
+                axis.y.label = axis.y.label,
+                legend.title = legend.title, legend.label = legend.label,
+                legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                legend.text.size = legend.text.size )
+  
+ 
+  if (is.na(title)){
+    name = if(object$robust){"Robust"} else{ "Classic" }
+    p = p +
+      ggtitle(paste0("Haar Wavelet Variance Representation for ", name, " Calculation"))
+  }
+  
+  p
+  
+}
+
+#' @title Graphical Function for Allan Variance, Wavelet Variance and Hadamard Variance
+#' @description A generic graphical function for Allan Variance, Wavelet Variance and Hadamard Variance
+#' @param object A \code{wvar}, or \code{avar}, or \code{hadam} object.
+#' @template CommonParams
+#' @keywords internal
+#' @return A ggplot2 graphical object.
+#' @author Wenchao
+graphingVar = function(object, CI = TRUE, transparence = 0.1, background = 'white', bw = FALSE, 
+                        CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                        point.size = NULL, point.shape = NULL,
+                        title = NA, title.size= 15, 
+                        axis.label.size = 13, axis.tick.size = 11, 
+                        axis.x.label = NULL,
+                        axis.y.label = NULL,
+                        legend.title = '',  legend.label =  NULL,
+                        legend.key.size = 1, legend.title.size = 13, 
+                        legend.text.size = 13, ...){
   
   .x=low=high=trans_breaks=trans_format=math_format=value=variable=NULL
   
@@ -464,48 +520,53 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
   }
   
   #check parameter
-  params = c('line.type', 'line.color', 'point.size', 'point.shape', 'legend.label')
-  requireLength = c(2, 2, 2, 2, 2)
-  legend.label.default = c(bquote("Empirical WV"~hat(nu)), bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" )) 
-  #legend.label.default = c(expression(paste("Empirical WV ", hat(nu))), expression(paste("CI(", hat(nu)," ,", 1 - object$alpha, ")" )) )
-  default = list(c('solid','dotted'), c('#003C7D', '#999999'),  c(5, 0), c(20,46), legend.label.default)
-  nullIsFine = c(rep(F,4), T)
-  for (i in 1:length(params)){
-    one_param = params[i]
-    if( length(get(one_param))!=requireLength[i]){
-      isNull = is.null(get(one_param))
-      if(isNull && nullIsFine[i]){}else{
-        warning(paste('Parameter', one_param, 'requires', requireLength[i],'elements,','but', length(get(one_param)),
-                      'is supplied.','Default setting is used.'))
-      }
-      assign(one_param, default[[i]])
-    }
+  params = c('line.type', 'line.color', 'point.size', 'point.shape')
+  if(CI){
+    requireLength = rep(2, times = 4)
+    default = list(c('solid','dotted'), c('#003C7D', '#999999'),  c(5, 0), c(20,46))
+  }else{
+    requireLength = rep(1, times = 4)
+    default = list('solid', '#003C7D',  5, 20)
   }
+  nullIsFine = rep(T,4)
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
   
   if(bw){
-    line.color = c("#000000", "#404040")
+    if(CI){line.color = c("#000000", "#404040")}else{line.color = c("#000000")}
     CI.color = "grey50"
   }
   
-  #process parameter (insert some values)
-  params = params[-5];from = 2; to = 3; times = 1;
-  for(i in 1:length(params)){
-    real_param = get(params[i])
-    target = real_param[from]
-    stuff = rep(target, times)
-    one_param = params[i]
-    
-    assign(one_param, c(real_param, stuff))
-  }
-
-  #other parameter
-  breaks = c('var', 'low')
-  legend.color = c(NA, alpha(CI.color, transparence) )
-  legend.linetype = c(line.type[1], 'blank')
-  legend.pointshape = c(point.shape[1], NA)
-  
   WV = data.frame(var = object$variance, low = object$ci_low, high = object$ci_high, scale = object$scales)
-  melt.wv = melt(WV, id.vars = 'scale')
+  
+  if(CI){
+    #process parameter (insert some values)
+    params = params[-5]; from = 2; to = 3; times = 1;
+    for(i in 1:length(params)){
+      real_param = get(params[i])
+      target = real_param[from]
+      stuff = rep(target, times)
+      one_param = params[i]
+      
+      assign(one_param, c(real_param, stuff))
+    }
+    
+    #other parameter
+    breaks = c('var', 'low')
+    legend.color = c(NA, alpha(CI.color, transparence) )
+    legend.linetype = c(line.type[1], 'blank')
+    legend.pointshape = c(point.shape[1], NA)
+    
+    # put data in the desired format
+    melt.wv = melt(WV, id.vars = 'scale')
+    
+  }else{
+    #other parameter
+    breaks = c('var')
+    
+    # put data in the desired format
+    melt.wv = melt(WV, id.vars = 'scale', measure.vars = 'var')
+  }
+  
   p = ggplot() + geom_line(data = melt.wv, mapping = aes(x = scale, y = value, color = variable, linetype = variable)) +
     geom_point(data = melt.wv, mapping =aes(x = scale, y = value, color = variable, size = variable, shape = variable)) +
     
@@ -519,10 +580,11 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x)))
   
-  #if(CI){
+  if(CI){
   p = p + geom_ribbon(data = WV, mapping = aes(ymin = low , ymax = high, x = scale, y = NULL), alpha = transparence, fill = CI.color, show.legend = T) +
     guides(colour = guide_legend(override.aes = list(fill = legend.color, linetype = legend.linetype, shape = legend.pointshape)))
-  #}
+  }
+  
   if( background == 'white'||bw){
     p = p + theme_bw() 
   }
@@ -543,12 +605,7 @@ autoplot.wvar = function(object, transparence = 0.1, background = 'white', bw = 
       legend.background = element_rect(fill="transparent"),
       legend.justification=legendPlace[1:2], legend.position=legendPlace[3:4],
       legend.text.align = 0)  
-  
-  if (is.na(title)){
-    name = if(object$robust){ "Robust"} else{ "Classic" }
-    p = p +
-      ggtitle(paste0("Haar Wavelet Variance Representation for ", name, " Calculation"))
-  }
+
   p
 }
 
@@ -672,6 +729,7 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark
 #' @param axis.x.label A \code{string} that indicates the label on x axis
 #' @param axis.y.label A \code{string} that indicates the label on y axis
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label
 #' @param legend.title A \code{string} that indicates the title of legend
@@ -733,6 +791,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
                         axis.label.size = 13, axis.tick.size = 11, 
                         axis.x.label = expression(paste("Scale ", tau)),
                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                        units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                         facet.label.size = 13, facet.label.background = "#003C7D33",
                         legend.label = NULL,
                         legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
@@ -821,6 +880,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                        axis.x.label = axis.x.label,
                        axis.y.label = axis.y.label,
+                       units = units,
                        facet.label.size = facet.label.size, facet.label.background = facet.label.background,
                        legend.label = legend.label,
                        legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
@@ -896,6 +956,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param legend.title A \code{string} that indicates the title of legend.
@@ -912,6 +973,7 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
                         axis.label.size = 13, axis.tick.size = 11, 
                         axis.x.label = expression(paste("Scale ", tau)),
                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                        units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                         facet.label.size = 13, facet.label.background = "#003C7D33",
                         legend.label = NULL,
                         legend.title = '', legend.key.size = 1.3, legend.title.size = 13, 
@@ -1005,6 +1067,9 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
     axis = obj.list[[i]]$axis
     sensor = obj.list[[i]]$sensor
     
+    # add units to sensor
+    sensor = addUnits(units = units, sensor = sensor)
+    
     for( j in 1:length(each.len[[i]])){
       
       d = each.len[[i]][j]
@@ -1072,7 +1137,7 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
     p = p + theme_bw() 
   }
   
-  p = p + facet_grid(sensor ~ axis, scales = 'free_y') +
+  p = p + facet_grid(sensor ~ axis, scales = 'free_y', labeller = label_parsed) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +

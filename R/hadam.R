@@ -74,6 +74,7 @@ hadam = function(x, type = "mo") {
   hv$hdev = sqrt(hv$hadamard)
   hv$lci = hv$hdev - hv$errors*hv$hdev
   hv$uci = hv$hdev + hv$errors*hv$hdev
+  hv$type = type
   class(hv) = "hadam"
   hv
 }
@@ -100,30 +101,123 @@ print.hadam = function(x, ...) {
   print(x$errors, digits=5)
 }
 
-#' @title Plot Hadamard Variance
+#' @title Wrapper to ggplot Hadamard Variance Graph
 #' @description Displays a plot containing the Hadamard variance
 #' @method plot hadam
 #' @export
 #' @param x   A \code{hadam} object.
-#' @param ... Arguments to be passed to methods
-#' @author JJB
-#' @return ggplot2 graph
+#' @template CommonParams
+#' @author JJB, Wenchao
+#' @return A ggplot2 graph containing the Hadamard variance.
+#' @note 
+#' It is known that the calculation for confidence interval is incorrect, therefore \code{CI}
+#' can only be set to FALSE currently.
 #' @examples
 #' set.seed(999)
 #' x=rnorm(100)
 #' out = hadam(x)
 #' plot( out )
-plot.hadam = function(x, ...){
-  plot(x$clusters, x$hdev,log="xy",
-       xlab=expression("Scale " ~ tau),
-       ylab=expression("Hadamard Deviation " ~ phi[tau]),
-       main=expression(log(tau) ~ " vs. " ~ log(phi[tau]))
-  )
-  lines(x$clusters, x$hdev, type="l")
-  lines(x$clusters, x$lci, type="l", col="grey", lty=2)
-  lines(x$clusters, x$uci, type="l", col="grey", lty=2)
+plot.hadam = function(x, CI = F, transparence = 0.1, background = 'white', bw = F, 
+                      CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                      point.size = NULL, point.shape = NULL,
+                      title = NULL, title.size= 15, 
+                      axis.label.size = 13, axis.tick.size = 11, 
+                      axis.x.label = expression("Cluster "~tau~"(sec)"),
+                      axis.y.label = expression("Hadamard Variance "~phi[tau]),
+                      legend.title = '',  legend.label = NULL,
+                      legend.key.size = 1, legend.title.size = 13, 
+                      legend.text.size = 13, ...){
+  
+  autoplot.hadam(x, CI = CI, transparence = transparence, background = background, bw = bw, 
+                 CI.color = CI.color, line.type = line.type, line.color = line.color,
+                 point.size = point.size, point.shape = point.shape,
+                 title = title, title.size= title.size, 
+                 axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                 axis.x.label = axis.x.label,
+                 axis.y.label = axis.y.label,
+                 legend.title = legend.title, legend.label = legend.label,
+                 legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                 legend.text.size = legend.text.size )
+  
 }
 
+#' @title Graph Hadamard Variance
+#' @description Displays a plot containing the Hadamard variance
+#' @method autoplot hadam
+#' @export
+#' @param object A \code{hadam} object.
+#' @template CommonParams
+#' @author JJB, Wenchao
+#' @return A ggplot2 graph containing the Hadamard variance.
+#' @note 
+#' It is known that the calculation for confidence interval is incorrect, therefore \code{CI}
+#' can only be set to FALSE currently.
+#' @examples
+#' set.seed(999)
+#' x=rnorm(100)
+#' out = hadam(x)
+#' autoplot( out )
+autoplot.hadam = function(object, CI = F, transparence = 0.1, background = 'white', bw = F, 
+                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
+                          point.size = NULL, point.shape = NULL,
+                          title = NULL, title.size= 15, 
+                          axis.label.size = 13, axis.tick.size = 11, 
+                          axis.x.label = expression("Cluster "~tau~"(sec)"),
+                          axis.y.label = expression("Hadamard Variance "~phi[tau]),
+                          legend.title = '',  legend.label =  NULL,
+                          legend.key.size = 1, legend.title.size = 13, 
+                          legend.text.size = 13, ...){
+  if(CI == T){
+    warning("It is known that the calculation for confidence interval is incorrect, therefore 'CI' can only be set to FALSE currently.")
+    CI = F
+  }
+  
+  # The format of object that can be passed to graphingVar()
+  names(object) = c("scales", "variance", "errors", "hdev", "ci_low", "ci_high", "type")
+  
+  #check parameter
+  params = 'legend.label'
+  if(CI){
+    #Update later
+    #requireLength = 2
+    #legend.label.default = c(bquote("Empirical AV"~hat(sigma)^2), bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ))
+  }else{
+    requireLength = 1
+    legend.label.default = c(bquote("Empirical HV "~hat(sigma)^2))
+  }
+  
+  default = list(legend.label.default)
+  nullIsFine = T
+  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
+  
+  p = graphingVar(object, CI = CI, transparence = transparence, background = background, bw = bw, 
+                  CI.color = CI.color, line.type = line.type, line.color = line.color,
+                  point.size = point.size, point.shape = point.shape,
+                  title = title, title.size= title.size, 
+                  axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
+                  axis.x.label = axis.x.label,
+                  axis.y.label = axis.y.label,
+                  legend.title = legend.title,  legend.label = legend.label,
+                  legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
+                  legend.text.size = legend.text.size )
+  
+  
+  if(is.null(title)){
+    
+    if (object$type == "mo"){
+      type = "Maximal Overlap"
+    }else{
+      type = "Tau Overlap"
+    }
+    
+    p = p +
+      ggtitle(paste0("Hadamard Variance (",type, ")"))
+    
+  }
+  
+  p
+  
+}
 
 #' @title Summary Hadamard Variance
 #' @description Displays the summary table of Hadamard variance

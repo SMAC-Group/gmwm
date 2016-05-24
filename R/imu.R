@@ -343,6 +343,7 @@ read.imu = function(file, type, unit = NULL, name = NULL){
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param legend.title A \code{string} that indicates the title of legend. It is onlly used when \code{split = FALSE}.
@@ -377,7 +378,8 @@ plot.wvar.imu = function(x, split = TRUE, CI = TRUE, background = 'white', trans
                          CI.color = NULL, title = "Haar Wavelet Variance Representation", title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
-                         axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                         units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                          facet.label.size = 13, facet.label.background = "#003C7D33",
                          legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
                          scales = "free_y",...){
@@ -388,6 +390,7 @@ plot.wvar.imu = function(x, split = TRUE, CI = TRUE, background = 'white', trans
                     axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                     axis.x.label = axis.x.label,
                     axis.y.label = axis.y.label, 
+                    units = units,
                     facet.label.size = facet.label.size, facet.label.background = facet.label.background,
                     legend.title = legend.title, legend.key.size = legend.key.size, legend.title.size = legend.title.size, legend.text.size = legend.text.size,
                     scales = scales)  
@@ -415,6 +418,7 @@ plot.wvar.imu = function(x, split = TRUE, CI = TRUE, background = 'white', trans
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param legend.title A \code{string} that indicates the title of legend. It is onlly used when \code{split = FALSE}.
@@ -451,6 +455,7 @@ autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'whit
                              axis.label.size = 13, axis.tick.size = 11, 
                              axis.x.label = expression(paste("Scale ", tau)),
                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                             units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                              facet.label.size = 13, facet.label.background = "#003C7D33",
                              legend.title = 'Axis', legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
                              scales = "free_y",...){
@@ -466,6 +471,9 @@ autoplot.wvar.imu = function(object, split = TRUE, CI = TRUE, background = 'whit
   n.axis = length(axis)
   sensor = object$sensor
   tau = obj.list[[1]]$scales #this is 'tau' - different from scales = "free_y"
+  
+  #add units to sensors
+  sensor = addUnits(units = units, sensor = sensor)
   
   nlevels = length(tau)
   total.len = nlevels*n.axis
@@ -686,7 +694,7 @@ autoplot.imu6 = function(object, CI = TRUE, background = 'white', transparence =
   
   p = p + theme(legend.position='none')+ theme(strip.background = element_rect(fill= facet.label.background) )
   
-  p = p + facet_grid(sensor ~ axis, scales = scales) +
+  p = p + facet_grid(sensor ~ axis, scales = scales, labeller = label_parsed) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +
@@ -831,7 +839,8 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
     p = p + theme_bw()
   }
   
-  p = p + facet_grid(sensor~., scales = scales) + theme(strip.background = element_rect(fill= facet.label.background) ) +
+  p = p + facet_grid(sensor~., scales = scales, labeller = label_parsed) + 
+    theme(strip.background = element_rect(fill= facet.label.background) ) +
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +
     scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -875,6 +884,7 @@ autoplot.imu2 = function(object, CI = T, background = 'white', transparence = 0.
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
@@ -905,7 +915,8 @@ plot.auto.imu = function(x, process.decomp = FALSE, CI = TRUE, background = 'whi
                          CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
                          axis.label.size = 13, axis.tick.size = 11, 
                          axis.x.label = expression(paste("Scale ", tau)),
-                         axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                         units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                          facet.label.size = 13, facet.label.background = "#003C7D33", scales = "free_y",
                          legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                          legend.text.size = 13, ...){
@@ -916,6 +927,7 @@ plot.auto.imu = function(x, process.decomp = FALSE, CI = TRUE, background = 'whi
                     axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                     axis.x.label = axis.x.label,
                     axis.y.label = axis.y.label, 
+                    units = units,
                     facet.label.size = facet.label.size, facet.label.background = facet.label.background, scales = scales,
                     legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
                     legend.text.size = legend.text.size)
@@ -945,6 +957,7 @@ plot.auto.imu = function(x, process.decomp = FALSE, CI = TRUE, background = 'whi
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
@@ -976,7 +989,8 @@ autoplot.auto.imu = function(object, process.decomp = FALSE, CI = TRUE, backgrou
                               CI.color = "#003C7D", title = "Automatic Model Selection Results", title.size= 15, 
                               axis.label.size = 13, axis.tick.size = 11, 
                               axis.x.label = expression(paste("Scale ", tau)),
-                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                              axis.y.label = expression(paste("Wavelet Variance ", nu)),
+                              units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                               facet.label.size = 13, facet.label.background = "#003C7D33",scales = "free_y",
                               legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                               legend.text.size = 13, ...){
@@ -998,7 +1012,8 @@ autoplot.auto.imu = function(object, process.decomp = FALSE, CI = TRUE, backgrou
                       CI.color = CI.color, title = title, title.size= title.size, 
                       axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                       axis.x.label = axis.x.label,
-                      axis.y.label = axis.y.label, 
+                      axis.y.label = axis.y.label,
+                      units = units,
                       facet.label.size = facet.label.size, facet.label.background = facet.label.background,
                       scales = scales)
   }else{
@@ -1010,6 +1025,7 @@ autoplot.auto.imu = function(object, process.decomp = FALSE, CI = TRUE, backgrou
                        axis.label.size = axis.label.size, axis.tick.size = axis.tick.size, 
                        axis.x.label = axis.x.label,
                        axis.y.label = axis.y.label, 
+                       units = units,
                        facet.label.size = facet.label.size, facet.label.background = facet.label.background, scales = scales,
                        legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
                        legend.text.size = legend.text.size)
@@ -1038,6 +1054,7 @@ autoplot.auto.imu = function(object, process.decomp = FALSE, CI = TRUE, backgrou
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed.
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
@@ -1055,6 +1072,7 @@ autoplot.auto.imu2 = function(object, CI = TRUE, background = 'white', transpare
                    axis.label.size = 13, axis.tick.size = 11, 
                    axis.x.label = expression(paste("Scale ", tau)),
                    axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                   units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                    facet.label.size = 13, facet.label.background = "#003C7D33", scales = "free_y", 
                    legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
                    legend.text.size = 13, ...){
@@ -1079,6 +1097,9 @@ autoplot.auto.imu2 = function(object, CI = TRUE, background = 'white', transpare
     axis[i] = object[[i]][[2]]$axis
     sensor[i] = object[[i]][[2]]$sensor
   }
+  
+  #add units to sensors
+  sensor = addUnits(units = units, sensor = sensor)
   
   #Put data in the desired form
   obj.list = vector("list", ncols)
@@ -1290,7 +1311,7 @@ autoplot.auto.imu2 = function(object, CI = TRUE, background = 'white', transpare
   )
   y.lim = c(y.lim.low, y.lim.high)
   
-  p = p + facet_grid(sensor ~ axis, scales = scales) +
+  p = p + facet_grid(sensor ~ axis, scales = scales, labeller = label_parsed) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +
@@ -1339,6 +1360,7 @@ autoplot.auto.imu2 = function(object, CI = TRUE, background = 'white', transpare
 #' @param axis.tick.size An \code{integer} that indicates the size of tick mark.
 #' @param axis.x.label A \code{string} that indicates the label on x axis.
 #' @param axis.y.label A \code{string} that indicates the label on y axis.
+#' @param units A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed. 
 #' @param facet.label.size An \code{integer} that indicates the size of facet label.
 #' @param facet.label.background A \code{string} that indicates the background color of the facet label.
 #' @param scales Same as \code{scales} in \code{facet_grid()} in \code{ggplot2} package: should scales be fixed ("fixed"), free ("free"), or free in one dimension ("free_x", "free_y"). The default is "free_y" in this function.
@@ -1350,6 +1372,7 @@ autoplot.auto.imu1 = function(object, CI = TRUE, background = 'white', transpare
                              axis.label.size = 13, axis.tick.size = 11, 
                              axis.x.label = expression(paste("Scale ", tau)),
                              axis.y.label = expression(paste("Wavelet Variance ", nu)), 
+                             units = c(bquote(rad^2/s^2), bquote(m^2/s^4)),
                              facet.label.size = 13, facet.label.background = "#003C7D33",
                              scales = "free_y",...){
   value = variable = low = high = .x = NULL
@@ -1386,6 +1409,9 @@ autoplot.auto.imu1 = function(object, CI = TRUE, background = 'white', transpare
     axis[i] = object[[i]][[2]]$axis
     sensor[i] = object[[i]][[2]]$sensor
   }
+  
+  #Add units to sensor
+  sensor = addUnits(units = units, sensor = sensor)
   
   #assume 
   obj.list = vector("list", ncols)
@@ -1542,7 +1568,7 @@ autoplot.auto.imu1 = function(object, CI = TRUE, background = 'white', transpare
   
   p = p + theme(legend.position='none') + theme(strip.background = element_rect(fill= facet.label.background) )
   
-  p = p + facet_grid(sensor ~ axis, scales = scales) +
+  p = p + facet_grid(sensor ~ axis, scales = scales, labeller = label_parsed) +
     
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x))) +

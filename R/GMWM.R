@@ -808,7 +808,6 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' @export
 #' @param x A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
-#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB, Wenchao
@@ -849,7 +848,6 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' @keywords internal
 #' @param object A \code{GMWM} object
 #' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
-#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB, Wenchao
@@ -940,7 +938,6 @@ autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', C
 #' @export
 #' @keywords internal
 #' @param object A \code{GMWM} object
-#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM for each latent process.
 #' @author JJB, Wenchao
@@ -1107,7 +1104,6 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
 #' @export
 #' @keywords internal
 #' @param object A \code{GMWM} object
-#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @template CommonParams
 #' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
 #' @author JJB, Wenchao

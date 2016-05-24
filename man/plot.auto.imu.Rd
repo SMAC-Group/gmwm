@@ -11,9 +11,10 @@
   title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
-  facet.label.size = 13, facet.label.background = "#003C7D33",
-  scales = "free_y", legend.title = "", legend.label = NULL,
-  legend.key.size = 1, legend.title.size = 13, legend.text.size = 13, ...)
+  units = c(bquote(rad^2/s^2), bquote(m^2/s^4)), facet.label.size = 13,
+  facet.label.background = "#003C7D33", scales = "free_y",
+  legend.title = "", legend.label = NULL, legend.key.size = 1,
+  legend.title.size = 13, legend.text.size = 13, ...)
 }
 \arguments{
 \item{x}{A \code{auto.imu} object}
@@ -47,6 +48,8 @@
 \item{axis.x.label}{A \code{string} that indicates the label on x axis.}
 
 \item{axis.y.label}{A \code{string} that indicates the label on y axis.}
+
+\item{units}{A two-element vector indicating the units of gyroscope and accelerometer sensor. Set it to \code{NULL} if units are not needed.}
 
 \item{facet.label.size}{An \code{integer} that indicates the size of facet label.}
 
