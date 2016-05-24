@@ -1,3 +1,4 @@
+#' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
 #' @param transparence A \code{double} that ranges from 0 to 1 that controls the transparency of the graph.
 #' @param bw A \code{boolean} that indicates whether the graph should be black and white color scheme.
