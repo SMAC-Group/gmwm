@@ -15,6 +15,8 @@ SARMA(ar = 1, ma = 1, sar = 1, sma = 1, s = 12, sigma2 = 1)
 
 \item{sma}{A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Theta}{THETA}'s or the process number \eqn{Q} for the Seasonal Moving Average (SMA) term.}
 
+\item{s}{A \code{integer} indicating the seasonal value of the data.}
+
 \item{sigma2}{A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the SARMA process.}
 }
 \value{

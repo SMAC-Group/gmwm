@@ -259,7 +259,7 @@ arma::vec transform_values(const arma::vec& theta,
         starting.rows(i_theta, param_est - 1) = pseudo_logit(theta.rows(i_theta, param_est - 1));
         
         // Increment index
-        i_theta += param_est;
+        i_theta = param_est;
         
       }else{ 
         // SSM Case
@@ -422,7 +422,7 @@ arma::vec untransform_values(const arma::vec& theta,
         result.rows(i_theta, param_est - 1) = pseudo_logit_inv(theta.rows(i_theta, param_est - 1));
         
         // Increment index
-        i_theta += param_est;
+        i_theta = param_est;
         
       }else{ 
         // SSM Case

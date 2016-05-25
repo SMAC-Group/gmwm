@@ -349,7 +349,7 @@ AR = function(phi = NULL, sigma2 = 1) {
     stop("`phi` must either be a whole number or a vector of numbers for phi parameter in AR().")
   }
   
-  out = SARIMA(ar = ar, i = 0,  ma = 0, sar = 0, si = 0,  sma = 0, s = 0, sigma2 = sigma2)
+  out = SARIMA(ar = phi, i = 0,  ma = 0, sar = 0, si = 0,  sma = 0, s = 0, sigma2 = sigma2)
 
   invisible(out)
 }
@@ -459,6 +459,7 @@ ARIMA = function(ar = 1, i = 0, ma = 1, sigma2 = 1.0) {
 #' @param ma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
 #' @param sar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Phi}{PHI}'s or the process number \eqn{P} for the Seasonal Autoregressive (SAR) term.
 #' @param sma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Theta}{THETA}'s or the process number \eqn{Q} for the Seasonal Moving Average (SMA) term.
+#' @param s   A \code{integer} indicating the seasonal value of the data.
 #' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the SARMA process.
 #' @return An S3 object with called ts.model with the following structure:
 #' \describe{
