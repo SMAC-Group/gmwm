@@ -32,7 +32,7 @@ The \code{objdesc} is assumed to have the structure of:
 }
 }
 \examples{
-m = expand_sarma(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+m = sarma_expand(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
 }
 \keyword{internal}
 

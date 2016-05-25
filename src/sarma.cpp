@@ -240,7 +240,7 @@ arma::field<arma::vec> sarma_expand_unguided(const arma::vec& params,
 //' }
 //' @keywords internal
 //' @examples
-//' m = expand_sarma(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+//' m = sarma_expand(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
 // [[Rcpp::export]]
 arma::field<arma::vec> sarma_expand(const arma::vec& params, const arma::vec& objdesc) {
 
