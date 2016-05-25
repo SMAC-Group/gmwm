@@ -32,16 +32,50 @@ arma::vec Rcpp_ARIMA(const arma::vec& data,
   Rcpp::Environment stats("package:stats"); 
   Rcpp::Function arima = stats["arima"];    
   
-  arma::vec aparams(3);
+  // Bridge to R
+  Rcpp::NumericVector aparams(3);
   
   aparams(0) = params(0);
-  aparams(1) = 0;
   aparams(2) = params(1);
   
-  Rcpp::List Opt= arima(Rcpp::_["x"] = data,
-                        Rcpp::_["order"] = aparams,
-                        Rcpp::_["include.mean"] = false,
-                        Rcpp::_["method"] = "CSS");
+  Rcpp::List Opt;
+  
+  // Determine whether it is ARMA11 or SARIMA object
+  // And check to see if there is seasonality (s)
+  if(params.n_elem > 3 && params(5) > 0){
+    
+    // Load difference of 0.
+    aparams(1) = params(6);
+    
+    Rcpp::NumericVector seasonal_order(3);
+    
+    // Seasonal AR
+    seasonal_order(0) = params(2);
+    
+    // Seasonal Difference
+    seasonal_order(1) = params(7);
+    
+    // Seasonal MA
+    seasonal_order(2) = params(3);
+    
+    Rcpp::List seasons = Rcpp::List::create(Rcpp::Named("order") = seasonal_order,
+                                            Rcpp::Named("period") = params(5));
+
+    Opt = arima(Rcpp::_["x"] = data,
+                Rcpp::_["order"] = aparams,
+                Rcpp::_["include.mean"] = false,
+                Rcpp::_["seasonal"] = seasons,
+                Rcpp::_["method"] = "CSS");
+  }else{
+    
+    // No differencing
+    aparams(1) = 0;
+    
+    Opt = arima(Rcpp::_["x"] = data,
+                Rcpp::_["order"] = aparams,
+                Rcpp::_["include.mean"] = false,
+                Rcpp::_["method"] = "CSS");
+  }
   
   arma::vec out = arma::join_cols(Rcpp::as<arma::vec>(Opt[0]), Rcpp::as<arma::vec>(Opt[1]));
   

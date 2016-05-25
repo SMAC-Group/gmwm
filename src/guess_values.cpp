@@ -263,20 +263,14 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
         // Second shift at end. (sigma2)
         i_theta++;
         
-      } else if(element_type == "ARMA" || element_type == "ARMA11"){
+      } else if(element_type == "WN"){ // WN
         
-        // Unpackage ARMA model parameter
-        arma::vec model_params = objdesc(i);
+        if(only_wn || dom_wn){
+          temp_theta(i_theta) = draw_wn_dom(sigma2_total);
+        }else{
+          temp_theta(i_theta) = draw_wn_weak(sigma2_total);
+        }
         
-        // Get position numbers (AR,MA,SIGMA2)
-        unsigned int p = model_params(0);
-        unsigned int q = model_params(1);
-        
-        // Draw samples (need extra 1 for sigma2 return)
-        temp_theta.rows(i_theta, i_theta + p + q) = arma_draws(p, q, sigma2_total);
-        
-        i_theta += p + q; // additional +1 added at end for sigma2
-      
       }else if(element_type == "DR"){   
       
         temp_theta(i_theta) = draw_drift(ranged);
@@ -293,14 +287,29 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
       
         temp_theta(i_theta) = draw_rw(sigma2_total, N);
       
-      }else{ // WN
+      }
+      else {
         
-        if(only_wn || dom_wn){
-          temp_theta(i_theta) = draw_wn_dom(sigma2_total);
-        }else{
-          temp_theta(i_theta) = draw_wn_weak(sigma2_total);
+        // Unpackage ARMA model parameter
+        arma::vec model_params = objdesc(i);
+        
+        // Get position numbers (AR,MA,SIGMA2)
+        unsigned int p = model_params(0), q = model_params(1);
+        
+        // Draw samples (need extra 1 for sigma2 return)
+        temp_theta.rows(i_theta, i_theta + p + q) = arma_draws(p, q, sigma2_total);
+        
+        i_theta += p + q; // additional +1 added at end for sigma2
+        
+        // Add seasonal guessing. 
+        if( model_params.n_elem > 3 && model_params(5) != 0){
+          // Get position numbers (AR,MA,SIGMA2)
+          unsigned int sp = model_params(2), sq = model_params(3);
+          
+          temp_theta.rows(i_theta, i_theta + sp + sq) = arma_draws(sp, sq, sigma2_total);
+          
+          i_theta += sp + sq; // additional +1 added at end for sigma2
         }
-        
       }
       
       i_theta ++;
@@ -537,19 +546,8 @@ arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::fi
         i_theta++; // needed to account for two parameters (e.g. phi + sigma2). Second shift at end.
         AR1_counter++;
       }
-      else if(element_type == "ARMA" || element_type == "ARMA11"){
-        
-        // Unpackage ARMA model parameter
-        arma::vec model_params = objdesc(i);
-        
-        // Get position numbers (AR,MA,SIGMA2)
-        unsigned int p = model_params(0);
-        unsigned int q = model_params(1);
-        
-        // Draw samples (need extra 1 for sigma2 return)
-        temp_theta.rows(i_theta, i_theta + p + q) = arma_draws(p, q, sigma2_total);
-        
-        i_theta += p + q; // additional +1 added at end for sigma2
+      else if(element_type == "WN"){  // WN
+        temp_theta(i_theta) = R::runif(sigma2_total/2.0, sigma2_total);
       }
       else if(element_type == "DR"){   
         temp_theta(i_theta) = expect_diff;
@@ -560,8 +558,29 @@ arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::fi
       else if(element_type == "RW"){
         temp_theta(i_theta) = R::runif(sigma2_total/double(N*1000.0), 2.0*sigma2_total/double(N));
       }
-      else{ // WN
-        temp_theta(i_theta) = R::runif(sigma2_total/2.0, sigma2_total);
+      else {
+        
+        // Unpackage ARMA model parameter
+        arma::vec model_params = objdesc(i);
+        
+        // Get position numbers (AR,MA,SIGMA2)
+        unsigned int p = model_params(0), q = model_params(1);
+        
+        // Draw samples (need extra 1 for sigma2 return)
+        temp_theta.rows(i_theta, i_theta + p + q) = arma_draws(p, q, sigma2_total);
+        
+        i_theta += p + q; // additional +1 added at end for sigma2
+        
+        // Add seasonal guessing. 
+        if( model_params.n_elem > 3 && model_params(5) != 0){
+          // Get position numbers (AR,MA,SIGMA2)
+          unsigned int sp = model_params(2), sq = model_params(3);
+          
+          temp_theta.rows(i_theta, i_theta + sp + sq) = arma_draws(sp, sq, sigma2_total);
+          
+          i_theta += sp + sq; // additional +1 added at end for sigma2
+        }
+        
       }
       
       i_theta ++;

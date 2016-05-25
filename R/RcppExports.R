@@ -976,6 +976,85 @@ gen_arma <- function(N, ar, ma, sigma2 = 1.5, n_start = 0L) {
     .Call('gmwm_gen_arma', PACKAGE = 'gmwm', N, ar, ma, sigma2, n_start)
 }
 
+#' Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
+#' 
+#' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+#' @param N       An \code{integer} for signal length.
+#' @param ar      A \code{vec} that contains the AR coefficients.
+#' @param ma      A \code{vec} that contains the MA coefficients.
+#' @param sar     A \code{vec} that contains the SAR coefficients.
+#' @param sma     A \code{vec} that contains the SMA coefficients.
+#' @param sigma2  A \code{double} that contains process variance.
+#' @param s       An \code{integer} that contains a seasonal id. 
+#' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+#' @return A \code{vec} that contains the generated observations.
+#' @details 
+#' The innovations are generated from a normal distribution.
+#' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+#' This differs from R's use of the standard deviation, \eqn{\sigma}.
+#' @backref src/gen_process.cpp
+#' @backref src/gen_process.h
+#' @keywords internal
+#' @examples
+#' gen_sarma(10, c(.3,.5), c(.1), c(.2), c(.4), 1, 12, 0)
+gen_sarma <- function(N, ar, ma, sar, sma, sigma2 = 1.5, s = 12L, n_start = 0L) {
+    .Call('gmwm_gen_sarma', PACKAGE = 'gmwm', N, ar, ma, sar, sma, sigma2, s, n_start)
+}
+
+#' Generate Autoregressive Order p, Integrated d, Moving Average Order q (ARIMA(p,d,q)) Model
+#' 
+#' Generate an ARIMA(p,d,q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Integrated \eqn{d}{d}, Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+#' @param N       An \code{integer} for signal length.
+#' @param ar      A \code{vec} that contains the AR coefficients.
+#' @param d       An \code{integer} that indicates a difference.
+#' @param ma      A \code{vec} that contains the MA coefficients.
+#' @param sigma2  A \code{double} that contains process variance.
+#' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+#' @return A \code{vec} that contains the generated observations.
+#' @details 
+#' The innovations are generated from a normal distribution.
+#' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+#' This differs from R's use of the standard deviation, \eqn{\sigma}.
+#' @section Warning:
+#' Please note, this function will generate a sum of \eqn{N + d} number of observations,
+#' where \eqn{d} denotes the number of differences necessary. 
+#' @backref src/gen_process.cpp
+#' @backref src/gen_process.h
+#' @keywords internal
+#' @examples
+#' # Generate an ARIMA model
+#' xt = gen_arima(10, c(.3,.5), 1, c(.1), 1.5, 0)
+gen_arima <- function(N, ar, d, ma, sigma2 = 1.5, n_start = 0L) {
+    .Call('gmwm_gen_arima', PACKAGE = 'gmwm', N, ar, d, ma, sigma2, n_start)
+}
+
+#' Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
+#' 
+#' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+#' @param N       An \code{integer} for signal length.
+#' @param ar      A \code{vec} that contains the AR coefficients.
+#' @param d       An \code{integer} that indicates a non-seasonal difference.
+#' @param ma      A \code{vec} that contains the MA coefficients.
+#' @param sar     A \code{vec} that contains the SAR coefficients.
+#' @param sd      An \code{integer} that indicates a seasonal difference.
+#' @param sma     A \code{vec} that contains the SMA coefficients.
+#' @param sigma2  A \code{double} that contains process variance.
+#' @param s       An \code{integer} that contains a seasonal id. 
+#' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+#' @return A \code{vec} that contains the generated observations.
+#' @details 
+#' The innovations are generated from a normal distribution.
+#' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+#' This differs from R's use of the standard deviation, \eqn{\sigma}.
+#' @backref src/gen_process.cpp
+#' @backref src/gen_process.h
+#' @keywords internal
+#' @examples
+#' gen_sarima(10, c(.3,.5), c(.1), c(.2), c(.4), 1, 12, 0)
+gen_sarima <- function(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L, n_start = 0L) {
+    .Call('gmwm_gen_sarima', PACKAGE = 'gmwm', N, ar, d, ma, sar, sd, sma, sigma2, s, n_start)
+}
+
 #' Generate Time Series based on Model (Internal)
 #' 
 #' Create a time series process based on a supplied \code{ts.model}.
@@ -1989,6 +2068,88 @@ diff_inv <- function(x, lag, d) {
     .Call('gmwm_diff_inv', PACKAGE = 'gmwm', x, lag, d)
 }
 
+#' Create the ts.model obj.desc given split values
+#' 
+#' Computes the total phi and total theta vector length.
+#' @param ar  A \code{vec} containing the non-seasonal phi parameters.
+#' @param ma  A \code{vec} containing the non-seasonal theta parameters.
+#' @param sar A \code{vec} containing the seasonal phi parameters.
+#' @param sma A \code{vec} containing the seasonal theta parameters.
+#' @param s   An \code{unsigned integer} containing the frequency of seasonality.
+#' @param i   An \code{unsigned integer} containing the number of non-seasonal differences.
+#' @param si  An \code{unsigned integer} containing the number of seasonal differences.
+#' @return A \code{vec} with rows:
+#' \describe{
+#' \item{np}{Number of Non-Seasonal AR Terms}
+#' \item{nq}{Number of Non-Seasonal MA Terms}
+#' \item{nsp}{Number of Seasonal AR Terms}
+#' \item{nsq}{Number of Seasonal MA Terms}
+#' \item{nsigma}{Number of Variances (always 1)}
+#' \item{s}{Season Value}
+#' \item{i}{Number of non-seasonal differences}
+#' \item{si}{Number of Seasonal Differences}
+#' }
+sarma_objdesc <- function(ar, ma, sar, sma, s, i, si) {
+    .Call('gmwm_sarma_objdesc', PACKAGE = 'gmwm', ar, ma, sar, sma, s, i, si)
+}
+
+#' Calculates Length of Seasonal Padding
+#' 
+#' Computes the total phi and total theta vector length.
+#' @param np  An \code{unsigned int} containing the number of non-seasonal phi parameters.
+#' @param nq  An \code{unsigned int} containing the number of non-seasonal theta parameters.
+#' @param nsp An \code{unsigned int} containing the number of seasonal phi parameters.
+#' @param nsq An \code{unsigned int} containing the number of seasonal theta parameters.
+#' @seealso \code{\link{sarma_components}}
+#' @return A \code{vec} with rows:
+#' \describe{
+#'  \item{p}{Number of phi parameters}
+#'  \item{q}{Number of theta parameters}
+#' }
+#' @keywords internal
+#' 
+#' 
+sarma_calculate_spadding <- function(np, nq, nsp, nsq, ns) {
+    .Call('gmwm_sarma_calculate_spadding', PACKAGE = 'gmwm', np, nq, nsp, nsq, ns)
+}
+
+#' Determine parameter expansion based upon objdesc
+#' 
+#' Calculates the necessary vec space needed to pad the vectors
+#' for seasonal terms. 
+#' @param objdesc A \code{vec} with the appropriate sarima object description
+#' @return A \code{vec} with the structure:
+#' \describe{
+#' \item{np}{Number of Non-Seasonal AR Terms}
+#' \item{nq}{Number of Non-Seasonal MA Terms}
+#' \item{nsp}{Number of Seasonal AR Terms}
+#' \item{nsq}{Number of Seasonal MA Terms}
+#' \item{ns}{Number of Seasons (e.g. 12 is year)}
+#' \item{p}{Total number of phi terms}
+#' \item{q}{Total number of theta terms}
+#' }
+#' @keywords internal
+sarma_components <- function(objdesc) {
+    .Call('gmwm_sarma_components', PACKAGE = 'gmwm', objdesc)
+}
+
+#' Efficient way to merge items together
+#' @keywords internal
+sarma_params_construct <- function(ar, ma, sar, sma) {
+    .Call('gmwm_sarma_params_construct', PACKAGE = 'gmwm', ar, ma, sar, sma)
+}
+
+#' (Internal) Expand the SARMA Parameters
+#' @param params  A \code{vec} containing the theta values of the parameters.
+#' @inheritParams sarma_calculate_spadding
+#' @param p An \code{unsigned int} that is the total size of the phi vector. 
+#' @param q An \code{unsigned int} that is the total size of the theta vector. 
+#' @return A \code{field<vec>} that contains the expansion. 
+#' @keywords internal
+sarma_expand_unguided <- function(params, np, nq, nsp, nsq, ns, p, q) {
+    .Call('gmwm_sarma_expand_unguided', PACKAGE = 'gmwm', params, np, nq, nsp, nsq, ns, p, q)
+}
+
 #' Expand Parameters for an SARMA object
 #' 
 #' Creates an expanded PHI and THETA vector for use in other objects. 
@@ -2011,8 +2172,8 @@ diff_inv <- function(x, lag, d) {
 #' @keywords internal
 #' @examples
 #' m = expand_sarma(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
-expand_sarma <- function(params, objdesc) {
-    .Call('gmwm_expand_sarma', PACKAGE = 'gmwm', params, objdesc)
+sarma_expand <- function(params, objdesc) {
+    .Call('gmwm_sarma_expand', PACKAGE = 'gmwm', params, objdesc)
 }
 
 #' @title Routing function for summary info

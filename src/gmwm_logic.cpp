@@ -333,7 +333,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
     
     // If under ARMA case and only ARMA is in the model, 
     // then see how well these values are.
-    if(desc[0] == "ARMA" && desc.size() == 1){
+    if(desc.size() == 1 && (desc[0] == "SARIMA" || desc[0] == "ARMA11")){
       
       // Use R's ARIMA function to estimate parameter space
       arma::vec theta2 = Rcpp_ARIMA(data, objdesc(0)); // Only 1 objdesc in the available.

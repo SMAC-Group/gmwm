@@ -241,36 +241,78 @@ arma::vec transform_values(const arma::vec& theta,
       
       // Increase index for phi term
       ++i_theta;
-    }
-    // ARMA
-    else if(element_type == "ARMA"  || element_type == "ARMA11") {
+    }else if(element_type == "ARMA11"){
+      
+      // Obtain the ARMA Model information
+      arma::vec arma_params = objdesc(i);
+      
+      unsigned int p = arma_params(0);
+      unsigned int q = arma_params(1);
+      
+      // Determine transformation to apply
+      if(model_type == "imu"){
+        
+        // All parameters but sigma
+        unsigned int param_est = i_theta + p + q;
+        
+        // Use the invs pseudo logit function R => (0 <= x <= 1) 
+        starting.rows(i_theta, param_est - 1) = pseudo_logit(theta.rows(i_theta, param_est - 1));
+        
+        // Increment index
+        i_theta += param_est;
+        
+      }else{ 
+        // SSM Case
+        
+        // Two different transformations.
+        if(p == 1){
+          starting(i_theta) = pseudo_logit(theta(i_theta));
+        }
+        
+        // Increment count by p
+        i_theta += p;
+        
+        // Two different transformations.
+        if(q == 1){
+          starting(i_theta) = pseudo_logit(theta(i_theta));
+        }
+        
+        // Increment count by q
+        i_theta += q;
+      }
+    } else if(element_type == "SARIMA") {
       
       // Obtain the ARMA Model information
       arma::vec arma_params = objdesc(i);
       
       // Get the count of parameter values
-      unsigned int p = arma_params(0); // AR(P)
-      unsigned int q = arma_params(1); // MA(Q)
+      unsigned int p = arma_params(0); // AR(p)
+      unsigned int q = arma_params(1); // MA(q)
       
+      // Get the count of parameter values
+      unsigned int sp = arma_params(2); // SAR(P)
+      unsigned int sq = arma_params(3); // SMA(Q)
+      
+      unsigned int sfreq = arma_params(5); // season frequency
       
       // Determine transformation to apply
       if(model_type == "imu"){
         // All parameters but sigma
-        unsigned int param_est = i_theta + p + q;
+        unsigned int param_est = i_theta + p + q + sp + sq;
         
-        // Use the pseudo logit function (0 <= x <= 1) => R
+        // Use the invs pseudo logit function R => (0 <= x <= 1) 
         starting.rows(i_theta, param_est - 1) = pseudo_logit(theta.rows(i_theta, param_est - 1));
         
         // Increment index
         i_theta = param_est;
-      }
-      else{ 
+        
+      }else{ 
         // SSM Case
+        
         // Two different transformations.
         if(p == 1){
           starting(i_theta) = pseudo_logit(theta(i_theta));
-        }
-        else if(p > 1){
+        } else if(p > 1){
           starting.rows(i_theta, i_theta + p - 1) = logit2(theta.rows(i_theta, i_theta + p - 1));
         }
         
@@ -284,14 +326,35 @@ arma::vec transform_values(const arma::vec& theta,
           starting.rows(i_theta, i_theta + q - 1) = logit2(theta.rows(i_theta, i_theta + q - 1));
         }
         
-        
         // Increment count by q
         i_theta += q;
         
-        
+        if(sfreq > 0){
+          // Two different transformations.
+          if(sp == 1){
+            starting(i_theta) = pseudo_logit(theta(i_theta));
+          } else if(sp > 1){
+            starting.rows(i_theta, i_theta + sp - 1) = logit2(theta.rows(i_theta, i_theta + sp - 1));
+          }
+          
+          // Increment count by sp
+          i_theta += sp;
+          
+          // Two different transformations.
+          if(sq == 1){
+            starting(i_theta) = pseudo_logit(theta(i_theta));
+          }else if(sq > 1){
+            starting.rows(i_theta, i_theta + sq - 1) = logit2(theta.rows(i_theta, i_theta + sq - 1));
+          }
+          
+          // Increment count by sq
+          i_theta += sq;
+          
+        }
       }// end else
       
-    }
+      // end ARMA case 
+    } 
     
     // Here we log scale the SIGMA2, RW, or QN terms
     // We are unable to identify whether a drift has a negative trend due to covariance matrix.
@@ -341,20 +404,64 @@ arma::vec untransform_values(const arma::vec& theta,
         result(i_theta) = arma::as_scalar(pseudo_logit_inv(theta.row(i_theta)));
       }
       ++i_theta;
-    } else if(element_type == "ARMA" || element_type == "ARMA11") {
+    } else if(element_type == "ARMA11"){
+      
+      // Obtain the ARMA Model information
+      arma::vec arma_params = objdesc(i);
+      
+      unsigned int p = arma_params(0);
+      unsigned int q = arma_params(1);
+      
+      // Determine transformation to apply
+      if(model_type == "imu"){
+        
+        // All parameters but sigma
+        unsigned int param_est = i_theta + p + q;
+        
+        // Use the invs pseudo logit function R => (0 <= x <= 1) 
+        result.rows(i_theta, param_est - 1) = pseudo_logit_inv(theta.rows(i_theta, param_est - 1));
+        
+        // Increment index
+        i_theta += param_est;
+        
+      }else{ 
+        // SSM Case
+        
+        // Two different transformations.
+        if(p == 1){
+          result(i_theta) = pseudo_logit_inv(theta(i_theta));
+        }
+        
+        // Increment count by p
+        i_theta += p;
+        
+        // Two different transformations.
+        if(q == 1){
+          result(i_theta) = pseudo_logit_inv(theta(i_theta));
+        }
+        
+        // Increment count by q
+        i_theta += q;
+      }
+    } else if(element_type == "SARIMA") {
       
       // Obtain the ARMA Model information
       arma::vec arma_params = objdesc(i);
       
       // Get the count of parameter values
-      unsigned int p = arma_params(0); // AR(P)
-      unsigned int q = arma_params(1); // MA(Q)
+      unsigned int p = arma_params(0); // AR(p)
+      unsigned int q = arma_params(1); // MA(q)
       
+      // Get the count of parameter values
+      unsigned int sp = arma_params(2); // SAR(P)
+      unsigned int sq = arma_params(3); // SMA(Q)
+      
+      unsigned int sfreq = arma_params(5); // season frequency
       
       // Determine transformation to apply
       if(model_type == "imu"){
         // All parameters but sigma
-        unsigned int param_est = i_theta + p + q;
+        unsigned int param_est = i_theta + p + q + sp + sq;
         
         // Use the invs pseudo logit function R => (0 <= x <= 1) 
         result.rows(i_theta, param_est - 1) = pseudo_logit_inv(theta.rows(i_theta, param_est - 1));
@@ -368,8 +475,7 @@ arma::vec untransform_values(const arma::vec& theta,
         // Two different transformations.
         if(p == 1){
           result(i_theta) = pseudo_logit_inv(theta(i_theta));
-        }
-        else if(p > 1){
+        } else if(p > 1){
           result.rows(i_theta, i_theta + p - 1) = logit2_inv(theta.rows(i_theta, i_theta + p - 1));
         }
         
@@ -385,6 +491,29 @@ arma::vec untransform_values(const arma::vec& theta,
         
         // Increment count by q
         i_theta += q;
+        
+        if(sfreq > 0){
+          // Two different transformations.
+          if(sp == 1){
+            result(i_theta) = pseudo_logit_inv(theta(i_theta));
+          } else if(sp > 1){
+            result.rows(i_theta, i_theta + sp - 1) = logit2_inv(theta.rows(i_theta, i_theta + sp - 1));
+          }
+          
+          // Increment count by sp
+          i_theta += sp;
+          
+          // Two different transformations.
+          if(sq == 1){
+            result(i_theta) = pseudo_logit_inv(theta(i_theta));
+          }else if(sq > 1){
+            result.rows(i_theta, i_theta + sq - 1) = logit2_inv(theta.rows(i_theta, i_theta + sq - 1));
+          }
+
+          // Increment count by sq
+          i_theta += sq;
+          
+        }
       }// end else
       
       // end ARMA case 

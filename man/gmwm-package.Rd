@@ -11,8 +11,8 @@ Generalized Method of Wavelet Moments (GMWM) is an estimation technique for the 
 \tabular{ll}{
 Package: \tab GMWM\cr
 Type: \tab Package\cr
-Version: \tab 2.8.0\cr
-Date: \tab 2016-04-07\cr
+Version: \tab 2.9.1\cr
+Date: \tab 2016-05-25\cr
 License: \tab CC BY-NC-SA 4.0\cr
 }
 }

@@ -146,10 +146,18 @@ arma::vec order_AR1s(arma::vec theta, const std::vector<std::string>& desc, cons
       }
       
       i_theta += 2;
-    }else if(element_type == "ARMA"){
-      i_theta += sum(objdesc(i));  
-    }else{
+    }else if(element_type != "MA1"){
+      i_theta += 2;
+    }else if(element_type != "SARIMA" && element_type != "ARMA11"){
       i_theta++;
+    }else{
+      
+      // number of values given in the first few rows. 
+      if(element_type == "SARIMA"){
+        i_theta += sum(objdesc(i).rows(0,3));
+      }else{ // ARMA11
+        i_theta += sum(objdesc(i));
+      }
     }
   }
   

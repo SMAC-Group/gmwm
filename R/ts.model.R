@@ -323,6 +323,70 @@ DR = function(omega = NULL) {
   invisible(out)
 }
 
+
+
+#' @title Create an Autoregressive P [AR(P)] Process
+#' @description Setups the necessary backend for the AR(P) process.
+#' @param phi A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
+#'  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"AR"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' AR(1) # Slower version of AR1()
+#' AR(phi=.32, sigma=1.3) # Slower version of AR1()
+#' AR(2) # Equivalent to ARMA(2,0).
+AR = function(phi = NULL, sigma2 = 1) {
+  
+  if(is.null(phi)){
+    stop("`phi` must either be a whole number or a vector of numbers for phi parameter in AR().")
+  }
+  
+  out = SARIMA(ar = ar, i = 0,  ma = 0, sar = 0, si = 0,  sma = 0, s = 0, sigma2 = sigma2)
+
+  invisible(out)
+}
+
+
+#' Create an Moving Average Q [MA(Q)] Process
+#' 
+#' Setups the necessary backend for the MA(Q) process.
+#' @param theta A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.
+#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
+#'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{desc}{"MA"}
+#'  \item{obj.desc}{Depth of Parameters e.g. list(q,1)}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @author JJB
+#' @examples
+#' MA(1) # One theta
+#' MA(2) # Two thetas!
+#' 
+#' MA(theta=.32, sigma=1.3) # 1 theta with a specific value.
+#' MA(theta=c(.3,.5), sigma=.3) # 2 thetas with specific values.
+MA = function(theta = NULL, sigma2 = 1) {
+  if(is.null(theta)){
+    stop("`theta` must be either a whole number or a vector of doubles for theta parameter in MA().")
+  }
+  
+  out = SARIMA(ar = 0, i = 0,  ma = theta, sar = 0, si = 0,  sma = 0, s = 0, sigma2 = sigma2)
+
+  invisible(out)
+}
+
+
 #' @title Create an Autoregressive Moving Average (ARMA) Process
 #' @description Sets up the necessary backend for the ARMA process.
 #' @param ar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.
@@ -350,6 +414,109 @@ DR = function(omega = NULL) {
 #' # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
 #' ARMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
 ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
+  out = SARIMA(ar = ar, i = 0,  ma = ma, sar = 0, si = 0,  sma = 0, s = 0, sigma2 = sigma2)
+  
+  invisible(out)
+}
+
+
+#' @title Create an Autoregressive Integrated Moving Average (ARIMA) Process
+#' @description Sets up the necessary backend for the ARIMA process.
+#' @param ar     A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.
+#' @param i      An \code{integer} containing the number of differences to be done.
+#' @param ma     A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
+#' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the ARIMA process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}}
+#'  \item{theta}{\eqn{\sigma}{sigma}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{obj.desc}{y desc replicated x times}
+#'  \item{obj}{Depth of Parameters e.g. list(c(length(ar),length(ma),1) )}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @details
+#' A variance is required since the model generation statements utilize 
+#' randomization functions expecting a variance instead of a standard deviation like R.
+#' @author JJB
+#' @examples
+#' # Create an ARMA(1,2) process
+#' ARIMA(ar=1,2)
+#' # Creates an ARMA(3,2) process with predefined coefficients.
+#' ARIMA(ar=c(0.23,.43, .59), ma=c(0.4,.3))
+#' 
+#' # Creates an ARMA(3,2) process with predefined coefficients and standard deviation
+#' ARIMA(ar=c(0.23,.43, .59), ma=c(0.4,.3), sigma2 = 1.5)
+ARIMA = function(ar = 1, i = 0, ma = 1, sigma2 = 1.0) {
+  out = SARIMA(ar = ar, i = i,  ma = ma, sar = 0, si = 0,  sma = 0, s = 0, sigma2 = sigma2)
+  
+  invisible(out)
+}
+
+#' @title Create a Seasonal Autoregressive Moving Average (SARMA) Process
+#' @description Sets up the necessary backend for the SARMA process.
+#' @param ar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.
+#' @param ma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
+#' @param sar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Phi}{PHI}'s or the process number \eqn{P} for the Seasonal Autoregressive (SAR) term.
+#' @param sma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Theta}{THETA}'s or the process number \eqn{Q} for the Seasonal Moving Average (SMA) term.
+#' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the SARMA process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}, \eqn{SAR*P}{SAR x P}, \eqn{SMA*Q}{SMA x Q}}
+#'  \item{theta}{\eqn{\sigma}{sigma}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{obj.desc}{y desc replicated x times}
+#'  \item{obj}{Depth of Parameters e.g. list(c(length(ar), length(ma), length(sar), length(sma), 1) )}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @details
+#' A variance is required since the model generation statements utilize 
+#' randomization functions expecting a variance instead of a standard deviation unlike R.
+#' @author JJB
+#' @examples
+#' # Create an SARMA(1,2)x(1,1) process
+#' SARMA(ar = 1, ma = 2,sar = 1, sma =1)
+#' 
+#' # Creates an SARMA(1,1)x(1,1) process with predefined coefficients.
+#' SARMA(ar=0.23, ma=0.4, sar = .3, sma = .3)
+SARMA = function(ar = 1, ma = 1, sar = 1, sma = 1, s = 12, sigma2 = 1.0) {
+  
+  out = SARIMA(ar = ar, i = 0,  ma = ma, sar = sar, si = 0,  sma = sma, s = 12, sigma2 = sigma2)
+  
+  invisible(out)
+}
+
+
+#' @title Create a Seasonal Autoregressive Integrated Moving Average (SARIMA) Process
+#' @description Sets up the necessary backend for the SARIMA process.
+#' @param ar  A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.
+#' @param i   An \code{integer} containing the number of differences to be done.
+#' @param ma  A \code{vector} or \code{integer} containing either the coefficients for \eqn{\theta}{theta}'s or the process number \eqn{q} for the Moving Average (MA) term.
+#' @param sar A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Phi}{PHI}'s or the process number \eqn{P} for the Seasonal Autoregressive (SAR) term.
+#' @param si  An \code{integer} containing the number of seasonal differences to be done.
+#' @param sma A \code{vector} or \code{integer} containing either the coefficients for \eqn{\Theta}{THETA}'s or the process number \eqn{Q} for the Seasonal Moving Average (SMA) term.
+#' @param s   An \code{integer} containing the seasonality.
+#' @param sigma2 A \code{double} value for the standard deviation, \eqn{\sigma}{sigma}, of the SARMA process.
+#' @return An S3 object with called ts.model with the following structure:
+#' \describe{
+#'  \item{process.desc}{\eqn{AR*p}{AR x p}, \eqn{MA*q}{MA x q}, \eqn{SAR*P}{SAR x P}, \eqn{SMA*Q}{SMA x Q}}
+#'  \item{theta}{\eqn{\sigma}{sigma}}
+#'  \item{plength}{Number of Parameters}
+#'  \item{obj.desc}{y desc replicated x times}
+#'  \item{obj}{Depth of Parameters e.g. list(c(length(ar), length(ma), length(sar), length(sma), 1, i, si) )}
+#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
+#' }
+#' @details
+#' A variance is required since the model generation statements utilize 
+#' randomization functions expecting a variance instead of a standard deviation unlike R.
+#' @author JJB
+#' @examples
+#' # Create an SARIMA(1,1,2)x(1,0,1) process
+#' SARIMA(ar = 1, i = 1, ma = 2, sar = 1, si = 0, sma =1)
+#' 
+#' # Creates an SARMA(1,0,1)x(1,1,1) process with predefined coefficients.
+#' SARIMA(ar=0.23, i = 0, ma=0.4, sar = .3,  sma = .3)
+SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sigma2 = 1.0) {
   # Assume the user specified data
   starting = FALSE
   
@@ -357,8 +524,19 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
   p = length(ar)
   q = length(ma)
   
+  P = length(sar)
+  Q = length(sma)
+  
+  
+  d = length(i)
+  ds = length(si)
+  
+  if(d > 1 || ds > 1){stop("`i` or `si` must have a length of 1.")}
+  else if(!is.whole(i) || !is.whole(si)){stop("`i` or `si` must be integers.")}
+  
+  
   # If P or Q == 1, this implies we might have a starting guess. 
-  if( p == 1 || q == 1 ){
+  if( p == 1 || q == 1 || P == 1 || Q == 1 ){
     if(p == 1){
       if(is.whole(ar) & ar != 0){
         ar = rep(-1, ar)
@@ -376,102 +554,38 @@ ARMA = function(ar = 1, ma = 1, sigma2 = 1.0) {
         ma = numeric(0) 
       }
     }
+    
+    if(P == 1){
+      if(is.whole(sar) & sar != 0){
+        sar = rep(-1, sar)
+        starting = TRUE
+      }else if(sar == 0){
+        sar = numeric(0) # creates a size 0 vector
+      }
+    }
+    
+    if(Q == 1){
+      if(is.whole(sma) & sma != 0){
+        sma = rep(-2, sma)
+        starting = TRUE
+      }else if(sma == 0){
+        sma = numeric(0) 
+      }
+    }
   }
   
   # Update the values.
   p = length(ar)
   q = length(ma)
   
-  out = structure(list(process.desc = c(rep("AR", p), rep("MA",q), "SIGMA2"),
-                       theta = c(ar, ma, sigma2),
-                       plength = p + q + 1,
-                       desc = "ARMA",
-                       obj.desc = list(c(p,q,1)),
-                       starting = starting), class = "ts.model")
-  invisible(out)
-}
-
-
-#' @title Create an Autoregressive P [AR(P)] Process
-#' @description Setups the necessary backend for the AR(P) process.
-#' @param phi A \code{vector} with double values for the \eqn{\phi}{phi} of an AR(P) process.
-#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
-#' @return An S3 object with called ts.model with the following structure:
-#' \describe{
-#'  \item{process.desc}{Used in summary: "AR-1","AR-2", ..., "AR-P", "SIGMA2"}
-#'  \item{theta}{\eqn{\phi_1}{phi[[1]]}, \eqn{\phi_2}{phi[[2]]}, ..., \eqn{\phi_p}{phi[[p]]}, \eqn{\sigma^2}{sigma^2}}
-#'  \item{plength}{Number of Parameters}
-#'  \item{desc}{"AR"}
-#'  \item{obj.desc}{Depth of Parameters e.g. list(p,1)}
-#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
-#' }
-#' @author JJB
-#' @examples
-#' AR(1) # Slower version of AR1()
-#' AR(phi=.32, sigma=1.3) # Slower version of AR1()
-#' AR(2) # Equivalent to ARMA(2,0).
-AR = function(phi = NULL, sigma2 = 1) {
-  starting = FALSE;
+  P = length(sar)
+  Q = length(sma)
   
-  if(is.null(phi)){
-    stop("Must supply either a whole number of a string of numbers for phi parameter in AR().")
-  }
-  
-  p = length(phi)
-  if(p == 1 & is.whole(phi)){
-    p = phi
-    phi = rep(0,p)
-    starting = TRUE;
-  }
-  
-  out = structure(list(process.desc = c(paste0("AR-",1:p), "SIGMA2"),
-                       theta = c(phi,sigma2),
-                       plength = 2,
-                       desc = "ARMA", #update to AR when backend supports it!
-                       obj.desc = list(c(p,0,1)), # Remove the 0, when the backend supports it!
-                       starting = starting), class = "ts.model")
-  invisible(out)
-}
-
-
-#' @title Create an Moving Average Q [MA(Q)] Process
-#' @description Setups the necessary backend for the MA(Q) process.
-#' @param theta A \code{vector} with double values for the \eqn{\theta}{theta} of an MA(Q) process.
-#' @param sigma2 A \code{double} value for the variance, \eqn{\sigma ^2}{sigma^2}, of a WN process.
-#' @return An S3 object with called ts.model with the following structure:
-#' \describe{
-#'  \item{process.desc}{Used in summary: "MA-1","MA-2", ..., "MA-Q", "SIGMA2"}
-#'  \item{theta}{\eqn{\theta_1}{theta[[1]]}, \eqn{\theta_2}{theta[[2]]}, ..., \eqn{\theta_q}{theta[[q]]}, \eqn{\sigma^2}{sigma^2}}
-#'  \item{plength}{Number of Parameters}
-#'  \item{desc}{"MA"}
-#'  \item{obj.desc}{Depth of Parameters e.g. list(q,1)}
-#'  \item{starting}{Guess Starting values? TRUE or FALSE (e.g. specified value)}
-#' }
-#' @author JJB
-#' @examples
-#' MA(1) # One theta
-#' MA(2) # Two thetas!
-#' 
-#' MA(theta=.32, sigma=1.3) # 1 theta with a specific value.
-#' MA(theta=c(.3,.5), sigma=.3) # 2 thetas with specific values.
-MA = function(theta = NULL, sigma2 = 1) {
-  starting = FALSE;
-  if(is.null(theta)){
-    stop("Must supply either a whole number of a string of doubles for theta parameter in MA().")
-  }
-  
-  q = length(theta)
-  if(q == 1 & is.whole(theta)){
-    q = theta
-    theta = rep(1,q)
-    starting = TRUE;
-  }
-  
-  out = structure(list(process.desc = c(paste0("MA-",1:q), "SIGMA2"),
-                       theta = c(theta,sigma2),
-                       plength = 2,
-                       desc = "ARMA", # Move to MA when backend supports it!
-                       obj.desc = list(c(0,q,1)), # Remove the 0 when backend supports it!
+  out = structure(list(process.desc = c(rep("AR", p), rep("MA",q), rep("SAR", P), rep("SMA",Q), "SIGMA2"),
+                       theta = c(ar, ma, sar, sma, sigma2),
+                       plength = p + q + P + Q + 1,
+                       desc = "SARIMA",
+                       obj.desc = list(c(p, q, P, Q, 1, s, i, si)),
                        starting = starting), class = "ts.model")
   invisible(out)
 }

@@ -757,6 +757,60 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// gen_sarma
+arma::vec gen_sarma(const unsigned int N, const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma, const double sigma2, unsigned int s, unsigned int n_start);
+RcppExport SEXP gmwm_gen_sarma(SEXP NSEXP, SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sigma2SEXP, SEXP sSEXP, SEXP n_startSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ar(arSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ma(maSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sar(sarSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sma(smaSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type s(sSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n_start(n_startSEXP);
+    __result = Rcpp::wrap(gen_sarma(N, ar, ma, sar, sma, sigma2, s, n_start));
+    return __result;
+END_RCPP
+}
+// gen_arima
+arma::vec gen_arima(const unsigned int N, const arma::vec& ar, const unsigned int d, const arma::vec& ma, const double sigma2, unsigned int n_start);
+RcppExport SEXP gmwm_gen_arima(SEXP NSEXP, SEXP arSEXP, SEXP dSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ar(arSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ma(maSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n_start(n_startSEXP);
+    __result = Rcpp::wrap(gen_arima(N, ar, d, ma, sigma2, n_start));
+    return __result;
+END_RCPP
+}
+// gen_sarima
+arma::vec gen_sarima(const unsigned int N, const arma::vec& ar, unsigned int d, const arma::vec& ma, const arma::vec& sar, unsigned int sd, const arma::vec& sma, const double sigma2, unsigned int s, unsigned int n_start);
+RcppExport SEXP gmwm_gen_sarima(SEXP NSEXP, SEXP arSEXP, SEXP dSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP sdSEXP, SEXP smaSEXP, SEXP sigma2SEXP, SEXP sSEXP, SEXP n_startSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ar(arSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ma(maSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sar(sarSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type sd(sdSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sma(smaSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type s(sSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n_start(n_startSEXP);
+    __result = Rcpp::wrap(gen_sarima(N, ar, d, ma, sar, sd, sma, sigma2, s, n_start));
+    return __result;
+END_RCPP
+}
 // gen_model
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
 RcppExport SEXP gmwm_gen_model(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
@@ -1533,15 +1587,90 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// expand_sarma
-arma::field<arma::vec> expand_sarma(const arma::vec& params, const arma::vec& objdesc);
-RcppExport SEXP gmwm_expand_sarma(SEXP paramsSEXP, SEXP objdescSEXP) {
+// sarma_objdesc
+arma::vec sarma_objdesc(const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma, int s, int i, int si);
+RcppExport SEXP gmwm_sarma_objdesc(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sSEXP, SEXP iSEXP, SEXP siSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type ar(arSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ma(maSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sar(sarSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sma(smaSEXP);
+    Rcpp::traits::input_parameter< int >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type si(siSEXP);
+    __result = Rcpp::wrap(sarma_objdesc(ar, ma, sar, sma, s, i, si));
+    return __result;
+END_RCPP
+}
+// sarma_calculate_spadding
+arma::vec sarma_calculate_spadding(unsigned int np, unsigned int nq, unsigned int nsp, unsigned int nsq, unsigned int ns);
+RcppExport SEXP gmwm_sarma_calculate_spadding(SEXP npSEXP, SEXP nqSEXP, SEXP nspSEXP, SEXP nsqSEXP, SEXP nsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< unsigned int >::type np(npSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nq(nqSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nsp(nspSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nsq(nsqSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ns(nsSEXP);
+    __result = Rcpp::wrap(sarma_calculate_spadding(np, nq, nsp, nsq, ns));
+    return __result;
+END_RCPP
+}
+// sarma_components
+arma::vec sarma_components(const arma::vec& objdesc);
+RcppExport SEXP gmwm_sarma_components(SEXP objdescSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type objdesc(objdescSEXP);
+    __result = Rcpp::wrap(sarma_components(objdesc));
+    return __result;
+END_RCPP
+}
+// sarma_params_construct
+arma::vec sarma_params_construct(const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma);
+RcppExport SEXP gmwm_sarma_params_construct(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type ar(arSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type ma(maSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sar(sarSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sma(smaSEXP);
+    __result = Rcpp::wrap(sarma_params_construct(ar, ma, sar, sma));
+    return __result;
+END_RCPP
+}
+// sarma_expand_unguided
+arma::field<arma::vec> sarma_expand_unguided(const arma::vec& params, unsigned int np, unsigned int nq, unsigned int nsp, unsigned int nsq, unsigned int ns, unsigned int p, unsigned int q);
+RcppExport SEXP gmwm_sarma_expand_unguided(SEXP paramsSEXP, SEXP npSEXP, SEXP nqSEXP, SEXP nspSEXP, SEXP nsqSEXP, SEXP nsSEXP, SEXP pSEXP, SEXP qSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type np(npSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nq(nqSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nsp(nspSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nsq(nsqSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type q(qSEXP);
+    __result = Rcpp::wrap(sarma_expand_unguided(params, np, nq, nsp, nsq, ns, p, q));
+    return __result;
+END_RCPP
+}
+// sarma_expand
+arma::field<arma::vec> sarma_expand(const arma::vec& params, const arma::vec& objdesc);
+RcppExport SEXP gmwm_sarma_expand(SEXP paramsSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::vec& >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type objdesc(objdescSEXP);
-    __result = Rcpp::wrap(expand_sarma(params, objdesc));
+    __result = Rcpp::wrap(sarma_expand(params, objdesc));
     return __result;
 END_RCPP
 }

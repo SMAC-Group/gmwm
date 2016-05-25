@@ -24,6 +24,9 @@
 // Need square
 #include "inline_functions.h"
 
+// Needed for sarma model support
+#include "sarma.h"
+
 /* ----------------------------- Start Process to WV Functions ------------------------------- */
 
 //' ARMA process to WV
@@ -345,7 +348,6 @@ arma::vec dr_to_wv(double omega, const arma::vec& tau){
 	return square(omega)*arma::square(tau)/16.0;
 }
 
-
 //' Model Process to WV
 //' 
 //' This function computes the summation of all Processes to WV (haar) in a given model
@@ -420,32 +422,25 @@ arma::vec theoretical_wv(const arma::vec& theta,
     }
     else { // ARMA
       
+      // Unpackage ARMA model parameter
       arma::vec model_params = objdesc(i);
       
-      unsigned int p = model_params(0);
-      unsigned int q = model_params(1);
+      unsigned int pop = arma::sum(model_params.rows(0,3));
       
-      arma::vec ar;
-      arma::vec ma;
+      // Extract theta_values (includes the active theta_value)
+      // Takes np + nq + nsp + nsq values
+      arma::vec theta_values = theta.rows(i_theta, i_theta + pop - 1);
       
-      if(p == 0){
-        ar = arma::zeros<arma::vec>(0);
-      }else{
-        ar = theta.rows(i_theta,i_theta+p-1);
-      }
+      // Increase the theta counter
+      i_theta += pop;
       
-      i_theta += p;
+      // Setup parameters
+      arma::field<arma::vec> psetup = sarma_expand(theta_values, model_params);
       
-      if(q == 0){
-        ma = arma::zeros<arma::vec>(0); 
-      }else{
-        ma = theta.rows(i_theta,i_theta+q-1);
-      }
+      // Pip into the gen_arima function!
+      // Note this floors the function at d. 
       
-      i_theta += q;
-      
-      
-      wv_theo += arma_to_wv(ar, ma, theta(i_theta), tau);
+      wv_theo += arma_to_wv(psetup(0), psetup(1), theta(i_theta), tau);
     }
     
     ++i_theta;
@@ -530,34 +525,24 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
       
       wv_theo.col(i) = arma11_to_wv(theta_value, th, sig2, tau);
     }
-    else { // "ARMA"
+    else { // "SARIMA"
       
+      // Unpackage ARMA model parameter
       arma::vec model_params = objdesc(i);
       
-      unsigned int p = model_params(0);
-      unsigned int q = model_params(1);
+      unsigned int pop = arma::sum(model_params.rows(0,3));
       
-      arma::vec ar;
-      arma::vec ma;
+      // Extract theta_values (includes the active theta_value)
+      // Takes np + nq + nsp + nsq values
+      arma::vec theta_values = theta.rows(i_theta, i_theta + pop - 1);
       
-      if(p == 0){
-        ar = arma::zeros<arma::vec>(0);
-      }else{
-        ar = theta.rows(i_theta,i_theta+p-1);
-      }
+      // Increase the theta counter
+      i_theta += pop;
       
-      i_theta += p;
+      // Setup parameters
+      arma::field<arma::vec> psetup = sarma_expand(theta_values, model_params);
       
-      if(q == 0){
-        ma = arma::zeros<arma::vec>(0); 
-      }else{
-        ma = theta.rows(i_theta,i_theta+q-1);
-      }
-      
-      i_theta += q;
-      
-      
-      wv_theo.col(i) = arma_to_wv(ar, ma, theta(i_theta), tau);
+      wv_theo.col(i) = arma_to_wv(psetup(0), psetup(1), theta(i_theta), tau);
     }
     
     ++i_theta;

@@ -25,6 +25,9 @@
 // For invertibility check in ARMA
 #include "ts_checks.h"
 
+// Support for SARMA models
+#include "sarma.h"
+
 /* ------------------------------ START Individual Process Generation Functions ------------------------------ */
 
 //' Generate a Gaussian White Noise Process (WN(\eqn{\sigma ^2}{sigma^2}))
@@ -374,10 +377,168 @@ arma::vec gen_arma(const unsigned int N,
   return x;
 }
 
+
+//' Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
+//' 
+//' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+//' @param N       An \code{integer} for signal length.
+//' @param ar      A \code{vec} that contains the AR coefficients.
+//' @param ma      A \code{vec} that contains the MA coefficients.
+//' @param sar     A \code{vec} that contains the SAR coefficients.
+//' @param sma     A \code{vec} that contains the SMA coefficients.
+//' @param sigma2  A \code{double} that contains process variance.
+//' @param s       An \code{integer} that contains a seasonal id. 
+//' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+//' @return A \code{vec} that contains the generated observations.
+//' @details 
+//' The innovations are generated from a normal distribution.
+//' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+//' This differs from R's use of the standard deviation, \eqn{\sigma}.
+//' @backref src/gen_process.cpp
+//' @backref src/gen_process.h
+//' @keywords internal
+//' @examples
+//' gen_sarma(10, c(.3,.5), c(.1), c(.2), c(.4), 1, 12, 0)
+// [[Rcpp::export]]
+arma::vec gen_sarma(const unsigned int N,
+                    const arma::vec& ar, const arma::vec& ma,
+                    const arma::vec& sar, const arma::vec& sma,
+                    const double sigma2 = 1.5, 
+                    unsigned int s = 12, 
+                    unsigned int n_start = 0){
+
+  // Calculate the length of phi and theta w/ seasons
+  arma::vec ptotals = sarma_calculate_spadding(ar.n_elem, ma.n_elem,
+                                               sar.n_elem, sma.n_elem,
+                                               s);
+  
+  arma::vec params = sarma_params_construct(ar, ma, sar, sma);
+  
+  // Merge the separate vectors together
+  arma::field<arma::vec> sarma_coefs = sarma_expand_unguided(params,
+                                                             // np      nq
+                                                             ar.n_elem, ma.n_elem, 
+                                                             sar.n_elem, sma.n_elem,
+                                                             s,
+                                                             // p        q
+                                                             ptotals(0), ptotals(1));
+  
+  return gen_arma(N,
+                  sarma_coefs(0), sarma_coefs(1),
+                  sigma2, 
+                  n_start);
+}
+
+
+
+//' Generate Autoregressive Order p, Integrated d, Moving Average Order q (ARIMA(p,d,q)) Model
+//' 
+//' Generate an ARIMA(p,d,q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Integrated \eqn{d}{d}, Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+//' @param N       An \code{integer} for signal length.
+//' @param ar      A \code{vec} that contains the AR coefficients.
+//' @param d       An \code{integer} that indicates a difference.
+//' @param ma      A \code{vec} that contains the MA coefficients.
+//' @param sigma2  A \code{double} that contains process variance.
+//' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+//' @return A \code{vec} that contains the generated observations.
+//' @details 
+//' The innovations are generated from a normal distribution.
+//' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+//' This differs from R's use of the standard deviation, \eqn{\sigma}.
+//' @section Warning:
+//' Please note, this function will generate a sum of \eqn{N + d} number of observations,
+//' where \eqn{d} denotes the number of differences necessary. 
+//' @backref src/gen_process.cpp
+//' @backref src/gen_process.h
+//' @keywords internal
+//' @examples
+//' # Generate an ARIMA model
+//' xt = gen_arima(10, c(.3,.5), 1, c(.1), 1.5, 0)
+// [[Rcpp::export]]
+arma::vec gen_arima(const unsigned int N,
+                    const arma::vec& ar,
+                    const unsigned int d,
+                    const arma::vec& ma,
+                    const double sigma2 = 1.5, 
+                    unsigned int n_start = 0){
+  
+  // This gives a vector of N + d observations
+
+  arma::vec o = gen_arma(N, ar, ma, sigma2, n_start);
+  
+  // If difference
+  if(d > 0) o = diff_inv(o, 1, d);
+  
+  return o;
+}
+
+
+//' Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
+//' 
+//' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+//' @param N       An \code{integer} for signal length.
+//' @param ar      A \code{vec} that contains the AR coefficients.
+//' @param d       An \code{integer} that indicates a non-seasonal difference.
+//' @param ma      A \code{vec} that contains the MA coefficients.
+//' @param sar     A \code{vec} that contains the SAR coefficients.
+//' @param sd      An \code{integer} that indicates a seasonal difference.
+//' @param sma     A \code{vec} that contains the SMA coefficients.
+//' @param sigma2  A \code{double} that contains process variance.
+//' @param s       An \code{integer} that contains a seasonal id. 
+//' @param n_start An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+//' @return A \code{vec} that contains the generated observations.
+//' @details 
+//' The innovations are generated from a normal distribution.
+//' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+//' This differs from R's use of the standard deviation, \eqn{\sigma}.
+//' @backref src/gen_process.cpp
+//' @backref src/gen_process.h
+//' @keywords internal
+//' @examples
+//' gen_sarima(10, c(.3,.5), c(.1), c(.2), c(.4), 1, 12, 0)
+// [[Rcpp::export]]
+arma::vec gen_sarima(const unsigned int N,
+                    const arma::vec& ar,
+                    unsigned int d,
+                    const arma::vec& ma,
+                    const arma::vec& sar,
+                    unsigned int sd,
+                    const arma::vec& sma,
+                    const double sigma2 = 1.5, 
+                    unsigned int s = 12, 
+                    unsigned int n_start = 0){
+  
+  // For folks who want to do stuff they shouldn't..
+  if(sd != 0){ Rcpp::stop("Seasonal difference is not supported yet!.");}
+  
+  // Calculate the length of phi and theta w/ seasons
+  arma::vec ptotals = sarma_calculate_spadding(ar.n_elem, ma.n_elem,
+                                               sar.n_elem, sma.n_elem,
+                                               s);
+  
+  arma::vec params = sarma_params_construct(ar, ma, sar, sma);
+  
+  // Merge the separate vectors together
+  arma::field<arma::vec> sarma_coefs = sarma_expand_unguided(params,
+                                                             // np      nq
+                                                             ar.n_elem, ma.n_elem, 
+                                                             sar.n_elem, sma.n_elem,
+                                                             s,
+                                                             // p        q
+                                                             ptotals(0), ptotals(1));
+  
+  return gen_arima(N,
+                  sarma_coefs(0), d, sarma_coefs(1),
+                  sigma2, 
+                  n_start);
+}
+
+
 /* --------------------- END Individual Process Generation Functions --------------------------- */
 
 
 /* --------------------- START Composite Process Generation Functions -------------------------- */
+
 
 //' Generate Time Series based on Model (Internal)
 //' 
@@ -467,39 +628,35 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    // Unpackage ARMA model parameter
   	    arma::vec model_params = objdesc(i);
   	    
-  	    // Get position numbers (AR,MA,SIGMA2)
-  	    unsigned int p = model_params(0);
-  	    unsigned int q = model_params(1);
+  	    unsigned int pop = arma::sum(model_params.rows(0,3));
   	    
-  	    // Set up temp storage
-  	    arma::vec ar;
-  	    arma::vec ma;
+  	    // Extract theta_values (includes the active theta_value)
+  	    // Takes np + nq + nsp + nsq values
+        arma::vec theta_values = theta.rows(i_theta, i_theta + pop - 1);
+        
+  	    // Increase the theta counter
+  	    i_theta += pop;
   	    
-  	    // Get AR values
-  	    if(p == 0){
-  	      ar = arma::zeros<arma::vec>(0);
-  	    }else{
-  	      ar = theta.rows(i_theta,i_theta+p-1);
-  	    }
-  	    
-  	    // Account for the number of P values
-  	    i_theta += p;
-  	    
-  	    // Get MA values
-  	    if(q == 0){
-  	      ma = arma::zeros<arma::vec>(0); 
-  	    }else{
-  	      ma = theta.rows(i_theta,i_theta+q-1);
-  	    }
-  	    
-  	    // Account for Q values
-  	    i_theta += q;
-  	    
-  	    // Extract sigma2
+  	    // Grab the variance parameter on stack. 
   	    double sig2 = theta(i_theta);
   	    
-  	    // Modified arima.sim
-  	    x += gen_arma(N, ar, ma, sig2, 0);
+  	    // Setup parameters
+  	    arma::field<arma::vec> psetup = sarma_expand(theta_values, model_params);
+  	    
+  	    unsigned int d = model_params(6);
+  	   
+  	    // Pip into the gen_arima function!
+  	    // Note this floors the function at d. 
+  	    
+  	    arma::vec temp = gen_arima(N, psetup(0), d, psetup(1), sig2, 0);
+  	    
+  	    // Apply a cap
+  	    if(d > 0){ 
+  	      temp = temp.rows(0,N-d-1); // delete extra from differencing. 
+  	      Rcpp::Rcout << "Warning: This is not an ideal generation function for difference! Observations truncated to length N!." << std::endl;
+  	    }
+  	    
+  	    x += temp;
   	  }
       
       // Increment theta once to account for popped value
@@ -608,39 +765,36 @@ arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std:
       // Unpackage ARMA model parameter
       arma::vec model_params = objdesc(i);
       
-      // Get position numbers (AR,MA,SIGMA2)
-      unsigned int p = model_params(0);
-      unsigned int q = model_params(1);
+      unsigned int pop = arma::sum(model_params.rows(0,3));
       
-      // Set up temp storage
-      arma::vec ar;
-      arma::vec ma;
+      // Extract theta_values (includes the active theta_value)
+      // Takes np + nq + nsp + nsq values
+      arma::vec theta_values = theta.rows(i_theta, i_theta + pop - 1);
       
-      // Get AR values
-      if(p == 0){
-        ar = arma::zeros<arma::vec>(0);
-      }else{
-        ar = theta.rows(i_theta,i_theta+p-1);
-      }
+      // Increase the theta counter
+      i_theta += pop;
       
-      // Account for the number of P values
-      i_theta += p;
-      
-      // Get MA values
-      if(q == 0){
-        ma = arma::zeros<arma::vec>(0); 
-      }else{
-        ma = theta.rows(i_theta,i_theta+q-1);
-      }
-      
-      // Account for Q values
-      i_theta += q;
-      
-      // Extract sigma2
+      // Grab the variance parameter on stack. 
       double sig2 = theta(i_theta);
       
+      // Setup parameters
+      arma::field<arma::vec> psetup = sarma_expand(theta_values, model_params);
+      
+      unsigned int d = model_params(6);
+      
+      // Pip into the gen_arima function!
+      // Note this floors the function at d. 
+      
+      arma::vec temp = gen_arima(N, psetup(0), d, psetup(1), sig2, 0);
+      
+      // Apply a cap
+      if(d > 0){ 
+        temp = temp.rows(0,N-d-1); // delete extra from differencing. 
+        Rcpp::Rcout << "Warning: This is not an ideal generation function for difference! Observations truncated to length N!." << std::endl;
+      }
+      
       // Modified arima.sim
-      x.col(i) = gen_arma(N, ar, ma, sig2, 0);
+      x.col(i) = temp;
       x.col(num_desc) += x.col(i);
     }
     

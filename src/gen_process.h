@@ -33,6 +33,21 @@ arma::vec gen_arma(const unsigned int N,
                    const double sigma2, 
                    unsigned int n_start);
 
+arma::vec gen_arima(const unsigned int N,
+                    const arma::vec& ar,
+                    const unsigned int d,
+                    const arma::vec& ma,
+                    const double sigma2, 
+                    unsigned int n_start);
+
+arma::vec gen_sarma(const unsigned int N,
+                    const arma::vec& ar, const arma::vec& ma,
+                    const arma::vec& sar, const arma::vec& sma,
+                    const double sigma2, 
+                    unsigned int s, 
+                    unsigned int n_start);
+  
+
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
 
 arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
