@@ -1587,6 +1587,21 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// rtruncated_normal
+arma::vec rtruncated_normal(unsigned int n, double mu, double sigma, double a, double b);
+RcppExport SEXP gmwm_rtruncated_normal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    __result = Rcpp::wrap(rtruncated_normal(n, mu, sigma, a, b));
+    return __result;
+END_RCPP
+}
 // sarma_objdesc
 arma::vec sarma_objdesc(const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma, int s, int i, int si);
 RcppExport SEXP gmwm_sarma_objdesc(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sSEXP, SEXP iSEXP, SEXP siSEXP) {
