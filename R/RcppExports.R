@@ -2171,7 +2171,8 @@ sarma_expand_unguided <- function(params, np, nq, nsp, nsq, ns, p, q) {
 #' }
 #' @keywords internal
 #' @examples
-#' m = sarma_expand(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,12))
+#' # p, q, P, Q, 1, s, i, si
+#' m = sarma_expand(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,1,12,0,0))
 sarma_expand <- function(params, objdesc) {
     .Call('gmwm_sarma_expand', PACKAGE = 'gmwm', params, objdesc)
 }
