@@ -1050,7 +1050,7 @@ gen_arima <- function(N, ar, d, ma, sigma2 = 1.5, n_start = 0L) {
 #' @backref src/gen_process.h
 #' @keywords internal
 #' @examples
-#' gen_sarima(10, c(.3,.5), c(.1), c(.2), c(.4), 1, 12, 0)
+#' gen_sarima(10, c(.3,.5), 1, c(.1), c(.2), 0, c(.4), 1, 12, 0)
 gen_sarima <- function(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L, n_start = 0L) {
     .Call('gmwm_gen_sarima', PACKAGE = 'gmwm', N, ar, d, ma, sar, sd, sma, sigma2, s, n_start)
 }
