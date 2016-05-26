@@ -2077,7 +2077,7 @@ diff_inv <- function(x, lag, d) {
 #' @param a      A \code{double} that is the lower bound of the truncated normal.
 #' @param b      A \code{double} that is the upper bound of the truncated normal.
 #' @examples
-#' rtruncated_normal(10, 5, 1, -2, 2)
+#' rtruncated_normal(10, 1, 1, -2, 2)
 rtruncated_normal <- function(n, mu, sigma, a, b) {
     .Call('gmwm_rtruncated_normal', PACKAGE = 'gmwm', n, mu, sigma, a, b)
 }

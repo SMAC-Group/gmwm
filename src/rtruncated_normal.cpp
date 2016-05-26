@@ -11,7 +11,7 @@
 //' @param a      A \code{double} that is the lower bound of the truncated normal.
 //' @param b      A \code{double} that is the upper bound of the truncated normal.
 //' @examples
-//' rtruncated_normal(10, 5, 1, -2, 2)
+//' rtruncated_normal(10, 1, 1, -2, 2)
 // [[Rcpp::export]]
 arma::vec rtruncated_normal(unsigned int n, double mu, double sigma, double a, double b){
   double phi_a = ( a - mu ) / sigma;
