@@ -91,3 +91,46 @@ test_that("SARMA Parameter Construction",{
   expect_equal(r_comp, cpp_comp)
 })
 
+
+
+test_that("SARMA Parameter Expansion (Guided)",{
+
+  # SARIMA(1,0,0)x(1,0,0)[12]
+  model = SARIMA(ar = .6, i = 0, ma = 0, sar = .5, si = 0, sma = 0, s = 12, sigma2 = 1)
+  
+  params = model$theta[1:2]
+  obj = model$obj.desc[[1]]
+  
+  # Test phi expansion has 3 values.
+  r_made = matrix(c(params[1],0,0,0,0,0,0,0,0,0,0,params[2],-1*params[1]*params[2]), ncol = 1)
+  
+  m = sarma_expand(params, obj)
+  
+  expect_equal(m[[1]],r_made)
+  
+  
+  # Test theta expansion is empty.
+  mat = numeric()
+  dim(mat) = c(0,1)
+  
+  expect_equal(m[[2]], mat)
+  
+  
+  # SARIMA(0,0,1)x(0,0,1)[12]
+  model = SARIMA(ar = 0, i = 0, ma = .7, sar = 0, si = 0, sma = .6, s = 12, sigma2 = 1)
+  
+  params = model$theta[1:2]
+  obj = model$obj.desc[[1]]
+  
+  r_made = matrix(c(params[1],0,0,0,0,0,0,0,0,0,0,params[2], params[1]*params[2]), ncol = 1)
+  
+  m = sarma_expand(params, obj)
+  
+  expect_equal(m[[2]],r_made)
+  
+  # Test phi expansion is empty.
+  mat = numeric()
+  dim(mat) = c(0,1)
+  
+  expect_equal(m[[1]], mat)
+})

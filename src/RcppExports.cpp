@@ -811,6 +811,21 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// gen_generic_sarima
+arma::vec gen_generic_sarima(const unsigned int N, const arma::vec& theta_values, const arma::vec& objdesc, double sigma2, unsigned int n_start);
+RcppExport SEXP gmwm_gen_generic_sarima(SEXP NSEXP, SEXP theta_valuesSEXP, SEXP objdescSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta_values(theta_valuesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type objdesc(objdescSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma2(sigma2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n_start(n_startSEXP);
+    __result = Rcpp::wrap(gen_generic_sarima(N, theta_values, objdesc, sigma2, n_start));
+    return __result;
+END_RCPP
+}
 // gen_model
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
 RcppExport SEXP gmwm_gen_model(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {

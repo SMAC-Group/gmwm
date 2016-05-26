@@ -1055,6 +1055,29 @@ gen_sarima <- function(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L, n_star
     .Call('gmwm_gen_sarima', PACKAGE = 'gmwm', N, ar, d, ma, sar, sd, sma, sigma2, s, n_start)
 }
 
+#' Generate Generic Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
+#' 
+#' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+#' @param N            An \code{integer} for signal length.
+#' @param theta_values A \code{vec} containing the parameters for (S)AR and (S)MA.
+#' @param objdesc      A \code{vec} that contains the \code{\link{+.ts.model}}'s obj.desc field.
+#' @param sigma2       A \code{double} that contains process variance.
+#' @param s            An \code{integer} that contains a seasonal id. 
+#' @param n_start      An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+#' @return A \code{vec} that contains the generated observations.
+#' @details 
+#' The innovations are generated from a normal distribution.
+#' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+#' This differs from R's use of the standard deviation, \eqn{\sigma}.
+#' @backref src/gen_process.cpp
+#' @backref src/gen_process.h
+#' @keywords internal
+#' @examples
+#' gen_sarima(10, c(.3,.5), 1, c(.1), c(.2), 0, c(.4), 1, 12, 0)
+gen_generic_sarima <- function(N, theta_values, objdesc, sigma2 = 1.5, n_start = 0L) {
+    .Call('gmwm_gen_generic_sarima', PACKAGE = 'gmwm', N, theta_values, objdesc, sigma2, n_start)
+}
+
 #' Generate Time Series based on Model (Internal)
 #' 
 #' Create a time series process based on a supplied \code{ts.model}.

@@ -467,7 +467,7 @@ arma::vec gen_arima(const unsigned int N,
   arma::vec o = gen_arma(N, ar, ma, sigma2, n_start);
   
   // If difference
-  if(d > 0) o = diff_inv(o, 1, d);
+  if(d > 0) o = diff_inv(o, 1, d).rows(d, N+d-1);
   
   return o;
 }
@@ -508,9 +508,6 @@ arma::vec gen_sarima(const unsigned int N,
                     unsigned int s = 12, 
                     unsigned int n_start = 0){
   
-  // For folks who want to do stuff they shouldn't..
-  if(sd != 0){ Rcpp::stop("Seasonal difference is not supported yet!.");}
-  
   // Calculate the length of phi and theta w/ seasons
   arma::vec ptotals = sarma_calculate_spadding(ar.n_elem, ma.n_elem,
                                                sar.n_elem, sma.n_elem,
@@ -527,10 +524,68 @@ arma::vec gen_sarima(const unsigned int N,
                                                              // p        q
                                                              ptotals(0), ptotals(1));
   
-  return gen_arima(N,
-                  sarma_coefs(0), d, sarma_coefs(1),
-                  sigma2, 
-                  n_start);
+  
+  arma::vec temp = gen_arima(N,
+                             sarma_coefs(0), d, sarma_coefs(1),
+                             sigma2, 
+                             n_start);
+  
+  if(sd > 0){
+    // Drop zeros introduced into vector... (sd*s of them at the start)
+    temp = diff_inv(temp, s, sd).rows(sd*s, N+sd*s-1);
+  }
+  
+  return temp;
+}
+
+
+//' Generate Generic Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
+//' 
+//' Generate an ARMA(P,Q) process with supplied vector of Autoregressive Coefficients (\eqn{\phi}), Moving Average Coefficients (\eqn{\theta}), and \eqn{\sigma^2}.
+//' @param N            An \code{integer} for signal length.
+//' @param theta_values A \code{vec} containing the parameters for (S)AR and (S)MA.
+//' @param objdesc      A \code{vec} that contains the \code{\link{+.ts.model}}'s obj.desc field.
+//' @param sigma2       A \code{double} that contains process variance.
+//' @param s            An \code{integer} that contains a seasonal id. 
+//' @param n_start      An \code{unsigned int} that indicates the amount of observations to be used for the burn in period. 
+//' @return A \code{vec} that contains the generated observations.
+//' @details 
+//' The innovations are generated from a normal distribution.
+//' The \eqn{\sigma^2} parameter is indeed a variance parameter. 
+//' This differs from R's use of the standard deviation, \eqn{\sigma}.
+//' @backref src/gen_process.cpp
+//' @backref src/gen_process.h
+//' @keywords internal
+//' @examples
+//' gen_sarima(10, c(.3,.5), 1, c(.1), c(.2), 0, c(.4), 1, 12, 0)
+// [[Rcpp::export]]
+arma::vec gen_generic_sarima(const unsigned int N,
+                             const arma::vec& theta_values, 
+                             const arma::vec& objdesc,
+                             double sigma2 = 1.5,
+                             unsigned int n_start = 0){
+  
+  // Unpack seasonal info.
+  unsigned int s = objdesc(5);
+  unsigned int d = objdesc(6);
+  unsigned int sd = objdesc(7);
+  
+  // Do parameter expansion
+  arma::field<arma::vec> sarma_coefs = sarma_expand(theta_values, objdesc);
+  
+  // Generate the SARMA + non-seaonal I
+  arma::vec temp = gen_arima(N,
+                             sarma_coefs(0), d, sarma_coefs(1),
+                             sigma2, 
+                             n_start);
+  
+  // Full SARIMA (generates the seasonal component if it exits.)
+  if(sd > 0){
+    // Drop zeros introduced into vector... (sd*s of them at the start)
+    temp = diff_inv(temp, s, sd).rows(sd*s, N+sd*s-1);
+  }
+  
+  return temp;
 }
 
 
@@ -640,23 +695,7 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
   	    // Grab the variance parameter on stack. 
   	    double sig2 = theta(i_theta);
   	    
-  	    // Setup parameters
-  	    arma::field<arma::vec> psetup = sarma_expand(theta_values, model_params);
-  	    
-  	    unsigned int d = model_params(6);
-  	   
-  	    // Pip into the gen_arima function!
-  	    // Note this floors the function at d. 
-  	    
-  	    arma::vec temp = gen_arima(N, psetup(0), d, psetup(1), sig2, 0);
-  	    
-  	    // Apply a cap
-  	    if(d > 0){ 
-  	      temp = temp.rows(0,N-d-1); // delete extra from differencing. 
-  	      Rcpp::Rcout << "Warning: This is not an ideal generation function for difference! Observations truncated to length N!." << std::endl;
-  	    }
-  	    
-  	    x += temp;
+  	    x += gen_generic_sarima(N, theta_values, model_params, sig2, 0);
   	  }
       
       // Increment theta once to account for popped value

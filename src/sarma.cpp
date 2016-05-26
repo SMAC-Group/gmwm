@@ -247,6 +247,7 @@ arma::field<arma::vec> sarma_expand(const arma::vec& params, const arma::vec& ob
 
     // Get a breakdown of relevant obj desc values.
     arma::vec o = sarma_components(objdesc);
+    // O has different breakdown than the objdesc! ()
 
     return sarma_expand_unguided(params,
                                  o(0), o(1),

@@ -46,7 +46,12 @@ arma::vec gen_sarma(const unsigned int N,
                     const double sigma2, 
                     unsigned int s, 
                     unsigned int n_start);
-  
+
+arma::vec gen_generic_sarima(const unsigned int N,
+                             const arma::vec& theta_values, 
+                             const arma::vec& objdesc,
+                             double sigma2,
+                             unsigned int n_start);
 
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
 
