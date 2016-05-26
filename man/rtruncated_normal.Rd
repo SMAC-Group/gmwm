@@ -11,11 +11,11 @@ rtruncated_normal(n, mu, sigma, a, b)
 
 \item{mu}{A \code{double} indicating the mean of the normal.}
 
+\item{sigma}{A \code{double} indicating the standard deviation of the normal.}
+
 \item{a}{A \code{double} that is the lower bound of the truncated normal.}
 
 \item{b}{A \code{double} that is the upper bound of the truncated normal.}
-
-\item{sigma2}{A \code{double} indicating the variance of the normal.}
 }
 \description{
 Enables sampling from a truncated normal

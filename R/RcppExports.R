@@ -2073,7 +2073,7 @@ diff_inv <- function(x, lag, d) {
 #' Enables sampling from a truncated normal
 #' @param n      An \code{unsigned int} indicating the number of observations to generate.
 #' @param mu     A \code{double} indicating the mean of the normal.
-#' @param sigma2 A \code{double} indicating the variance of the normal.
+#' @param sigma  A \code{double} indicating the standard deviation of the normal.
 #' @param a      A \code{double} that is the lower bound of the truncated normal.
 #' @param b      A \code{double} that is the upper bound of the truncated normal.
 #' @examples
