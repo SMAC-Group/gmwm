@@ -185,12 +185,14 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
 #' @keywords internal
 create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL, stype = NULL){
   
-  if(ngyros>0 && nacces>0){
-    colnames(data) = paste( c(rep('Gyro.', times = ngyros), rep('Accel.', times = nacces)), axis)
-  }else if (ngyros > 0){
-    colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis))
-  }else{
-    colnames(data) = c(paste(rep('Accel.', times = nacces), axis))
+  if(!is.null(ncol(data))){
+    if(ngyros>0 && nacces>0){
+      colnames(data) = paste( c(rep('Gyro.', times = ngyros), rep('Accel.', times = nacces)), axis)
+    }else if (ngyros > 0){
+      colnames(data) = c(paste(rep('Gyro.', times = ngyros), axis))
+    }else{
+      colnames(data) = c(paste(rep('Accel.', times = nacces), axis))
+    }
   }
    
   out = structure(data, 
@@ -249,16 +251,21 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
   axis = attr(x,"axis")
   sensor = attr(x,"sensor")
   num.sensor = attr(x,"num.sensor")
-  
-  # If j is missing, then it is simply lowering the number of observations!
+
+  # If j is missing, then it is a subset by row (not column!)
   if(!missing(j)){
-    # Select column names picked by user
     
+    # Select column names picked by user
     if(is(j, "character")){
       nc = j
     }else{
+      # Otherwise, use j as a numeric.
       nc = colnames(x)[j]
     }
+    
+    # TO DO:
+    # Rewrite the selection using indices now that
+    # we are no longer bound by naming schemes.
     
     # Remove structure to get Gyros/Accels
     g = gsub("\\..*","",nc)
@@ -270,12 +277,8 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
   
     num.sensor = c({if(!is.na(ng["Gyro"])) ng["Gyro"] else 0}, {if(!is.na(ng["Accel"])) ng["Accel"] else 0})
   }
-  
-  if(drop){
-    return(NextMethod("[", drop = TRUE))
-  }
-  
-  create_imu(NextMethod("[", drop = FALSE),
+
+  create_imu(NextMethod("[", drop = drop),
              num.sensor[1], num.sensor[2], axis, attr(x,"freq"), attr(x,"unit"), attr(x,"name"), attr(x,"stype"))
   
 }
@@ -319,7 +322,11 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 read.imu = function(file, type, unit = NULL, name = NULL){
   d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
-  create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z','X','Y','Z'), d[[2]][1], unit = unit, name = name, stype = type)
+  obj = create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z','X','Y','Z'), d[[2]][1], unit = unit, name = name, stype = type)
+  
+  rownames(obj) = d[[1]][,1]
+  
+  obj
 }
 
 

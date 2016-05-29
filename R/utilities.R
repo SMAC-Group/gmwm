@@ -313,3 +313,21 @@ has.imu = function(x, type){
          stop("The `type` specified is not an available slot")
   ) 
 }
+
+#' Pulls the IMU time from the IMU object
+#' 
+#' Helper function for the IMU object to access \code{rownames()} with a numeric conversion.
+#' @param x A \code{imu} object
+#' @return A \code{vector} with numeric information.
+imu_time = function(x){
+  
+  if(!is.imu(x)){ stop("`x` must be an `imu` object.")}
+  
+  # If the IMU object does not have a built in time stamp (not made w/ read.imu)
+  if(!is.null(rownames(x))){
+    1:nrow(x)
+  }else{
+    # Pull time information and cast as.numeric
+    as.numeric(rownames(x))
+  }
+}
