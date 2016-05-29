@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -45,7 +45,7 @@
 //' y = wave_variance(decomp)
 //' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025)
 // [[Rcpp::export]]
-arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
+arma::mat ci_eta3(const arma::vec& y, const arma::vec& dims, double alpha_ov_2) {
     
     unsigned int num_elem = dims.n_elem;
 
@@ -84,14 +84,14 @@ arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2) {
 //' y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
 //' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
-arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alpha_ov_2, double eff) {
+arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, const arma::vec& dims, double alpha_ov_2, double eff) {
     unsigned int num_elem = wv_robust.n_elem;
 
     arma::mat out(num_elem, 3);
     
     double q1 = R::qnorm(1-alpha_ov_2, 0.0, 1.0, true, false);
     
-    double coef = ((-1.0*q1-q1) * sqrt(1.0/eff)) / (-1.0*q1-q1);
+    double coef = sqrt(1.0/eff);
 
     for(unsigned int i = 0; i<num_elem;i++){
       
@@ -109,7 +109,13 @@ arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alph
       if(lci > 0){
         out(i,1) = lci;        
       }else{
-        out(i,1) = DBL_EPSILON; // Replaced. (Drop interval to 0)
+        
+        // // Old calculation
+        // double eff_mod = sqrt(eff);
+        // double eta3 = std::max(dims(i)/pow(2,i+1),1.0); 
+        // lci = eff_mod * eta3 * wv_ri/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
+        // 
+        out(i,1) =  wv_ci_class(i,1)/2.0; // Replaced DPL_EPSILON (Drop interval to 0) and made graph look odd
       }
 
       out(i,2) = wv_ri + uci*coef*wv_ri;
@@ -169,7 +175,7 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
         arma::mat wv_ci_class = ci_eta3(wv_class, dims, alpha_ov_2);  // calculate the CI
     
         // wv is the wave robust
-        out = ci_eta3_robust(wv, wv_ci_class, alpha_ov_2, eff);
+        out = ci_eta3_robust(wv, wv_ci_class, dims, alpha_ov_2, eff);
       }
   }
   else{

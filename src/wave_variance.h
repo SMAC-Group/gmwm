@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -18,9 +18,9 @@
 #ifndef WAVE_VARIANCE
 #define WAVE_VARIANCE
 
-arma::mat ci_eta3(arma::vec y,  arma::vec dims, double alpha_ov_2);
+arma::mat ci_eta3(const arma::vec& y, const arma::vec& dims, double alpha_ov_2);
 
-arma::mat ci_eta3_robust(arma::vec wv_robust, arma::mat wv_ci_class, double alpha_ov_2, double eff);
+arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, const arma::vec& dims, double alpha_ov_2, double eff);
 
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& wv, 
                             std::string type, double alpha_ov_2, bool robust, double eff);

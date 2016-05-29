@@ -2576,8 +2576,8 @@ ci_eta3 <- function(y, dims, alpha_ov_2) {
 #' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
 #' y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
 #' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
-ci_eta3_robust <- function(wv_robust, wv_ci_class, alpha_ov_2, eff) {
-    .Call('gmwm_ci_eta3_robust', PACKAGE = 'gmwm', wv_robust, wv_ci_class, alpha_ov_2, eff)
+ci_eta3_robust <- function(wv_robust, wv_ci_class, dims, alpha_ov_2, eff) {
+    .Call('gmwm_ci_eta3_robust', PACKAGE = 'gmwm', wv_robust, wv_ci_class, dims, alpha_ov_2, eff)
 }
 
 #' @title Generate a Confidence intervval for a Univariate Time Series
