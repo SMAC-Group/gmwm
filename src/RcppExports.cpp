@@ -1946,17 +1946,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // ci_eta3_robust
-arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, const arma::vec& dims, double alpha_ov_2, double eff);
-RcppExport SEXP gmwm_ci_eta3_robust(SEXP wv_robustSEXP, SEXP wv_ci_classSEXP, SEXP dimsSEXP, SEXP alpha_ov_2SEXP, SEXP effSEXP) {
+arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, double alpha_ov_2, double eff);
+RcppExport SEXP gmwm_ci_eta3_robust(SEXP wv_robustSEXP, SEXP wv_ci_classSEXP, SEXP alpha_ov_2SEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::vec& >::type wv_robust(wv_robustSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type wv_ci_class(wv_ci_classSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type dims(dimsSEXP);
     Rcpp::traits::input_parameter< double >::type alpha_ov_2(alpha_ov_2SEXP);
     Rcpp::traits::input_parameter< double >::type eff(effSEXP);
-    __result = Rcpp::wrap(ci_eta3_robust(wv_robust, wv_ci_class, dims, alpha_ov_2, eff));
+    __result = Rcpp::wrap(ci_eta3_robust(wv_robust, wv_ci_class, alpha_ov_2, eff));
     return __result;
 END_RCPP
 }
