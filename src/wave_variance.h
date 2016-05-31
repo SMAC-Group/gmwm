@@ -20,7 +20,7 @@
 
 arma::mat ci_eta3(const arma::vec& y, const arma::vec& dims, double alpha_ov_2);
 
-arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, const arma::vec& dims, double alpha_ov_2, double eff);
+arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, double alpha_ov_2, double eff);
 
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& wv, 
                             std::string type, double alpha_ov_2, bool robust, double eff);

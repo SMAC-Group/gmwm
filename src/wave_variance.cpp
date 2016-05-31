@@ -84,7 +84,7 @@ arma::mat ci_eta3(const arma::vec& y, const arma::vec& dims, double alpha_ov_2) 
 //' y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
 //' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 // [[Rcpp::export]]
-arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, const arma::vec& dims, double alpha_ov_2, double eff) {
+arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, double alpha_ov_2, double eff) {
     unsigned int num_elem = wv_robust.n_elem;
 
     arma::mat out(num_elem, 3);
@@ -175,7 +175,7 @@ arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const 
         arma::mat wv_ci_class = ci_eta3(wv_class, dims, alpha_ov_2);  // calculate the CI
     
         // wv is the wave robust
-        out = ci_eta3_robust(wv, wv_ci_class, dims, alpha_ov_2, eff);
+        out = ci_eta3_robust(wv, wv_ci_class, alpha_ov_2, eff);
       }
   }
   else{
