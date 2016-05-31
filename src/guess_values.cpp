@@ -300,7 +300,7 @@ arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<
         temp_theta.rows(i_theta, i_theta + p + q) = arma_draws(p, q, sigma2_total);
         
         i_theta += p + q; // additional +1 added at end for sigma2
-        
+
         // Add seasonal guessing. 
         if( model_params.n_elem > 3 && model_params(5) != 0){
           // Get position numbers (AR,MA,SIGMA2)
@@ -469,14 +469,14 @@ arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total){
   if(q != 0){
     // Randomize
     ma = rsample(ma, ma.n_elem, false, empty);
+    
+    // Export the MA terms to ARMA
+    arma.rows(p, p + q - 1) = ma;
   }
-  
-  // Export the MA terms to ARMA
-  arma.rows(p, p + q - 1) = ma;
   
   // Obtain infinite MA process
   infMA = ARMAtoMA_cpp(ar, ma, 1000);
-
+  
   // Obtain sigma2
   sigma2 = sigma2_total / (1 + arma::sum(arma::square(infMA)));
   
@@ -558,9 +558,7 @@ arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::fi
       else if(element_type == "RW"){
         temp_theta(i_theta) = R::runif(sigma2_total/double(N*1000.0), 2.0*sigma2_total/double(N));
       }
-      else {
-        
-        // Unpackage ARMA model parameter
+      else { // Unpackage ARMA model parameter
         arma::vec model_params = objdesc(i);
         
         // Get position numbers (AR,MA,SIGMA2)
@@ -580,7 +578,6 @@ arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::fi
           
           i_theta += sp + sq; // additional +1 added at end for sigma2
         }
-        
       }
       
       i_theta ++;
