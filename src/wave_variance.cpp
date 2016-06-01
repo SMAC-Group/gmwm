@@ -109,13 +109,9 @@ arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_clas
       if(lci > 0){
         out(i,1) = lci;        
       }else{
-        
-        // // Old calculation
-        // double eff_mod = sqrt(eff);
-        // double eta3 = std::max(dims(i)/pow(2,i+1),1.0); 
-        // lci = eff_mod * eta3 * wv_ri/(R::qchisq(1-alpha_ov_2, eta3, 1, 0)); // Lower CI
-        // 
-        out(i,1) =  wv_ci_class(i,1)/2.0; // Replaced DPL_EPSILON (Drop interval to 0) and made graph look odd
+        // Take the minimum from either Robust WV / 2 or a previous minimum value.
+        // This logic should no longer be needed once we remove the J-1th scale. 
+        out(i,1) = std::min(wv_ri / 2.0, arma::as_scalar(arma::min(out.submat(0, 1, i-1, 1)))); // Replaced DPL_EPSILON (Drop interval to 0) and made graph look odd
       }
 
       out(i,2) = wv_ri + uci*coef*wv_ri;
