@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -259,7 +259,7 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 //' @backref src/gmwm_logic.cpp
 //' @backref src/gmwm_logic.h
 // [[Rcpp::export]]
-arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, 
+arma::field<arma::mat> gmwm_master_cpp(arma::vec& data, 
                                       arma::vec theta,
                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
                                       std::string model_type, bool starting,
@@ -267,7 +267,41 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
                                       std::string compute_v, unsigned int K, unsigned int H,
                                       unsigned int G, 
                                       bool robust, double eff){
-  // Variable Declarations
+  
+  // Obtain counts of the different models we need to work with
+  std::map<std::string, int> models = count_models(desc);
+  
+  // HACK METHOD (todo: formalize it)
+  // Determine if we need to difference
+  if(models["SARIMA"] > 0){
+    
+    // Note: s, i, si are 6,7,8 => 5,6,7
+    for(unsigned int i = 0; i < desc.size(); i ++){
+      if(objdesc(i).n_elem > 3){
+        arma::vec sarima_desc = objdesc(i);
+        // Do we need to difference? 
+        if(sarima_desc(6) > 0 || sarima_desc(7) > 0){
+          // Perform differencing in specific order...
+          // First non-seasonal and then seasonal.
+          
+          if(sarima_desc(6) > 0){
+            // Lag is always 1, number of differences is (i)
+            data = diff_cpp(data, 1, sarima_desc(6));
+          }
+          
+          if(sarima_desc(7) > 0){
+            // Lag is always seasonality (s) and differences is (si).
+            data = diff_cpp(data, sarima_desc(5), sarima_desc(7));
+          }
+          
+          // Kill loop. We only handle the tsmodel object with the first difference.
+          break;
+        }
+      }
+    }
+  }
+  
+  // ------ Variable Declarations
   
   // Length of the Time Series
   unsigned int N = data.n_elem;
@@ -382,7 +416,7 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
   }
 
   
-  if(desc[0] == "ARMA" && desc.size() == 1){
+  if(desc[0] == "SARIMA" && desc.size() == 1){
     
     arma::vec temp = objdesc(0);
     unsigned int p = temp(0);
@@ -390,9 +424,6 @@ arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data,
       Rcpp::Rcout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
     }
   } 
-  
-  
-  std::map<std::string, int> models = count_models(desc);
   
   // Order AR1s / GM so largest phi is first!
    if(models["AR1"] > 1 || models["GM"] > 1){

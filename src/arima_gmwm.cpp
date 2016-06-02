@@ -38,22 +38,22 @@ arma::vec Rcpp_ARIMA(const arma::vec& data,
   aparams(0) = params(0);
   aparams(2) = params(1);
   
+  // Load difference of 0.  (Taken care of in the gmwm_master)
+  aparams(1) = 0; //params(6);
+  
   Rcpp::List Opt;
   
   // Determine whether it is ARMA11 or SARIMA object
   // And check to see if there is seasonality (s)
   if(params.n_elem > 3 && params(5) > 0){
     
-    // Load difference of 0.
-    aparams(1) = params(6);
-    
     Rcpp::NumericVector seasonal_order(3);
     
     // Seasonal AR
     seasonal_order(0) = params(2);
     
-    // Seasonal Difference
-    seasonal_order(1) = params(7);
+    // Seasonal Difference (Taken care of in the gmwm_master)
+    seasonal_order(1) = 0; //params(7);
     
     // Seasonal MA
     seasonal_order(2) = params(3);
@@ -67,9 +67,6 @@ arma::vec Rcpp_ARIMA(const arma::vec& data,
                 Rcpp::_["seasonal"] = seasons,
                 Rcpp::_["method"] = "CSS");
   }else{
-    
-    // No differencing
-    aparams(1) = 0;
     
     Opt = arima(Rcpp::_["x"] = data,
                 Rcpp::_["order"] = aparams,

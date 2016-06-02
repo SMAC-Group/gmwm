@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -333,7 +333,7 @@ arma::rowvec asympt_calc(const arma::vec& theta,
 
 // ---- End helper functions
 
-arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
+arma::field<arma::field<arma::mat> > model_select(arma::vec& data,
                                                   const std::set<std::vector<std::string > >& models,
                                                   const std::vector< std::string >& full_model,
                                                   std::string model_type,
@@ -544,34 +544,34 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
   // Only run if in asymptotic mode
   if(!bs_optimism){
     
-    std::set<std::vector<std::string > > ::const_iterator iter2;
-    
-    iter = models.begin(); 
-    
-    /*
-    * Iterate through all models
-    * If i != j, then 
-    * IF (Complex_i > Complex_j && Obj_i > Obj_j){
-    *  IF(Crit_i < Crit_J)
-    * }
-    */
-    while(iter != models.end()){
-      iter2 = models.begin(); 
-      while(iter2 != models.end()){
-        if(iter != iter2){
-          double m1_index = std::distance(models.begin(),iter);
-          double m2_index = std::distance(models.begin(),iter2);
-          
-          if(count_params(*iter) > count_params(*iter2) && results(m1_index,0) >  results(m2_index,0)){
-            if(results(m1_index,2) < results(m2_index,2)){
-              results(m1_index,1) = results(m2_index,1) + fabs(R::rnorm(0, sqrt(results(m2_index,0)/10) ));
-            }
-          }
-        }
-        iter2++;
-      }
-      iter++; 
-    }
+    // std::set<std::vector<std::string > > ::const_iterator iter2;
+    // 
+    // iter = models.begin(); 
+    // 
+    // /*
+    // * Iterate through all models
+    // * If i != j, then 
+    // * IF (Complex_i > Complex_j && Obj_i > Obj_j){
+    // *  IF(Crit_i < Crit_J)
+    // * }
+    // */
+    // while(iter != models.end()){
+    //   iter2 = models.begin(); 
+    //   while(iter2 != models.end()){
+    //     if(iter != iter2){
+    //       double m1_index = std::distance(models.begin(),iter);
+    //       double m2_index = std::distance(models.begin(),iter2);
+    //       
+    //       if(count_params(*iter) > count_params(*iter2) && results(m1_index,0) >  results(m2_index,0)){
+    //         if(results(m1_index,2) < results(m2_index,2)){
+    //           results(m1_index,1) = results(m2_index,1) + fabs(R::rnorm(0, sqrt(results(m2_index,0)/10) ));
+    //         }
+    //       }
+    //     }
+    //     iter2++;
+    //   }
+    //   iter++; 
+    // }
     
   }
   
@@ -641,7 +641,7 @@ arma::field<arma::field<arma::mat> > model_select(const arma::mat& data,
 //' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 //' @keywords internal
 // [[Rcpp::export]]
-arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec& data,
+arma::field< arma::field<arma::field<arma::mat> > >  rank_models(arma::vec& data,
                                                                  const std::vector<std::vector < std::string > >& model_str, 
                                                                  const std::vector< std::string >&  full_model,
                                                                  double alpha, 
@@ -685,7 +685,7 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(const arma::vec
 //' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 //' @keywords internal
 // [[Rcpp::export]]
-arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& data,
+arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(arma::mat& data,
                                                               const arma::mat& combs,
                                                               const std::vector< std::string >&  full_model,
                                                               double alpha, 
@@ -706,15 +706,18 @@ arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(const arma::mat& d
   
   for(unsigned int i = 0; i < V; i++){
     Rcpp::Rcout << "Generating models for the " << i + 1 << " column in the data set " << std::endl << std::endl;
-    h(i) = model_select(data.col(i),
-      models,
-      full_model,
-      model_type,
-      bs_optimism,
-      alpha,
-      compute_v, 
-      K, H, G, 
-      robust, eff, seed);
+    
+    arma::vec signal_col = data.col(i);
+    
+    h(i) = model_select(signal_col,
+                        models,
+                        full_model,
+                        model_type,
+                        bs_optimism,
+                        alpha,
+                        compute_v, 
+                        K, H, G, 
+                        robust, eff, seed);
     
     Rcpp::Rcout << std::endl;
   }

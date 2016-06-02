@@ -385,12 +385,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // rank_models
-arma::field< arma::field<arma::field<arma::mat> > > rank_models(const arma::vec& data, const std::vector<std::vector < std::string > >& model_str, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
+arma::field< arma::field<arma::field<arma::mat> > > rank_models(arma::vec& data, const std::vector<std::vector < std::string > >& model_str, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
 RcppExport SEXP gmwm_rank_models(SEXP dataSEXP, SEXP model_strSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const arma::vec& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::vector < std::string > >& >::type model_str(model_strSEXP);
     Rcpp::traits::input_parameter< const std::vector< std::string >& >::type full_model(full_modelSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
@@ -408,12 +408,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // auto_imu
-arma::field< arma::field<arma::field<arma::mat> > > auto_imu(const arma::mat& data, const arma::mat& combs, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
+arma::field< arma::field<arma::field<arma::mat> > > auto_imu(arma::mat& data, const arma::mat& combs, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
 RcppExport SEXP gmwm_auto_imu(SEXP dataSEXP, SEXP combsSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type combs(combsSEXP);
     Rcpp::traits::input_parameter< const std::vector< std::string >& >::type full_model(full_modelSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
@@ -911,12 +911,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // gmwm_master_cpp
-arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, bool starting, double alpha, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
+arma::field<arma::mat> gmwm_master_cpp(arma::vec& data, arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, bool starting, double alpha, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
 RcppExport SEXP gmwm_gmwm_master_cpp(SEXP dataSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP startingSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const arma::vec& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP);

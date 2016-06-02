@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+/* Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
  *
  * This file is part of GMWM R Methods Package
  *
@@ -35,13 +35,13 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
                                        unsigned int G = 1000, 
                                        bool robust=false, double eff = 0.6);
                                       
-arma::field<arma::mat> gmwm_master_cpp(const arma::vec& data, 
-                                      arma::vec theta,
-                                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
-                                      std::string model_type, bool starting = true,
-                                      double alpha = 0.05, 
-                                      std::string compute_v = "fast", unsigned int K = 1, unsigned int H = 100,
-                                      unsigned int G = 1000, 
-                                      bool robust=false, double eff = 0.6);
+arma::field<arma::mat> gmwm_master_cpp(arma::vec& data, 
+                                       arma::vec theta,
+                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                                       std::string model_type, bool starting = true,
+                                       double alpha = 0.05, 
+                                       std::string compute_v = "fast", unsigned int K = 1, unsigned int H = 100,
+                                       unsigned int G = 1000, 
+                                       bool robust=false, double eff = 0.6);
                                       
 #endif
