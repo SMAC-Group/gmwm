@@ -183,8 +183,12 @@ With the system dependency taken care of, we continue on by installing the R spe
 # Install dependencies
 install.packages(c("RcppArmadillo","ggplot2","reshape2","devtools","knitr","rmarkdown"))
 
-# Install the package from github
+# Install the package from GitHub without Vignettes/User Guides
 devtools::install_github("SMAC-Group/gmwm")
+
+# Install the package from GitHub with Vignettes/User Guides
+# Note: This will be a longer install as the vignettes must be built.
+devtools::install_github("SMAC-Group/gmwm", build_vignettes = TRUE)
 ```
 
 Installing the package from SMAC-Group.com (Stable - offline)
@@ -204,15 +208,26 @@ install.packages("GMWM", repos = NULL, type="source")
 Supplementary data package
 --------------------------
 
-To test the package performance on real-world data that is *stationary* or work with some of the examples, you will need to download and install the `imudata` R package.
+To test the package performance on real-world data that is *stationary* or work with some of the examples, you will need to download and install the `imudata` and/or the `datapkg` R package.
 
 To do so, please use the following installation method within the `gmwm` R package:
 
 ``` r
+# Install the imudata package containing real world IMU data sets
 gmwm::install_imudata()
+
+# Install the datapkg package containing miscellaneous data sets
+gmwm::install_datapkg()
 ```
 
-For more information about the `imudata` package, see the [repository](https://github.com/SMAC-Group/imudata).
+For more information about the `imudata` and `datapkg` package, see the <https://github.com/SMAC-Group/imudata> and <https://github.com/SMAC-Group/datapkg>.
+
+User Guides
+===========
+
+Various guides ship with package or are available on <http://smac-group.com/> to provide insight into how to use the different methods. At the present time, the following vignettes are available:
+
+1.  Process to Haar Wavelet Variance [(Online)](smac-group.com/computing/process-to-haar-wavelet-variance-formulae)
 
 Licensing
 =========
