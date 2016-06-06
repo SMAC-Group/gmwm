@@ -1,3 +1,1 @@
-#!/usr/bin/env Rscript
-
-staticdocs::build_site(examples = TRUE)
+R -e "staticdocs::build_site(examples = TRUE)"
