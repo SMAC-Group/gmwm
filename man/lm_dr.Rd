@@ -29,4 +29,5 @@ lm_dr(y)[[1]]
 coef(lm(y~x-1))
 
 }
+\keyword{internal}
 

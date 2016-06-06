@@ -14,6 +14,7 @@
 //'   \item{resid}{Residuals}
 //'   \item{sigma2}{Sigma^2}
 //' }
+//' @keywords internal
 //' @examples
 //' x = cbind(1,1:10)
 //' y = cumsum(rep(.45,10))
@@ -52,6 +53,7 @@ arma::field<arma::vec> lm_arma(const arma::vec & y, const arma::mat & X) {
 //'   \item{resid}{Residuals}
 //'   \item{sigma2}{Sigma^2}
 //' }
+//' @keywords internal
 //' @examples
 //' x = 1:10
 //' y = cumsum(rep(.7,10))

@@ -1471,6 +1471,7 @@ bootstrap_gof_test <- function(obj_value, bs_obj_values, alpha, bs_gof_p_ci) {
 #'   \item{resid}{Residuals}
 #'   \item{sigma2}{Sigma^2}
 #' }
+#' @keywords internal
 #' @examples
 #' x = cbind(1,1:10)
 #' y = cumsum(rep(.45,10))
@@ -1493,6 +1494,7 @@ lm_arma <- function(y, X) {
 #'   \item{resid}{Residuals}
 #'   \item{sigma2}{Sigma^2}
 #' }
+#' @keywords internal
 #' @examples
 #' x = 1:10
 #' y = cumsum(rep(.7,10))
