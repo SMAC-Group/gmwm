@@ -383,7 +383,7 @@ update.gmwm = function(object, model, ...){
   }
   
   # ID error:
-  if( sum(num.models) == 1 & num.models["ARMA"] == 1 & model$starting){
+  if( sum(num.models) == 1 & num.models["SARIMA"] == 1 & model$starting){
     warning("ARMA starting guesses using update.gmwm are NOT based on CSS but an alternative algorithm.")
   }
   
