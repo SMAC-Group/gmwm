@@ -44,7 +44,7 @@ dwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary="p
   }
   out = .Call('gmwm_dwt_cpp', PACKAGE = 'gmwm', x, filter_name = filter, nlevels, boundary = boundary, brickwall = bw)
   names(out) = paste0("S",1:nlevels)
-  mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class="dwt")
+  mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class=c("dwt","list"))
   out
 }
 
@@ -61,9 +61,9 @@ dwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary="p
 #' @examples
 #' set.seed(999)
 #' x = rnorm(2^8)
-#' print(dwt(x))
+#' dwt(x)
 print.dwt=function(x, ...){
-  x
+  NextMethod("print")
 }
 
 #' @title Summary Discrete Wavelet Transform

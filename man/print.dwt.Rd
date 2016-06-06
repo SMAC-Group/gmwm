@@ -20,7 +20,7 @@ Prints the results of the modwt list
 \examples{
 set.seed(999)
 x = rnorm(2^8)
-print(dwt(x))
+dwt(x)
 }
 \author{
 JJB

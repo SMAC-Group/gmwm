@@ -2,7 +2,9 @@
 % Please edit documentation in R/modwt.R
 \name{modwt}
 \alias{modwt}
-\title{Maximum Overlap Discrete Wavelet Transform}
+\title{Maximum Overlap Discrete Wavelet Transform
+ 
+Calculation of the coefficients for the discrete wavelet transformation}
 \usage{
 modwt(x, nlevels = floor(log2(length(x))), filter = "haar",
   boundary = "periodic", bw = TRUE)
@@ -22,6 +24,8 @@ modwt(x, nlevels = floor(log2(length(x))), filter = "haar",
 y       A \code{field<vec>} that contains the wavelet coefficients for each decomposition level
 }
 \description{
+Maximum Overlap Discrete Wavelet Transform
+ 
 Calculation of the coefficients for the discrete wavelet transformation
 }
 \details{
@@ -30,8 +34,8 @@ The default \eqn{J} is determined by \eqn{floor\left(log_2 \left(length\left(x\r
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
-modwt(x)
+x = rnorm(100)
+a = modwt(x)
 }
 \author{
 JJB

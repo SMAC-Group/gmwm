@@ -2,7 +2,9 @@
 % Please edit documentation in R/modwt.R
 \name{brickwall}
 \alias{brickwall}
-\title{Brickwall functionality for MO/DWT}
+\title{Brickwall functionality for MO/DWT
+ 
+Removes boundary coefficients}
 \usage{
 brickwall(signal.decomp)
 }
@@ -13,6 +15,8 @@ brickwall(signal.decomp)
 A \code{modwt} or \code{dwt} object that has been brick walled
 }
 \description{
+Brickwall functionality for MO/DWT
+ 
 Removes boundary coefficients
 }
 \examples{

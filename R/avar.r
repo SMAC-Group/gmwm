@@ -1,4 +1,4 @@
-# Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+# Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
 #
 # This file is part of GMWM R Methods Package
 #
@@ -73,7 +73,7 @@ avar = function(x, type = "mo") {
   av$lci = av$adev - av$errors*av$adev
   av$uci = av$adev + av$errors*av$adev
   av$type = type
-  class(av) = "avar"
+  class(av) = c("avar","list")
   av
 }
 
@@ -241,6 +241,6 @@ summary.avar = function(object, ...) {
   out_matrix[,"Upper CI"] = object$uci
   out_matrix[,"Error"] = object$errors
   
-  class(out_matrix) = "summary.avar"
+  class(out_matrix) = c("summary.avar","matrix")
   out_matrix
 }

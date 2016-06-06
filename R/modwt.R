@@ -1,4 +1,4 @@
-# Copyright (C) 2014 - 2015  James Balamuta, Stephane Guerrier, Roberto Molinari
+# Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
 #
 # This file is part of GMWM R Methods Package
 #
@@ -13,8 +13,8 @@
 # You should have received a copy of the Attribution-NonCommercial-ShareAlike 4.0 International 
 # (CC BY-NC-SA 4.0) along with `gmwm`.  If not, see <http://www.smac-group.com/licensing/>.
 
-#' @title Brickwall functionality for MO/DWT
-#' @description 
+#' Brickwall functionality for MO/DWT
+#'  
 #' Removes boundary coefficients
 #' @param signal.decomp  A \code{modwt} or \code{dwt} object that has not yet been brick walled
 #' @return A \code{modwt} or \code{dwt} object that has been brick walled
@@ -46,8 +46,8 @@ brickwall = function(signal.decomp){
 
 
 
-#' @title Maximum Overlap Discrete Wavelet Transform
-#' @description 
+#' Maximum Overlap Discrete Wavelet Transform
+#'  
 #' Calculation of the coefficients for the discrete wavelet transformation
 #' @param x        A \code{vector} with dimensions N x 1. 
 #' @param nlevels  A \code{integer} indicating the \eqn{J} levels of decomposition.
@@ -61,12 +61,12 @@ brickwall = function(signal.decomp){
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
-#' modwt(x)
+#' x = rnorm(100)
+#' a = modwt(x)
 modwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary="periodic", bw = TRUE) {
   out = .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name = filter, nlevels, boundary = boundary, brickwall = bw)
   names(out) = paste0("S",1:nlevels)
-  mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class="modwt")
+  mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class=c("modwt","list"))
   out
 }
 
@@ -84,8 +84,8 @@ modwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary=
 #' set.seed(999)
 #' x=rnorm(100)
 #' print(modwt(x))
-print.modwt=function(x, ...){
-  x
+print.modwt = function(x, ...){
+  NextMethod("print")
 }
 
 #' @title Summary Maximum Overlap Discrete Wavelet Transform
