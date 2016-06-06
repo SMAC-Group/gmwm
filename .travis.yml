@@ -1,3 +1,18 @@
 language: R
 cache: packages
 sudo: false
+env:
+  global:
+    secure: Uv2vIsl/YzDJOs/HxzTayopE9KDROspfQ28jkfc+A098HxWtoPrDdzXujCNZp1OaYrNJzkMnGAgtvFTxyynt0GO1PoHzAsnIo9J5lhlapNDWD0E2I88fm4H2TU8UOaX1LKoqzXhUuJ9EnOHAUDwTs+Fv34sDSXY86jv+RDgkK7o8l2kQku59ursqvWDDLgpKV+IR4E4XT+gkATD91b+Kx1aMUzcCR5cbKAjK9I7GW6CGUMKbskhRaqL4wa6uHXVBWfupx81vaImAhE3pdVo65xHouMxoc3kK/1ggqBKDv3fn4Ir42mseRfLDGm+4zXVbm2Q0p7zfrg05h5IZ8nA2R6AnxnXc9fGIxXk2MuhmAvNZZ1lZDrSGPZYCHRf6vNJXlS3v0FKf3y2fJuj8auUf6untWB2+eLkH7g90sAPgjXGhj9Fy80MecglE9t9AxLNWrpgA43+aT7q1QWbzsalYnAtIpX1LSKaPnKpCo1HkeGOPOSU+7uHAxlxUB/eh5VTRo+bDW6luM4KSRrfpPKbcNBE1wpSKYPp5RSpzGyK8SaG08Lp83rUzxxXlY3DB0r9Y0sKtkwvJbXx8oh0f1QlHNfCuk9JC8HO4EZBmteuNX512u+Ef54OD39TV58fvoJOSAiIoIdbHxuZl6Xs70bhZI3FyLo44swE30pvUq3BRxFw=
+
+r_github_packages:
+  - klutometis/roxygen
+  - hadley/staticdocs
+
+before_script:
+- chmod +x ./_build.sh
+- chmod +x ./_deploy.sh
+
+after_success:
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash _build.sh && bash
+  _deploy.sh
