@@ -1,1 +1,1 @@
-R -e "staticdocs::build_site(examples = TRUE)"
+Rscript -e "staticdocs::build_site(examples = TRUE)"
