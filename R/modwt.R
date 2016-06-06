@@ -36,7 +36,7 @@ brickwall = function(signal.decomp){
     stop("The decomposition has already been decomposed.")
   }
   
-  obj = .Call('gmwm_brick_wall', PACKAGE = 'gmwm', signal.decomp, select_filter("haar"), class(signal.decomp))
+  obj = .Call('gmwm_brick_wall', PACKAGE = 'gmwm', signal.decomp, select_filter("haar"), class(signal.decomp)[1])
   
   mostattributes(obj) = attributes(signal.decomp)
   attr(signal.decomp,"brick.wall") = T

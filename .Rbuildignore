@@ -11,3 +11,5 @@ LICENSE
 ^README\.Rmd$
 ^README-.*\.png$
 ^inst/web$
+^_deploy\.sh$
+^_build\.sh$
