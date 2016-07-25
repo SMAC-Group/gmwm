@@ -1,12 +1,6 @@
 # Use the R testing scheme
 language: r
 
-# Test on multiple versions (note requirement of R > 3.0)
-r:
-  - oldrel
-  - release
-  - devel
-  
 # Enable package cache
 cache: packages
 
@@ -16,13 +10,49 @@ sudo: false
 # To CRAN, warnings **are** errors.
 warnings_are_errors: true
 
-# Build on OS
-os:
-  - linux
-#  - osx
-  
-# Build matrices seem to fail w/ R options set.
-
+# Test package on multiple platforms
+matrix:
+  include:
+    - os: linux
+      dist: precise
+      sudo: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+      r: oldrel
+    - os: linux
+      dist: precise
+      sudo: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+      r: release
+    - os: linux
+      dist: precise
+      sudo: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+      r: devel
+    - os: linux
+      dist: trusty
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+      r: oldrel
+    - os: linux
+      dist: trusty
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+      r: release
+    - os: linux
+      dist: trusty
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+      r: devel
+      
 # Setup GITHUB_PAT for static doc deploy / use with devtools
 env:
   global:
