@@ -10,47 +10,38 @@ sudo: false
 # To CRAN, warnings **are** errors.
 warnings_are_errors: true
 
+
+# Inherited by each job in the build matrix
+r_build_args: '--no-build-vignettes'
+r_check_args: '--no-build-vignettes --ignore-vignettes --no-examples'
+latex: false
+
 # Test package on multiple platforms
 matrix:
   include:
     - os: linux
       dist: precise
       sudo: false
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-      latex: false
       r: oldrel
     - os: linux
       dist: precise
       sudo: false
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-      latex: false
       r: release
     - os: linux
       dist: precise
       sudo: false
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-      latex: false
       r: devel
     - os: linux
       dist: trusty
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-      latex: false
+      sudo: true
       r: oldrel
     - os: linux
       dist: trusty
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-      latex: false
+      sudo: true
       r: release
     - os: linux
       dist: trusty
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-      latex: false
+      sudo: true
       r: devel
       
 # Setup GITHUB_PAT for static doc deploy / use with devtools
