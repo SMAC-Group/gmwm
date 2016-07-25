@@ -10,12 +10,6 @@ sudo: false
 # To CRAN, warnings **are** errors.
 warnings_are_errors: true
 
-
-# Inherited by each job in the build matrix
-r_build_args: '--no-build-vignettes'
-r_check_args: '--no-build-vignettes --ignore-vignettes --no-examples'
-latex: false
-
 # Test package on multiple platforms
 matrix:
   include:
