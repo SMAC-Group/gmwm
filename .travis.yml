@@ -19,7 +19,7 @@ warnings_are_errors: true
 # Build on OS
 os:
   - linux
-  - osx
+#  - osx
   
 # Build matrices seem to fail w/ R options set.
 
