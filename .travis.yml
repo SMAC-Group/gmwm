@@ -1,9 +1,63 @@
-language: R
+# Use the R testing scheme
+language: r
+
+# Test on multiple versions (note requirement of R > 3.0)
+r:
+  - oldrel
+  - release
+  - devel
+
+# Enable package cache
 cache: packages
+
+# Disable sudo to ensure container infrasturcture
 sudo: false
+
+# Setup GITHUB_PAT for static doc deploy / use with devtools
 env:
   global:
     secure: Uv2vIsl/YzDJOs/HxzTayopE9KDROspfQ28jkfc+A098HxWtoPrDdzXujCNZp1OaYrNJzkMnGAgtvFTxyynt0GO1PoHzAsnIo9J5lhlapNDWD0E2I88fm4H2TU8UOaX1LKoqzXhUuJ9EnOHAUDwTs+Fv34sDSXY86jv+RDgkK7o8l2kQku59ursqvWDDLgpKV+IR4E4XT+gkATD91b+Kx1aMUzcCR5cbKAjK9I7GW6CGUMKbskhRaqL4wa6uHXVBWfupx81vaImAhE3pdVo65xHouMxoc3kK/1ggqBKDv3fn4Ir42mseRfLDGm+4zXVbm2Q0p7zfrg05h5IZ8nA2R6AnxnXc9fGIxXk2MuhmAvNZZ1lZDrSGPZYCHRf6vNJXlS3v0FKf3y2fJuj8auUf6untWB2+eLkH7g90sAPgjXGhj9Fy80MecglE9t9AxLNWrpgA43+aT7q1QWbzsalYnAtIpX1LSKaPnKpCo1HkeGOPOSU+7uHAxlxUB/eh5VTRo+bDW6luM4KSRrfpPKbcNBE1wpSKYPp5RSpzGyK8SaG08Lp83rUzxxXlY3DB0r9Y0sKtkwvJbXx8oh0f1QlHNfCuk9JC8HO4EZBmteuNX512u+Ef54OD39TV58fvoJOSAiIoIdbHxuZl6Xs70bhZI3FyLo44swE30pvUq3BRxFw=
+
+# Test package on multiple platforms
+matrix:
+  include:
+    - os: linux
+      dist: precise
+      sudo: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+    - os: linux
+      dist: trusty
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+      latex: false
+    - os: osx
+      osx_image: xcode8
+      before_install:
+        - brew install curl
+        - brew link --force curl
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: osx
+      osx_image: xcode7.3
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: osx
+      osx_image: beta-xcode6.1
+      disable_homebrew: true
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+
+warnings_are_errors: true
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
 
 #r_github_packages:
 #  - klutometis/roxygen
