@@ -53,19 +53,30 @@ ACF <- function(x, lagmax = 0, cor = TRUE, demean = TRUE){
 #' @description The acf function computes the estimated
 #' autocovariance or autocorrelation for both univariate and multivariate cases.
 #' @param x,object  An \code{"ACF"} object from \code{\link{ACF}}.
-#' @param ci        A \code{double} containing the 1-alpha level. Default is 95%
 #' @param show.ci   A \code{bool} indicating whether to show confidence region
-#' @param ...     Additional parameters
+#' @param ci        A \code{double} containing the 1-alpha level. Default is 0.95
+#' @param ...       Additional parameters
 #' @return An \code{array} of dimensions \eqn{N \times S \times S}{N x S x S}.
 #' @rdname plot.ACF
 #' @export
-plot.ACF = function(x, ci = 0.95, show.ci = TRUE, ...){
+#' @examples 
+#' m = ACF(datasets::AirPassengers)
+#' 
+#' # Plot with 95% CI
+#' plot(m) 
+#' 
+#' # Plot with 90% CI
+#' plot(m, ci = 0.90) 
+#' 
+#' # Plot without 95% CI
+#' plot(m, show.ci = FALSE)
+plot.ACF = function(x, show.ci = TRUE, ci = 0.95, ...){
   autoplot.ACF(x = x, ci = ci, show.ci = show.ci, ...)
 }
 
 #' @rdname plot.ACF
 #' @export
-autoplot.ACF = function(object, ci = 0.95, show.ci = TRUE, ...){
+autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
   
   # Quiet the warnings...
   Lag = hline = NULL

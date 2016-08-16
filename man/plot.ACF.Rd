@@ -5,16 +5,16 @@
 \alias{plot.ACF}
 \title{Auto-Covariance and Correlation Functions}
 \usage{
-\method{plot}{ACF}(x, ci = 0.95, show.ci = TRUE, ...)
+\method{plot}{ACF}(x, show.ci = TRUE, ci = 0.95, ...)
 
-\method{autoplot}{ACF}(object, ci = 0.95, show.ci = TRUE, ...)
+\method{autoplot}{ACF}(object, show.ci = TRUE, ci = 0.95, ...)
 }
 \arguments{
 \item{x, object}{An \code{"ACF"} object from \code{\link{ACF}}.}
 
-\item{ci}{A \code{double} containing the 1-alpha level. Default is 95%}
-
 \item{show.ci}{A \code{bool} indicating whether to show confidence region}
+
+\item{ci}{A \code{double} containing the 1-alpha level. Default is 0.95}
 
 \item{...}{Additional parameters}
 }
@@ -24,5 +24,17 @@ An \code{array} of dimensions \eqn{N \times S \times S}{N x S x S}.
 \description{
 The acf function computes the estimated
 autocovariance or autocorrelation for both univariate and multivariate cases.
+}
+\examples{
+m = ACF(datasets::AirPassengers)
+
+# Plot with 95\% CI
+plot(m) 
+
+# Plot with 90\% CI
+plot(m, ci = 0.90) 
+
+# Plot without 95\% CI
+plot(m, show.ci = FALSE)
 }
 

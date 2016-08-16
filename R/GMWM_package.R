@@ -56,7 +56,7 @@
 #' @importFrom grDevices gray.colors hcl graphics.off
 #' @importFrom graphics lines plot
 #' @importFrom methods is
-#' @importFrom stats arima predict ts as.ts is.ts
+#' @importFrom stats arima predict ts as.ts is.ts qnorm
 #' @importFrom utils install.packages tail head packageDescription compareVersion
 #' @importFrom scales trans_breaks trans_format math_format
 #' @importFrom grid textGrob gpar
