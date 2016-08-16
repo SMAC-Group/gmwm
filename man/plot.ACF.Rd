@@ -7,12 +7,12 @@
 \usage{
 \method{plot}{ACF}(x, ci = 0.95, show.ci = TRUE, ...)
 
-\method{autoplot}{ACF}(x, ci = 0.95, show.ci = TRUE, ...)
+\method{autoplot}{ACF}(object, ci = 0.95, show.ci = TRUE, ...)
 }
 \arguments{
-\item{x}{An \code{"ACF"} object from \code{\link{ACF}}.}
+\item{x, object}{An \code{"ACF"} object from \code{\link{ACF}}.}
 
-\item{ci}{A \code{double}}
+\item{ci}{A \code{double} containing the 1-alpha level. Default is 95%}
 
 \item{show.ci}{A \code{bool} indicating whether to show confidence region}
 
