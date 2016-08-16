@@ -9,7 +9,7 @@ ACF(x, lagmax = 0, cor = TRUE, demean = TRUE)
 \arguments{
 \item{x}{A \code{matrix} with dimensions \eqn{N \times S}{N x S} or N observations and S processes}
 
-\item{lagmax}{A \code{integer}}
+\item{lagmax}{A \code{integer} indicating the max lag.}
 
 \item{cor}{A \code{bool} indicating whether the correlation 
 (\code{TRUE}) or covariance (\code{FALSE}) should be computed.}
@@ -23,5 +23,18 @@ An \code{array} of dimensions \eqn{N \times S \times S}{N x S x S}.
 \description{
 The acf function computes the estimated
 autocovariance or autocorrelation for both univariate and multivariate cases.
+}
+\details{
+\code{lagmax} default is \eqn{10*log10(N/m)} where \eqn{N} is the number of
+observations and \eqn{m} is the number of series being compared. If 
+\code{lagmax} supplied is greater than the number of observations, then one
+less than the total will be taken.
+}
+\examples{
+# Get Autocorrelation
+m = ACF(datasets::AirPassengers)
+
+# Get Autocovariance and do not remove trend from signal
+m = ACF(datasets::AirPassengers, cor = FALSE, demean = FALSE)
 }
 

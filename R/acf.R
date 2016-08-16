@@ -18,13 +18,24 @@
 #' @description The acf function computes the estimated
 #' autocovariance or autocorrelation for both univariate and multivariate cases.
 #' @param x      A \code{matrix} with dimensions \eqn{N \times S}{N x S} or N observations and S processes
-#' @param lagmax A \code{integer}
+#' @param lagmax A \code{integer} indicating the max lag.
 #' @param cor    A \code{bool} indicating whether the correlation 
 #' (\code{TRUE}) or covariance (\code{FALSE}) should be computed.
 #' @param demean A \code{bool} indicating whether the data should be detrended
 #'  (\code{TRUE}) or not (\code{FALSE})
 #' @return An \code{array} of dimensions \eqn{N \times S \times S}{N x S x S}.
-ACF <- function(x, lagmax = 0, cor = TRUE, demean = TRUE){
+#' @details 
+#' \code{lagmax} default is \eqn{10*log10(N/m)} where \eqn{N} is the number of
+#' observations and \eqn{m} is the number of series being compared. If 
+#' \code{lagmax} supplied is greater than the number of observations, then one
+#' less than the total will be taken.
+#' @examples 
+#' # Get Autocorrelation
+#' m = ACF(datasets::AirPassengers)
+#' 
+#' # Get Autocovariance and do not remove trend from signal
+#' m = ACF(datasets::AirPassengers, cor = FALSE, demean = FALSE)
+ACF = function(x, lagmax = 0, cor = TRUE, demean = TRUE){
 
   # Force to matrix form
   if(is.ts(x) || is.atomic(x)){
@@ -71,7 +82,7 @@ ACF <- function(x, lagmax = 0, cor = TRUE, demean = TRUE){
 #' # Plot without 95% CI
 #' plot(m, show.ci = FALSE)
 plot.ACF = function(x, show.ci = TRUE, ci = 0.95, ...){
-  autoplot.ACF(x = x, ci = ci, show.ci = show.ci, ...)
+  autoplot.ACF(object = x, show.ci = show.ci, ci = ci, ...)
 }
 
 #' @rdname plot.ACF
@@ -82,7 +93,7 @@ autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
   Lag = hline = NULL
   
   # Wide to long array transform
-  x2 = as.data.frame.table(x, responseName = "ACF")
+  x2 = as.data.frame.table(object, responseName = "ACF")
   
   colnames(x2) = c("Lag", "Signal X", "Signal Y", "ACF")
   
@@ -105,7 +116,7 @@ autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
   
   if(show.ci){
     
-    clim0 = qnorm( (1 + ci)/2 ) / sqrt(attr(x,'n'))
+    clim0 = qnorm( (1 + ci)/2 ) / sqrt(attr(object,'n'))
 
     ci.data = data.frame(hline=c(-clim0,clim0),
                              type=c("ci","ci"))
@@ -115,10 +126,10 @@ autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
                        color = "blue",  linetype = "longdash")
   }
   
-  if(attr(x,'type')){
-    g = g + ggtitle("Autocorrelation Plot")
+  if(attr(object,'type')){
+    g = g + ggtitle("Autocorrelation Plot") + ylab("ACF (cor)")
   } else{
-    g = g + ggtitle("Autocovariance Plot")
+    g = g + ggtitle("Autocovariance Plot") + ylab("ACF (cov)")
   }
   
   g
