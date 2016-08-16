@@ -71,6 +71,7 @@ ACF = function(x, lagmax = 0, cor = TRUE, demean = TRUE){
 #' @rdname plot.ACF
 #' @export
 #' @examples 
+#' # Calculate the Autocorrelation
 #' m = ACF(datasets::AirPassengers)
 #' 
 #' # Plot with 95% CI
@@ -90,7 +91,7 @@ plot.ACF = function(x, show.ci = TRUE, ci = 0.95, ...){
 autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
   
   # Quiet the warnings...
-  Lag = hline = NULL
+  Lag = xmin = xmax = ymin = ymax = NULL 
   
   # Wide to long array transform
   x2 = as.data.frame.table(object, responseName = "ACF")
@@ -118,18 +119,19 @@ autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
     
     clim0 = qnorm( (1 + ci)/2 ) / sqrt(attr(object,'n'))
 
-    ci.data = data.frame(hline=c(-clim0,clim0),
-                             type=c("ci","ci"))
-    
-    g = g + geom_hline(data = ci.data, 
-                       aes(yintercept = hline),
-                       color = "blue",  linetype = "longdash")
+    ci.region = data.frame(xmin=-Inf, xmax=Inf, ymin=-clim0, ymax=clim0)
+
+    g = g + geom_rect(data = ci.data, 
+                      aes(xmin = xmin, xmax = xmax,
+                          ymin = ymin, ymax = ymax),
+                      fill = "blue", alpha = 0.10,
+                      inherit.aes = FALSE)
   }
   
   if(attr(object,'type')){
-    g = g + ggtitle("Autocorrelation Plot") + ylab("ACF (cor)")
+    g = g + ylab("Autocorrelation")
   } else{
-    g = g + ggtitle("Autocovariance Plot") + ylab("ACF (cov)")
+    g = g + ylab("Autocovariance")
   }
   
   g

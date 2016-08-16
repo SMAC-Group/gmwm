@@ -26,6 +26,7 @@ The acf function computes the estimated
 autocovariance or autocorrelation for both univariate and multivariate cases.
 }
 \examples{
+# Calculate the Autocorrelation
 m = ACF(datasets::AirPassengers)
 
 # Plot with 95\% CI
