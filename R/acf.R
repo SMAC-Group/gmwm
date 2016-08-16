@@ -119,9 +119,9 @@ autoplot.ACF = function(object, show.ci = TRUE, ci = 0.95, ...){
     
     clim0 = qnorm( (1 + ci)/2 ) / sqrt(attr(object,'n'))
 
-    ci.region = data.frame(xmin=-Inf, xmax=Inf, ymin=-clim0, ymax=clim0)
+    ci.region = data.frame(xmin = -Inf, xmax = Inf, ymin = -clim0, ymax = clim0)
 
-    g = g + geom_rect(data = ci.data, 
+    g = g + geom_rect(data = ci.region, 
                       aes(xmin = xmin, xmax = xmax,
                           ymin = ymin, ymax = ymax),
                       fill = "blue", alpha = 0.10,
