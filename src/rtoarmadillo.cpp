@@ -541,4 +541,119 @@ arma::vec diff_inv(const arma::vec& x, unsigned int lag, unsigned int d){
   return diff_inv_values(x, lag, d, xi);
 }
 
+
+
+// helper function
+inline void sweep_col_mean(arma::mat& x){
+  
+  for(unsigned int i = 0; i < x.n_cols; i++){
+    arma::vec act = x.col(i);
+    double mu = mean(act);
+    x.col(i) = act - mu;
+  }
+  
+}
+
+
+//' @title Auto-Covariance and Correlation Functions
+//' @description The acf function computes the estimated
+//' autocovariance or autocorrelation for both univariate and multivariate cases.
+//' @param x      A \code{matrix} with dimensions \eqn{N \times S}{N x S} or N observations and S processes
+//' @param lagmax A \code{integer}
+//' @param cor    A \code{bool} indicating whether the correlation 
+//' (\code{TRUE}) or covariance (\code{FALSE}) should be computed.
+//' @param demean A \code{bool} indicating whether the data should be detrended
+//'  (\code{TRUE}) or not (\code{FALSE})
+//' @keywords internal
+// [[Rcpp::export(.acf)]]
+arma::cube acf(arma::mat& x, int lagmax = 0, bool cor = true, bool demean = true){
+  
+  int nobs = x.n_rows, nsignals = x.n_cols;
+  
+  // Fix a default lag max
+  if(lagmax <= 0){
+    lagmax = std::floor(10 * (log10((double)nobs) - log10((double)nsignals)));
+  }
+  
+  
+  // Detrend data
+  if(demean){
+    sweep_col_mean(x);
+  }
+  
+  // Figure out best max
+  lagmax = std::min(lagmax, nobs - 1);
+  
+  // Need a cube form
+  arma::cube acf((lagmax + 1), nsignals, nsignals);
+  
+  
+  // Dimensions
+  int d1 = lagmax + 1, d2 = nsignals*d1;
+  
+  // Compute Autocovariance
+  for(int u = 0; u < nsignals; u++){
+    
+    for(int v = 0; v < nsignals; v++){
+      
+      for(int lag = 0; lag <= lagmax; lag++) {
+        
+        double sum = 0.0; int nu = 0;
+        
+        for(int i = 0; i < nobs-lag; i++){
+          
+          if(arma::is_finite(x[i + lag + nobs*u]) &&
+             arma::is_finite(x[i + nobs*v])) {
+            nu++;
+            sum += x[i + lag + nobs*u] * x[i + nobs*v];
+          }
+          
+        }
+        
+        acf[lag + d1*u + d2*v] = (nu > 0) ? sum/(nu + lag) : arma::datum::nan;
+      }
+      
+    }
+  }
+  
+  
+  // Compute Correlation
+  if(cor) {
+    
+    if(nobs == 1) {
+      
+      for(int u = 0; u < nsignals; u++){
+        acf[0 + d1*u + d2*u] = 1.0;
+      }
+      
+    } else {
+      
+      arma::vec se(nsignals);
+      
+      for(int u = 0; u < nsignals; u++){
+        se[u] = sqrt(acf[0 + d1*u + d2*u]);
+      }
+      
+      for(int u = 0; u < nsignals; u++){
+        for(int v = 0; v < nsignals; v++){
+          
+          for(int lag = 0; lag <= lagmax; lag++) {
+            
+            // Correlation formula COV(X,Y) / (SE(X)*SE(Y))
+            double a = acf[lag + d1*u + d2*v] / (se[u]*se[v]);
+            
+            // Bound correlations to [-1,1]
+            acf[lag + d1*u + d2*v] = (a > 1.) ? 1. : ((a < -1.) ? -1. : a);
+            
+          } // end for
+        } // end for
+      } // end for
+      
+    } // end if
+    
+  } // end if
+  
+  return acf;
+}
+
 /* ------------------ End R to Armadillo Functions ----------------------- */
