@@ -410,13 +410,15 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
   
   # axis label: default setting
   if(is.null(axis.x.label)){
+    
+    axis.x.label = 'Time'
+    
     if(!is.null(from.unit) && !is.null(to.unit) && obj$converted){ 
-      axis.x.label = paste('time(',to.unit,')', sep = '')
+      axis.x.label = paste0(axis.x.label,' (',to.unit,')')
     }else if(is.null(from.unit) == F){
-      axis.x.label =paste('time(',from.unit,')', sep = '')
-    }else{
-      axis.x.label = 'time'
+      axis.x.label = paste0(axis.x.label,' (',from.unit,')')
     }
+    
   }
   
   p = p +  
