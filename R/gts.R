@@ -336,13 +336,15 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
   }
   
   # axis label: default setting
-  if(is.null(axis.x.label)){
+  if(is.null(axis.x.label)){ 
+    
+    ## TODO: Write the following as a function
+    axis.x.label = 'Time'
+    
     if(!is.null(from.unit) && !is.null(to.unit) && obj$converted){ 
-      axis.x.label = paste('Time(',to.unit,')', sep = '')
+      axis.x.label = paste0(axis.x.label, ' (',to.unit,')')
     }else if(is.null(from.unit) == F){
-      axis.x.label =paste('Time(',from.unit,')', sep = '')
-    }else{
-      axis.x.label = 'Time'
+      axis.x.label =paste0(axis.x.label,' (',from.unit,')')
     }
   }
   if(is.null(axis.y.label)){
