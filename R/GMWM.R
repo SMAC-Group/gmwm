@@ -540,7 +540,7 @@ rgmwm = function(model, data, eff = c(1,0.9,0.6), ...){
   obj.list = vector('list', length = len)
   
   for(i in seq_len(len)){
-    if(all.equal(eff[i], 1)){
+    if(isTRUE(all.equal(eff[i], 1))){
       obj.list[[i]] = gmwm(model = model, data = data, robust = F, ...)
     }else{
       obj.list[[i]] = gmwm(model = model, data = data, robust = T, eff = eff[i], ...) 
