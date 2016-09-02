@@ -532,15 +532,15 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 #' @examples 
 #' set.seed(8836)
 #' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), 1000)
-#' obj = gmwm_robust(2*AR1()+WN(), data = x)
+#' obj = rgmwm(2*AR1()+WN(), data = x)
 #' compare.eff(obj)
-gmwm_robust = function(model, data, eff = c(1,0.9,0.6), ...){ 
+rgmwm = function(model, data, eff = c(1,0.9,0.6), ...){ 
   
   len = length(eff)
   obj.list = vector('list', length = len)
   
-  for(i in 1:len){
-    if(eff[i] == 1){
+  for(i in seq_len(len)){
+    if(all.equal(eff[i], 1)){
       obj.list[[i]] = gmwm(model = model, data = data, robust = F, ...)
     }else{
       obj.list[[i]] = gmwm(model = model, data = data, robust = T, eff = eff[i], ...) 
