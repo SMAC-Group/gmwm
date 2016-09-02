@@ -33,7 +33,8 @@ Imports:
     stats,
     methods,
     graphics,
-    grDevices
+    grDevices,
+    balamuta
 LinkingTo: 
     Rcpp,
     RcppArmadillo
@@ -45,3 +46,4 @@ Suggests:
 Additional_repositories: http://smac-group.com/datarepo
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
+Remotes: coatless/balamuta
