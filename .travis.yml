@@ -1,7 +1,16 @@
+# Use the R package with docs at: https://docs.travis-ci.com/user/languages/r
 language: r
+
+# Store packages to avoid redownloading
 cache: packages
+
+# Go to container architecture
 sudo: false
+
+# For CRAN...
 warnings_are_errors: true
+
+# Let's create a build matrix!
 matrix:
   include:
   - os: linux
@@ -28,6 +37,21 @@ matrix:
     dist: trusty
     sudo: true
     r: devel
+
+# Write documentation to new branch
+r_github_packages:
+- klutometis/roxygen
+- hadley/staticdocs
+
+before_script:
+- chmod +x ./_build.sh
+- chmod +x ./_deploy.sh
+
+after_success:
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash _build.sh && bash
+  _deploy.sh
+
+# Use SMAC's GitHub PAT token
 env:
   global:
     secure: Uv2vIsl/YzDJOs/HxzTayopE9KDROspfQ28jkfc+A098HxWtoPrDdzXujCNZp1OaYrNJzkMnGAgtvFTxyynt0GO1PoHzAsnIo9J5lhlapNDWD0E2I88fm4H2TU8UOaX1LKoqzXhUuJ9EnOHAUDwTs+Fv34sDSXY86jv+RDgkK7o8l2kQku59ursqvWDDLgpKV+IR4E4XT+gkATD91b+Kx1aMUzcCR5cbKAjK9I7GW6CGUMKbskhRaqL4wa6uHXVBWfupx81vaImAhE3pdVo65xHouMxoc3kK/1ggqBKDv3fn4Ir42mseRfLDGm+4zXVbm2Q0p7zfrg05h5IZ8nA2R6AnxnXc9fGIxXk2MuhmAvNZZ1lZDrSGPZYCHRf6vNJXlS3v0FKf3y2fJuj8auUf6untWB2+eLkH7g90sAPgjXGhj9Fy80MecglE9t9AxLNWrpgA43+aT7q1QWbzsalYnAtIpX1LSKaPnKpCo1HkeGOPOSU+7uHAxlxUB/eh5VTRo+bDW6luM4KSRrfpPKbcNBE1wpSKYPp5RSpzGyK8SaG08Lp83rUzxxXlY3DB0r9Y0sKtkwvJbXx8oh0f1QlHNfCuk9JC8HO4EZBmteuNX512u+Ef54OD39TV58fvoJOSAiIoIdbHxuZl6Xs70bhZI3FyLo44swE30pvUq3BRxFw=
@@ -37,3 +61,4 @@ notifications:
     on_failure: change
   slack:
     secure: iNUHskGIhjqWJnfaf46nuvhJMsbl7jsLoiZ3Zbyh9sdXKaN3I1G79XNVyuDms0FypcrRYYbixJMLqQHiegpCFKo+cdvpjupy6VGG1wmdwqSMYB/HqFVzGg9YUCgrWm9bExQc3pq/O+MZM4GqX+oDAxfnW6lNsMbpLh19MEl0otmsK9WGTAeK6SIC5Eo5L2I5D2cQgaM9/9+FCY054uNbIs4oA/vwGbMaLp5aLIe61ULV4O8HUyQUJqKBLtP/KwRNXCspJ6DkoIAVwYmHgREZxJ3JJLUthbL3B573ho3IHDOy2hYX/Kga/vLXBWHXjWBUqvu/SHxxF7ujfq2kVMnAlHGGEyfzswj+H5IqvSFUACrOb8u6CrJIb/IAoEb33qVp8kOdsWr2roBrNW919xhUlRghJCGwpxbrjREbxcRFGu1mPcdFE4tXqUe2zGLYS5Qte5VfnqKsjodVg9Mj9YKrJrycUGaq+nkNWU/TLTTbl6UqbSPz/ZFuH7EtsBYqAc0tTZ2k7O8aRHCAP6TaSMG3mG12GnzRGhSR6p+2UUsW2pWXjlaMjd+24zJajdnyY7w4AMKea0ibVD3M1NyjuTeyMbtfv+RbMh9ASpu50qnFTPLshFbJaDhzHLxfVxT8K+ORtadu97hOvMYSoOv/8V8qcuKjpXnnDyB2N3eoeXmhjms=
+

@@ -11,7 +11,7 @@ git clone -b gh-pages \
 cd doc-output/gmwm
 
 # Copy generated output to doc-output
-cp -r ../../inst/web/* ./
+cp -r ../../docs/* ./
 
 # Add all files to the repo
 git add *

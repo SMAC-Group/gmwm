@@ -24,7 +24,7 @@ sd_section("GMWM Estimator",
            c(
              "gmwm",
              "gmwm.imu",
-             "gmwm.robust",
+             "rgmwm",
              "update.gmwm"
            )
 )
@@ -46,7 +46,7 @@ sd_section("Computations",
              "hadam",
              "modwt",
              "dwt",
-             "brickwal"
+             "brickwall"
            )
 )
 
