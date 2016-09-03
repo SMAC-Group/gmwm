@@ -2,7 +2,10 @@
 language: r
 
 # Store packages to avoid redownloading
-cache: packages
+cache:
+  packages: true
+  directories:
+  - "$TRAVIS_BUILD_DIR/docs"
 
 # Go to container architecture
 sudo: false
@@ -11,32 +14,32 @@ sudo: false
 warnings_are_errors: true
 
 # Let's create a build matrix!
-matrix:
-  include:
-  - os: linux
-    dist: precise
-    sudo: false
-    r: oldrel
-  - os: linux
-    dist: precise
-    sudo: false
-    r: release
-  - os: linux
-    dist: precise
-    sudo: false
-    r: devel
-  - os: linux
-    dist: trusty
-    sudo: true
-    r: oldrel
-  - os: linux
-    dist: trusty
-    sudo: true
-    r: release
-  - os: linux
-    dist: trusty
-    sudo: true
-    r: devel
+# matrix:
+#  include:
+#  - os: linux
+#    dist: precise
+#    sudo: false
+#    r: oldrel
+#  - os: linux
+#    dist: precise
+#    sudo: false
+#    r: release
+#  - os: linux
+#    dist: precise
+#    sudo: false
+#    r: devel
+#  - os: linux
+#    dist: trusty
+#    sudo: true
+#    r: oldrel
+#  - os: linux
+#    dist: trusty
+#    sudo: true
+#    r: release
+#  - os: linux
+#    dist: trusty
+#    sudo: true
+#    r: devel
 
 # Write documentation to new branch
 r_github_packages:
