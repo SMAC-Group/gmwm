@@ -613,7 +613,7 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
 #' 4*DR()+2*WN()
 #' DR()*4 + WN()*2
 #' AR1(phi=.3,sigma=.2)*3
-"*.ts.model" = function(x, y) {
+`*.ts.model` = function(x, y) {
   # Handles the ts.model()*c case
   if(!is.numeric(x)){
     temp = x
@@ -649,7 +649,7 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
 #' @examples
 #' DR()+WN()
 #' AR1(phi=.3,sigma=.2)
-"+.ts.model" = function(x, y) {
+`+.ts.model` = function(x, y) {
   starting = FALSE
   if(y$starting & x$starting){
     starting = TRUE
