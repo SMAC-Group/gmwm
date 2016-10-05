@@ -2,11 +2,12 @@
 % Please edit documentation in R/GMWM.R
 \name{compare.models}
 \alias{compare.models}
-\title{Graphically Compare GMWM Models Constructed by the Same Data}
+\title{Graphically Compare GMWM Model Fit}
 \usage{
-compare.models(..., display.model = T, background = "white",
-  transparence = 0.1, CI.color = "#003C7D", line.color = NULL,
-  line.type = NULL, point.size = NULL, point.shape = NULL,
+compare.models(..., display.model = T, show.theo.wv = F,
+  facet.label = NULL, background = "white", transparence = 0.05,
+  CI.color = NULL, line.color = NULL, line.type = NULL,
+  point.size = NULL, point.shape = NULL,
   title = "Comparison of GMWM Models", title.size = 18,
   axis.label.size = 16, axis.tick.size = 11, facet.label.size = 13,
   facet.label.background = "#003C7D33",
@@ -14,15 +15,19 @@ compare.models(..., display.model = T, background = "white",
   axis.y.label = expression(paste("Wavelet Variance ", nu)))
 }
 \arguments{
-\item{...}{Several \code{gmwm} objects, and they must be constrcuted by the same data.}
+\item{...}{Several \code{gmwm} objects.}
 
 \item{display.model}{A \code{boolean} indicating whether the model should be displayed in the facet label.}
+
+\item{show.theo.wv}{A \code{boolean} indicating whether the theoretical WV should be plotted in the lower triangular area. See \code{details}.}
+
+\item{facet.label}{A \code{character vector} indicating what should be displayed in the facet labels.}
 
 \item{background}{A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.}
 
 \item{transparence}{A \code{double} that ranges from 0 to 1 that controls the transparency of confidence interval.}
 
-\item{CI.color}{A \code{string} that indicates the color of the confidence interval (e.g. 'black', 'red', '#003C7D', etc.)}
+\item{CI.color}{A \code{vector} of \code{string} that indicates the color of the confidence interval.}
 
 \item{line.color}{A \code{vector} of \code{string} that indicates the color of lines.}
 
@@ -48,38 +53,43 @@ compare.models(..., display.model = T, background = "white",
 
 \item{axis.y.label}{A \code{string} that indicates the label on y axis.}
 }
+\value{
+A ggplot2 panel containing the graphs of gmwm objects.
+}
 \description{
-Creates a table of graphs to compare GMWM model fits.
+Creates a table of graphs to compare GMWM model fit.
 }
 \details{
-This function only works for \code{gmwm} objects which are constrcuted by same data, and 
-all \code{gmwm} objects must be constructed by classical method, or by robust methods
-with the same efficiency. That's because this function assumes each \code{gmwm} object has the same empirical wavelet variance (WV).
-This function will check whether this requirement is satisfied before plotting the graph.
+This function has been updated to deal with any \code{gmwm} object. The old contraint that supplied
+objects must be constrcuted by the same data is no longer needed.
 
-The value of \code{line.type}, \code{line.color}, \code{point.size}, \code{point.size} must be a \code{vector}. Please follow this order:
-"Empirical WV, lower bound of CI, higher bound of CI, model1 implied WV, model2 implied WV, ...."
+The parameter \code{show.theo.wv} will be automatically set to TRUE, if the supplied \code{gmwm} objects
+are constructed by the same data. This aims to mimic the behaviour in the old version of \code{compare.models}.
 
-Please check examples for help.
+The default aesthetical setting is designed to work well with 2 and 3 objects. Users are expected to change
+the color/point/line settings if they want to supply more than 3 objects.
 
-If you meet the error "polygon edge not found", it is complaining that you don't have enough space to
-plot the graph. Adjust the plot window.
+If two models have the same attribute values, for example, same empirical WV, then their aethetics will
+be set to the same, i.e. same line type, line color, point size, point shape, etc.
 }
 \examples{
 \dontrun{
-if(!require("imudata")){
-   install_imudata()
-   library("imudata")
-}
+#AR
+set.seed(8836)
+x1 = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), 1000)
+x2 = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), 2000)
 
-data(imu6)
+GMWM1 = gmwm(AR1(), data = x1)
+GMWM2 = gmwm(2*AR1(), data = x2)
 
-model1 = gmwm.imu(3*AR1(),imu6[,2])
-model2 = gmwm.imu(2*AR1() + RW(),imu6[,2])
-compare.models(model1, model2)
-compare.models(model1, model2, display.model = F, point.size = c(4, 0, 0, 4, 4))
-compare.models(model1, model2, transparence = 0.2, 
-               line.color = c('black', 'grey', 'grey', 'blue', 'red'))
+compare.models(GMWM1, GMWM2, show.theo.wv = T, transparence = 0.2, 
+               facet.label = c('model1', 'model2'))
+               
+compare.models(GMWM1, GMWM2, CI.color = c('black','red'), 
+               point.size = c(3, 3, 0, 0, 0, 0, 2, 2),
+               line.color = c('black', 'red', 'grey', 'pink',
+                              'grey', 'pink', 'purple', 'green')) 
+#in the order of emp. WV, lower bound, higher bound, theo. WV
 }
 }
 \author{
