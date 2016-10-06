@@ -193,7 +193,8 @@ arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
     double data_buffer[7];
   
     for(unsigned int i = 0; i < nEpochs; i++){
-      fread(&data_buffer, 8, 7, fid); // double
+      if(!fread(&data_buffer, 8, 7, fid)) // double
+        break; 
       
       for(int j = 0; j < 7; j++){
         data(i,j) = data_buffer[j];
@@ -206,9 +207,11 @@ arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type) {
     int32_t data_buffer[6];
     
     for(unsigned int i = 0; i < nEpochs; i++){
-      fread(&time_buffer, 8, 1, fid); // double
+      if(!fread(&time_buffer, 8, 1, fid)) // double
+        break;
       
-      fread(&data_buffer, 4, 6, fid); // int
+      if(!fread(&data_buffer, 4, 6, fid)) // int
+        break; 
     
       data(i,0) = time_buffer[0];
       
