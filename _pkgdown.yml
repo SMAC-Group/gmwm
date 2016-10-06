@@ -1,0 +1,152 @@
+title: gmwm
+
+template:
+  bootswatch: cerulean
+
+reference:
+- title: Models 
+  desc: >
+    Supported Time Series Processes
+  contents:
+  - SARIMA
+  - SARMA
+  - ARIMA
+  - ARMA
+  - AR
+  - MA
+  - ARMA11
+  - AR1
+  - GM
+  - MA1
+  - WN
+  - DR
+  - QN
+  - RW
+
+- title: GMWM Estimator
+  desc: >
+    Estimation Tools for the Generalized Method of Wavelet Moments estimator (GMWM)
+  contents:
+  - gmwm
+  - gmwm.imu
+  - rgmwm
+  - update.gmwm
+
+
+- title: Model Selection
+  desc: >
+    Rank a group of models by using the Wavelet Information Criterion (WIC)
+  contents:
+  - rank.models
+  - auto.imu
+
+
+- title: Computations
+  desc: >
+    Tools for computing information
+  contents:
+  - wvar
+  - wvcov
+  - avar
+  - hadam
+  - modwt
+  - dwt
+  - brickwall
+
+
+- title: Generation
+  desc: > 
+    Support for Generating Single or Composite Processes
+  contents:
+  - gen.gts
+  - gen.lts
+
+- title: Inertial Measurement Units
+  desc: >
+    IMU specific tools
+  contents:
+  - imu
+  - read.imu
+  
+- title: Visualizations
+  desc: >
+    Graphing Features
+  contents:
+  - plot.wvar
+  - plot.wvar.imu
+  - compare.wvar
+  - plot.gmwm
+  - compare.models
+  - compare.eff
+  - compare.gmwm
+  - plot.gts
+  - plot.lts
+  - autoplot.avar
+  - autoplot.hadam
+  - plot.avar
+  - plot.hadam
+  - plot.rank.models
+  - plot.auto.imu
+
+
+
+- title: Supplementary Data Packages
+  desc: >
+    Helpers to install different SMAC-Group data packages
+  contents:
+  - install_datapkg
+  - install_imudata
+
+- title: Process to Haar Wavelet Variance
+  desc: >
+    Functions that compute the theoretical Haar Wavelet Variance
+  contents:
+  - arma_to_wv
+  - arma11_to_wv
+  - ar1_to_wv
+  - ma1_to_wv
+  - wn_to_wv
+  - dr_to_wv
+  - qn_to_wv
+  - rw_to_wv
+
+
+- title: Partial First Order Derivatives
+  desc: >
+    Functions that compute the partial first order derivatives of the theoretical Haar Wavelet Variance
+  contents: 
+  - derivative_first_matrix
+  - deriv_arma11
+  - deriv_ar1
+  - deriv_ma1
+  - deriv_wn
+  - deriv_dr
+  - deriv_qn
+  - deriv_rw
+
+
+- title: Partial Second Order Derivatives
+  desc: > 
+    Functions that compute the partial second order derivatives of the theoretical Haar Wavelet Variance
+  contents:
+  - deriv_2nd_arma11
+  - deriv_2nd_ar1
+  - deriv_2nd_ma1
+  - deriv_2nd_dr
+
+navbar:
+  type: default
+  left:
+  - text: Home
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+  - text: Quick Start
+    href: articles/Quick-Start-Guide.html
+  - text: News
+    menu:
+      - text: "Change log"
+        href: news/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/SMAC-Group/gmwm

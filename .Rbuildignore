@@ -13,3 +13,4 @@ LICENSE
 ^inst/web$
 ^_deploy\.sh$
 ^_build\.sh$
+^_pkgdown\.yml$

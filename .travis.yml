@@ -13,6 +13,12 @@ sudo: false
 # For CRAN...
 warnings_are_errors: true
 
+# Required for use with pkgdown (due to magick dependency)
+addons:
+  apt:
+    packages:
+      - libmagick++-dev
+
 # Let's create a build matrix!
 # matrix:
 #  include:
@@ -44,7 +50,7 @@ warnings_are_errors: true
 # Write documentation to new branch
 r_github_packages:
 - klutometis/roxygen
-- hadley/staticdocs
+- hadley/pkgdown
 
 before_script:
 - chmod +x ./_build.sh
