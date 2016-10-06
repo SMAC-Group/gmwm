@@ -1,1 +1,1 @@
-Rscript -e "staticdocs::build_site(examples = TRUE)"
+Rscript -e "pkgdown::build_site(examples = TRUE)"
