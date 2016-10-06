@@ -13,6 +13,12 @@ sudo: false
 # For CRAN...
 warnings_are_errors: true
 
+# Required for use with pkgdown (due to magick dependency)
+addons:
+  apt:
+    packages:
+      - libmagick++-dev
+
 # Let's create a build matrix!
 # matrix:
 #  include:
