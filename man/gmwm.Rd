@@ -113,7 +113,7 @@ If robust = TRUE the function takes the robust estimate of the wavelet variance 
 # AR
 set.seed(1336)
 n = 200
-data = gen.gts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
+data = gen_gts(n, AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1))
 
 # Models can contain specific parameters e.g.
 adv.model = gmwm(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 0.01),
@@ -136,8 +136,8 @@ guided.ar1.wn.new = gmwm(AR1()+WN(), data)
  
 # ARMA case
 set.seed(1336)
-data = gen.gts(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
-              sigma2 = 0.1796), 200)
+data = gen_gts(n, ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
+              sigma2 = 0.1796))
 #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
                 data, model.type="ssm")

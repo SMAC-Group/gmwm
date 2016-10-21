@@ -19,7 +19,7 @@ Displays the summary table of wavelet variance in addition to CI values and supp
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 out = wvar(x)
 summary( out )
 }

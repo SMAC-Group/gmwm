@@ -70,7 +70,7 @@ can only be set to FALSE currently.
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 out = hadam(x)
 plot( out )
 }

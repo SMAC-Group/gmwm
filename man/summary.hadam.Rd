@@ -19,7 +19,7 @@ Displays the summary table of Hadamard variance
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 out = hadam(x)
 summary( out )
 }

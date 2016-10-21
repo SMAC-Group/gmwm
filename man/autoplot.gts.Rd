@@ -45,7 +45,7 @@ A ggplot2 panel containing the graph of time series.
 This function is implemented with ggplot2.
 }
 \examples{
-x = gen.gts(WN(sigma2=1), 50, unit = 'sec', freq = 1)
+x = gen_gts(50, WN(sigma2=1), unit = 'sec', freq = 1)
 autoplot(x)
 autoplot(x, to.unit = 'ns', line.type = 'dashed', line.color = 'black', point.size = 2)
 }
