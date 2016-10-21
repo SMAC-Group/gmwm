@@ -84,7 +84,7 @@ modwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary=
 #' @keywords internal
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' print(modwt(x))
 print.modwt = function(x, ...){
   NextMethod("print")
@@ -101,7 +101,7 @@ print.modwt = function(x, ...){
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' summary(modwt(x))
 summary.modwt=function(object, ...){
   cat("Results of the MODWT containing ",attr(object,"J")," scales\n")

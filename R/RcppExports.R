@@ -523,8 +523,8 @@ find_full_model <- function(x) {
 #' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
-rank_models <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
-    .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
+rank_models_cpp <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
+    .Call('gmwm_rank_models_cpp', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Find the auto imu result
@@ -544,8 +544,8 @@ rank_models <- function(data, model_str, full_model, alpha, compute_v, model_typ
 #' @param seed A \code{unsigned int} that is the seed one wishes to use. 
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
-auto_imu <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
-    .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
+auto_imu_cpp <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
+    .Call('gmwm_auto_imu_cpp', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Bootstrap for Matrix V

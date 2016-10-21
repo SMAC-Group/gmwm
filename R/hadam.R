@@ -91,7 +91,7 @@ hadam = function(x, type = "mo") {
 #' @return console output
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' out = hadam(x)
 #' print( out )
 print.hadam = function(x, ...) {
@@ -116,7 +116,7 @@ print.hadam = function(x, ...) {
 #' can only be set to FALSE currently.
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' out = hadam(x)
 #' plot( out )
 plot.hadam = function(x, CI = F, transparence = 0.1, background = 'white', bw = F, 
@@ -156,7 +156,7 @@ plot.hadam = function(x, CI = F, transparence = 0.1, background = 'white', bw = 
 #' can only be set to FALSE currently.
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' out = hadam(x)
 #' autoplot( out )
 autoplot.hadam = function(object, CI = F, transparence = 0.1, background = 'white', bw = F, 
@@ -231,7 +231,7 @@ autoplot.hadam = function(object, CI = F, transparence = 0.1, background = 'whit
 #' @return Summary table
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' out = hadam(x)
 #' summary( out )
 summary.hadam = function(object, ...) {

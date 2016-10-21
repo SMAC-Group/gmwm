@@ -384,9 +384,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rank_models
-arma::field< arma::field<arma::field<arma::mat> > > rank_models(arma::vec& data, const std::vector<std::vector < std::string > >& model_str, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
-RcppExport SEXP gmwm_rank_models(SEXP dataSEXP, SEXP model_strSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
+// rank_models_cpp
+arma::field< arma::field<arma::field<arma::mat> > > rank_models_cpp(arma::vec& data, const std::vector<std::vector < std::string > >& model_str, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
+RcppExport SEXP gmwm_rank_models_cpp(SEXP dataSEXP, SEXP model_strSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -403,13 +403,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type eff(effSEXP);
     Rcpp::traits::input_parameter< bool >::type bs_optimism(bs_optimismSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(rank_models(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed));
+    rcpp_result_gen = Rcpp::wrap(rank_models_cpp(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed));
     return rcpp_result_gen;
 END_RCPP
 }
-// auto_imu
-arma::field< arma::field<arma::field<arma::mat> > > auto_imu(arma::mat& data, const arma::mat& combs, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
-RcppExport SEXP gmwm_auto_imu(SEXP dataSEXP, SEXP combsSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
+// auto_imu_cpp
+arma::field< arma::field<arma::field<arma::mat> > > auto_imu_cpp(arma::mat& data, const arma::mat& combs, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
+RcppExport SEXP gmwm_auto_imu_cpp(SEXP dataSEXP, SEXP combsSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -426,7 +426,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type eff(effSEXP);
     Rcpp::traits::input_parameter< bool >::type bs_optimism(bs_optimismSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(auto_imu(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed));
+    rcpp_result_gen = Rcpp::wrap(auto_imu_cpp(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed));
     return rcpp_result_gen;
 END_RCPP
 }
