@@ -78,7 +78,7 @@ nrow(x)
 To create a graph with the `gts` object use:
 
 ```{r}
-x = gen.gts(WN(sigma2=1), 50)
+x = gen_gts(50, WN(sigma2 = 1))
 plot(x)
 ```
 
@@ -196,8 +196,8 @@ As was the case with `gts`, there are two options to populate an `lts` object:
 ```{r eval = F}
 N = 10000
 
-wn = gen_wn(N,1)
-dr = gen_dr(N,.001)
+wn = gen_wn(N, 1)
+dr = gen_dr(N, .001)
 t  = wn + dr
 
 vals = cbind(wn,dr,t)
@@ -210,7 +210,7 @@ x = lts(vals, process = c("WN","DR","WN+DR"))
 ```{r}
 n = 10000
 
-model = WN(sigma2=1) + DR(0.001)
+model = WN(sigma2 = 1) + DR(omega = 0.001)
 
 # Basic
 ex2.basic = gen_lts(n, model)
@@ -241,7 +241,7 @@ nrow(x)
 To create a graph with the `lts` object use:
 
 ```{r, fig.height = 6}
-x = gen_lts(50, WN(1)+DR(0.001))
+x = gen_lts(50, WN(sigma2 = 1) + DR(omega = 0.001))
 plot(x)
 ```
 

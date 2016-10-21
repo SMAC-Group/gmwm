@@ -166,7 +166,7 @@ gen_lts = function(n, model, start = 0, end = NULL, freq = 1, unit = NULL, name 
   if( is.numeric(start)==F && is.numeric(end)==F){
     stop("'start' or 'end' must be specified.")}
   
-  if(is.null(start)==F && is.null(end)==F && (end-start)!= ((N-1)/freq) ){
+  if(is.null(start)==F && is.null(end)==F && (end - start) != ((n - 1)/freq) ){
     stop("end-start == (n - 1)/freq must be TRUE.")
   }
   
@@ -201,7 +201,7 @@ gen_lts = function(n, model, start = 0, end = NULL, freq = 1, unit = NULL, name 
   
   if(!model$starting){
     theta = model$theta
-    out = .Call('gmwm_gen_lts', PACKAGE = 'gmwm', N, theta, desc, obj)
+    out = .Call('gmwm_gen_lts', PACKAGE = 'gmwm', n, theta, desc, obj)
   }else{
     stop("Need to supply initial values within the ts.model object.")
   }
