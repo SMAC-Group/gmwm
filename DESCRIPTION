@@ -19,7 +19,7 @@ Description: Generalized Method of Wavelet Moments (GMWM) is an estimation
     models and ARIMA models. Lastly, the package provides the ability to quickly
     generate time series data, perform different wavelet decompositions, and
     visualizations.
-License: CC BY-NC-SA 4.0
+License: AGPL-3
 Maintainer: Stephane Guerrier <stephane@illinois.edu>
 Depends: 
     R (>= 3.0),
