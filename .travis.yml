@@ -56,9 +56,8 @@ before_script:
 - chmod +x ./_build.sh
 - chmod +x ./_deploy.sh
 
-after_success:
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash _build.sh && bash
-  _deploy.sh
+#after_success:
+#- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash _build.sh && bash _deploy.sh
 
 # Use SMAC's GitHub PAT token
 env:
