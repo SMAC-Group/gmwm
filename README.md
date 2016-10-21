@@ -94,11 +94,11 @@ model = AR1(phi = .99, sigma2 = .01) + WN(sigma2 = 1)
 # Generate Data
 set.seed(213)
 N = 1e3
-sim.ts = gen.gts(model, N)
+sim.ts = gen_gts(n, model)
 
 # Contaminate Data
 cont.eps = 0.01
-cont.num = sample(1:N,round(N*cont.eps))
+cont.num = sample(1:N, round(N*cont.eps))
 sim.ts[cont.num,] = sim.ts[cont.num,] + rnorm(round(N*cont.eps),0,sqrt(100))
 
 # Plot the data
@@ -111,7 +111,7 @@ wv.classic = wvar(sim.ts)
 wv.robust = wvar(sim.ts, robust = TRUE, eff = 0.6)
 
 # Plot the Classical vs. Robust WV
-compare.wvar(wv.classic, wv.robust, split = FALSE)
+compare_wvar(wv.classic, wv.robust, split = FALSE)
 
 # Run robust estimation
 o = gmwm.imu(model, sim.ts, robust = TRUE, eff = 0.6)
@@ -227,9 +227,9 @@ User Guides
 
 Various guides ship with package or are available on <http://smac-group.com/> to provide insight into how to use the different methods. At the present time, the following vignettes are available:
 
-1.  Process to Haar Wavelet Variance [(Online)](smac-group.com/computing/process-to-haar-wavelet-variance-formulae)
+1.  Process to Haar Wavelet Variance [(Online)](http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae)
 
 Licensing
 =========
 
-The license this source code is released under is the Creative Commons Attribution NonCommercial ShareAlike (CC-NC-SA). In some cases, the GPL license does apply. However, in the majority of the cases, the license in effect is the Creative Commons Attribution NonCommercial ShareAlike (CC-NC-SA) as the computational code is heavily dependent on armadilllo, which has an MIT license that enables us to recast our code to the Creative Commons Attribution NonCommercial ShareAlike (CC-NC-SA). See the LICENSE file for full text. Otherwise, please consult [TLDR Legal](https://tldrlegal.com/license/creative-commons-attribution-noncommercial-sharealike-(cc-nc-sa)) or [CC](https://creativecommons.org/licenses/by-nc-sa/4.0/#) which will provide a synopsis of the restrictions placed upon the data and code. Please note, this does NOT excuse you from talking about licensing with a lawyer!
+The license this source code is released under is the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0. In some cases, the GPL license does apply. However, in the majority of the cases, the license in effect is the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0 as the computational code is heavily dependent on Armadilllo, which use the MPL license that enables us to recast our code to use the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0. See the LICENSE file for full text. Otherwise, please consult [TLDR Legal](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0)) or [GNU](https://www.gnu.org/licenses/agpl-3.0.en.html) which will provide a synopsis of the restrictions placed upon the code. Please note, this does NOT excuse you from talking about licensing with a lawyer!
