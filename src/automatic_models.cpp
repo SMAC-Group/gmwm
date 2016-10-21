@@ -642,13 +642,13 @@ arma::field<arma::field<arma::mat> > model_select(arma::vec& data,
 //' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 //' @keywords internal
 // [[Rcpp::export]]
-arma::field< arma::field<arma::field<arma::mat> > >  rank_models(arma::vec& data,
-                                                                 const std::vector<std::vector < std::string > >& model_str, 
-                                                                 const std::vector< std::string >&  full_model,
-                                                                 double alpha, 
-                                                                 std::string compute_v, std::string model_type, 
-                                                                 unsigned int K, unsigned int H, unsigned int G, 
-                                                                 bool robust, double eff, bool bs_optimism, unsigned int seed){
+arma::field< arma::field<arma::field<arma::mat> > >  rank_models_cpp(arma::vec& data,
+                                                                     const std::vector<std::vector < std::string > >& model_str, 
+                                                                     const std::vector< std::string >&  full_model,
+                                                                     double alpha, 
+                                                                     std::string compute_v, std::string model_type, 
+                                                                     unsigned int K, unsigned int H, unsigned int G, 
+                                                                     bool robust, double eff, bool bs_optimism, unsigned int seed){
   
   
   std::set<std::vector < std::string > > models = vector_to_set(model_str);
@@ -686,13 +686,13 @@ arma::field< arma::field<arma::field<arma::mat> > >  rank_models(arma::vec& data
 //' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 //' @keywords internal
 // [[Rcpp::export]]
-arma::field< arma::field<arma::field<arma::mat> > >  auto_imu(arma::mat& data,
-                                                              const arma::mat& combs,
-                                                              const std::vector< std::string >&  full_model,
-                                                              double alpha, 
-                                                              std::string compute_v, std::string model_type, 
-                                                              unsigned int K, unsigned int H, unsigned int G, 
-                                                              bool robust, double eff, bool bs_optimism, unsigned int seed){
+arma::field< arma::field<arma::field<arma::mat> > >  auto_imu_cpp(arma::mat& data,
+                                                                  const arma::mat& combs,
+                                                                  const std::vector< std::string >&  full_model,
+                                                                  double alpha, 
+                                                                  std::string compute_v, std::string model_type, 
+                                                                  unsigned int K, unsigned int H, unsigned int G, 
+                                                                  bool robust, double eff, bool bs_optimism, unsigned int seed){
   
   
   

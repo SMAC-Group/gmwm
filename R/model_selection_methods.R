@@ -168,7 +168,7 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' Due to the structure of \code{rank.models}, you cannot mix and match \code{AR1()} and \code{GM()} objects.
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
-rank.models = function(..., data = NULL, nested = F, bootstrap = F, 
+rank_models = function(..., data = NULL, nested = F, bootstrap = F, 
                        model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
   
   if(is.null(data)){
@@ -247,7 +247,7 @@ rank.models = function(..., data = NULL, nested = F, bootstrap = F,
     
   }
   
-  out = .Call('gmwm_rank_models', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap, seed)
+  out = .Call('gmwm_rank_models_cpp', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap, seed)
   
   N = length(data)
   nlevels =  floor(log2(N))
@@ -293,7 +293,7 @@ rank.models = function(..., data = NULL, nested = F, bootstrap = F,
 #' # Example 1
 #' test1 = imu(imu6, gyros = 1:3, accels = NULL, axis = c('X', 'Y', 'Z'), freq = 100)
 #' 
-#' m = auto.imu(test1)
+#' m = auto_imu(test1)
 #' 
 #' # Process 1's model table
 #' m[[1]][[1]]
@@ -302,7 +302,7 @@ rank.models = function(..., data = NULL, nested = F, bootstrap = F,
 #' m[[1]][[2]]
 #' 
 #' }
-auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, seed = 1337){
+auto_imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, seed = 1337){
   
   # Check object
   if(!is.imu(data) ) {
@@ -324,7 +324,7 @@ auto.imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap, seed)
+  out = .Call('gmwm_auto_imu_cpp', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap, seed)
   
   # Handle post processing
   
