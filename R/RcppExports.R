@@ -1111,9 +1111,9 @@ gen_model <- function(N, theta, desc, objdesc) {
 #' @examples
 #' # AR
 #' set.seed(1336)
-#' gen_lts(10, c(.9,1), "AR1", list(c(1,1)))
-gen_lts <- function(N, theta, desc, objdesc) {
-    .Call('gmwm_gen_lts', PACKAGE = 'gmwm', N, theta, desc, objdesc)
+#' gen_lts_cpp(10, c(.9,1), "AR1", list(c(1,1)))
+gen_lts_cpp <- function(N, theta, desc, objdesc) {
+    .Call('gmwm_gen_lts_cpp', PACKAGE = 'gmwm', N, theta, desc, objdesc)
 }
 
 #' @title Optim loses NaN

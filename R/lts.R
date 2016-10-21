@@ -201,7 +201,7 @@ gen_lts = function(n, model, start = 0, end = NULL, freq = 1, unit = NULL, name 
   
   if(!model$starting){
     theta = model$theta
-    out = .Call('gmwm_gen_lts', PACKAGE = 'gmwm', n, theta, desc, obj)
+    out = .Call('gmwm_gen_lts_cpp', PACKAGE = 'gmwm', n, theta, desc, obj)
   }else{
     stop("Need to supply initial values within the ts.model object.")
   }

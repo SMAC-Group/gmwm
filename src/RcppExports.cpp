@@ -840,9 +840,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gen_lts
-arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
-RcppExport SEXP gmwm_gen_lts(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
+// gen_lts_cpp
+arma::mat gen_lts_cpp(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
+RcppExport SEXP gmwm_gen_lts_cpp(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -850,7 +850,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP);
-    rcpp_result_gen = Rcpp::wrap(gen_lts(N, theta, desc, objdesc));
+    rcpp_result_gen = Rcpp::wrap(gen_lts_cpp(N, theta, desc, objdesc));
     return rcpp_result_gen;
 END_RCPP
 }
