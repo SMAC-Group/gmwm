@@ -104,7 +104,7 @@
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' data = gen.gts(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1), n)
+#' data = gen_gts(n, AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 1))
 #' 
 #' # Models can contain specific parameters e.g.
 #' adv.model = gmwm(AR1(phi = .99, sigma2 = 0.01) + WN(sigma2 = 0.01),
@@ -127,8 +127,8 @@
 #'  
 #' # ARMA case
 #' set.seed(1336)
-#' data = gen.gts(ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
-#'               sigma2 = 0.1796), 200)
+#' data = gen_gts(n, ARMA(ar = c(0.8897, -0.4858), ma = c(-0.2279, 0.2488),
+#'               sigma2 = 0.1796))
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
@@ -341,7 +341,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
 #' set.seed(1336)
 #' n = 200
 #' exact.model = AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1)
-#' data = gen.gts(exact.model)
+#' data = gen_gts(n, exact.model)
 #' 
 #' # Create an initial model that is not accurate
 #' bad.model = gmwm(AR1(), data = data)
@@ -496,16 +496,11 @@ update.gmwm = function(object, model, ...){
 #' @examples 
 #' \dontrun{
 #' # Example data generation
-#' data = gen.gts(GM(beta=0.25,sigma2_gm=1),10000, freq = 5)
-#' results = gmwm.imu(GM(),data)
+#' data = gen_gts(10000, GM(beta=0.25,sigma2_gm=1), freq = 5)
+#' results = gmwm_imu(GM(),data)
 #' inference = summary(results)
-#' 
-#' # Example with IMU Data
-#' 
-#' 
-#' 
 #' }
-gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
+gmwm_imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
   
   x = gmwm(model = model, 
        data = data, 
@@ -531,9 +526,9 @@ gmwm.imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...)
 #' @return A \code{rgmwm} object
 #' @examples 
 #' set.seed(8836)
-#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), 1000)
+#' x = gen_gts(1000, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 #' obj = rgmwm(2*AR1()+WN(), data = x)
-#' compare.eff(obj)
+#' compare_eff(obj)
 rgmwm = function(model, data, eff = c(1,0.9,0.6), ...){ 
   
   len = length(eff)
@@ -565,7 +560,7 @@ rgmwm = function(model, data, eff = c(1,0.9,0.6), ...){
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
+#' xt = gen_gts(n, AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1))
 #' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
 #' print(mod)
 #' }
@@ -610,8 +605,8 @@ print.gmwm = function(x, ...){
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
-#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+#' xt = gen_gts(n, AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1))
+#' mod = gmwm(AR1()+AR1(), data = xt, model.type = "imu")
 #' summary(mod)
 #' }
 summary.gmwm = function(object, inference = NULL,  
@@ -723,8 +718,8 @@ summary.gmwm = function(object, inference = NULL,
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
-#' mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+#' xt = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
+#' mod = gmwm(AR1() + AR1(), data = xt, model.type = "imu")
 #' summary(mod)
 #' }
 print.summary.gmwm = function(x, ...){
@@ -856,8 +851,8 @@ plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, tr
 #' # AR
 #' set.seed(1336)
 #' n = 200
-#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
-#' mod = gmwm(AR1(), data=x, model.type="imu")
+#' x = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
+#' mod = gmwm(AR1(), data = x, model.type = "imu")
 #' autoplot(mod)
 #' 
 #' mod = gmwm(2*AR1(), data = x)
@@ -1227,21 +1222,7 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
   p
 }
 
-#' @title Defunct function(s) in the gmwm package
-#' @description These functions have been removed from the gmwm package.
-#' @rdname gmwm-defunct
-#' @name gmwm-defunct
-#' @param ... Grab old parameters
-#' @export  compare.gmwm 
-#' @aliases compare.gmwm 
-#' @section Details:
-#' \tabular{rl}{
-#'   \code{compare.gmwm} \tab has been removed in favor of \code{\link{compare.models}}\cr
-#' }
-compare.gmwm = function(...){
-  
-  .Defunct("compare.models", package="gmwm")
-}
+
 
 
 #' @title Graphically Compare GMWM Model Fit
@@ -1273,7 +1254,7 @@ compare.gmwm = function(...){
 #' objects must be constrcuted by the same data is no longer needed.
 #' 
 #' The parameter \code{show.theo.wv} will be automatically set to TRUE, if the supplied \code{gmwm} objects
-#' are constructed by the same data. This aims to mimic the behaviour in the old version of \code{compare.models}.
+#' are constructed by the same data. This aims to mimic the behaviour in the old version of \code{compare_models}.
 #' 
 #' The default aesthetical setting is designed to work well with 2 and 3 objects. Users are expected to change
 #' the color/point/line settings if they want to supply more than 3 objects.
@@ -1285,22 +1266,22 @@ compare.gmwm = function(...){
 #' \dontrun{
 #' #AR
 #' set.seed(8836)
-#' x1 = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), 1000)
-#' x2 = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), 2000)
+#' x1 = gen_gts(1000, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
+#' x2 = gen_gts(2000, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 #' 
 #' GMWM1 = gmwm(AR1(), data = x1)
 #' GMWM2 = gmwm(2*AR1(), data = x2)
 #' 
-#' compare.models(GMWM1, GMWM2, show.theo.wv = T, transparence = 0.2, 
+#' compare_models(GMWM1, GMWM2, show.theo.wv = T, transparence = 0.2, 
 #'                facet.label = c('model1', 'model2'))
 #'                
-#' compare.models(GMWM1, GMWM2, CI.color = c('black','red'), 
+#' compare_models(GMWM1, GMWM2, CI.color = c('black','red'), 
 #'                point.size = c(3, 3, 0, 0, 0, 0, 2, 2),
 #'                line.color = c('black', 'red', 'grey', 'pink',
 #'                               'grey', 'pink', 'purple', 'green')) 
 #' #in the order of emp. WV, lower bound, higher bound, theo. WV
 #' }
-compare.models = function(..., display.model = T, show.theo.wv = F, facet.label = NULL, 
+compare_models = function(..., display.model = T, show.theo.wv = F, facet.label = NULL, 
                         background = 'white', transparence = 0.05, CI.color = NULL,
                         line.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
                         title = "Comparison of GMWM Models", title.size= 18, 
@@ -1761,29 +1742,29 @@ compare.models = function(..., display.model = T, show.theo.wv = F, facet.label 
 #' #Simulate data
 #' set.seed(8836)
 #' n = 1000
-#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 #' x[1] = 1000 #Robust gmwm works better for contaminated data
 #' GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.9)
 #' GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.6)
 #' GMWM3 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
 #' 
 #' # How order.eff works:
-#' compare.eff(GMWM1, GMWM2, GMWM3, order.eff = FALSE)
-#' compare.eff(GMWM1, GMWM2, GMWM3, order.eff = TRUE) 
+#' compare_eff(GMWM1, GMWM2, GMWM3, order.eff = FALSE)
+#' compare_eff(GMWM1, GMWM2, GMWM3, order.eff = TRUE) 
 #' # order.eff=TRUE: The objects are plotted in descending order of model efficiency.
 #'
 #' 
 #' # How to modify facet.label
-#' compare.eff(GMWM2, GMWM3, order.eff = FALSE, facet.label = c('Rob. eff. 0.6', 'Cla.') )
-#' compare.eff(GMWM2, GMWM3, order.eff = TRUE, facet.label = c('Cla.', 'Rob. eff. 0.6') )
+#' compare_eff(GMWM2, GMWM3, order.eff = FALSE, facet.label = c('Rob. eff. 0.6', 'Cla.') )
+#' compare_eff(GMWM2, GMWM3, order.eff = TRUE, facet.label = c('Cla.', 'Rob. eff. 0.6') )
 #' 
 #' # How to modify graph aesthetics
-#' compare.eff(GMWM2, GMWM3, order.eff = FALSE, CI.color = c("#003C7D", "#F47F24"),
+#' compare_eff(GMWM2, GMWM3, order.eff = FALSE, CI.color = c("#003C7D", "#F47F24"),
 #'            line.color = rep(c("#003C7D", "#F47F24"), 4) )
-#' compare.eff(GMWM2, GMWM3, order.eff = TRUE, CI.color = c("#F47F24", "#003C7D"),
+#' compare_eff(GMWM2, GMWM3, order.eff = TRUE, CI.color = c("#F47F24", "#003C7D"),
 #'            line.color = rep(c("#F47F24", "#003C7D"), 4) )
 #' }
-compare.eff = function(..., display.eff = T, order.eff = T, facet.label = NULL, 
+compare_eff = function(..., display.eff = T, order.eff = T, facet.label = NULL, 
                        background = 'white', transparence = 0.05, CI.color = NULL,
                        line.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
                        title = NULL, title.size= 18, 

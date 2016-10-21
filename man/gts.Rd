@@ -38,7 +38,7 @@ x = gts(m, unit = 'sec', name = 'example')
 x
 plot(x)
 
-x = gen.gts(WN(sigma2=1), 50)
+x = gen_gts(50, WN(sigma2 = 1))
 x = gts(x, freq = 100, unit = 'sec')
 plot(x)
 }

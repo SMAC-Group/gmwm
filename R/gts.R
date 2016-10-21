@@ -37,7 +37,7 @@
 #' x
 #' plot(x)
 #' 
-#' x = gen.gts(WN(sigma2=1), 50)
+#' x = gen_gts(50, WN(sigma2 = 1))
 #' x = gts(x, freq = 100, unit = 'sec')
 #' plot(x)
 gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
@@ -109,8 +109,8 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
 
 #' @title Create a GMWM TS Object based on model
 #' @description Create a \code{gts} object based on a supplied time series model.
+#' @param n An \code{interger} containing the amount of observations for the time series.
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
-#' @param N An \code{interger} containing the amount of observations for the time series.
 #' @param start A \code{numeric} that provides the time of the first observation.
 #' @param end A \code{numeric} that provides the time of the last observation.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
@@ -129,29 +129,28 @@ gts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
 #' @examples
 #' # Set seed for reproducibility
 #' set.seed(1336)
-#' 
 #' n = 1000
 #' 
 #' # AR1 + WN
 #' model = AR1(phi = .5, sigma2 = .1) + WN(sigma2=1)
-#' x = gen.gts(model, n)
-#' x
+#' x = gen_gts(n, model)
 #' plot(x)
 #' 
+#' # Reset seed
 #' set.seed(1336)
+#' 
 #' # GM + WN
 #' # Convert from AR1 to GM values
 #' m = ar1_to_gm(c(.5,.1),10)
+#' 
 #' # Beta = 6.9314718, Sigma2_gm = 0.1333333
 #' model = GM(beta = m[1], sigma2_gm = m[2]) + WN(sigma2=1)
-#' x2 = gen.gts(model, n, freq = 10, unit = 'sec')
-#' x2
-#' 
+#' x2 = gen_gts(n, model, freq = 10, unit = 'sec')
 #' plot(x2, to.unit = 'min')
 #' 
 #' # Same time series
 #' all.equal(x, x2, check.attributes = FALSE)
-gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
+gen_gts = function(n, model, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL){
   
   # 1. Do we have a valid model?
   if(!(is.ts.model(model) || is.gmwm(model))){
@@ -170,14 +169,14 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
   if( is.numeric(start)==F && is.numeric(end)==F){
     stop("'start' or 'end' must be specified.")}
   
-  if(is.null(start)==F && is.null(end)==F && (end-start)!= ((N-1)/freq) ){
+  if(is.null(start)==F && is.null(end)==F && (end-start)!= ((n-1)/freq) ){
     stop("end-start == (N-1)/freq must be TRUE.")
   }
   
   if ( is.null(end) ){
-    end = start + (N - 1)/freq} # freq conversion (unit conversion is handled in graphical function)
+    end = start + (n - 1)/freq} # freq conversion (unit conversion is handled in graphical function)
   else if ( is.null(start) ){
-    start = end - (N - 1)/freq}
+    start = end - (n - 1)/freq}
   
   # 4. 'unit'
   if(!is.null(unit)){
@@ -205,7 +204,7 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
       theta = conv.gm.to.ar1(theta, model$process.desc, freq)
     }
     
-    out = .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, obj)
+    out = .Call('gmwm_gen_model', PACKAGE = 'gmwm', n, theta, desc, obj)
   }else{
     stop("Need to supply initial values within the ts.model object.")
   }
@@ -245,7 +244,7 @@ gen.gts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
 #' @return A ggplot2 panel containing the graph of time series.
 #' @author Wenchao
 #' @examples
-#' x = gen.gts(WN(sigma2=1), 50, unit = 'sec', freq = 1)
+#' x = gen_gts(50, WN(sigma2=1), unit = 'sec', freq = 1)
 #' plot(x)
 #' plot(x, to.unit = 'ns', line.type = 'dashed', line.color = 'black', point.size = 2)
 plot.gts = function(x, to.unit = NULL, background = 'white',  
@@ -286,7 +285,7 @@ plot.gts = function(x, to.unit = NULL, background = 'white',
 #' @return A ggplot2 panel containing the graph of time series.
 #' @author Wenchao
 #' @examples
-#' x = gen.gts(WN(sigma2=1), 50, unit = 'sec', freq = 1)
+#' x = gen_gts(50, WN(sigma2=1), unit = 'sec', freq = 1)
 #' autoplot(x)
 #' autoplot(x, to.unit = 'ns', line.type = 'dashed', line.color = 'black', point.size = 2)
 autoplot.gts = function(object, to.unit = NULL, background = 'white',  
@@ -306,7 +305,7 @@ autoplot.gts = function(object, to.unit = NULL, background = 'white',
     background = 'white'
   }
   
-  if(!is(object,"gts")){stop('object must be a gts object. Use function gts() or gen.gts() to create it.')}
+  if(!is(object,"gts")){stop('object must be a gts object. Use function gts() or gen_gts() to create it.')}
   
   df = data.frame(y1 = object, x1 = seq( start, end, length.out = ndata) )
   colnames(df) = c('y1', 'x1')

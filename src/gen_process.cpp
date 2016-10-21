@@ -722,9 +722,9 @@ arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<st
 //' @examples
 //' # AR
 //' set.seed(1336)
-//' gen_lts(10, c(.9,1), "AR1", list(c(1,1)))
+//' gen_lts_cpp(10, c(.9,1), "AR1", list(c(1,1)))
 // [[Rcpp::export]]
-arma::mat gen_lts(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
+arma::mat gen_lts_cpp(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc){
   unsigned int i_theta = 0;
   unsigned int num_desc = desc.size();
   arma::mat x = arma::zeros<arma::mat>(N, num_desc+1);

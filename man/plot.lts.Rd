@@ -57,8 +57,8 @@ A \code{ggplot2} panel containing the graph of latent time series.
 Plots the graph of latent time series using \code{ggplot2}
 }
 \examples{
-model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-res = gen.lts(model, N = 100)
+model = AR1(phi = .99, sigma2 = 1) + WN(sigma2 = 1)
+res = gen_lts(100, model)
 plot(res)
 
 # Modify the graph aesthetics

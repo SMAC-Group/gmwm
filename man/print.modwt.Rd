@@ -19,7 +19,7 @@ Prints the results of the modwt list
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 print(modwt(x))
 }
 \author{

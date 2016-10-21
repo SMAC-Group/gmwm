@@ -37,10 +37,10 @@ A \code{lts} object with the following attributes:
 Create a \code{lts} object based on a supplied matrix or data frame.
 }
 \examples{
-model1 = AR1(phi = .99, sigma = 1) 
-model2 = WN(sigma2=1)
-col1 = gen.gts(model1, N = 1000)
-col2 = gen.gts(model2, N = 1000)
+model1 = AR1(phi = .99, sigma2 = 1) 
+model2 = WN(sigma2 = 1)
+col1 = gen_gts(1000, model1)
+col2 = gen_gts(1000, model2)
 testMat = cbind(col1, col2, col1+col2)
 testLts = lts(testMat, unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 plot(testLts)

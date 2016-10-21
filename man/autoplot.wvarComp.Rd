@@ -73,7 +73,7 @@ Compare the estimates given by the classical and robust methods of calculating t
 JJB, Wenchao
 }
 \seealso{
-\code{\link{compare.wvar}}
+\code{\link{compare_wvar}}
 }
 \keyword{internal}
 

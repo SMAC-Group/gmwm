@@ -25,7 +25,7 @@ top left corner,  number larger than 1 (e.g. 1.1) is used. This setting makes it
 \examples{
 set.seed(8836)
 n = 1000
-x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+x = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
 GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.1)
 GMWM3 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.6)

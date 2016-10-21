@@ -337,7 +337,7 @@ print.wvar.imu = function(x, ...){
 #' @author JJB
 #' @examples
 #' set.seed(999)
-#' x=rnorm(100)
+#' x = rnorm(100)
 #' out = wvar(x)
 #' summary( out )
 summary.wvar = function(object, ...){
@@ -640,7 +640,7 @@ graphingVar = function(object, CI = TRUE, transparence = 0.1, background = 'whit
 #' @param nrow An \code{integer} that indicates number of rows
 #' @param ... Additional parameters
 #' @author JJB, Wenchao
-#' @seealso \code{\link{compare.wvar}}
+#' @seealso \code{\link{compare_wvar}}
 autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'white', transparence = 0.1, line.color = NULL, 
                              CI.color = NULL, line.type = NULL, point.size = NULL, point.shape = NULL,
                              title = "Haar Wavelet Variance Representation", title.size= 15, 
@@ -751,24 +751,28 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 #' @examples
 #' \dontrun{
 #' ## Case1: Supplied objects are \code{wvar}:
-#' data1 = gen.gts(AR1(phi = .32, sigma2=.01), N = 1000)
-#' data2 = gen.gts(ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1), N = 2000)
-#' data3 = gen.gts(AR1(phi = .32, sigma2=1), N = 4000)
+#' data1 = gen_gts(1000, AR1(phi = .32, sigma2=.01))
+#' data2 = gen_gts(2000, ARMA(ar=c(.8,.1), ma=c(.3), sigma2=1))
+#' data3 = gen_gts(4000, AR1(phi = .32, sigma2=1))
 #' 
-#' wv1 = wvar(data1, robust = T)
+#' wv1 = wvar(data1, robust = TRUE)
 #' wv2 = wvar(data2)
 #' wv3 = wvar(data3)
 #' 
-#' compare.wvar(wv1, wv2)
-#' compare.wvar(wv1, wv2, CI = F)
-#' compare.wvar(wv1, wv2, split=F)
-#' compare.wvar(wv1, wv2, wv3, split = F)
+#' compare_wvar(wv1, wv2)
+#' compare_wvar(wv1, wv2, CI = FALSE)
+#' compare_wvar(wv1, wv2, split = FALSE)
+#' compare_wvar(wv1, wv2, wv3, split = FALSE)
 #' 
 #' # Change default setting
 #' color = c('green','red','blue')
 #' label = c('1','2','3')
-#' compare.wvar(wv1, wv2, wv3, line.color = color, CI.color = color, legend.label = label)
-#' compare.wvar(wv1, wv2, wv3, line.color = color, CI.color = color, legend.label = label, split = F)
+#' compare_wvar(wv1, wv2, wv3, 
+#'              line.color = color, CI.color = color,
+#'               legend.label = label)
+#' compare_wvar(wv1, wv2, wv3, 
+#'              line.color = color, CI.color = color, 
+#'              legend.label = label, split = FALSE)
 #' 
 #' ## Case2: Supplied objects are \code{wvar.imu}:
 #' if(!require("imudata")){
@@ -783,10 +787,10 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 #' test2 = imu(imu6, gyros = 1, accels = 3:4, axis = c('X','X','Y'), freq = 100)
 #' wv2 = wvar(test2, robust = T)
 #' 
-#' compare.wvar(wv1, wv2)
-#' compare.wvar(wv1, wv2, auto.label.wvar = F, legend.label = c('data1', 'data2'))
+#' compare_wvar(wv1, wv2)
+#' compare_wvar(wv1, wv2, auto.label.wvar = F, legend.label = c('data1', 'data2'))
 #' }
-compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
+compare_wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
                         CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
                         title = "Haar Wavelet Variance Representation", title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
@@ -874,7 +878,7 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
     
     if(all(is.wvar.imu == T)){
       
-      return( compare.wvar.imu(obj.list = obj_list,
+      return( compare_wvar.imu(obj.list = obj_list,
                        background = background, CI = CI, auto.label.wvar = auto.label.wvar, transparence = transparence, 
                        line.color = line.color, CI.color = CI.color, line.type = line.type, point.size = point.size, point.shape = point.shape,
                        title = title, title.size = title.size, 
@@ -967,8 +971,8 @@ compare.wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
 #' @param legend.text.size An \code{integer} that indicates the size of key label on legend.
 #' @author Wenchao
 #' @keywords internal
-#' @seealso \code{\link{compare.wvar}}
-compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
+#' @seealso \code{\link{compare_wvar}}
+compare_wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.label.wvar = T, transparence = 0.1, line.color = NULL, 
                         CI.color = NULL, line.type = NULL,  point.size = NULL, point.shape = NULL,
                         title = "Haar Wavelet Variance Representation", title.size= 15, 
                         axis.label.size = 13, axis.tick.size = 11, 
@@ -984,7 +988,7 @@ compare.wvar.imu = function(obj.list, background = 'white', CI = TRUE, auto.labe
   n.obj = length(obj.list)
   
   # 1. Check each graphical parameter. Reset it to default setting if user passes wrong values.
-  # checking statements are moved to compare.wvar.
+  # checking statements are moved to compare_wvar.
   
   # line.color
   if(is.null(line.color)){

@@ -19,7 +19,7 @@ Unlists MODWT object and places it in matrix form
 }
 \examples{
 set.seed(999)
-x=rnorm(100)
+x = rnorm(100)
 summary(modwt(x))
 }
 \author{
