@@ -22,10 +22,10 @@ Description: Generalized Method of Wavelet Moments (GMWM) is an estimation
 License: AGPL-3
 Maintainer: Stephane Guerrier <stephane@illinois.edu>
 Depends: 
-    R (>= 3.0),
+    R (>= 3.3),
     ggplot2 (>= 2.1.0)
 Imports: 
-    Rcpp (>= 0.12.3),
+    Rcpp (>= 0.12.7),
     scales,
     grid,
     reshape2,
@@ -47,3 +47,4 @@ Additional_repositories: http://smac-group.com/datarepo
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
 Remotes: coatless/balamuta
+SystemRequirements: C++11
