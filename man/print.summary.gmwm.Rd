@@ -22,8 +22,8 @@ Displays summary information about GMWM object
 # AR
 set.seed(1336)
 n = 200
-xt = gen.gts(AR1(phi=.1, sigma2 = 1) + AR1(phi=0.95, sigma2 = .1),n)
-mod = gmwm(AR1()+AR1(), data=xt, model.type="imu")
+xt = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
+mod = gmwm(AR1() + AR1(), data = xt, model.type = "imu")
 summary(mod)
 }
 }

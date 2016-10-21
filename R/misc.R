@@ -137,7 +137,7 @@ orderModel = function(models){
 #' @keywords internal
 #' @examples 
 #' n = 1000
-#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 #' GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.9)
 #' GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
 #' 
@@ -238,7 +238,7 @@ addSpaceIfDuplicate = function(x){
 #' @examples 
 #' set.seed(8836)
 #' n = 1000
-#' x = gen.gts(AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1), n)
+#' x = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 #' GMWM1 = gmwm(2*AR1()+RW(), data = x, robust  = FALSE)
 #' GMWM2 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.1)
 #' GMWM3 = gmwm(2*AR1()+RW(), data = x, robust  = TRUE, eff = 0.6)
