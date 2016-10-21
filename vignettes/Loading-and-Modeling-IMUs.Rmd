@@ -13,14 +13,14 @@ Within this guide, we consider a real signal issued from a MEMS IMU.
 # Load the `gmwm` package
 First, make sure to load the `gmwm` package into R.
 
-```{r load_gmwm, message=FALSE}
+```{r load_gmwm, message = FALSE}
 library("gmwm")
 ```
 
 # Installation
 To obtain the data, we must download and install the `imudata` package.
 
-```{r install_imu, message=FALSE}
+```{r install_imu, message = FALSE}
 if(!require("imudata")){
   install_imudata()
   library("imudata")
@@ -30,7 +30,7 @@ if(!require("imudata")){
 # Loading Data
 
 To load the data and display the first rows for each sensor we do:
-```{r imuData, message=FALSE}
+```{r imuData, message = FALSE}
 data(imu6)
 head(imu6)
 ```
@@ -54,12 +54,12 @@ wv.imu = wvar(sensor)
 
 To plot the WV (and confidence intervals) for all gyroscopes and accelerometers, we can use the following function 
 
-```{r imuPlot, fig.width=7, fig.height=4.25}
+```{r imuPlot, fig.width = 7, fig.height = 4.25}
 plot(wv.imu)
 ```
 
 To plot the WV for each sensor type together, we can use the following:
-```{r imu_plot_split, fig.width=7, fig.height=4.25}
+```{r imu_plot_split, fig.width = 7, fig.height = 4.25}
 plot(wv.imu, split = F)
 ```
 
@@ -73,14 +73,14 @@ Let us consider the Gyro on the axis X and, given the estimated WV from the plot
 TS.mod.imu = 3*AR1()
 
 # Compute GMWM estimator
-model.imu = gmwm.imu(TS.mod.imu, data = imu6[,1])
+model.imu = gmwm_imu(TS.mod.imu, data = imu6[,1])
 ```
 
 **Note: The gmwm.imu function only is able to handle one sensor at a time.**
 
 To see the results of the estimation, we can use the summary function as well as visualize the fit of the implied WV to the estimated WV from Gyro X (as done in the simulation example).
 
-```{r imu_model_summary, fig.width=7, fig.height=4.25}
+```{r imu_model_summary, fig.width = 7, fig.height = 4.25}
 summary(model.imu)
 plot(model.imu)
 ```

@@ -75,7 +75,7 @@ set.seed(1)
 n = 100000
 
 # Simulate AR(1) + WN
-xt = gen.gts(AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1),n)
+xt = gen_gts(n, AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1))
 ```
 
 ## Compute Wavelet Variance
@@ -99,7 +99,7 @@ TS.mod = AR1() + WN()
 and subsequently use it in the GMWM estimating function as follows
 
 ```{r GMWM}
-model = gmwm.imu(TS.mod, data = xt)
+model = gmwm_imu(TS.mod, data = xt)
 ```
 
 The difference between the true and estimated parameters is given below:
