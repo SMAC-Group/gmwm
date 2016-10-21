@@ -90,7 +90,7 @@ arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_clas
 
     arma::mat out(num_elem, 3);
     
-    double q1 = R::qnorm(1-alpha_ov_2, 0.0, 1.0, true, false);
+    //double q1 = R::qnorm(1-alpha_ov_2, 0.0, 1.0, true, false);
     
     double coef = sqrt(1.0/eff);
 
