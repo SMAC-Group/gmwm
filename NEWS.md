@@ -6,7 +6,7 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 
 * New `ts.model` components `SARIMA(p,d,q,P,D,Q,s)`, `MA1()`, and `ARMA11()`.
 * Support for more Wavelet Variance filters within the `wvar()` function and `hadam()` to calculate the Hadamard Variance (Tau and Maximal Overlap)
-* New robust tools `compare.eff()` and `gmwm.robust()` that help in deciding whether the classical or robust wavelet variance (WV) should be used.
+* New robust tools `compare_eff()` and `rgmwm()` that help in deciding whether the classical or robust wavelet variance (WV) should be used.
 * Improved documentation across all features and a website featuring examples of package documentation <http://smac-group.com/docs/gmwm>.
 
 ## Baseline Requirements
@@ -15,9 +15,16 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 * Underlying API changes with `ggplot2` have led to the need to add the requirement of at least v2.1.x.
 * Due to changes in the `imu` object structure, we have opted to update the `imudata` to v3.0.0 and, thus, previous functions will not work with this new data set.
 
-## Documentation
+## Generalized Method of Wavelet Moments (GMWM) 
 
-* Majority of documentation files were updated to improve clarity behind intent. 
+* Developed `rgmwm()` that computes estimates for both the classical and
+  robust wavelet variance (WV). 
+
+##  Time Series Processed Model Syntax
+
+* Rewritten ARMA backend support for `SARIMA(p,d,q,P,D,Q,s)`.
+* New model specific terms for `MA1()` and `ARMA11()` that provide access to
+  analytical equations and are significantly faster to compute.
 
 ## Signal Decomposition
 
@@ -45,19 +52,50 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
    
 ## Graphical System
 
-* Added `compare.eff()` to compare differences between robust and classical wavelet variance.
-* Made available `external_graphs()` for RStudio users to disable plotting within the RStudio window in favor of a native system solution (e.g. `X11()`, `quartz()`, or `windows()`).
+* Added `compare_eff()` to compare differences between robust and classical 
+  GMWM models.
+* Improved `compare_models()` to provide support for `m` models to be compared
+  simultaneously
+* Made available `external_graphs()` for RStudio users to disable plotting 
+  within the RStudio window in favor of a native system solution 
+  (e.g. `X11()`, `quartz()`, or `windows()`).
 
 ## Unit Tests
 
 * Added unit tests for `deriv_*()`.
 
+## Documentation
+
+* Majority of documentation files were updated to improve clarity behind usage.
+* Package help file documentation is now available via
+  <http://smac-group.com/docs/gmwm>
+
 ## Bug Fixes
 
-* Corrected derivatives associated with DR, QN, and AR1 for better asymptotic calculations.
-* Fixed seed across each model processed within `auto.imu()` and `rank.models()`.
-* `GM()` parameter are now sorted in a similar sense to an `AR1()` (descending `phi`/`beta`).
+* Corrected derivatives associated with `DR`, `QN`, and `AR1` for better
+  asymptotic calculations.
+* Fixed seed across each model processed within `auto_imu()` and `rank_models()`.
+* `GM()` parameter are now sorted in a similar sense to an `AR1()`
+  (descending `phi`/`beta`).
 
+## Defunct Functions
+
+* Due to naming schemes conflicting with S3 methods when a generic method was
+  not being used to dispatch the following functions were renamed.
+    * `gen.lts()` => `gen_lts()`
+    * `gen.gts()` => `gen_gts()`
+    * `compare.models()` => `compare_models()`
+    * `compare.wvar()` => `compare_wvar()`
+    * `gen.gts()` => `gen_gts()`
+    * `gen.lts()` => `gen_lts()` 
+    * `demo.lts()` => `demo_lts()`
+    * `gmwm.imu()` `gmwm_imu()`
+    * `rank.models()` => `rank_models()`
+    * `auto.imu()` => `auto_imu()`
+* The `compare.gmwm()` function has been deprecated due to feature issues.
+  Most notably, the comparison between implied models were difficult. As a result, we
+  have create a new function called `compare_models()` that better addresses this
+  issue.
 
 # gmwm 2.0.0
 
