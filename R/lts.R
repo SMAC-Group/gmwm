@@ -35,10 +35,10 @@
 #' }
 #' @author Wenchao
 #' @examples
-#' model1 = AR1(phi = .99, sigma = 1) 
-#' model2 = WN(sigma2=1)
-#' col1 = gen.gts(model1, N = 1000)
-#' col2 = gen.gts(model2, N = 1000)
+#' model1 = AR1(phi = .99, sigma2 = 1) 
+#' model2 = WN(sigma2 = 1)
+#' col1 = gen_gts(1000, model1)
+#' col2 = gen_gts(1000, model2)
 #' testMat = cbind(col1, col2, col1+col2)
 #' testLts = lts(testMat, unit = 'sec', process = c('AR1', 'WN', 'AR1+WN'))
 #' plot(testLts)
@@ -122,8 +122,8 @@ lts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, 
 
 #' @title Generate Latent Time Series Object Based on Model
 #' @description Create a \code{lts} object based on a supplied time series model.
+#' @param n An \code{interger} indicating the amount of observations generated in this function.
 #' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
-#' @param N An \code{interger} indicating the amount of observations generated in this function.
 #' @param start A \code{numeric} that provides the time of the first observation.
 #' @param end A \code{numeric} that provides the time of the last observation.
 #' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
@@ -145,10 +145,10 @@ lts = function(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, 
 #' @examples
 #' # AR
 #' set.seed(1336)
-#' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' test = gen.lts(model)
+#' model = AR1(phi = .99, sigma2 = 1) + WN(sigma2 = 1)
+#' test = gen_lts(1000, model)
 #' plot(test)
-gen.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL){
+gen_lts = function(n, model, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL){
   
   # 1. Do we have a valid model?
   if(!(is(model, "ts.model") || is(model, "gmwm"))){
@@ -167,13 +167,13 @@ gen.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
     stop("'start' or 'end' must be specified.")}
   
   if(is.null(start)==F && is.null(end)==F && (end-start)!= ((N-1)/freq) ){
-    stop("end-start == (N-1)/freq must be TRUE.")
+    stop("end-start == (n - 1)/freq must be TRUE.")
   }
   
   if ( is.null(end) ){
-    end = start + (N - 1)/freq # freq conversion (unit conversion is handled in graphical function)
+    end = start + (n - 1)/freq # freq conversion (unit conversion is handled in graphical function)
   }else if ( is.null(start) ){
-    start = end - (N - 1)/freq}
+    start = end - (n - 1)/freq}
   
   # 4. 'unit'
   if(!is.null(unit)){
@@ -259,8 +259,8 @@ gen.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL
 #' @return A \code{ggplot2} panel containing the graph of latent time series.
 #' @author Wenchao
 #' @examples
-#' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' res = gen.lts(model, N = 100)
+#' model = AR1(phi = .99, sigma2 = 1) + WN(sigma2 = 1)
+#' res = gen_lts(100, model)
 #' plot(res)
 #' 
 #' # Modify the graph aesthetics
@@ -310,8 +310,8 @@ plot.lts = function(x, to.unit = NULL, background = 'white', scales = 'free',
 #' @return A \code{ggplot2} panel containing the graph of latent time series.
 #' @author Wenchao
 #' @examples
-#' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' res = gen.lts(model, N = 100)
+#' model = AR1(phi = .99, sigma2 = 1) + WN(sigma2=1)
+#' res = gen_lts(100, model)
 #' autoplot(res)
 #' 
 #' # Modify the graph aesthetics
@@ -440,13 +440,13 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 
 #' @title Generate a Demo about the Latent Time Series
 #' @description Creates a time series based on the supplied model, then generate a demo about its latent structure
-#' @param model A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
-#' @param N An \code{interger} indicating the amount of observations generated in this function.
-#' @param start A \code{numeric} that provides the time of the first observation.
-#' @param end A \code{numeric} that provides the time of the last observation.
-#' @param freq A \code{numeric} that provides the rate of samples. Default value is 1.
-#' @param unit A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
-#' @param name A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
+#' @param n       An \code{interger} indicating the amount of observations generated in this function.
+#' @param model   A \code{ts.model} or \code{gmwm} object containing one of the allowed models.
+#' @param start   A \code{numeric} that provides the time of the first observation.
+#' @param end     A \code{numeric} that provides the time of the last observation.
+#' @param freq    A \code{numeric} that provides the rate of samples. Default value is 1.
+#' @param unit    A \code{string} that contains the unit expression of the frequency. Default value is \code{NULL}.
+#' @param name    A \code{string} that provides an identifier to the data. Default value is \code{NULL}.
 #' @param process A \code{vector} that contains model names of decomposed and combined processes.
 #' @param ... Additional parameters passed to \code{autoplot.lts}
 #' @author Wenchao
@@ -456,14 +456,13 @@ autoplot.lts = function(object, to.unit = NULL, background = 'white', scales = '
 #' # AR
 #' set.seed(1336)
 #' model = AR1(phi = .99, sigma = 1) + WN(sigma2=1)
-#' demo.lts(model)
+#' demo_lts(1000, model)
 #' 
 #' # Modify the graph aesthetics
-#' demo.lts(model, N = 100, line.color = c('blue', 'green', 'black'), 
+#' demo_lts(100, model, line.color = c('blue', 'green', 'black'), 
 #'          point.size = c(1,1,1), process = c('AR1', 'WN', 'Sum'))
-demo.lts = function(model, N = 1000, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL, ...){
+demo_lts = function(n, model, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL, process = NULL, ...){
    
-  object = gen.lts(model = model, N = N, start = start, end = end, freq = freq, unit = unit, name = name, process = process)
+  object = gen_lts(n = n, model = model, start = start, end = end, freq = freq, unit = unit, name = name, process = process)
   autoplot.lts(object = object, ...)
-  
 }
