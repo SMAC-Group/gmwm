@@ -14,21 +14,39 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#' @title GMWM for Sensors, ARMA, SSM, and Robust
-#' @description GMM object
-#' @export
+#' Generalized Method of Wavelet Moments (GMWM) for IMUs, ARMA, SSM, and Robust
+#' 
+#' Performs estimation of time series models by using the GMWM estimator.
 #' @param model      A \code{ts.model} object containing one of the allowed models.
-#' @param data       A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
-#' @param model.type A \code{string} containing the type of GMWM needed e.g. sensor or SSM
-#' @param compute.v  A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
-#' @param alpha      A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.
-#' @param robust     A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
-#' @param eff        A \code{double} between 0 and 1 that indicates the efficiency.
-#' @param G          An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.
-#' @param K          An \code{integer} that controls how many times the bootstrapping procedure will be initiated.
-#' @param H          An \code{integer} that indicates how many different samples the bootstrap will be collect.
-#' @param seed       A \code{integer} that controls the reproducibility of the auto model selection phase.
-#' @param freq       A \code{double} that indicates the time between frequency.
+#' @param data       A \code{matrix} or \code{data.frame} object with only column 
+#'                   (e.g. \eqn{N \times 1}{ N x 1 }), a \code{lts} object,
+#'                   or a \code{gts} object. 
+#' @param model.type A \code{string} containing the type of GMWM needed:
+#'                   \code{"imu"} or \code{"ssm"}.
+#' @param compute.v  A \code{string} indicating the type of covariance matrix 
+#'                   solver. Valid values are:
+#'                    \code{"fast"}, \code{"bootstrap"}, 
+#'                    \code{"diag"} (asymptotic diag), 
+#'                    \code{"full"} (asymptotic full). By default, the program
+#'                   will fit a "fast" model.
+#' @param alpha      A \code{double} between 0 and 1 that correspondings to the
+#'                   \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet 
+#'                   confidence intervals.
+#' @param robust     A \code{boolean} indicating whether to use the robust
+#'                   computation (\code{TRUE}) or not (\code{FALSE}).
+#' @param eff        A \code{double} between 0 and 1 that indicates the
+#'                   efficiency.
+#' @param G          An \code{integer} to sample the space for IMU and SSM
+#'                   models to ensure optimal identitability.
+#' @param K          An \code{integer} that controls how many times the
+#'                   bootstrapping procedure will be initiated.
+#' @param H          An \code{integer} that indicates how many different
+#'                   samples the bootstrap will be collect.
+#' @param seed       An \code{integer} that controls the reproducibility of the
+#'                   auto model selection phase.
+#' @param freq       A \code{double} that indicates the sampling frequency. By
+#'                   default, this is set to 1 and only is important if \code{GM()}
+#'                   is in the model
 #' @return A \code{gmwm} object with the structure: 
 #' \describe{
 #'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
@@ -99,7 +117,7 @@
 #' }
 #' If only an ARMA() term is supplied, then the function takes conditional least squares as starting values
 #' If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
-#' 
+#' @export
 #' @examples
 #' # AR
 #' set.seed(1336)
@@ -208,7 +226,9 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   nlevels =  floor(log2(length(data)))
   
   if(np > nlevels){
-    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need at least the same number of scales as parameters to estimate.")
+    stop("Please supply a longer signal / time series in order to use the GMWM.",
+         "This is because we need at least the same number of scales as",
+         "parameters to estimate.")
   }
   
   if(robust){
@@ -220,7 +240,8 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
 
   
   # Compute fast covariance if large sample, otherwise, bootstrap.
-  if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "diag")){
+  if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "diag" &&
+                              compute.v != "full" && compute.v != "bootstrap" )){
     compute.v = "fast"
   }
   

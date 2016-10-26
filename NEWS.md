@@ -1,4 +1,4 @@
-# gmwm 3.0.0
+# gmwm 3.0.0.9000
 
 The third release of the Generalized Method of Wavelet Moments (GMWM) R package introduces a slew of optimizations, documentation updates, and new features.
 
@@ -77,6 +77,8 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 * Fixed seed across each model processed within `auto_imu()` and `rank_models()`.
 * `GM()` parameter are now sorted in a similar sense to an `AR1()`
   (descending `phi`/`beta`).
+* Fixed inability to request a non-bootstrap estimation
+
 
 ## Defunct Functions
 

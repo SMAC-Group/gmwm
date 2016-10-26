@@ -11,27 +11,44 @@ gmwm(model, data, model.type = "ssm", compute.v = "auto", robust = FALSE,
 \arguments{
 \item{model}{A \code{ts.model} object containing one of the allowed models.}
 
-\item{data}{A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object.}
+\item{data}{A \code{matrix} or \code{data.frame} object with only column 
+(e.g. \eqn{N \times 1}{ N x 1 }), a \code{lts} object,
+or a \code{gts} object.}
 
-\item{model.type}{A \code{string} containing the type of GMWM needed e.g. sensor or SSM}
+\item{model.type}{A \code{string} containing the type of GMWM needed:
+\code{"imu"} or \code{"ssm"}.}
 
-\item{compute.v}{A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"}
+\item{compute.v}{A \code{string} indicating the type of covariance matrix 
+solver. Valid values are:
+ \code{"fast"}, \code{"bootstrap"}, 
+ \code{"diag"} (asymptotic diag), 
+ \code{"full"} (asymptotic full)}
 
-\item{robust}{A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).}
+\item{robust}{A \code{boolean} indicating whether to use the robust
+computation (\code{TRUE}) or not (\code{FALSE}).}
 
-\item{eff}{A \code{double} between 0 and 1 that indicates the efficiency.}
+\item{eff}{A \code{double} between 0 and 1 that indicates the
+efficiency.}
 
-\item{alpha}{A \code{double} between 0 and 1 that correspondings to the \eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet confidence intervals.}
+\item{alpha}{A \code{double} between 0 and 1 that correspondings to the
+\eqn{\frac{\alpha}{2}}{alpha/2} value for the wavelet 
+confidence intervals.}
 
-\item{seed}{A \code{integer} that controls the reproducibility of the auto model selection phase.}
+\item{seed}{An \code{integer} that controls the reproducibility of the
+auto model selection phase.}
 
-\item{G}{An \code{integer} to sample the space for sensor and SSM models to ensure optimal identitability.}
+\item{G}{An \code{integer} to sample the space for IMU and SSM
+models to ensure optimal identitability.}
 
-\item{K}{An \code{integer} that controls how many times the bootstrapping procedure will be initiated.}
+\item{K}{An \code{integer} that controls how many times the
+bootstrapping procedure will be initiated.}
 
-\item{H}{An \code{integer} that indicates how many different samples the bootstrap will be collect.}
+\item{H}{An \code{integer} that indicates how many different
+samples the bootstrap will be collect.}
 
-\item{freq}{A \code{double} that indicates the time between frequency.}
+\item{freq}{A \code{double} that indicates the sampling frequency. By
+default, this is set to 1 and only is important if \code{GM()}
+is in the model}
 }
 \value{
 A \code{gmwm} object with the structure: 
