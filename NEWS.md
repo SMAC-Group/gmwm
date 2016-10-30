@@ -78,7 +78,7 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 * `GM()` parameter are now sorted in a similar sense to an `AR1()`
   (descending `phi`/`beta`).
 * Fixed inability to request a non-bootstrap estimation
-
+* `predict.gmwm()` updated to handle `SARIMA()`
 
 ## Defunct Functions
 

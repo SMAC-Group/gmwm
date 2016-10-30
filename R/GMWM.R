@@ -776,46 +776,65 @@ print.summary.gmwm = function(x, ...){
    cat(paste0("\nTo replicate the results, use seed: ",x$seed, "\n"))
 }
 
-#' @title Predict future points in the time series using the solution of the Generalized Method of Wavelet Moments
-#' @description Creates a prediction using the estimated values of GMWM through the ARIMA function within R.
-#' @method predict gmwm
-#' @export
-#' @param object A \code{gmwm} object 
+#' Predict future points in the time series using the solution of the
+#' Generalized Method of Wavelet Moments
+#' 
+#' Creates a prediction using the estimated values of GMWM through the 
+#' ARIMA function within R.
+#' @param object       A \code{\link{gmwm}} object 
 #' @param data.in.gmwm The data SAME EXACT DATA used in the GMWM estimation
-#' @param n.ahead Number of observations to guess.
-#' @param ... Additional parameters
+#' @param n.ahead      Number of observations to forecast
+#' @param ...          Additional parameters passed to ARIMA Predict
 #' @return A \code{predict.gmwm} object with:
-#' \itemize{
+#' \describe{
 #' \item{pred}{Predictions}
-#' \item{se}{SE}
-#' \item{resid}{Residuals}
+#' \item{se}{Standard Errors}
+#' \item{resid}{Residuals from ARIMA ML Fit}
 #' }
+#' @seealso \code{\link{gmwm}}, \code{\link{ARMA}}
+#' @export
+#' @examples 
+#' # Simulate an ARMA Process
+#' xt = gen_gts(1000, ARMA(ar=0.3, ma=0.6, sigma2=1))
+#' model = gmwm(ARMA(1,1), xt)
+#' 
+#' # Make prediction
+#' predict(model, xt, n.ahead = 1)
 predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
   
   ts.mod = object$model
   
-  if(length(ts.mod$desc) > 1 || ts.mod$desc != "ARMA")
-    stop("The predict function only works with stand-alone ARMA models.")
+  if(length(ts.mod$desc) > 1 || ts.mod$desc != "SARIMA")
+    stop("The predict function only works with stand-alone SARIMA models.")
   
   objdesc = ts.mod$obj.desc[[1]]
-  
+
+  # Unpack ts object
   p = objdesc[1]
   q = objdesc[2]
+  P = objdesc[3]
+  Q = objdesc[4]
+  s = objdesc[6] # Set to 0 (handled in ARIMA)
+  d = objdesc[7]
+  D = objdesc[8]
   
-  mod = arima(data.in.gmwm, order = c(p, 0, q),
-              method="ML",
-              fixed = object$estimate[1:(p+q)],
+  # Make an ARIMA object
+  mod = arima(data.in.gmwm, order = c(p, d, q),
+              list(order = c(P, D, Q), period = s),
+              method = "ML",
+              fixed = object$estimate[1:(p+q+P+Q)],
               transform.pars = F,
               include.mean = F)
   
+  # Predict off of ARIMA
   pred = predict(mod, n.ahead = n.ahead, newxreg = NULL,
                  se.fit = TRUE, ...)
   
-  
-  out = structure(list(pred = pred$pred,
-                       se = pred$se,
-                       resid = mod$residuals)
-                  , class = "predict.gmwm")
+  # Format Results
+  structure(list(pred = pred$pred,
+                   se = pred$se,
+                resid = mod$residuals),
+            class = "predict.gmwm")
                           
 }
 

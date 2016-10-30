@@ -2,28 +2,41 @@
 % Please edit documentation in R/GMWM.R
 \name{predict.gmwm}
 \alias{predict.gmwm}
-\title{Predict future points in the time series using the solution of the Generalized Method of Wavelet Moments}
+\title{Predict future points in the time series using the solution of the
+Generalized Method of Wavelet Moments}
 \usage{
 \method{predict}{gmwm}(object, data.in.gmwm, n.ahead = 1, ...)
 }
 \arguments{
-\item{object}{A \code{gmwm} object}
+\item{object}{A \code{\link{gmwm}} object}
 
 \item{data.in.gmwm}{The data SAME EXACT DATA used in the GMWM estimation}
 
-\item{n.ahead}{Number of observations to guess.}
+\item{n.ahead}{Number of observations to forecast}
 
-\item{...}{Additional parameters}
+\item{...}{Additional parameters passed to ARIMA Predict}
 }
 \value{
 A \code{predict.gmwm} object with:
-\itemize{
+\describe{
 \item{pred}{Predictions}
-\item{se}{SE}
-\item{resid}{Residuals}
+\item{se}{Standard Errors}
+\item{resid}{Residuals from ARIMA ML Fit}
 }
 }
 \description{
-Creates a prediction using the estimated values of GMWM through the ARIMA function within R.
+Creates a prediction using the estimated values of GMWM through the 
+ARIMA function within R.
+}
+\examples{
+# Simulate an ARMA Process
+xt = gen_gts(1000, ARMA(ar=0.3, ma=0.6, sigma2=1))
+model = gmwm(ARMA(1,1), xt)
+
+# Make prediction
+predict(model, xt, n.ahead = 1)
+}
+\seealso{
+\code{\link{gmwm}}, \code{\link{ARMA}}
 }
 
