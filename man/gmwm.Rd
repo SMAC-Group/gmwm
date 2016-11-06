@@ -2,7 +2,7 @@
 % Please edit documentation in R/GMWM.R
 \name{gmwm}
 \alias{gmwm}
-\title{GMWM for Sensors, ARMA, SSM, and Robust}
+\title{Generalized Method of Wavelet Moments (GMWM) for IMUs, ARMA, SSM, and Robust}
 \usage{
 gmwm(model, data, model.type = "ssm", compute.v = "auto", robust = FALSE,
   eff = 0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
@@ -22,7 +22,8 @@ or a \code{gts} object.}
 solver. Valid values are:
  \code{"fast"}, \code{"bootstrap"}, 
  \code{"diag"} (asymptotic diag), 
- \code{"full"} (asymptotic full)}
+ \code{"full"} (asymptotic full). By default, the program
+will fit a "fast" model.}
 
 \item{robust}{A \code{boolean} indicating whether to use the robust
 computation (\code{TRUE}) or not (\code{FALSE}).}
@@ -84,7 +85,7 @@ A \code{gmwm} object with the structure:
 }
 }
 \description{
-GMM object
+Performs estimation of time series models by using the GMWM estimator.
 }
 \details{
 This function is under work. Some of the features are active. Others... Not so much. 
