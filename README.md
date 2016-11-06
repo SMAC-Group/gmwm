@@ -16,7 +16,7 @@ To start, let's generate some data:
 m = AR1(phi = .98, sigma2 = .01) + WN(sigma2 = 1)
 
 # Generate Data
-d = gen.gts(m, 10000)
+d = gen_gts(10000, m)
 ```
 
 Once we have data, we can see what the wavelet variance looks like for the data with the classical and robust wavelet variances.
@@ -32,7 +32,7 @@ plot(wv.classical)
 wv.robust = wvar(d, robust = TRUE, eff = 0.6)
 
 # Compare both versions
-compare.wvar(wv.classical, wv.robust)
+compare_wvar(wv.classical, wv.robust)
 ```
 
 Now, let's try to estimate it with specific (e.g. user supplied) and guessed (e.g. program generated) parameters.
@@ -41,10 +41,10 @@ Now, let's try to estimate it with specific (e.g. user supplied) and guessed (e.
 ## Estimation Modes ##
 
 # Use a specific initial starting value
-o.specific = gmwm.imu(AR1(phi=.98,sigma2=.05) + WN(sigma2=.95), data = d)
+o.specific = gmwm_imu(AR1(phi=.98,sigma2=.05) + WN(sigma2=.95), data = d)
 
 # Let the program guess a good starting value
-o.guess = gmwm.imu(AR1()+WN(), data = d)
+o.guess = gmwm_imu(AR1()+WN(), data = d)
 ```
 
 To run inference or view the parameter estimates, we do:
@@ -69,13 +69,13 @@ Alternatively, we can let the program try to figure out the best model for the d
 
 # Separate Models - Compares 2*AR1() and AR1() + WN() under common model 2*AR1() + WN()
 # Note: This function created a shared model (e.g. 2*AR1() + WN()) if not supplied to obtain the WIC. 
-ms.sep = rank.models(AR1()+WN(), 2*AR1(), data = d, model.type="imu")
+ms.sep = rank_models(AR1()+WN(), 2*AR1(), data = d, model.type="imu")
 
 # Nested version - Compares AR1() + WN(), AR1(), WN()
-ms.nested = rank.models(AR1()+WN(), data = d, nested = TRUE, model.type = "imu")
+ms.nested = rank_models(AR1()+WN(), data = d, nested = TRUE, model.type = "imu")
 
 # Bootstrapped Optimism
-ms.bs = rank.models(AR1()+WN(), WN(), data = d, bootstrap = TRUE, model.type = "imu")
+ms.bs = rank_models(AR1()+WN(), WN(), data = d, bootstrap = TRUE, model.type = "imu")
 
 # See automatic selection fit
 plot(ms.sep)
@@ -114,7 +114,7 @@ wv.robust = wvar(sim.ts, robust = TRUE, eff = 0.6)
 compare_wvar(wv.classic, wv.robust, split = FALSE)
 
 # Run robust estimation
-o = gmwm.imu(model, sim.ts, robust = TRUE, eff = 0.6)
+o = gmwm_imu(model, sim.ts, robust = TRUE, eff = 0.6)
 
 # Robust information
 summary(o)
