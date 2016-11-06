@@ -28,7 +28,7 @@ reference:
     Estimation Tools for the Generalized Method of Wavelet Moments estimator (GMWM)
   contents:
   - gmwm
-  - gmwm.imu
+  - gmwm_imu
   - rgmwm
   - update.gmwm
 
@@ -37,8 +37,8 @@ reference:
   desc: >
     Rank a group of models by using the Wavelet Information Criterion (WIC)
   contents:
-  - rank.models
-  - auto.imu
+  - rank_models
+  - auto_imu
 
 
 - title: Computations
@@ -58,15 +58,15 @@ reference:
   desc: > 
     Support for Generating Single or Composite Processes
   contents:
-  - gen.gts
-  - gen.lts
+  - gen_gts
+  - gen_lts
 
 - title: Inertial Measurement Units
   desc: >
     IMU specific tools
   contents:
   - imu
-  - read.imu
+  - read_imu
   
 - title: Visualizations
   desc: >
@@ -74,11 +74,10 @@ reference:
   contents:
   - plot.wvar
   - plot.wvar.imu
-  - compare.wvar
+  - compare_wvar
   - plot.gmwm
-  - compare.models
-  - compare.eff
-  - compare.gmwm
+  - compare_models
+  - compare_eff
   - plot.gts
   - plot.lts
   - autoplot.avar
@@ -87,8 +86,6 @@ reference:
   - plot.hadam
   - plot.rank.models
   - plot.auto.imu
-
-
 
 - title: Supplementary Data Packages
   desc: >
