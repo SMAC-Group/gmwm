@@ -690,14 +690,6 @@ summary.gmwm = function(object, inference = NULL,
                                                     inference, F, # fullV is always false. Need same logic updates.
                                                     bs.gof, bs.gof.p.ci, bs.theta.est, bs.ci,
                                                     B)
-    # Convert from AR1 to GM
-    if(any(object$model$desc == "GM")){
-      object$estimate[,1:3] = apply(object$estimate[,1:3], 2, FUN = conv.ar1.to.gm,
-                                    process.desc = object$model$process.desc, 
-                                    freq = object$freq)
-    }
-    
-    
   }else{
     mm = vector('list',3)
     mm[1:3] = NA
@@ -707,6 +699,15 @@ summary.gmwm = function(object, inference = NULL,
     out.coln = colnames(out)
     out = cbind(out, mm[[1]])
     colnames(out) = c(out.coln, "CI Low", "CI High", "SE")
+    # Convert from AR1 to GM
+    idx_gm = (object$model$desc == "GM")
+    if(any(idx_gm)) {
+      out[,2:3] = apply(out[,2:3], 2, FUN = conv.ar1.to.gm,
+                                      process.desc = object$model$process.desc, 
+                                      freq = object$freq)
+      # To do: Add delta method transform here for sigma2
+    }
+    
   }
   
   x = structure(list(estimate=out, 

@@ -1,4 +1,4 @@
-# gmwm 3.0.0.9000
+# gmwm 2.9.0.1000
 
 The third release of the Generalized Method of Wavelet Moments (GMWM) R package introduces a slew of optimizations, documentation updates, and new features.
 
@@ -79,6 +79,7 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
   (descending `phi`/`beta`).
 * Fixed inability to request a non-bootstrap estimation
 * `predict.gmwm()` updated to handle `SARIMA()`
+* Fixed issue with `GM` term in model causing inference to break.
 
 ## Defunct Functions
 
