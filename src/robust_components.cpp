@@ -73,7 +73,7 @@ double find_biwc(double eff = 0.6){
 
   Rcpp::List crob_t = optimize(_["f"]  = Rcpp::InternalFunction(&objFun_find_biwc),
                           _["lower"] = 0,
-                          _["upper"] = 10,
+                          _["upper"] = 100,
                           _["eff"] = eff);
                           
   double out = as<double>(crob_t[0]);
@@ -117,7 +117,7 @@ double sig_rob_bw(arma::vec y, double eff = 0.6){
 
   Rcpp::List opt_val = optimize(_["f"]  = Rcpp::InternalFunction(&objFun_sig_rob_bw),
                           _["lower"] = 0,
-                          _["upper"] = 5,
+                          _["upper"] = 2,
                           _["x"] = x,
                           _["a_of_c"] = a_of_c,
                           _["crob_bw"] = crob_bw);
