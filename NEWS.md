@@ -11,14 +11,19 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 
 ## Baseline Requirements
 
-* To gain the new benefit of improved C++11 support on Windows, the dependency on R version has been increased to v3.3.0 from v3.0.0. 
-* Underlying API changes with `ggplot2` have led to the need to add the requirement of at least v2.1.x.
-* Due to changes in the `imu` object structure, we have opted to update the `imudata` to v3.0.0 and, thus, previous functions will not work with this new data set.
+* To gain the new benefit of improved C++11 support on Windows, the dependency
+  on R version has been increased to v3.3.0 from v3.0.0. 
+* Underlying API changes with `ggplot2` have led to the need to add the
+  requirement of at least v2.1.x.
+* Due to changes in the `imu` object structure, we have opted to update the
+  `imudata` to v3.0.0 and, thus, previous functions will not work with this
+  new data set.
 
 ## Generalized Method of Wavelet Moments (GMWM) 
 
 * Developed `rgmwm()` that computes estimates for both the classical and
   robust wavelet variance (WV). 
+* Tuning parameters associated with robust estimation have been refined.
 
 ##  Time Series Processed Model Syntax
 
@@ -67,6 +72,8 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 ## Documentation
 
 * Majority of documentation files were updated to improve clarity behind usage.
+  * `update.gmwm` purpose of re-using WV and specifying custom weighting matrix was clarified.
+  * `gmwm_imu` purpose for IMU modeling has been clarified. 
   * `avar` has been updated to use `gen_gts` and sections highlighting the different overlapping techniques have been added.
 * Package help file documentation is now available via
   <http://smac-group.com/docs/gmwm>
@@ -81,6 +88,8 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 * Fixed inability to request a non-bootstrap estimation
 * `predict.gmwm()` updated to handle `SARIMA()`
 * Fixed issue with `GM` term in model causing inference to break.
+* Prevented robust estimation when `eff` > 0.99 as users should opt for the
+  classical case.
 
 ## Defunct Functions
 
