@@ -2,7 +2,7 @@
 % Please edit documentation in R/wvar.R
 \name{create_wvar}
 \alias{create_wvar}
-\title{Create a Wvar object}
+\title{Create a \code{wvar} object}
 \usage{
 create_wvar(obj, decomp, filter, robust, eff, alpha, scales, unit)
 }
@@ -36,7 +36,7 @@ A \code{list} with the structure:
 }
 }
 \description{
-Structures elements into a WVar object
+Structures elements into a \code{wvar} object
 }
 \keyword{internal}
 

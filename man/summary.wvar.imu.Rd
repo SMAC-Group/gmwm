@@ -15,7 +15,8 @@
 Summary table and other properties of the object.
 }
 \description{
-Displays the summary table of wavelet variance in addition to CI values and supplied efficiency for \code{imu} Object.
+Displays the summary table of wavelet variance in addition to CI values and
+supplied efficiency for \code{imu} Object.
 }
 \examples{
 \dontrun{

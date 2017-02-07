@@ -67,7 +67,8 @@
 \item{...}{Additional parameters}
 }
 \description{
-Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+Compare the estimates given by the classical and robust methods of 
+calculating the wavelet variance.
 }
 \author{
 JJB, Wenchao

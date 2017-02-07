@@ -70,7 +70,8 @@ compare_wvar(..., background = "white", split = TRUE, CI = TRUE,
 \item{nrow}{An \code{integer} that indicates number of rows}
 }
 \description{
-Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+Compare the estimates given by the classical and robust methods of 
+calculating the wavelet variance.
 }
 \note{
 If you meet the error "polygon edge not found", RStudio is complaining that you don't have enough 

@@ -60,7 +60,8 @@ graphingVar(object, CI = TRUE, transparence = 0.1, background = "white",
 A ggplot2 graphical object.
 }
 \description{
-A generic graphical function for Allan Variance, Wavelet Variance and Hadamard Variance
+A generic graphical function for Allan Variance, Wavelet Variance and
+Hadamard Variance
 }
 \author{
 Wenchao

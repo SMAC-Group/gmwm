@@ -66,7 +66,7 @@ A \code{list} with the structure:
 Calculates the (MODWT) wavelet variance
 }
 \details{
-If `nlevels` is not specified, it is set to floor(log2(length(x)))
+If \code{nlevels} is not specified, it is set to \eqn{\left\lfloor {{{\log }_2}\left( {length\left( x \right)} \right)} \right\rfloor}{floor(log2(length(x)))}
 }
 \examples{
 set.seed(999)
