@@ -67,6 +67,7 @@ The third release of the Generalized Method of Wavelet Moments (GMWM) R package 
 ## Documentation
 
 * Majority of documentation files were updated to improve clarity behind usage.
+  * `avar` has been updated to use `gen_gts` and sections highlighting the different overlapping techniques have been added.
 * Package help file documentation is now available via
   <http://smac-group.com/docs/gmwm>
 
