@@ -54,7 +54,7 @@ set.seed(999)
 
 # Simulate time series
 N = 100000
-ts = gen_gts(N, WN(sigma2 = 2) + RW(sigma2 = 1))
+ts = gen_gts(N, WN(sigma2 = 2) + RW(gamma2 = 1))
 
 # Maximal overlap
 av_mat_mo = avar(ts, type = "mo")
