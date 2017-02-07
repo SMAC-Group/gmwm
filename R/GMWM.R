@@ -576,10 +576,11 @@ rgmwm = function(model, data, eff = c(0.9, 0.8, 0.6), ...){
   len = length(eff) + 1
   obj.list = vector('list', length = len)
   
-  for(i in seq_len(len)){
+  # Allocate i = 1 for classical, i > 1 are varying robust efficiencies.
+  for(i in seq_len(len)) {
     if(i != 1L) {
       obj.list[[i]] = gmwm(model = model, data = data, 
-                           robust = TRUE, eff = eff[i], ...) 
+                           robust = TRUE, eff = eff[i-1], ...) 
     } else {
       obj.list[[i]] = gmwm(model = model, data = data, robust = FALSE, ...)
     }
