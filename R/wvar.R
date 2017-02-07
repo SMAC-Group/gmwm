@@ -1,4 +1,4 @@
-# Copyright (C) 2014 - 2016  James Balamuta, Stephane Guerrier, Roberto Molinari
+# Copyright (C) 2014 - 2017  James Balamuta, Stephane Guerrier, Roberto Molinari
 #
 # This file is part of GMWM R Methods Package
 #
@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#' @title Wavelet Variance
-#' @description Calculates the (MODWT) wavelet variance
+#' Wavelet Variance
+#' 
+#' Calculates the (MODWT) wavelet variance
 #' @param x         A \code{vector} with dimensions N x 1, or a \code{lts} object, or a \code{gts} object, or a \code{imu} object. 
 #' @param decomp    A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition.
 #' @param filter    A \code{string} that specifies what wavelet filter to use. 
@@ -38,7 +39,7 @@
 #'   \item{"unit"}{String representation of the unit}
 #' }
 #' @details 
-#' If `nlevels` is not specified, it is set to floor(log2(length(x)))
+#' If \code{nlevels} is not specified, it is set to \eqn{\left\lfloor {{{\log }_2}\left( {length\left( x \right)} \right)} \right\rfloor}{floor(log2(length(x)))}
 #' @author JJB
 #' @rdname wvar
 #' @examples
@@ -120,6 +121,12 @@ wvar.default = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, al
       stop('The supported units are "ns", "ms", "sec", "min", "hour", "day", "month", "year". ')
   }
   
+  if(robust) {
+    if(eff > 0.99) {
+      stop("The efficiency specified is too close to the classical case. Use `robust = FALSE`")
+    }
+  }
+  
   obj =  .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
                signal=x, nlevels=nlevels, robust=robust, eff=eff, alpha=alpha, 
                ci_type="eta3", strWavelet=filter, decomp = decomp)
@@ -167,6 +174,12 @@ wvar.imu = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha 
   }
   if(nlevels > mlevels){
     stop("`nlevels` must be less than ", mlevels,", which is the max number of levels.")
+  }
+  
+  if(robust) {
+    if(eff > 0.99) {
+      stop("The efficiency specified is too close to the classical case. Use `robust = FALSE`")
+    }
   }
   
   # freq conversion
@@ -223,8 +236,9 @@ wvar.imu = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha 
 }
 
 
-#' @title Create a Wvar object
-#' @description Structures elements into a WVar object
+#' Create a \code{wvar} object
+#' 
+#' Structures elements into a \code{wvar} object
 #' @param obj    A \code{matrix} with dimensions N x 3, that contains the wavelet variance, low ci, hi ci.
 #' @param decomp A \code{string} that indicates whether to use the "dwt" or "modwt" decomposition
 #' @param filter A \code{string} that specifies the type of wavelet filter used in the decomposition
@@ -257,8 +271,9 @@ create_wvar = function(obj, decomp, filter, robust, eff, alpha, scales, unit){
                        filter = filter), class = "wvar")
 }
 
-#' @title Print Wavelet Variances
-#' @description Displays the summary table of wavelet variance.
+#' Print Wavelet Variances
+#' 
+#' Displays the summary table of wavelet variance.
 #' @method print wvar
 #' @export
 #' @keywords internal
@@ -279,8 +294,9 @@ print.wvar = function(x, ...){
 }
 
 
-#' @title Print Wavelet Variances for \code{imu} Object
-#' @description Displays the summary table of wavelet variance for \code{imu} Object.
+#' Print Wavelet Variances for \code{imu} Object
+#' 
+#' Displays the summary table of wavelet variance for \code{imu} Object.
 #' @method print wvar.imu
 #' @export
 #' @keywords internal
@@ -326,8 +342,10 @@ print.wvar.imu = function(x, ...){
 }
 
 
-#' @title Summary of Wavelet Variances
-#' @description Displays the summary table of wavelet variance in addition to CI values and supplied efficiency.
+#' Summary of Wavelet Variances
+#' 
+#' Displays the summary table of wavelet variance in addition to CI values and
+#' supplied efficiency.
 #' @method summary wvar
 #' @export
 #' @keywords internal
@@ -356,8 +374,10 @@ summary.wvar = function(object, ...){
   print(object)
 }
 
-#' @title Summary of Wavelet Variances for \code{imu} Object
-#' @description Displays the summary table of wavelet variance in addition to CI values and supplied efficiency for \code{imu} Object.
+#' Summary of Wavelet Variances for \code{imu} Object
+#' 
+#' Displays the summary table of wavelet variance in addition to CI values and
+#' supplied efficiency for \code{imu} Object.
 #' @method summary wvar.imu
 #' @export
 #' @keywords internal
@@ -394,8 +414,9 @@ summary.wvar.imu = function(object, ...){
 }
 
 
-#' @title Wrapper to ggplot Wavelet Variances Graph
-#' @description Creates the wavelet variance graph
+#' Wrapper to ggplot Wavelet Variances Graph
+#' 
+#' Creates the wavelet variance graph
 #' @method plot wvar
 #' @export
 #' @param x A \code{wvar} object.
@@ -432,8 +453,9 @@ plot.wvar = function(x, CI = T, transparence = 0.1, background = 'white', bw = F
                 legend.text.size = legend.text.size )
 }
 
-#' @title Graph Wavelet Variances
-#' @description Creates the wavelet variance graph
+#' Graph Wavelet Variances
+#' 
+#' Creates the wavelet variance graph
 #' @method autoplot wvar
 #' @export
 #' @keywords internal
@@ -495,8 +517,10 @@ autoplot.wvar = function(object, CI = T, transparence = 0.1, background = 'white
   
 }
 
-#' @title Graphical Function for Allan Variance, Wavelet Variance and Hadamard Variance
-#' @description A generic graphical function for Allan Variance, Wavelet Variance and Hadamard Variance
+#' Graphical Function for Allan Variance, Wavelet Variance and Hadamard Variance
+#' 
+#' A generic graphical function for Allan Variance, Wavelet Variance and
+#' Hadamard Variance
 #' @param object A \code{wvar}, or \code{avar}, or \code{hadam} object.
 #' @template CommonParams
 #' @keywords internal
@@ -610,8 +634,10 @@ graphingVar = function(object, CI = TRUE, transparence = 0.1, background = 'whit
   p
 }
 
-#' @title Detail Implementation to Compare Wavelet Variances
-#' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+#' Detail Implementation to Compare Wavelet Variances
+#' 
+#' Compare the estimates given by the classical and robust methods of 
+#' calculating the wavelet variance.
 #' @export
 #' @keywords internal
 #' @param object A \code{data frame} that contains data in order to plot
@@ -711,8 +737,10 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 }
 
 
-#' @title Compare Wavelet Variances
-#' @description Compare the estimates given by the classical and robust methods of calculating the wavelet variance.
+#' Compare Wavelet Variances
+#' 
+#' Compare the estimates given by the classical and robust methods of 
+#' calculating the wavelet variance.
 #' @param ... Any number of \code{wvar} or \code{wvar.imu} objects.
 #' @param split A \code{boolean} that indicates whether the graphs should be separate (TRUE) or graphed ontop of each other (FALSE)
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
@@ -943,8 +971,9 @@ compare_wvar = function(..., background = 'white', split = TRUE, CI = TRUE, auto
 }
 
 
-#' @title Compare Wavelet Variances for \code{imu} Object
-#' @description Internal Function to compare the wavelet variance for \code{imu} object.
+#' Compare Wavelet Variances for \code{imu} Object
+#' 
+#' Internal Function to compare the wavelet variance for \code{imu} object.
 #' @param obj.list A \code{list} of \code{wvar.imu} objects.
 #' @param CI A \code{boolean} that indicates whether the confidence interval should be plotted.
 #' @param background A \code{string} that determines the graph background. It can be \code{'grey'} or \code{'white'}.
