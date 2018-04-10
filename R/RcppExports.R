@@ -1200,6 +1200,7 @@ gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ra
 #' @author JJB
 #' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 #' @keywords internal
+#' @export
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
 gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff) {
