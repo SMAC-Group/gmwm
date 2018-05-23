@@ -27,4 +27,3 @@ A \code{vec} that has
 Handles the bootstrap computation and the bootstrapped p-value.
 }
 \keyword{internal}
-

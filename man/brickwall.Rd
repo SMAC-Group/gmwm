@@ -32,4 +32,3 @@ brickwall(j)
 \author{
 JJB
 }
-

@@ -26,4 +26,3 @@ A \code{double} that is the value of the Objective function under Yannick's star
 Obtains the GMWM starting value given by Yannick's objective function optimization
 }
 \keyword{internal}
-

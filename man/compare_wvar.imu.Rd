@@ -68,11 +68,10 @@ compare_wvar.imu(obj.list, background = "white", CI = TRUE,
 \description{
 Internal Function to compare the wavelet variance for \code{imu} object.
 }
-\author{
-Wenchao
-}
 \seealso{
 \code{\link{compare_wvar}}
 }
+\author{
+Wenchao
+}
 \keyword{internal}
-

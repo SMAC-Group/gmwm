@@ -44,8 +44,8 @@ The innovations are generated from a normal distribution.
 The \eqn{\sigma^2} parameter is indeed a variance parameter. 
 This differs from R's use of the standard deviation, \eqn{\sigma}.
 }
+
 \examples{
 gen_arma(10, c(.3,.5), c(.1), 1, 0)
 }
 \keyword{internal}
-

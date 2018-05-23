@@ -18,4 +18,3 @@ A \code{mat}
 B Matrix
 }
 \keyword{internal}
-

@@ -23,4 +23,3 @@ Convert from AR1 to GM and vice-versa
 JJB
 }
 \keyword{internal}
-

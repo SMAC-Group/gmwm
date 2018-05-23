@@ -27,9 +27,9 @@ The Random Walk (RW) process has a Haar Wavelet Variance given by:
 
 For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
 }
+
 \examples{
 ntau = 8
 tau = 2^(1:ntau)
 wv.theo = rw_to_wv(.37, tau)
 }
-

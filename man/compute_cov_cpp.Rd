@@ -32,4 +32,3 @@ V = compute_cov_cpp(decomp$data, decomp$nlevels, compute_v="diag", robust = TRUE
 }
 }
 \keyword{internal}
-

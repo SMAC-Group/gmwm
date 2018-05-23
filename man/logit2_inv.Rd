@@ -31,11 +31,10 @@ x.sim.untransformed = logit2_inv(x.sim.transformed)
 # Compare results
 results = cbind(x.sim, x.sim.untransformed)
 }
-\author{
-James Joseph Balamuta (JJB)
-}
 \seealso{
 \code{\link{logit2}}
 }
+\author{
+James Joseph Balamuta (JJB)
+}
 \keyword{internal}
-

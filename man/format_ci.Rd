@@ -25,4 +25,3 @@ A \code{mat} that has:
 Creates hi and lo confidence based on SE and alpha.
 }
 \keyword{internal}
-

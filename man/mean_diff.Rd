@@ -20,4 +20,3 @@ x=rnorm(10)
 mean_diff(x)
 }
 \keyword{internal}
-

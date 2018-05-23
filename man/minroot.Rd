@@ -16,4 +16,3 @@ A \code{double} with the minimum root value.
 Calculates all the roots of a polynomial and returns the root that is the smallest.
 }
 \keyword{internal}
-

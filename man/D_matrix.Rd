@@ -33,4 +33,3 @@ Function returns the matrix effectively known as "D"
 James Joseph Balamuta (JJB)
 }
 \keyword{internal}
-

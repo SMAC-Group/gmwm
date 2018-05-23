@@ -27,4 +27,3 @@ d4_filter()
 JJB
 }
 \keyword{internal}
-

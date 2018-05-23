@@ -127,4 +127,3 @@ compare_wvar(wv1, wv2, auto.label.wvar = F, legend.label = c('data1', 'data2'))
 \author{
 JJB, Wenchao
 }
-

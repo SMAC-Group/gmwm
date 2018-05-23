@@ -52,4 +52,3 @@ ex.b2 = ex[,c("Gyro. X","Gyro. Y","Accel. X","Accel. Y")]
 }
 
 }
-

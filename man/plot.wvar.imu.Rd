@@ -94,4 +94,3 @@ plot(df, split = F)
 plot(df, split = F, line.color = c('black', 'green', 'red'), CI.color = c('black', 'green', 'red'))
 }
 }
-

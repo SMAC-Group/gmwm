@@ -13,4 +13,3 @@ do_polyroot_arma(z)
 Used to interface with Armadillo
 }
 \keyword{internal}
-

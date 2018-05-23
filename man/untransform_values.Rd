@@ -25,4 +25,3 @@ Undo the previous transform of parameter guesses to obtain the GMWM estimates.
 James Joseph Balamuta (JJB)
 }
 \keyword{internal}
-

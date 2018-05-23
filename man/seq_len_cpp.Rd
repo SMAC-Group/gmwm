@@ -23,4 +23,3 @@ seq_len_cpp(5)
 James J Balamuta
 }
 \keyword{internal}
-

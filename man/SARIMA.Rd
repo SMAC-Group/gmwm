@@ -52,4 +52,3 @@ SARIMA(ar=0.23, i = 0, ma=0.4, sar = .3,  sma = .3)
 \author{
 JJB
 }
-

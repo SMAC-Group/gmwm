@@ -16,4 +16,3 @@ A \code{map<string, int>} containing how frequent the model component appears.
 Count the amount of models that exist.
 }
 \keyword{internal}
-

@@ -25,11 +25,10 @@ x.sim = runif(10, -1, 1)
 # Transform
 x.sim.transformed = pseudo_logit(x.sim)
 }
-\author{
-James Joseph Balamuta (JJB)
-}
 \seealso{
 \code{\link{pseudo_logit_inv}}
 }
+\author{
+James Joseph Balamuta (JJB)
+}
 \keyword{internal}
-

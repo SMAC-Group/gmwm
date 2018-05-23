@@ -37,4 +37,3 @@ decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", 
 wvar_cpp(decomp, robust=FALSE, eff=0.6, alpha = 0.05, ci_type="eta3")
 }
 \keyword{internal}
-

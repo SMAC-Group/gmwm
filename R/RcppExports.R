@@ -10,7 +10,7 @@
 #' @examples
 #' e_drift(1,200)
 e_drift <- function(omega, n_ts) {
-    .Call('gmwm_e_drift', PACKAGE = 'gmwm', omega, n_ts)
+    .Call('_gmwm_e_drift', PACKAGE = 'gmwm', omega, n_ts)
 }
 
 #' @title Second moment DR
@@ -22,7 +22,7 @@ e_drift <- function(omega, n_ts) {
 #' @examples
 #' m2_drift(1, 200)
 m2_drift <- function(omega, n_ts) {
-    .Call('gmwm_m2_drift', PACKAGE = 'gmwm', omega, n_ts)
+    .Call('_gmwm_m2_drift', PACKAGE = 'gmwm', omega, n_ts)
 }
 
 #' @title Variance DR
@@ -34,7 +34,7 @@ m2_drift <- function(omega, n_ts) {
 #' @examples
 #' var_drift(1, 200)
 var_drift <- function(omega, n_ts) {
-    .Call('gmwm_var_drift', PACKAGE = 'gmwm', omega, n_ts)
+    .Call('_gmwm_var_drift', PACKAGE = 'gmwm', omega, n_ts)
 }
 
 #' @title Compute Tau-Overlap Allan Variance
@@ -70,7 +70,7 @@ var_drift <- function(omega, n_ts) {
 #' av_mat = avar_to_cpp(combined.ts)
 #' @keywords internal
 avar_to_cpp <- function(x) {
-    .Call('gmwm_avar_to_cpp', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_avar_to_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' @title Compute Maximal-Overlap Allan Variance using Means
@@ -106,7 +106,7 @@ avar_to_cpp <- function(x) {
 #' av_mat = avar_mo_cpp(combined.ts)
 #' @keywords internal
 avar_mo_cpp <- function(x) {
-    .Call('gmwm_avar_mo_cpp', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_avar_mo_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' ARMA Adapter to ARMA to WV Process function
@@ -124,7 +124,7 @@ avar_mo_cpp <- function(x) {
 #' @backref src/analytical_matrix_derivatives.h
 #' @template author/jjb
 arma_adapter <- function(theta, p, q, tau) {
-    .Call('gmwm_arma_adapter', PACKAGE = 'gmwm', theta, p, q, tau)
+    .Call('_gmwm_arma_adapter', PACKAGE = 'gmwm', theta, p, q, tau)
 }
 
 #' Calculates the Jacobian for the ARMA process
@@ -137,7 +137,7 @@ arma_adapter <- function(theta, p, q, tau) {
 #' @backref src/analytical_matrix_derivatives.h
 #' @template author/jjb
 jacobian_arma <- function(theta, p, q, tau) {
-    .Call('gmwm_jacobian_arma', PACKAGE = 'gmwm', theta, p, q, tau)
+    .Call('_gmwm_jacobian_arma', PACKAGE = 'gmwm', theta, p, q, tau)
 }
 
 #' Analytic D matrix for ARMA(1,1) process
@@ -158,7 +158,7 @@ jacobian_arma <- function(theta, p, q, tau) {
 #' @examples
 #' deriv_arma11(.3, .4, 1, 2^(1:5))
 deriv_arma11 <- function(phi, theta, sigma2, tau) {
-    .Call('gmwm_deriv_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
+    .Call('_gmwm_deriv_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
 }
 
 #' Analytic D matrix for ARMA(1,1) process
@@ -182,7 +182,7 @@ deriv_arma11 <- function(phi, theta, sigma2, tau) {
 #' @examples
 #' deriv_2nd_arma11(.3, .4, 1, 2^(1:5))
 deriv_2nd_arma11 <- function(phi, theta, sigma2, tau) {
-    .Call('gmwm_deriv_2nd_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
+    .Call('_gmwm_deriv_2nd_arma11', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
 }
 
 #' Analytic D matrix for AR(1) process
@@ -198,7 +198,7 @@ deriv_2nd_arma11 <- function(phi, theta, sigma2, tau) {
 #' @examples
 #' deriv_ar1(.3, 1, 2^(1:5))
 deriv_ar1 <- function(phi, sigma2, tau) {
-    .Call('gmwm_deriv_ar1', PACKAGE = 'gmwm', phi, sigma2, tau)
+    .Call('_gmwm_deriv_ar1', PACKAGE = 'gmwm', phi, sigma2, tau)
 }
 
 #' Analytic second derivative matrix for AR(1) process
@@ -217,7 +217,7 @@ deriv_ar1 <- function(phi, sigma2, tau) {
 #' @examples
 #' deriv_2nd_ar1(.3, 1, 2^(1:5))
 deriv_2nd_ar1 <- function(phi, sigma2, tau) {
-    .Call('gmwm_deriv_2nd_ar1', PACKAGE = 'gmwm', phi, sigma2, tau)
+    .Call('_gmwm_deriv_2nd_ar1', PACKAGE = 'gmwm', phi, sigma2, tau)
 }
 
 #' Analytic D matrix for MA(1) process
@@ -233,7 +233,7 @@ deriv_2nd_ar1 <- function(phi, sigma2, tau) {
 #' @examples
 #' deriv_ma1(.3, 1, 2^(1:5))
 deriv_ma1 <- function(theta, sigma2, tau) {
-    .Call('gmwm_deriv_ma1', PACKAGE = 'gmwm', theta, sigma2, tau)
+    .Call('_gmwm_deriv_ma1', PACKAGE = 'gmwm', theta, sigma2, tau)
 }
 
 #' Analytic second derivative for MA(1) process
@@ -250,7 +250,7 @@ deriv_ma1 <- function(theta, sigma2, tau) {
 #' @examples
 #' deriv_2nd_ma1(.3, 1, 2^(1:5))
 deriv_2nd_ma1 <- function(theta, sigma2, tau) {
-    .Call('gmwm_deriv_2nd_ma1', PACKAGE = 'gmwm', theta, sigma2, tau)
+    .Call('_gmwm_deriv_2nd_ma1', PACKAGE = 'gmwm', theta, sigma2, tau)
 }
 
 #' Analytic D matrix for Drift (DR) Process
@@ -265,7 +265,7 @@ deriv_2nd_ma1 <- function(theta, sigma2, tau) {
 #' @examples
 #' deriv_dr(5.3, 2^(1:5))
 deriv_dr <- function(omega, tau) {
-    .Call('gmwm_deriv_dr', PACKAGE = 'gmwm', omega, tau)
+    .Call('_gmwm_deriv_dr', PACKAGE = 'gmwm', omega, tau)
 }
 
 #' Analytic second derivative matrix for drift process
@@ -278,7 +278,7 @@ deriv_dr <- function(omega, tau) {
 #' @examples
 #' deriv_2nd_dr(2^(1:5))
 deriv_2nd_dr <- function(tau) {
-    .Call('gmwm_deriv_2nd_dr', PACKAGE = 'gmwm', tau)
+    .Call('_gmwm_deriv_2nd_dr', PACKAGE = 'gmwm', tau)
 }
 
 #' Analytic D matrix for Quantization Noise (QN) Process
@@ -292,7 +292,7 @@ deriv_2nd_dr <- function(tau) {
 #' @examples
 #' deriv_qn(2^(1:5))
 deriv_qn <- function(tau) {
-    .Call('gmwm_deriv_qn', PACKAGE = 'gmwm', tau)
+    .Call('_gmwm_deriv_qn', PACKAGE = 'gmwm', tau)
 }
 
 #' Analytic D matrix Random Walk (RW) Process
@@ -306,7 +306,7 @@ deriv_qn <- function(tau) {
 #' @examples
 #' deriv_rw(2^(1:5))
 deriv_rw <- function(tau) {
-    .Call('gmwm_deriv_rw', PACKAGE = 'gmwm', tau)
+    .Call('_gmwm_deriv_rw', PACKAGE = 'gmwm', tau)
 }
 
 #' Analytic D Matrix for a Gaussian White Noise (WN) Process
@@ -320,7 +320,7 @@ deriv_rw <- function(tau) {
 #' @examples
 #' deriv_wn(2^(1:5))
 deriv_wn <- function(tau) {
-    .Call('gmwm_deriv_wn', PACKAGE = 'gmwm', tau)
+    .Call('_gmwm_deriv_wn', PACKAGE = 'gmwm', tau)
 }
 
 #' Analytic D matrix of Processes
@@ -338,7 +338,7 @@ deriv_wn <- function(tau) {
 #' mod = AR1(.4,1) + WN(.2) + DR(.005)
 #' derivative_first_matrix(mod$theta, mod$desc, mod$obj.desc, 2^(1:9))
 derivative_first_matrix <- function(theta, desc, objdesc, tau) {
-    .Call('gmwm_derivative_first_matrix', PACKAGE = 'gmwm', theta, desc, objdesc, tau)
+    .Call('_gmwm_derivative_first_matrix', PACKAGE = 'gmwm', theta, desc, objdesc, tau)
 }
 
 #' Analytic D matrix of Processes
@@ -357,7 +357,7 @@ derivative_first_matrix <- function(theta, desc, objdesc, tau) {
 #' # TBA
 #' @keywords internal
 D_matrix <- function(theta, desc, objdesc, tau, omegadiff) {
-    .Call('gmwm_D_matrix', PACKAGE = 'gmwm', theta, desc, objdesc, tau, omegadiff)
+    .Call('_gmwm_D_matrix', PACKAGE = 'gmwm', theta, desc, objdesc, tau, omegadiff)
 }
 
 #' @title Hook into R's ARIMA function
@@ -367,7 +367,7 @@ D_matrix <- function(theta, desc, objdesc, tau, omegadiff) {
 #' @return A \code{vec} containing the CSS of the ARMA parameters.
 #' @keywords internal
 Rcpp_ARIMA <- function(data, params) {
-    .Call('gmwm_Rcpp_ARIMA', PACKAGE = 'gmwm', data, params)
+    .Call('_gmwm_Rcpp_ARIMA', PACKAGE = 'gmwm', data, params)
 }
 
 #' Sort Matrix by Column
@@ -383,7 +383,7 @@ Rcpp_ARIMA <- function(data, params) {
 #' @return The matrix sorted by values in the specified column.
 #' @keywords internal
 sort_mat <- function(x, col) {
-    .Call('gmwm_sort_mat', PACKAGE = 'gmwm', x, col)
+    .Call('_gmwm_sort_mat', PACKAGE = 'gmwm', x, col)
 }
 
 #' @title Reverse Subset Column
@@ -402,7 +402,7 @@ sort_mat <- function(x, col) {
 #' rev_col_subset(x, 1, 0)
 #' @keywords internal
 rev_col_subset <- function(x, start, end) {
-    .Call('gmwm_rev_col_subset', PACKAGE = 'gmwm', x, start, end)
+    .Call('_gmwm_rev_col_subset', PACKAGE = 'gmwm', x, start, end)
 }
 
 #' @title Reverse Subset Row
@@ -419,7 +419,7 @@ rev_col_subset <- function(x, start, end) {
 #' rev_row_subset(x, 1, 0)
 #' @keywords internal
 rev_row_subset <- function(x, start, end) {
-    .Call('gmwm_rev_row_subset', PACKAGE = 'gmwm', x, start, end)
+    .Call('_gmwm_rev_row_subset', PACKAGE = 'gmwm', x, start, end)
 }
 
 #' @title Reverse Armadillo Vector
@@ -434,7 +434,7 @@ rev_row_subset <- function(x, start, end) {
 #' reverse_vec(x)
 #' @keywords internal
 reverse_vec <- function(x) {
-    .Call('gmwm_reverse_vec', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_reverse_vec', PACKAGE = 'gmwm', x)
 }
 
 #' @title Transform an Armadillo field<vec> to a matrix
@@ -446,7 +446,7 @@ reverse_vec <- function(x) {
 #' x=rnorm(100)
 #' @keywords internal
 field_to_matrix <- function(x) {
-    .Call('gmwm_field_to_matrix', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_field_to_matrix', PACKAGE = 'gmwm', x)
 }
 
 #' @title Accumulation of Armadillo field<vec>
@@ -458,7 +458,7 @@ field_to_matrix <- function(x) {
 #' x=rnorm(100)
 #' @keywords internal
 sum_field_vec <- function(x) {
-    .Call('gmwm_sum_field_vec', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_sum_field_vec', PACKAGE = 'gmwm', x)
 }
 
 #' @title Build List of Unique Models
@@ -468,7 +468,7 @@ sum_field_vec <- function(x) {
 #' @return A \code{set<string>} that contains the list of unique models.
 #' @keywords internal
 build_model_set <- function(combs, x) {
-    .Call('gmwm_build_model_set', PACKAGE = 'gmwm', combs, x)
+    .Call('_gmwm_build_model_set', PACKAGE = 'gmwm', combs, x)
 }
 
 #' Set the RNG Seed from within Rcpp
@@ -485,7 +485,7 @@ build_model_set <- function(combs, x) {
 #' y = rnorm(5,0,1)
 #' all.equal(x,y, check.attributes = FALSE)
 set_seed <- function(seed) {
-    invisible(.Call('gmwm_set_seed', PACKAGE = 'gmwm', seed))
+    invisible(.Call('_gmwm_set_seed', PACKAGE = 'gmwm', seed))
 }
 
 #' @title Conversion function of Vector to Set
@@ -494,7 +494,7 @@ set_seed <- function(seed) {
 #' @return A \code{set<vector<string>>} that contains the list of unique models.
 #' @keywords internal
 vector_to_set <- function(model_str) {
-    .Call('gmwm_vector_to_set', PACKAGE = 'gmwm', model_str)
+    .Call('_gmwm_vector_to_set', PACKAGE = 'gmwm', model_str)
 }
 
 #' @title Find the Common Denominator of the Models
@@ -503,7 +503,7 @@ vector_to_set <- function(model_str) {
 #' @return A \code{vector<string>} that contains the terms of the common denominator of all models
 #' @keywords internal
 find_full_model <- function(x) {
-    .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_find_full_model', PACKAGE = 'gmwm', x)
 }
 
 #' @title Find the Rank Models result
@@ -524,7 +524,7 @@ find_full_model <- function(x) {
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
 rank_models_cpp <- function(data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
-    .Call('gmwm_rank_models_cpp', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
+    .Call('_gmwm_rank_models_cpp', PACKAGE = 'gmwm', data, model_str, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Find the auto imu result
@@ -545,7 +545,7 @@ rank_models_cpp <- function(data, model_str, full_model, alpha, compute_v, model
 #' @return A \code{field<field<field<mat>>>} that contains the model score matrix and the best GMWM model object.
 #' @keywords internal
 auto_imu_cpp <- function(data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed) {
-    .Call('gmwm_auto_imu_cpp', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
+    .Call('_gmwm_auto_imu_cpp', PACKAGE = 'gmwm', data, combs, full_model, alpha, compute_v, model_type, K, H, G, robust, eff, bs_optimism, seed)
 }
 
 #' @title Bootstrap for Matrix V
@@ -561,7 +561,7 @@ auto_imu_cpp <- function(data, combs, full_model, alpha, compute_v, model_type, 
 #' @examples
 #' # Coming soon
 cov_bootstrapper <- function(theta, desc, objdesc, N, robust, eff, H, diagonal_matrix) {
-    .Call('gmwm_cov_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, N, robust, eff, H, diagonal_matrix)
+    .Call('_gmwm_cov_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, N, robust, eff, H, diagonal_matrix)
 }
 
 #' @title Bootstrap for Optimism
@@ -577,7 +577,7 @@ cov_bootstrapper <- function(theta, desc, objdesc, N, robust, eff, H, diagonal_m
 #' @examples
 #' # Coming soon
 optimism_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
-    .Call('gmwm_optimism_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+    .Call('_gmwm_optimism_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
 }
 
 #' @title Bootstrap for Optimism and GoF
@@ -599,7 +599,7 @@ optimism_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, r
 #' @examples
 #' # Coming soon
 opt_n_gof_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
-    .Call('gmwm_opt_n_gof_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+    .Call('_gmwm_opt_n_gof_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
 }
 
 #' @title Bootstrap for Standard Deviations of Theta Estimates
@@ -615,7 +615,7 @@ opt_n_gof_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, 
 #' @examples
 #' # Coming soon
 gmwm_sd_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
-    .Call('gmwm_gmwm_sd_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+    .Call('_gmwm_gmwm_sd_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
 }
 
 #' @title Generate the Confidence Interval for GOF Bootstrapped
@@ -627,7 +627,7 @@ gmwm_sd_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, ro
 #' @return A \code{vec} that has the alpha/2.0 quantile and then the 1-alpha/2.0 quantile. 
 #' @keywords internal
 boot_pval_gof <- function(obj, obj_boot, B = 1000L, alpha = 0.05) {
-    .Call('gmwm_boot_pval_gof', PACKAGE = 'gmwm', obj, obj_boot, B, alpha)
+    .Call('_gmwm_boot_pval_gof', PACKAGE = 'gmwm', obj, obj_boot, B, alpha)
 }
 
 #' @title Bootstrap for Estimating Both Theta and Theta SD
@@ -643,7 +643,7 @@ boot_pval_gof <- function(obj, obj_boot, B = 1000L, alpha = 0.05) {
 #' @examples
 #' # Coming soon
 gmwm_param_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
-    .Call('gmwm_gmwm_param_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+    .Call('_gmwm_gmwm_param_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
 }
 
 #' @title Bootstrap for Everything!
@@ -659,7 +659,7 @@ gmwm_param_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N,
 #' @examples
 #' # Coming soon
 all_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H) {
-    .Call('gmwm_all_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
+    .Call('_gmwm_all_bootstrapper', PACKAGE = 'gmwm', theta, desc, objdesc, scales, model_type, N, robust, eff, alpha, H)
 }
 
 #' @title Absolute Value or Modulus of a Complex Number Squared.
@@ -673,7 +673,7 @@ all_bootstrapper <- function(theta, desc, objdesc, scales, model_type, N, robust
 #' Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
 #' @keywords internal
 Mod_squared_cpp <- function(x) {
-    .Call('gmwm_Mod_squared_cpp', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_Mod_squared_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' @title Absolute Value or Modulus of a Complex Number.
@@ -686,7 +686,7 @@ Mod_squared_cpp <- function(x) {
 #' Mod_cpp(c(1+.5i, 2+1i, 5+9i))
 #' @keywords internal
 Mod_cpp <- function(x) {
-    .Call('gmwm_Mod_cpp', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_Mod_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' @title Computes the (MODWT) wavelet covariance matrix
@@ -705,7 +705,7 @@ Mod_cpp <- function(x) {
 #' V = compute_cov_cpp(decomp$data, decomp$nlevels, compute_v="diag", robust = TRUE, eff=0.6)
 #' }
 compute_cov_cpp <- function(signal_modwt, nb_level, compute_v = "diag", robust = TRUE, eff = 0.6) {
-    .Call('gmwm_compute_cov_cpp', PACKAGE = 'gmwm', signal_modwt, nb_level, compute_v, robust, eff)
+    .Call('_gmwm_compute_cov_cpp', PACKAGE = 'gmwm', signal_modwt, nb_level, compute_v, robust, eff)
 }
 
 #' @title Computes the (MODWT) wavelet covariance matrix using Chi-square confidence interval bounds
@@ -721,7 +721,7 @@ compute_cov_cpp <- function(signal_modwt, nb_level, compute_v = "diag", robust =
 #' fast_cov_cpp(y,x)
 #' }
 fast_cov_cpp <- function(ci_hi, ci_lo) {
-    .Call('gmwm_fast_cov_cpp', PACKAGE = 'gmwm', ci_hi, ci_lo)
+    .Call('_gmwm_fast_cov_cpp', PACKAGE = 'gmwm', ci_hi, ci_lo)
 }
 
 #' @title Discrete Wavelet Transform
@@ -741,7 +741,7 @@ fast_cov_cpp <- function(ci_hi, ci_lo) {
 #' x = rnorm(2^8)
 #' dwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
 dwt_cpp <- function(x, filter_name, nlevels, boundary, brickwall) {
-    .Call('gmwm_dwt_cpp', PACKAGE = 'gmwm', x, filter_name, nlevels, boundary, brickwall)
+    .Call('_gmwm_dwt_cpp', PACKAGE = 'gmwm', x, filter_name, nlevels, boundary, brickwall)
 }
 
 #' @title Maximum Overlap Discrete Wavelet Transform
@@ -761,7 +761,7 @@ dwt_cpp <- function(x, filter_name, nlevels, boundary, brickwall) {
 #' x = rnorm(100)
 #' modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
 modwt_cpp <- function(x, filter_name, nlevels, boundary, brickwall) {
-    .Call('gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name, nlevels, boundary, brickwall)
+    .Call('_gmwm_modwt_cpp', PACKAGE = 'gmwm', x, filter_name, nlevels, boundary, brickwall)
 }
 
 #' @title Removal of Boundary Wavelet Coefficients
@@ -780,7 +780,7 @@ modwt_cpp <- function(x, filter_name, nlevels, boundary, brickwall) {
 #' me = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = FALSE)
 #' brick_wall(me, select_filter("haar"), "modwt")
 brick_wall <- function(x, wave_filter, method) {
-    .Call('gmwm_brick_wall', PACKAGE = 'gmwm', x, wave_filter, method)
+    .Call('_gmwm_brick_wall', PACKAGE = 'gmwm', x, wave_filter, method)
 }
 
 #' Generate a Gaussian White Noise Process (WN(\eqn{\sigma ^2}{sigma^2}))
@@ -800,7 +800,7 @@ brick_wall <- function(x, wave_filter, method) {
 #' @examples
 #' gen_wn(10, 1.5)
 gen_wn <- function(N, sigma2 = 1) {
-    .Call('gmwm_gen_wn', PACKAGE = 'gmwm', N, sigma2)
+    .Call('_gmwm_gen_wn', PACKAGE = 'gmwm', N, sigma2)
 }
 
 #' Generate a Drift Process
@@ -819,7 +819,7 @@ gen_wn <- function(N, sigma2 = 1) {
 #' @examples
 #' gen_dr(10, 8.2)
 gen_dr <- function(N, omega = 5) {
-    .Call('gmwm_gen_dr', PACKAGE = 'gmwm', N, omega)
+    .Call('_gmwm_gen_dr', PACKAGE = 'gmwm', N, omega)
 }
 
 #' Generate a Quantisation Noise (QN) or Rounding Error Sequence
@@ -853,7 +853,7 @@ gen_dr <- function(N, omega = 5) {
 #' @examples
 #' gen_qn(10, 5)
 gen_qn <- function(N, q2 = .1) {
-    .Call('gmwm_gen_qn', PACKAGE = 'gmwm', N, q2)
+    .Call('_gmwm_gen_qn', PACKAGE = 'gmwm', N, q2)
 }
 
 #' Generate an Autoregressive Order 1 ( AR(1) ) sequence
@@ -878,7 +878,7 @@ gen_qn <- function(N, q2 = .1) {
 #' @examples
 #' gen_ar1(10, 5, 1.2)
 gen_ar1 <- function(N, phi = .3, sigma2 = 1) {
-    .Call('gmwm_gen_ar1', PACKAGE = 'gmwm', N, phi, sigma2)
+    .Call('_gmwm_gen_ar1', PACKAGE = 'gmwm', N, phi, sigma2)
 }
 
 #' Generate a Random Walk without Drift
@@ -898,7 +898,7 @@ gen_ar1 <- function(N, phi = .3, sigma2 = 1) {
 #' @examples
 #' gen_rw(10, 8.2)
 gen_rw <- function(N, sigma2 = 1) {
-    .Call('gmwm_gen_rw', PACKAGE = 'gmwm', N, sigma2)
+    .Call('_gmwm_gen_rw', PACKAGE = 'gmwm', N, sigma2)
 }
 
 #' Generate an Moving Average Order 1 (MA(1)) Process
@@ -922,7 +922,7 @@ gen_rw <- function(N, sigma2 = 1) {
 #' @examples
 #' gen_ma1(10, .2, 1.2)
 gen_ma1 <- function(N, theta = .3, sigma2 = 1) {
-    .Call('gmwm_gen_ma1', PACKAGE = 'gmwm', N, theta, sigma2)
+    .Call('_gmwm_gen_ma1', PACKAGE = 'gmwm', N, theta, sigma2)
 }
 
 #' Generate an ARMA(1,1) sequence
@@ -947,7 +947,7 @@ gen_ma1 <- function(N, theta = .3, sigma2 = 1) {
 #' @examples
 #' gen_ma1(10, .2, 1.2)
 gen_arma11 <- function(N, phi = .1, theta = .3, sigma2 = 1) {
-    .Call('gmwm_gen_arma11', PACKAGE = 'gmwm', N, phi, theta, sigma2)
+    .Call('_gmwm_gen_arma11', PACKAGE = 'gmwm', N, phi, theta, sigma2)
 }
 
 #' Generate Autoregressive Order \eqn{p} - Moving Average Order \eqn{q} (ARMA(\eqn{p},\eqn{q})) Model
@@ -973,7 +973,7 @@ gen_arma11 <- function(N, phi = .1, theta = .3, sigma2 = 1) {
 #' @examples
 #' gen_arma(10, c(.3,.5), c(.1), 1, 0)
 gen_arma <- function(N, ar, ma, sigma2 = 1.5, n_start = 0L) {
-    .Call('gmwm_gen_arma', PACKAGE = 'gmwm', N, ar, ma, sigma2, n_start)
+    .Call('_gmwm_gen_arma', PACKAGE = 'gmwm', N, ar, ma, sigma2, n_start)
 }
 
 #' Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
@@ -998,7 +998,7 @@ gen_arma <- function(N, ar, ma, sigma2 = 1.5, n_start = 0L) {
 #' @examples
 #' gen_sarma(10, c(.3,.5), c(.1), c(.2), c(.4), 1, 12, 0)
 gen_sarma <- function(N, ar, ma, sar, sma, sigma2 = 1.5, s = 12L, n_start = 0L) {
-    .Call('gmwm_gen_sarma', PACKAGE = 'gmwm', N, ar, ma, sar, sma, sigma2, s, n_start)
+    .Call('_gmwm_gen_sarma', PACKAGE = 'gmwm', N, ar, ma, sar, sma, sigma2, s, n_start)
 }
 
 #' Generate Autoregressive Order p, Integrated d, Moving Average Order q (ARIMA(p,d,q)) Model
@@ -1025,7 +1025,7 @@ gen_sarma <- function(N, ar, ma, sar, sma, sigma2 = 1.5, s = 12L, n_start = 0L) 
 #' # Generate an ARIMA model
 #' xt = gen_arima(10, c(.3,.5), 1, c(.1), 1.5, 0)
 gen_arima <- function(N, ar, d, ma, sigma2 = 1.5, n_start = 0L) {
-    .Call('gmwm_gen_arima', PACKAGE = 'gmwm', N, ar, d, ma, sigma2, n_start)
+    .Call('_gmwm_gen_arima', PACKAGE = 'gmwm', N, ar, d, ma, sigma2, n_start)
 }
 
 #' Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
@@ -1052,7 +1052,7 @@ gen_arima <- function(N, ar, d, ma, sigma2 = 1.5, n_start = 0L) {
 #' @examples
 #' gen_sarima(10, c(.3,.5), 1, c(.1), c(.2), 0, c(.4), 1, 12, 0)
 gen_sarima <- function(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L, n_start = 0L) {
-    .Call('gmwm_gen_sarima', PACKAGE = 'gmwm', N, ar, d, ma, sar, sd, sma, sigma2, s, n_start)
+    .Call('_gmwm_gen_sarima', PACKAGE = 'gmwm', N, ar, d, ma, sar, sd, sma, sigma2, s, n_start)
 }
 
 #' Generate Generic Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model
@@ -1075,7 +1075,7 @@ gen_sarima <- function(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L, n_star
 #' @examples
 #' gen_sarima(10, c(.3,.5), 1, c(.1), c(.2), 0, c(.4), 1, 12, 0)
 gen_generic_sarima <- function(N, theta_values, objdesc, sigma2 = 1.5, n_start = 0L) {
-    .Call('gmwm_gen_generic_sarima', PACKAGE = 'gmwm', N, theta_values, objdesc, sigma2, n_start)
+    .Call('_gmwm_gen_generic_sarima', PACKAGE = 'gmwm', N, theta_values, objdesc, sigma2, n_start)
 }
 
 #' Generate Time Series based on Model (Internal)
@@ -1094,7 +1094,7 @@ gen_generic_sarima <- function(N, theta_values, objdesc, sigma2 = 1.5, n_start =
 #' set.seed(1336)
 #' gen_model(1000, c(.9,1), "AR1", list(c(1,1)))
 gen_model <- function(N, theta, desc, objdesc) {
-    .Call('gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, objdesc)
+    .Call('_gmwm_gen_model', PACKAGE = 'gmwm', N, theta, desc, objdesc)
 }
 
 #' Generate Latent Time Series based on Model (Internal)
@@ -1113,7 +1113,7 @@ gen_model <- function(N, theta, desc, objdesc) {
 #' set.seed(1336)
 #' gen_lts_cpp(10, c(.9,1), "AR1", list(c(1,1)))
 gen_lts_cpp <- function(N, theta, desc, objdesc) {
-    .Call('gmwm_gen_lts_cpp', PACKAGE = 'gmwm', N, theta, desc, objdesc)
+    .Call('_gmwm_gen_lts_cpp', PACKAGE = 'gmwm', N, theta, desc, objdesc)
 }
 
 #' @title Optim loses NaN
@@ -1123,7 +1123,7 @@ gen_lts_cpp <- function(N, theta, desc, objdesc) {
 #' @return A \code{vec} that contains safe theta values.
 #' @keywords internal
 code_zero <- function(theta) {
-    .Call('gmwm_code_zero', PACKAGE = 'gmwm', theta)
+    .Call('_gmwm_code_zero', PACKAGE = 'gmwm', theta)
 }
 
 #' @title Engine for obtaining the GMWM Estimator
@@ -1158,7 +1158,7 @@ code_zero <- function(theta) {
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
 gmwm_engine <- function(theta, desc, objdesc, model_type, wv_empir, omega, scales, starting) {
-    .Call('gmwm_gmwm_engine', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, omega, scales, starting)
+    .Call('_gmwm_gmwm_engine', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, omega, scales, starting)
 }
 
 #' @title Update Wrapper for the GMWM Estimator
@@ -1178,7 +1178,7 @@ gmwm_engine <- function(theta, desc, objdesc, model_type, wv_empir, omega, scale
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
 gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff) {
-    .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff)
+    .Call('_gmwm_gmwm_update_cpp', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV, scales, wv, starting, compute_v, K, H, G, robust, eff)
 }
 
 #' @title Master Wrapper for the GMWM Estimator
@@ -1204,7 +1204,7 @@ gmwm_update_cpp <- function(theta, desc, objdesc, model_type, N, expect_diff, ra
 #' @backref src/gmwm_logic.cpp
 #' @backref src/gmwm_logic.h
 gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff) {
-    .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
+    .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
 }
 
 #' @title Randomly guess a starting parameter
@@ -1224,7 +1224,7 @@ gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, al
 #' @examples
 #' #TBA
 guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G) {
-    .Call('gmwm_guess_initial', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G)
+    .Call('_gmwm_guess_initial', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv, tau, ranged, G)
 }
 
 #' @title Randomly guess starting parameters for AR1
@@ -1238,7 +1238,7 @@ guess_initial <- function(desc, objdesc, model_type, num_param, expect_diff, N, 
 #' @examples
 #' #TBA
 ar1_draw <- function(draw_id, last_phi, sigma2_total, model_type) {
-    .Call('gmwm_ar1_draw', PACKAGE = 'gmwm', draw_id, last_phi, sigma2_total, model_type)
+    .Call('_gmwm_ar1_draw', PACKAGE = 'gmwm', draw_id, last_phi, sigma2_total, model_type)
 }
 
 #' @title Randomly guess starting parameters for ARMA
@@ -1251,7 +1251,7 @@ ar1_draw <- function(draw_id, last_phi, sigma2_total, model_type) {
 #' @examples
 #' #TBA
 arma_draws <- function(p, q, sigma2_total) {
-    .Call('gmwm_arma_draws', PACKAGE = 'gmwm', p, q, sigma2_total)
+    .Call('_gmwm_arma_draws', PACKAGE = 'gmwm', p, q, sigma2_total)
 }
 
 #' @title Randomly guess a starting parameter
@@ -1270,7 +1270,7 @@ arma_draws <- function(p, q, sigma2_total) {
 #' @examples
 #' #TBA
 guess_initial_old <- function(desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B) {
-    .Call('gmwm_guess_initial_old', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
+    .Call('_gmwm_guess_initial_old', PACKAGE = 'gmwm', desc, objdesc, model_type, num_param, expect_diff, N, wv_empir, tau, B)
 }
 
 #' @title Compute Tau-Overlap Hadamard Variance
@@ -1306,7 +1306,7 @@ guess_initial_old <- function(desc, objdesc, model_type, num_param, expect_diff,
 #' av_mat = avar_to_cpp(combined.ts)
 #' @keywords internal
 hadam_to_cpp <- function(x) {
-    .Call('gmwm_hadam_to_cpp', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_hadam_to_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' @title Compute Maximal-Overlap Hadamard Variance using Means
@@ -1342,7 +1342,7 @@ hadam_to_cpp <- function(x) {
 #' av_mat = avar_mo_cpp(combined.ts)
 #' @keywords internal
 hadam_mo_cpp <- function(x) {
-    .Call('gmwm_hadam_mo_cpp', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_hadam_mo_cpp', PACKAGE = 'gmwm', x)
 }
 
 #' @title Indirect Inference for ARMA
@@ -1357,7 +1357,7 @@ hadam_mo_cpp <- function(x) {
 #' @return A \code{vec} with the indirect inference results.
 #' @keywords internal
 idf_arma <- function(ar, ma, sigma2, N, robust, eff, H) {
-    .Call('gmwm_idf_arma', PACKAGE = 'gmwm', ar, ma, sigma2, N, robust, eff, H)
+    .Call('_gmwm_idf_arma', PACKAGE = 'gmwm', ar, ma, sigma2, N, robust, eff, H)
 }
 
 #' @title Indirect Inference for ARMA
@@ -1372,7 +1372,7 @@ idf_arma <- function(ar, ma, sigma2, N, robust, eff, H) {
 #' @return A \code{vec} with the indirect inference results.
 #' @keywords internal
 idf_arma_total <- function(ar, ma, sigma2, N, robust, eff, H) {
-    .Call('gmwm_idf_arma_total', PACKAGE = 'gmwm', ar, ma, sigma2, N, robust, eff, H)
+    .Call('_gmwm_idf_arma_total', PACKAGE = 'gmwm', ar, ma, sigma2, N, robust, eff, H)
 }
 
 #' @title Calculate the Psi matrix
@@ -1385,7 +1385,7 @@ idf_arma_total <- function(ar, ma, sigma2, N, robust, eff, H) {
 #' @return A \code{mat} that has the first column 
 #' @keywords internal
 calculate_psi_matrix <- function(A, v_hat, omega) {
-    .Call('gmwm_calculate_psi_matrix', PACKAGE = 'gmwm', A, v_hat, omega)
+    .Call('_gmwm_calculate_psi_matrix', PACKAGE = 'gmwm', A, v_hat, omega)
 }
 
 #' @title Format the Confidence Interval for Estimates
@@ -1403,7 +1403,7 @@ calculate_psi_matrix <- function(A, v_hat, omega) {
 #' @backref src/inference.h
 #' @keywords internal
 format_ci <- function(theta, se, alpha) {
-    .Call('gmwm_format_ci', PACKAGE = 'gmwm', theta, se, alpha)
+    .Call('_gmwm_format_ci', PACKAGE = 'gmwm', theta, se, alpha)
 }
 
 #' @title Generate the Confidence Interval for Theta Estimates
@@ -1418,7 +1418,7 @@ format_ci <- function(theta, se, alpha) {
 #' @backref src/inference.h
 #' @keywords internal
 theta_ci <- function(theta, A, v_hat, omega, alpha) {
-    .Call('gmwm_theta_ci', PACKAGE = 'gmwm', theta, A, v_hat, omega, alpha)
+    .Call('_gmwm_theta_ci', PACKAGE = 'gmwm', theta, A, v_hat, omega, alpha)
 }
 
 #' @title Compute the GOF Test
@@ -1438,7 +1438,7 @@ theta_ci <- function(theta, A, v_hat, omega, alpha) {
 #' @backref src/inference.h
 #' @keywords internal
 gof_test <- function(theta, desc, objdesc, model_type, tau, v_hat, wv_empir) {
-    .Call('gmwm_gof_test', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, tau, v_hat, wv_empir)
+    .Call('_gmwm_gof_test', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, tau, v_hat, wv_empir)
 }
 
 #' @title Compute the Bootstrapped GoF Test
@@ -1457,7 +1457,7 @@ gof_test <- function(theta, desc, objdesc, model_type, tau, v_hat, wv_empir) {
 #' @backref src/inference.h
 #' @keywords internal
 bootstrap_gof_test <- function(obj_value, bs_obj_values, alpha, bs_gof_p_ci) {
-    .Call('gmwm_bootstrap_gof_test', PACKAGE = 'gmwm', obj_value, bs_obj_values, alpha, bs_gof_p_ci)
+    .Call('_gmwm_bootstrap_gof_test', PACKAGE = 'gmwm', obj_value, bs_obj_values, alpha, bs_gof_p_ci)
 }
 
 #' MLR in Armadillo
@@ -1481,7 +1481,7 @@ bootstrap_gof_test <- function(obj_value, bs_obj_values, alpha, bs_gof_p_ci) {
 #' 
 #' coef(lm(y~x-1))
 lm_arma <- function(y, X) {
-    .Call('gmwm_lm_arma', PACKAGE = 'gmwm', y, X)
+    .Call('_gmwm_lm_arma', PACKAGE = 'gmwm', y, X)
 }
 
 #' Linear Regression with Drift
@@ -1505,7 +1505,7 @@ lm_arma <- function(y, X) {
 #' coef(lm(y~x-1))
 #' 
 lm_dr <- function(x) {
-    .Call('gmwm_lm_dr', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_lm_dr', PACKAGE = 'gmwm', x)
 }
 
 #' @title B Matrix
@@ -1517,7 +1517,7 @@ lm_dr <- function(x) {
 #' @backref src/model_selection.h
 #' @keywords internal
 B_matrix <- function(A, at_omega) {
-    .Call('gmwm_B_matrix', PACKAGE = 'gmwm', A, at_omega)
+    .Call('_gmwm_B_matrix', PACKAGE = 'gmwm', A, at_omega)
 }
 
 #' @title Model Score
@@ -1535,7 +1535,7 @@ B_matrix <- function(A, at_omega) {
 #' The equation is slightly different than that stated in the paper due to the bootstrap already incorporating in 
 #' N.
 model_score <- function(A, D, omega, v_hat, obj_value) {
-    .Call('gmwm_model_score', PACKAGE = 'gmwm', A, D, omega, v_hat, obj_value)
+    .Call('_gmwm_model_score', PACKAGE = 'gmwm', A, D, omega, v_hat, obj_value)
 }
 
 #' @title Extract Object
@@ -1546,7 +1546,7 @@ model_score <- function(A, D, omega, v_hat, obj_value) {
 #' @return A \code{field<vec>} containing the breakdown of the object.
 #' @keywords internal
 obj_extract <- function(theta, objdesc, cur_position) {
-    .Call('gmwm_obj_extract', PACKAGE = 'gmwm', theta, objdesc, cur_position)
+    .Call('_gmwm_obj_extract', PACKAGE = 'gmwm', theta, objdesc, cur_position)
 }
 
 #' @title Retrieve GMWM starting value from Yannick's objective function
@@ -1558,7 +1558,7 @@ obj_extract <- function(theta, objdesc, cur_position) {
 #' @return A \code{double} that is the value of the Objective function under Yannick's starting algorithm
 #' @keywords internal
 getObjFunStarting <- function(theta, desc, objdesc, model_type, wv_empir, tau) {
-    .Call('gmwm_getObjFunStarting', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, tau)
+    .Call('_gmwm_getObjFunStarting', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, tau)
 }
 
 #' @title Retrieve GMWM starting value from Yannick's objective function
@@ -1571,7 +1571,7 @@ getObjFunStarting <- function(theta, desc, objdesc, model_type, wv_empir, tau) {
 #' @return A \code{double} that is the value of the Objective function under Yannick's starting algorithm
 #' @keywords internal
 getObjFun <- function(theta, desc, objdesc, model_type, omega, wv_empir, tau) {
-    .Call('gmwm_getObjFun', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, omega, wv_empir, tau)
+    .Call('_gmwm_getObjFun', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, omega, wv_empir, tau)
 }
 
 #' @title Root Finding C++
@@ -1579,7 +1579,7 @@ getObjFun <- function(theta, desc, objdesc, model_type, omega, wv_empir, tau) {
 #' @param z A \code{cx_vec} (complex vector) that has 1 in the beginning (e.g. c(1,3i,-3i))
 #' @keywords internal
 do_polyroot_arma <- function(z) {
-    .Call('gmwm_do_polyroot_arma', PACKAGE = 'gmwm', z)
+    .Call('_gmwm_do_polyroot_arma', PACKAGE = 'gmwm', z)
 }
 
 #' @title Root Finding C++
@@ -1587,7 +1587,7 @@ do_polyroot_arma <- function(z) {
 #' @param z A \code{vec<complex<double>} (complex vector) that has 1 in the beginning (e.g. c(1,3i,-3i))
 #' @keywords internal
 do_polyroot_cpp <- function(z) {
-    .Call('gmwm_do_polyroot_cpp', PACKAGE = 'gmwm', z)
+    .Call('_gmwm_do_polyroot_cpp', PACKAGE = 'gmwm', z)
 }
 
 #' ARMA process to WV
@@ -1610,7 +1610,7 @@ do_polyroot_cpp <- function(z) {
 #' wv.theo = arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
 #' @seealso \code{\link{ARMAtoMA_cpp}}, \code{\link{ARMAacf_cpp}}, and \code{\link{arma11_to_wv}}
 arma_to_wv <- function(ar, ma, sigma2, tau) {
-    .Call('gmwm_arma_to_wv', PACKAGE = 'gmwm', ar, ma, sigma2, tau)
+    .Call('_gmwm_arma_to_wv', PACKAGE = 'gmwm', ar, ma, sigma2, tau)
 }
 
 #' @title Helper Function for ARMA to WV Approximation
@@ -1623,7 +1623,7 @@ arma_to_wv <- function(ar, ma, sigma2, tau) {
 #' @keywords internal
 #' @seealso \code{\link{arma_to_wv_app}}
 acf_sum <- function(ar, ma, last_tau, alpha = 0.99) {
-    .Call('gmwm_acf_sum', PACKAGE = 'gmwm', ar, ma, last_tau, alpha)
+    .Call('_gmwm_acf_sum', PACKAGE = 'gmwm', ar, ma, last_tau, alpha)
 }
 
 #' ARMA process to WV Approximation
@@ -1649,7 +1649,7 @@ acf_sum <- function(ar, ma, last_tau, alpha = 0.99) {
 #' wv.theo = arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9), .9)
 #' @seealso \code{\link{ARMAtoMA_cpp}}, \code{\link{ARMAacf_cpp}}, \code{\link{acf_sum}} and \code{\link{arma_to_wv}}
 arma_to_wv_app <- function(ar, ma, sigma2, tau, alpha = 0.9999) {
-    .Call('gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, sigma2, tau, alpha)
+    .Call('_gmwm_arma_to_wv_app', PACKAGE = 'gmwm', ar, ma, sigma2, tau, alpha)
 }
 
 #' ARMA(1,1) to WV
@@ -1674,7 +1674,7 @@ arma_to_wv_app <- function(ar, ma, sigma2, tau, alpha = 0.9999) {
 #' tau = 2^(1:ntau)
 #' wv.theo = arma11_to_wv(0.3, 0.1, 1, tau)
 arma11_to_wv <- function(phi, theta, sigma2, tau) {
-    .Call('gmwm_arma11_to_wv', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
+    .Call('_gmwm_arma11_to_wv', PACKAGE = 'gmwm', phi, theta, sigma2, tau)
 }
 
 #' AR(1) process to WV
@@ -1698,7 +1698,7 @@ arma11_to_wv <- function(phi, theta, sigma2, tau) {
 #' tau = 2^(1:ntau)
 #' wv.theo = ar1_to_wv(.63, 1, tau)
 ar1_to_wv <- function(phi, sigma2, tau) {
-    .Call('gmwm_ar1_to_wv', PACKAGE = 'gmwm', phi, sigma2, tau)
+    .Call('_gmwm_ar1_to_wv', PACKAGE = 'gmwm', phi, sigma2, tau)
 }
 
 #' Moving Average Order 1 (MA(1)) to WV
@@ -1722,7 +1722,7 @@ ar1_to_wv <- function(phi, sigma2, tau) {
 #' tau = 2^(1:ntau)
 #' wv.theo = ma1_to_wv(.3, 1, tau)
 ma1_to_wv <- function(theta, sigma2, tau) {
-    .Call('gmwm_ma1_to_wv', PACKAGE = 'gmwm', theta, sigma2, tau)
+    .Call('_gmwm_ma1_to_wv', PACKAGE = 'gmwm', theta, sigma2, tau)
 }
 
 #' Quantisation Noise (QN) to WV
@@ -1740,7 +1740,7 @@ ma1_to_wv <- function(theta, sigma2, tau) {
 #' tau = 2^(1:ntau)
 #' wv.theo = qn_to_wv(.42, tau)
 qn_to_wv <- function(q2, tau) {
-    .Call('gmwm_qn_to_wv', PACKAGE = 'gmwm', q2, tau)
+    .Call('_gmwm_qn_to_wv', PACKAGE = 'gmwm', q2, tau)
 }
 
 #' @title Gaussian White Noise to WV
@@ -1755,7 +1755,7 @@ qn_to_wv <- function(q2, tau) {
 #' tau = 2^(1:ntau)
 #' wv.theo = wn_to_wv(1, tau)
 wn_to_wv <- function(sigma2, tau) {
-    .Call('gmwm_wn_to_wv', PACKAGE = 'gmwm', sigma2, tau)
+    .Call('_gmwm_wn_to_wv', PACKAGE = 'gmwm', sigma2, tau)
 }
 
 #' @title Random Walk to WV
@@ -1770,7 +1770,7 @@ wn_to_wv <- function(sigma2, tau) {
 #' tau = 2^(1:ntau)
 #' wv.theo = rw_to_wv(.37, tau)
 rw_to_wv <- function(gamma2, tau) {
-    .Call('gmwm_rw_to_wv', PACKAGE = 'gmwm', gamma2, tau)
+    .Call('_gmwm_rw_to_wv', PACKAGE = 'gmwm', gamma2, tau)
 }
 
 #' @title Drift to WV
@@ -1785,7 +1785,7 @@ rw_to_wv <- function(gamma2, tau) {
 #' tau = 2^(1:ntau)
 #' wv.theo = dr_to_wv(-2.3, tau)
 dr_to_wv <- function(omega, tau) {
-    .Call('gmwm_dr_to_wv', PACKAGE = 'gmwm', omega, tau)
+    .Call('_gmwm_dr_to_wv', PACKAGE = 'gmwm', omega, tau)
 }
 
 #' Model Process to WV
@@ -1804,7 +1804,7 @@ dr_to_wv <- function(omega, tau) {
 #' wv.theo = theoretical_wv(model$theta, model$desc, model$objdesc, tau)
 #' @keywords internal
 theoretical_wv <- function(theta, desc, objdesc, tau) {
-    .Call('gmwm_theoretical_wv', PACKAGE = 'gmwm', theta, desc, objdesc, tau)
+    .Call('_gmwm_theoretical_wv', PACKAGE = 'gmwm', theta, desc, objdesc, tau)
 }
 
 #' Each Models Process Decomposed to WV
@@ -1823,7 +1823,7 @@ theoretical_wv <- function(theta, desc, objdesc, tau) {
 #' wv.theo = decomp_theoretical_wv(model$theta, model$desc, model$objdesc, tau)
 #' @keywords internal
 decomp_theoretical_wv <- function(theta, desc, objdesc, tau) {
-    .Call('gmwm_decomp_theoretical_wv', PACKAGE = 'gmwm', theta, desc, objdesc, tau)
+    .Call('_gmwm_decomp_theoretical_wv', PACKAGE = 'gmwm', theta, desc, objdesc, tau)
 }
 
 #' Decomposed WV to Single WV
@@ -1840,7 +1840,7 @@ decomp_theoretical_wv <- function(theta, desc, objdesc, tau) {
 #' wv.total = decomp_to_theo_wv(wv.theo)
 #' @keywords internal
 decomp_to_theo_wv <- function(decomp) {
-    .Call('gmwm_decomp_to_theo_wv', PACKAGE = 'gmwm', decomp)
+    .Call('_gmwm_decomp_to_theo_wv', PACKAGE = 'gmwm', decomp)
 }
 
 #' @title Read an IMU Binary File into R
@@ -1884,7 +1884,7 @@ decomp_to_theo_wv <- function(decomp) {
 #' }
 #' @keywords internal
 read_imu <- function(file_path, imu_type) {
-    .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path, imu_type)
+    .Call('_gmwm_read_imu', PACKAGE = 'gmwm', file_path, imu_type)
 }
 
 #' @title Generate a sequence of values
@@ -1899,7 +1899,7 @@ read_imu <- function(file_path, imu_type) {
 #' seq_cpp(3, 5)
 #' seq_cpp(5, 3)
 seq_cpp <- function(a, b) {
-    .Call('gmwm_seq_cpp', PACKAGE = 'gmwm', a, b)
+    .Call('_gmwm_seq_cpp', PACKAGE = 'gmwm', a, b)
 }
 
 #' @title Generate a sequence of values based on supplied number
@@ -1912,7 +1912,7 @@ seq_cpp <- function(a, b) {
 #' #Call with the following data:
 #' seq_len_cpp(5)
 seq_len_cpp <- function(n) {
-    .Call('gmwm_seq_len_cpp', PACKAGE = 'gmwm', n)
+    .Call('_gmwm_seq_len_cpp', PACKAGE = 'gmwm', n)
 }
 
 #' @title Find Quantiles
@@ -1927,7 +1927,7 @@ seq_len_cpp <- function(n) {
 #' quantile_cpp(c(1,2,3,4,5,6,7), c(.25,.5,.75))
 #' quantile(c(1,2,3,4,5,6,7), c(.25,.5,.75))
 quantile_cpp <- function(x, probs) {
-    .Call('gmwm_quantile_cpp', PACKAGE = 'gmwm', x, probs)
+    .Call('_gmwm_quantile_cpp', PACKAGE = 'gmwm', x, probs)
 }
 
 #' @title Lagged Differences in Armadillo
@@ -1942,7 +1942,7 @@ quantile_cpp <- function(x, probs) {
 #' x = rnorm(10, 0, 1)
 #' diff_cpp(x,1,1)
 diff_cpp <- function(x, lag, differences) {
-    .Call('gmwm_diff_cpp', PACKAGE = 'gmwm', x, lag, differences)
+    .Call('_gmwm_diff_cpp', PACKAGE = 'gmwm', x, lag, differences)
 }
 
 #' @title Converting an ARMA Process to an Infinite MA Process
@@ -1960,7 +1960,7 @@ diff_cpp <- function(x, lag, differences) {
 #' # ARMA(0,1)
 #' ARMAtoMA_cpp(numeric(0), 1.0, 10)
 ARMAtoMA_cpp <- function(ar, ma, lag_max) {
-    .Call('gmwm_ARMAtoMA_cpp', PACKAGE = 'gmwm', ar, ma, lag_max)
+    .Call('_gmwm_ARMAtoMA_cpp', PACKAGE = 'gmwm', ar, ma, lag_max)
 }
 
 #' @title Time Series Convolution Filters
@@ -1989,7 +1989,7 @@ ARMAtoMA_cpp <- function(ar, ma, lag_max) {
 #' # Using R's function
 #' filter(x, rep(1, 3), sides = 1, circular = TRUE)
 cfilter <- function(x, filter, sides, circular) {
-    .Call('gmwm_cfilter', PACKAGE = 'gmwm', x, filter, sides, circular)
+    .Call('_gmwm_cfilter', PACKAGE = 'gmwm', x, filter, sides, circular)
 }
 
 #' @title Time Series Recursive Filters
@@ -2011,7 +2011,7 @@ cfilter <- function(x, filter, sides, circular) {
 #' # Using R's function
 #' filter(x, rep(1, 3), method="recursive", init=rep(1, 3))
 rfilter <- function(x, filter, init) {
-    .Call('gmwm_rfilter', PACKAGE = 'gmwm', x, filter, init)
+    .Call('_gmwm_rfilter', PACKAGE = 'gmwm', x, filter, init)
 }
 
 #' @title Compute Theoretical ACF for an ARMA Process
@@ -2030,7 +2030,7 @@ rfilter <- function(x, filter, init) {
 #' # ARMA(0,1)
 #' ARMAacf_cpp(numeric(0), .35, lag_max = 10)
 ARMAacf_cpp <- function(ar, ma, lag_max) {
-    .Call('gmwm_ARMAacf_cpp', PACKAGE = 'gmwm', ar, ma, lag_max)
+    .Call('_gmwm_ARMAacf_cpp', PACKAGE = 'gmwm', ar, ma, lag_max)
 }
 
 #' @title Discrete Fourier Transformation for Autocovariance Function
@@ -2046,7 +2046,7 @@ ARMAacf_cpp <- function(ar, ma, lag_max) {
 #' x=rnorm(10)
 #' dft_acf(x)
 dft_acf <- function(x) {
-    .Call('gmwm_dft_acf', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_dft_acf', PACKAGE = 'gmwm', x)
 }
 
 #' @title Mean of the First Difference of the Data
@@ -2058,7 +2058,7 @@ dft_acf <- function(x) {
 #' x=rnorm(10)
 #' mean_diff(x)
 mean_diff <- function(x) {
-    .Call('gmwm_mean_diff', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_mean_diff', PACKAGE = 'gmwm', x)
 }
 
 #' Replicate a Vector of Elements \eqn{n} times
@@ -2069,18 +2069,18 @@ mean_diff <- function(x) {
 #' @return A \code{vec} with repeated elements of the initial supplied vector.
 #' @keywords internal
 num_rep <- function(x, n) {
-    .Call('gmwm_num_rep', PACKAGE = 'gmwm', x, n)
+    .Call('_gmwm_num_rep', PACKAGE = 'gmwm', x, n)
 }
 
 #' @rdname diff_inv
 intgr_vec <- function(x, xi, lag) {
-    .Call('gmwm_intgr_vec', PACKAGE = 'gmwm', x, xi, lag)
+    .Call('_gmwm_intgr_vec', PACKAGE = 'gmwm', x, xi, lag)
 }
 
 #' @param xi A \code{vec} with length \eqn{lag*d} that provides initial values for the integration.
 #' @rdname diff_inv
 diff_inv_values <- function(x, lag, d, xi) {
-    .Call('gmwm_diff_inv_values', PACKAGE = 'gmwm', x, lag, d, xi)
+    .Call('_gmwm_diff_inv_values', PACKAGE = 'gmwm', x, lag, d, xi)
 }
 
 #' Discrete Intergral: Inverse Difference
@@ -2091,7 +2091,7 @@ diff_inv_values <- function(x, lag, d, xi) {
 #' @param d   An \code{unsigned int} which gives the number of "differences" to invert.
 #' @keywords internal
 diff_inv <- function(x, lag, d) {
-    .Call('gmwm_diff_inv', PACKAGE = 'gmwm', x, lag, d)
+    .Call('_gmwm_diff_inv', PACKAGE = 'gmwm', x, lag, d)
 }
 
 #' @title Auto-Covariance and Correlation Functions
@@ -2105,7 +2105,7 @@ diff_inv <- function(x, lag, d) {
 #'  (\code{TRUE}) or not (\code{FALSE})
 #' @keywords internal
 .acf <- function(x, lagmax = 0L, cor = TRUE, demean = TRUE) {
-    .Call('gmwm_acf', PACKAGE = 'gmwm', x, lagmax, cor, demean)
+    .Call('_gmwm_acf', PACKAGE = 'gmwm', x, lagmax, cor, demean)
 }
 
 #' Truncated Normal Distribution Sampling Algorithm
@@ -2119,7 +2119,7 @@ diff_inv <- function(x, lag, d) {
 #' @examples
 #' rtruncated_normal(10, 1, 1, -2, 2)
 rtruncated_normal <- function(n, mu, sigma, a, b) {
-    .Call('gmwm_rtruncated_normal', PACKAGE = 'gmwm', n, mu, sigma, a, b)
+    .Call('_gmwm_rtruncated_normal', PACKAGE = 'gmwm', n, mu, sigma, a, b)
 }
 
 #' Create the ts.model obj.desc given split values
@@ -2144,7 +2144,7 @@ rtruncated_normal <- function(n, mu, sigma, a, b) {
 #' \item{si}{Number of Seasonal Differences}
 #' }
 sarma_objdesc <- function(ar, ma, sar, sma, s, i, si) {
-    .Call('gmwm_sarma_objdesc', PACKAGE = 'gmwm', ar, ma, sar, sma, s, i, si)
+    .Call('_gmwm_sarma_objdesc', PACKAGE = 'gmwm', ar, ma, sar, sma, s, i, si)
 }
 
 #' Calculates Length of Seasonal Padding
@@ -2164,7 +2164,7 @@ sarma_objdesc <- function(ar, ma, sar, sma, s, i, si) {
 #' 
 #' 
 sarma_calculate_spadding <- function(np, nq, nsp, nsq, ns) {
-    .Call('gmwm_sarma_calculate_spadding', PACKAGE = 'gmwm', np, nq, nsp, nsq, ns)
+    .Call('_gmwm_sarma_calculate_spadding', PACKAGE = 'gmwm', np, nq, nsp, nsq, ns)
 }
 
 #' Determine parameter expansion based upon objdesc
@@ -2184,13 +2184,13 @@ sarma_calculate_spadding <- function(np, nq, nsp, nsq, ns) {
 #' }
 #' @keywords internal
 sarma_components <- function(objdesc) {
-    .Call('gmwm_sarma_components', PACKAGE = 'gmwm', objdesc)
+    .Call('_gmwm_sarma_components', PACKAGE = 'gmwm', objdesc)
 }
 
 #' Efficient way to merge items together
 #' @keywords internal
 sarma_params_construct <- function(ar, ma, sar, sma) {
-    .Call('gmwm_sarma_params_construct', PACKAGE = 'gmwm', ar, ma, sar, sma)
+    .Call('_gmwm_sarma_params_construct', PACKAGE = 'gmwm', ar, ma, sar, sma)
 }
 
 #' (Internal) Expand the SARMA Parameters
@@ -2201,7 +2201,7 @@ sarma_params_construct <- function(ar, ma, sar, sma) {
 #' @return A \code{field<vec>} that contains the expansion. 
 #' @keywords internal
 sarma_expand_unguided <- function(params, np, nq, nsp, nsq, ns, p, q) {
-    .Call('gmwm_sarma_expand_unguided', PACKAGE = 'gmwm', params, np, nq, nsp, nsq, ns, p, q)
+    .Call('_gmwm_sarma_expand_unguided', PACKAGE = 'gmwm', params, np, nq, nsp, nsq, ns, p, q)
 }
 
 #' Expand Parameters for an SARMA object
@@ -2228,7 +2228,7 @@ sarma_expand_unguided <- function(params, np, nq, nsp, nsq, ns, p, q) {
 #' # p, q, P, Q, 1, s, i, si
 #' m = sarma_expand(c(0.5,.2,0,.1,.92,.83,.42,.33,.12), c(2,2,2,3,1,12,0,0))
 sarma_expand <- function(params, objdesc) {
-    .Call('gmwm_sarma_expand', PACKAGE = 'gmwm', params, objdesc)
+    .Call('_gmwm_sarma_expand', PACKAGE = 'gmwm', params, objdesc)
 }
 
 #' @title Routing function for summary info
@@ -2256,7 +2256,7 @@ sarma_expand <- function(params, objdesc) {
 #' @return A \code{field<mat>} that contains bootstrapped / asymptotic GoF results as well as CIs.
 #' @keywords internal
 get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B) {
-    .Call('gmwm_get_summary', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B)
+    .Call('_gmwm_get_summary', PACKAGE = 'gmwm', theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci, bs_theta_est, bs_ci, B)
 }
 
 #' Pseudo Logit Inverse Function
@@ -2283,7 +2283,7 @@ get_summary <- function(theta, desc, objdesc, model_type, wv_empir, theo, scales
 #' # Compare results
 #' results = cbind(x.sim, x.sim.untransformed)
 pseudo_logit_inv <- function(x) {
-    .Call('gmwm_pseudo_logit_inv', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_pseudo_logit_inv', PACKAGE = 'gmwm', x)
 }
 
 #' Logit Inverse Function
@@ -2310,7 +2310,7 @@ pseudo_logit_inv <- function(x) {
 #' # Compare results
 #' results = cbind(x.sim, x.sim.untransformed)
 logit_inv <- function(x) {
-    .Call('gmwm_logit_inv', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_logit_inv', PACKAGE = 'gmwm', x)
 }
 
 #' Pseudo Logit Function
@@ -2331,7 +2331,7 @@ logit_inv <- function(x) {
 #' # Transform
 #' x.sim.transformed = pseudo_logit(x.sim)
 pseudo_logit <- function(x) {
-    .Call('gmwm_pseudo_logit', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_pseudo_logit', PACKAGE = 'gmwm', x)
 }
 
 #' Logit Function
@@ -2352,7 +2352,7 @@ pseudo_logit <- function(x) {
 #' # Transform
 #' x.sim.transformed = logit(x.sim)
 logit <- function(x) {
-    .Call('gmwm_logit', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_logit', PACKAGE = 'gmwm', x)
 }
 
 #' Logit2 Function
@@ -2373,7 +2373,7 @@ logit <- function(x) {
 #' # Transform
 #' x.sim.transformed = logit2(x.sim)
 logit2 <- function(x) {
-    .Call('gmwm_logit2', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_logit2', PACKAGE = 'gmwm', x)
 }
 
 #' Logit2 Inverse Function
@@ -2400,7 +2400,7 @@ logit2 <- function(x) {
 #' # Compare results
 #' results = cbind(x.sim, x.sim.untransformed)
 logit2_inv <- function(x) {
-    .Call('gmwm_logit2_inv', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_logit2_inv', PACKAGE = 'gmwm', x)
 }
 
 #' Transform Values for Optimization
@@ -2412,7 +2412,7 @@ logit2_inv <- function(x) {
 #' @template author/jjb
 #' @keywords internal
 transform_values <- function(theta, desc, objdesc, model_type) {
-    .Call('gmwm_transform_values', PACKAGE = 'gmwm', theta, desc, objdesc, model_type)
+    .Call('_gmwm_transform_values', PACKAGE = 'gmwm', theta, desc, objdesc, model_type)
 }
 
 #' Revert Transform Values for Display
@@ -2424,7 +2424,7 @@ transform_values <- function(theta, desc, objdesc, model_type) {
 #' @template author/jjb
 #' @keywords internal
 untransform_values <- function(theta, desc, objdesc, model_type) {
-    .Call('gmwm_untransform_values', PACKAGE = 'gmwm', theta, desc, objdesc, model_type)
+    .Call('_gmwm_untransform_values', PACKAGE = 'gmwm', theta, desc, objdesc, model_type)
 }
 
 #' @title Obtain the smallest polynomial root
@@ -2433,7 +2433,7 @@ untransform_values <- function(theta, desc, objdesc, model_type) {
 #' @return A \code{double} with the minimum root value.
 #' @keywords internal
 minroot <- function(x) {
-    .Call('gmwm_minroot', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_minroot', PACKAGE = 'gmwm', x)
 }
 
 #' @title Check Invertibility Conditions
@@ -2442,7 +2442,7 @@ minroot <- function(x) {
 #' @return True (if outside unit circle) || False (if inside unit circle)
 #' @keywords internal
 invert_check <- function(x) {
-    .Call('gmwm_invert_check', PACKAGE = 'gmwm', x)
+    .Call('_gmwm_invert_check', PACKAGE = 'gmwm', x)
 }
 
 #' @title Count Models
@@ -2451,7 +2451,7 @@ invert_check <- function(x) {
 #' @return A \code{map<string, int>} containing how frequent the model component appears.
 #' @keywords internal
 count_models <- function(desc) {
-    .Call('gmwm_count_models', PACKAGE = 'gmwm', desc)
+    .Call('_gmwm_count_models', PACKAGE = 'gmwm', desc)
 }
 
 #' @title Order AR1s by size of phi.
@@ -2460,7 +2460,7 @@ count_models <- function(desc) {
 #' @return A \code{vec} that has AR1s shown in descending parameter value.
 #' @keywords internal
 order_AR1s <- function(theta, desc, objdesc) {
-    .Call('gmwm_order_AR1s', PACKAGE = 'gmwm', theta, desc, objdesc)
+    .Call('_gmwm_order_AR1s', PACKAGE = 'gmwm', theta, desc, objdesc)
 }
 
 #' @title Transform AR1 to GM
@@ -2482,7 +2482,7 @@ order_AR1s <- function(theta, desc, objdesc) {
 #' @examples
 #' ar1_to_gm(c(0.3,1,0.6,.3), 2)
 ar1_to_gm <- function(theta, freq) {
-    .Call('gmwm_ar1_to_gm', PACKAGE = 'gmwm', theta, freq)
+    .Call('_gmwm_ar1_to_gm', PACKAGE = 'gmwm', theta, freq)
 }
 
 #' @title Transform GM to AR1
@@ -2502,7 +2502,7 @@ ar1_to_gm <- function(theta, freq) {
 #' @examples
 #' gm_to_ar1(c(0.3,1,0.6,.3), 2)
 gm_to_ar1 <- function(theta, freq) {
-    .Call('gmwm_gm_to_ar1', PACKAGE = 'gmwm', theta, freq)
+    .Call('_gmwm_gm_to_ar1', PACKAGE = 'gmwm', theta, freq)
 }
 
 #' @title Generate the ts model object description
@@ -2517,7 +2517,7 @@ gm_to_ar1 <- function(theta, freq) {
 #' @backref src/ts_model_cpp.cpp
 #' @backref src/ts_model_cpp.h
 model_objdesc <- function(desc) {
-    .Call('gmwm_model_objdesc', PACKAGE = 'gmwm', desc)
+    .Call('_gmwm_model_objdesc', PACKAGE = 'gmwm', desc)
 }
 
 #' @title Generate the ts model object's theta vector
@@ -2532,7 +2532,7 @@ model_objdesc <- function(desc) {
 #' @backref src/ts_model_cpp.cpp
 #' @backref src/ts_model_cpp.h
 model_theta <- function(desc) {
-    .Call('gmwm_model_theta', PACKAGE = 'gmwm', desc)
+    .Call('_gmwm_model_theta', PACKAGE = 'gmwm', desc)
 }
 
 #' @title Generate the ts model object's process desc
@@ -2547,7 +2547,7 @@ model_theta <- function(desc) {
 #' @backref src/ts_model_cpp.cpp
 #' @backref src/ts_model_cpp.h
 model_process_desc <- function(desc) {
-    .Call('gmwm_model_process_desc', PACKAGE = 'gmwm', desc)
+    .Call('_gmwm_model_process_desc', PACKAGE = 'gmwm', desc)
 }
 
 #' @title Generate eta3 confidence interval
@@ -2569,7 +2569,7 @@ model_process_desc <- function(desc) {
 #' y = wave_variance(decomp)
 #' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025)
 ci_eta3 <- function(y, dims, alpha_ov_2) {
-    .Call('gmwm_ci_eta3', PACKAGE = 'gmwm', y, dims, alpha_ov_2)
+    .Call('_gmwm_ci_eta3', PACKAGE = 'gmwm', y, dims, alpha_ov_2)
 }
 
 #' @title Generate eta3 robust confidence interval
@@ -2594,7 +2594,7 @@ ci_eta3 <- function(y, dims, alpha_ov_2) {
 #' y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
 #' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 ci_eta3_robust <- function(wv_robust, wv_ci_class, alpha_ov_2, eff) {
-    .Call('gmwm_ci_eta3_robust', PACKAGE = 'gmwm', wv_robust, wv_ci_class, alpha_ov_2, eff)
+    .Call('_gmwm_ci_eta3_robust', PACKAGE = 'gmwm', wv_robust, wv_ci_class, alpha_ov_2, eff)
 }
 
 #' @title Generate a Confidence intervval for a Univariate Time Series
@@ -2622,7 +2622,7 @@ ci_eta3_robust <- function(wv_robust, wv_ci_class, alpha_ov_2, eff) {
 #' y = wave_variance(decomp)
 #' ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025)
 ci_wave_variance <- function(signal_modwt_bw, wv, type = "eta3", alpha_ov_2 = 0.025, robust = FALSE, eff = 0.6) {
-    .Call('gmwm_ci_wave_variance', PACKAGE = 'gmwm', signal_modwt_bw, wv, type, alpha_ov_2, robust, eff)
+    .Call('_gmwm_ci_wave_variance', PACKAGE = 'gmwm', signal_modwt_bw, wv, type, alpha_ov_2, robust, eff)
 }
 
 #' @title Generate a Wave Variance for a Univariate Time Series
@@ -2640,7 +2640,7 @@ ci_wave_variance <- function(signal_modwt_bw, wv, type = "eta3", alpha_ov_2 = 0.
 #' 
 #' wave_variance(decomp, robust = TRUE, eff = 0.6)
 wave_variance <- function(signal_modwt_bw, robust = FALSE, eff = 0.6) {
-    .Call('gmwm_wave_variance', PACKAGE = 'gmwm', signal_modwt_bw, robust, eff)
+    .Call('_gmwm_wave_variance', PACKAGE = 'gmwm', signal_modwt_bw, robust, eff)
 }
 
 #' @title Computes the (MODWT) wavelet variance
@@ -2664,7 +2664,7 @@ wave_variance <- function(signal_modwt_bw, robust = FALSE, eff = 0.6) {
 #' decomp = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall = TRUE)
 #' wvar_cpp(decomp, robust=FALSE, eff=0.6, alpha = 0.05, ci_type="eta3")
 wvar_cpp <- function(signal_modwt_bw, robust, eff, alpha, ci_type) {
-    .Call('gmwm_wvar_cpp', PACKAGE = 'gmwm', signal_modwt_bw, robust, eff, alpha, ci_type)
+    .Call('_gmwm_wvar_cpp', PACKAGE = 'gmwm', signal_modwt_bw, robust, eff, alpha, ci_type)
 }
 
 #' @title Computes the (MODWT) wavelet variance
@@ -2690,7 +2690,7 @@ wvar_cpp <- function(signal_modwt_bw, robust, eff, alpha, ci_type) {
 #' modwt_wvar_cpp(x, nlevels=4, robust=FALSE, eff=0.6, alpha = 0.05,
 #'                ci_type="eta3", strWavelet="haar", decomp="modwt")
 modwt_wvar_cpp <- function(signal, nlevels, robust, eff, alpha, ci_type, strWavelet, decomp) {
-    .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm', signal, nlevels, robust, eff, alpha, ci_type, strWavelet, decomp)
+    .Call('_gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm', signal, nlevels, robust, eff, alpha, ci_type, strWavelet, decomp)
 }
 
 #' @title Computes the MO/DWT wavelet variance for multiple processes
@@ -2717,7 +2717,7 @@ modwt_wvar_cpp <- function(signal, nlevels, robust, eff, alpha, ci_type, strWave
 #'                      alpha = 0.05, ci_type="eta3", strWavelet="haar", 
 #'                      decomp="modwt")
 batch_modwt_wvar_cpp <- function(signal, nlevels, robust, eff, alpha, ci_type, strWavelet, decomp) {
-    .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', signal, nlevels, robust, eff, alpha, ci_type, strWavelet, decomp)
+    .Call('_gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', signal, nlevels, robust, eff, alpha, ci_type, strWavelet, decomp)
 }
 
 #' @title Computes the MODWT scales
@@ -2730,7 +2730,7 @@ batch_modwt_wvar_cpp <- function(signal, nlevels, robust, eff, alpha, ci_type, s
 #' @examples
 #' scales_cpp(5)
 scales_cpp <- function(nb_level) {
-    .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nb_level)
+    .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nb_level)
 }
 
 #' @title Quadrature Mirror Filter
@@ -2747,7 +2747,7 @@ scales_cpp <- function(nb_level) {
 #' g = rep(1/sqrt(2),2)
 #' qmf(g)
 qmf <- function(g, inverse = TRUE) {
-    .Call('gmwm_qmf', PACKAGE = 'gmwm', g, inverse)
+    .Call('_gmwm_qmf', PACKAGE = 'gmwm', g, inverse)
 }
 
 #' @title Haar filter construction
@@ -2766,7 +2766,7 @@ qmf <- function(g, inverse = TRUE) {
 #' @examples
 #' haar_filter()
 haar_filter <- function() {
-    .Call('gmwm_haar_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_haar_filter', PACKAGE = 'gmwm')
 }
 
 #' @title d4 filter construction
@@ -2784,7 +2784,7 @@ haar_filter <- function() {
 #' @examples
 #' d4_filter()
 d4_filter <- function() {
-    .Call('gmwm_d4_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_d4_filter', PACKAGE = 'gmwm')
 }
 
 #' @title mb4 filter construction
@@ -2802,7 +2802,7 @@ d4_filter <- function() {
 #' @examples
 #' mb4_filter()
 mb4_filter <- function() {
-    .Call('gmwm_mb4_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_mb4_filter', PACKAGE = 'gmwm')
 }
 
 #' @title w4 filter construction
@@ -2820,7 +2820,7 @@ mb4_filter <- function() {
 #' @examples
 #' w4_filter()
 w4_filter <- function() {
-    .Call('gmwm_w4_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_w4_filter', PACKAGE = 'gmwm')
 }
 
 #' @title fk4 filter construction
@@ -2838,7 +2838,7 @@ w4_filter <- function() {
 #' @examples
 #' fk4_filter()
 fk4_filter <- function() {
-    .Call('gmwm_fk4_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_fk4_filter', PACKAGE = 'gmwm')
 }
 
 #' @title d6 filter construction
@@ -2856,7 +2856,7 @@ fk4_filter <- function() {
 #' @examples
 #' d6_filter()
 d6_filter <- function() {
-    .Call('gmwm_d6_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_d6_filter', PACKAGE = 'gmwm')
 }
 
 #' @title fk6 filter construction
@@ -2874,7 +2874,7 @@ d6_filter <- function() {
 #' @examples
 #' fk6_filter()
 fk6_filter <- function() {
-    .Call('gmwm_fk6_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_fk6_filter', PACKAGE = 'gmwm')
 }
 
 #' @title d8 filter construction
@@ -2892,7 +2892,7 @@ fk6_filter <- function() {
 #' @examples
 #' d8_filter()
 d8_filter <- function() {
-    .Call('gmwm_d8_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_d8_filter', PACKAGE = 'gmwm')
 }
 
 #' @title fk8 filter construction
@@ -2910,7 +2910,7 @@ d8_filter <- function() {
 #' @examples
 #' fk8_filter()
 fk8_filter <- function() {
-    .Call('gmwm_fk8_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_fk8_filter', PACKAGE = 'gmwm')
 }
 
 #' @title la8 filter construction
@@ -2928,7 +2928,7 @@ fk8_filter <- function() {
 #' @examples
 #' la8_filter()
 la8_filter <- function() {
-    .Call('gmwm_la8_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_la8_filter', PACKAGE = 'gmwm')
 }
 
 #' @title mb8 filter construction
@@ -2946,7 +2946,7 @@ la8_filter <- function() {
 #' @examples
 #' mb8_filter()
 mb8_filter <- function() {
-    .Call('gmwm_mb8_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_mb8_filter', PACKAGE = 'gmwm')
 }
 
 #' @title bl14 filter construction
@@ -2964,7 +2964,7 @@ mb8_filter <- function() {
 #' @examples
 #' bl14_filter()
 bl14_filter <- function() {
-    .Call('gmwm_bl14_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_bl14_filter', PACKAGE = 'gmwm')
 }
 
 #' @title fk14 filter construction
@@ -2982,7 +2982,7 @@ bl14_filter <- function() {
 #' @examples
 #' fk14_filter()
 fk14_filter <- function() {
-    .Call('gmwm_fk14_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_fk14_filter', PACKAGE = 'gmwm')
 }
 
 #' @title d16 filter construction
@@ -3000,7 +3000,7 @@ fk14_filter <- function() {
 #' @examples
 #' d16_filter()
 d16_filter <- function() {
-    .Call('gmwm_d16_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_d16_filter', PACKAGE = 'gmwm')
 }
 
 #' @title la16 filter construction
@@ -3018,7 +3018,7 @@ d16_filter <- function() {
 #' @examples
 #' la16_filter()
 la16_filter <- function() {
-    .Call('gmwm_la16_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_la16_filter', PACKAGE = 'gmwm')
 }
 
 #' @title mb16 filter construction
@@ -3036,7 +3036,7 @@ la16_filter <- function() {
 #' @examples
 #' mb16_filter()
 mb16_filter <- function() {
-    .Call('gmwm_mb16_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_mb16_filter', PACKAGE = 'gmwm')
 }
 
 #' @title la20 filter construction
@@ -3054,7 +3054,7 @@ mb16_filter <- function() {
 #' @examples
 #' la20_filter()
 la20_filter <- function() {
-    .Call('gmwm_la20_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_la20_filter', PACKAGE = 'gmwm')
 }
 
 #' @title bl20 filter construction
@@ -3072,7 +3072,7 @@ la20_filter <- function() {
 #' @examples
 #' bl20_filter()
 bl20_filter <- function() {
-    .Call('gmwm_bl20_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_bl20_filter', PACKAGE = 'gmwm')
 }
 
 #' @title fk22 filter construction
@@ -3090,7 +3090,7 @@ bl20_filter <- function() {
 #' @examples
 #' fk22_filter()
 fk22_filter <- function() {
-    .Call('gmwm_fk22_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_fk22_filter', PACKAGE = 'gmwm')
 }
 
 #' @title mb24 filter construction
@@ -3108,7 +3108,7 @@ fk22_filter <- function() {
 #' @examples
 #' mb24_filter()
 mb24_filter <- function() {
-    .Call('gmwm_mb24_filter', PACKAGE = 'gmwm')
+    .Call('_gmwm_mb24_filter', PACKAGE = 'gmwm')
 }
 
 #' @title Select the Wavelet Filter
@@ -3128,6 +3128,6 @@ mb24_filter <- function() {
 #' @examples
 #' select_filter("haar")
 select_filter <- function(filter_name = "haar") {
-    .Call('gmwm_select_filter', PACKAGE = 'gmwm', filter_name)
+    .Call('_gmwm_select_filter', PACKAGE = 'gmwm', filter_name)
 }
 

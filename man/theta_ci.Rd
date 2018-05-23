@@ -24,4 +24,3 @@ A \code{mat} that has the first column
 Create an Asymptotic CI for the Theta Estimates.
 }
 \keyword{internal}
-

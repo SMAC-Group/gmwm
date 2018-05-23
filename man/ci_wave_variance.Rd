@@ -43,4 +43,3 @@ y = wave_variance(decomp)
 ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025)
 }
 \keyword{internal}
-

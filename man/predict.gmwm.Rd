@@ -39,4 +39,3 @@ predict(model, xt, n.ahead = 1)
 \seealso{
 \code{\link{gmwm}}, \code{\link{ARMA}}
 }
-

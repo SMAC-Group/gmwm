@@ -30,8 +30,8 @@ To generate the Gaussian White Noise (WN) process, we first obtain the
 standard deviation from the variance by taking a square root. Then, we 
 sample \eqn{N} times from a \eqn{N(0,\sigma ^2)}{N(0,sigma^2)} distribution.
 }
+
 \examples{
 gen_wn(10, 1.5)
 }
 \keyword{internal}
-

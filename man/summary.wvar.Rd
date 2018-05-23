@@ -28,4 +28,3 @@ summary( out )
 JJB
 }
 \keyword{internal}
-

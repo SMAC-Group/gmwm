@@ -26,4 +26,3 @@ summary(modwt(x))
 JJB
 }
 \keyword{internal}
-

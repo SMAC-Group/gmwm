@@ -67,4 +67,3 @@ plot(res, line.color = c('blue', 'green', 'black'), point.size = c(1,1,1))
 \author{
 Wenchao
 }
-

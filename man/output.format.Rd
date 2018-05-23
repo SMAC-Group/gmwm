@@ -37,4 +37,3 @@ An updated matrix in the ith position of the list.
 Creates the correct GMWM object and rank.models (auto.imu) summary object
 }
 \keyword{internal}
-

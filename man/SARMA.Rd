@@ -47,4 +47,3 @@ SARMA(ar=0.23, ma=0.4, sar = .3, sma = .3)
 \author{
 JJB
 }
-

@@ -39,4 +39,3 @@ A \code{list} with the structure:
 Structures elements into a \code{wvar} object
 }
 \keyword{internal}
-

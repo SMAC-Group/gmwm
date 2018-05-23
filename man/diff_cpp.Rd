@@ -27,4 +27,3 @@ diff_cpp(x,1,1)
 JJB
 }
 \keyword{internal}
-

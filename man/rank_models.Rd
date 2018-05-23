@@ -52,4 +52,3 @@ e.g. to specify nested, you must use nested = T. Otherwise, it the function will
 Due to the structure of \code{rank.models}, you cannot mix and match \code{AR1()} and \code{GM()} objects.
 So you must enter either AR1() or GM() objects.
 }
-

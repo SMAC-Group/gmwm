@@ -31,4 +31,3 @@ lm_arma(y, x)[[1]]
 coef(lm(y~x-1))
 }
 \keyword{internal}
-

@@ -75,4 +75,3 @@ updated.model = update(bad.model, exact.model)
 # Or...
 updated.model.guided = update(bad.model, AR1()+AR1())
 }
-

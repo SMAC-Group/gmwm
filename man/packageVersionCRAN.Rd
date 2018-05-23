@@ -31,4 +31,3 @@ packageVersionCRAN("gmwm")
 JJB
 }
 \keyword{internal}
-

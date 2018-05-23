@@ -23,4 +23,3 @@ Enables sampling from a truncated normal
 \examples{
 rtruncated_normal(10, 1, 1, -2, 2)
 }
-

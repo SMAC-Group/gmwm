@@ -68,4 +68,3 @@ Creates a graph containing the empirical and theoretical wavelet variances const
 JJB, Wenchao
 }
 \keyword{internal}
-

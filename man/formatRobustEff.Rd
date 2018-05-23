@@ -25,4 +25,3 @@ formatRobustEff(GMWM1)
 formatRobustEff(GMWM2)
 }
 \keyword{internal}
-

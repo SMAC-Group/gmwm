@@ -29,8 +29,8 @@ Drift with parameter \eqn{\omega \in \Omega}{omega in Omega} where \eqn{\Omega}{
 To generate the Drift process, we first fill a \code{vector} with the \eqn{\omega}{omega} parameter.
 After, we take the cumulative sum along the vector.
 }
+
 \examples{
 gen_dr(10, 8.2)
 }
 \keyword{internal}
-

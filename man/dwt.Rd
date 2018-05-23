@@ -36,4 +36,3 @@ dwt(x)
 \author{
 JJB
 }
-

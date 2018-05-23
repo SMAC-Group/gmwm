@@ -37,4 +37,3 @@ m = ACF(datasets::AirPassengers)
 # Get Autocovariance and do not remove trend from signal
 m = ACF(datasets::AirPassengers, cor = FALSE, demean = FALSE)
 }
-

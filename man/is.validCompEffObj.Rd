@@ -17,4 +17,3 @@ A valid object list should contain \code{gmwm} objects constructed by the same d
 and the same model.
 }
 \keyword{internal}
-

@@ -45,4 +45,3 @@ demo_lts(100, model, line.color = c('blue', 'green', 'black'),
 \author{
 Wenchao
 }
-

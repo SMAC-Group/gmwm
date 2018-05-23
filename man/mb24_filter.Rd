@@ -27,4 +27,3 @@ mb24_filter()
 JJB
 }
 \keyword{internal}
-

@@ -35,4 +35,3 @@ filter(x, rep(1, 3), method="recursive", init=rep(1, 3))
 R Core Team and JJB
 }
 \keyword{internal}
-

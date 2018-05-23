@@ -96,4 +96,3 @@ autoplot(df, split = F, line.color = c('black', 'green', 'red'),
 }
 }
 \keyword{internal}
-

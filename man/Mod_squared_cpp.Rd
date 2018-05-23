@@ -24,4 +24,3 @@ This function will return: \eqn{r^2 = Mod\left(z\right)^2 = x^2 + y^2}
 Mod_squared_cpp(c(1+.5i, 2+1i, 5+9i))
 }
 \keyword{internal}
-

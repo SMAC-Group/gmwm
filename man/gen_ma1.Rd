@@ -38,8 +38,8 @@ MA values under the above equation.
 
 The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 }
+
 \examples{
 gen_ma1(10, .2, 1.2)
 }
 \keyword{internal}
-

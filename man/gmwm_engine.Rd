@@ -44,11 +44,10 @@ If model_type = "imu" or type = "ssm" then
 starting values pass through an initial bootstrap and pseudo-optimization before being passed to the GMWM optimization.
 If robust = TRUE the function takes the robust estimate of the wavelet variance to be used in the GMWM estimation procedure.
 }
-\author{
-JJB
-}
 \references{
 Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 }
+\author{
+JJB
+}
 \keyword{internal}
-

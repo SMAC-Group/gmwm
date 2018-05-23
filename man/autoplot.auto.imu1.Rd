@@ -62,4 +62,3 @@ A panel containing the automatic model selection results of an IMU sensor.
 Creates a graph of the automatic model selection result without decomposed processes
 }
 \keyword{internal}
-

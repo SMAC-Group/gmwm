@@ -2,11 +2,11 @@
 % Please edit documentation in R/wvar.R
 \name{wvar}
 \alias{wvar}
-\alias{wvar.default}
-\alias{wvar.gts}
-\alias{wvar.imu}
 \alias{wvar.lts}
+\alias{wvar.gts}
 \alias{wvar.ts}
+\alias{wvar.default}
+\alias{wvar.imu}
 \title{Wavelet Variance}
 \usage{
 wvar(x, ...)
@@ -93,4 +93,3 @@ df = wvar.imu(test)
 \author{
 JJB
 }
-

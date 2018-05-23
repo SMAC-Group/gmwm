@@ -22,4 +22,3 @@ An object with the updated attribute.
 Internal Function to Update the Attributes of Objects
 }
 \keyword{internal}
-

@@ -27,4 +27,3 @@ w4_filter()
 JJB
 }
 \keyword{internal}
-

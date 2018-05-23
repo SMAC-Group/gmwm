@@ -27,4 +27,3 @@ qmf(g)
 JJB
 }
 \keyword{internal}
-

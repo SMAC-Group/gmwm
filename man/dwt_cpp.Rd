@@ -35,4 +35,3 @@ dwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", brickwall =
 JJB
 }
 \keyword{internal}
-

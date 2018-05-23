@@ -18,4 +18,3 @@ A \code{vec} with repeated elements of the initial supplied vector.
 This function takes a vector and replicates all of the data \eqn{n} times
 }
 \keyword{internal}
-

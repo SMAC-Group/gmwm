@@ -33,7 +33,7 @@ To access information about \code{imu} properties use:
 \itemize{
 \item \code{imu}: Access \code{imu} object properties
 }}
+
 \author{
 JJB
 }
-

@@ -43,4 +43,3 @@ GM(beta=.32, sigma2_gm=1.3)
 \author{
 JJB
 }
-

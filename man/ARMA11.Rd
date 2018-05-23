@@ -40,4 +40,3 @@ ARMA11()
 \author{
 JJB
 }
-

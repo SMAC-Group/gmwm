@@ -95,4 +95,3 @@ autoplot(df, CI = T, line.color = c('black', 'black', 'blue'), title.size = 18)
 Wenchao
 }
 \keyword{internal}
-

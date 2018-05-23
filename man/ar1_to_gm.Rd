@@ -31,4 +31,3 @@ ar1_to_gm(c(0.3,1,0.6,.3), 2)
 JJB
 }
 \keyword{internal}
-

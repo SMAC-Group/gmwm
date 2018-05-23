@@ -41,11 +41,10 @@ random.walk = cumsum(0.1*rnorm(N, 0, 2))
 combined.ts = white.noise+random.walk
 av_mat = avar_mo_cpp(combined.ts)
 }
-\author{
-JJB
-}
 \references{
 Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
 }
+\author{
+JJB
+}
 \keyword{internal}
-

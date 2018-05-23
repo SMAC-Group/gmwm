@@ -26,4 +26,3 @@ desc.to.ts.model(c("AR1","WN"))
 JJB
 }
 \keyword{internal}
-

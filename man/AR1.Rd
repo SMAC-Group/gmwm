@@ -32,4 +32,3 @@ AR1(phi=.32, sigma2=1.3)
 \author{
 JJB
 }
-

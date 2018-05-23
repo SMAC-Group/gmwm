@@ -33,4 +33,3 @@ AR(2) # Equivalent to ARMA(2,0).
 \author{
 JJB
 }
-

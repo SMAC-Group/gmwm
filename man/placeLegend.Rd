@@ -20,4 +20,3 @@ A numeric vector containing 4 elements. The first two elements indicate legend.j
 This function decides where the legend should be put (top left or bottom left)
 }
 \keyword{internal}
-

@@ -26,4 +26,3 @@ summary( out )
 \author{
 JJB
 }
-

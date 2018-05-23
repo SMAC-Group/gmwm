@@ -32,4 +32,3 @@ MA1(theta=.32, sigma2=1.3)
 \author{
 JJB
 }
-

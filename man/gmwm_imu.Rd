@@ -73,4 +73,3 @@ results = gmwm_imu(GM(),data)
 inference = summary(results)
 }
 }
-

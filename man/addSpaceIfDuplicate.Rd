@@ -22,4 +22,3 @@ x2 = c('GMWM3', 'GMWM4', 'GMWM3', 'GMWM4', 'GMWM5', 'GMWM6','GMWM3')
 addSpaceIfDuplicate(x2)
 }
 \keyword{internal}
-

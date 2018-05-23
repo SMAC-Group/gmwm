@@ -27,4 +27,3 @@ set.seed(1336)
 gen_lts_cpp(10, c(.9,1), "AR1", list(c(1,1)))
 }
 \keyword{internal}
-

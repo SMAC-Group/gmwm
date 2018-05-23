@@ -25,10 +25,10 @@ Taking the derivative with respect to \eqn{\omega}{omega} yields:
 \strong{Note:} We are taking the derivative with respect to \eqn{\omega}{omega} and not \eqn{\omega^2}{omega^2} as the \eqn{\omega}{omega}
 relates to the slope of the process and not the processes variance like RW and WN. As a result, a second derivative exists and is not zero.
 }
+
 \examples{
 deriv_dr(5.3, 2^(1:5))
 }
 \author{
 James Joseph Balamuta (JJB)
 }
-

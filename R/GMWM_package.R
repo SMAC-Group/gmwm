@@ -61,7 +61,7 @@
 #' @importFrom utils install.packages tail head packageDescription compareVersion
 #' @importFrom scales trans_breaks trans_format math_format
 #' @importFrom grid textGrob gpar
-#' @importFrom balamuta external_graphs is.whole
+#' @importFrom bmisc external_graphs is_whole
 #' @import ggplot2 reshape2
 #' @exportPattern ^[[:alpha:]]+
 NULL

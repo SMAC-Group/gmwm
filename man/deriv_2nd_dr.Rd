@@ -22,4 +22,3 @@ deriv_2nd_dr(2^(1:5))
 \author{
 James Joseph Balamuta (JJB)
 }
-

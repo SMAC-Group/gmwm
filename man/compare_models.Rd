@@ -95,4 +95,3 @@ compare_models(GMWM1, GMWM2, CI.color = c('black','red'),
 \author{
 Wenchao
 }
-

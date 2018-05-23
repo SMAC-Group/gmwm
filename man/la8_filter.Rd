@@ -27,4 +27,3 @@ la8_filter()
 JJB
 }
 \keyword{internal}
-

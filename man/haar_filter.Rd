@@ -27,4 +27,3 @@ haar_filter()
 JJB
 }
 \keyword{internal}
-

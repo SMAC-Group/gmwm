@@ -41,4 +41,3 @@ A \code{field<field<field<mat>>>} that contains the model score matrix and the b
 Provides the core material to create an S3 object for auto.imu
 }
 \keyword{internal}
-

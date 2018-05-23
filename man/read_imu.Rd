@@ -51,4 +51,3 @@ for providing a matlab function that reads in IMUs.
 The function below is a heavily modified port of MATLAB code into Armadillo/C++.
 }
 \keyword{internal}
-

@@ -26,4 +26,3 @@ Calculates the necessary vec space needed to pad the vectors
 for seasonal terms.
 }
 \keyword{internal}
-

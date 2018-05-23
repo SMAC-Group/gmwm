@@ -40,11 +40,10 @@ A \code{field<mat>} that contains a list of ever-changing estimates...
 \description{
 This function generates WV, GMWM Estimator, and an initial test estimate.
 }
-\author{
-JJB
-}
 \references{
 Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 }
+\author{
+JJB
+}
 \keyword{internal}
-

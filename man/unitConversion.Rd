@@ -34,4 +34,3 @@ y = 1:10
 unitConversion(y, 'hour', 'sec')
 }
 \keyword{internal}
-

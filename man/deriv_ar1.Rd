@@ -28,10 +28,10 @@ Taking the derivative with respect to \eqn{\phi}{phi} yields:
 Taking the derivative with respect to \eqn{\sigma ^2}{sigma^2} yields:
 \deqn{\frac{\partial }{{\partial {\sigma ^2}}}\nu _j^2\left( {\phi ,{\sigma ^2}} \right) = \frac{{\left( {{\phi ^2} - 1} \right){\tau _j} + 2\phi \left( { - 4{\phi ^{\frac{{{\tau _j}}}{2}}} + {\phi ^{{\tau _j}}} + 3} \right)}}{{{{\left( {\phi  - 1} \right)}^3}\left( {\phi  + 1} \right)\tau _j^2}}}{d/dsigma2 nu[j]^2(phi,sigma2) = ((phi^2-1)*tau[j]+2*phi*(-4*phi^(tau[j]/2) + phi^(tau[j]) + 3))/((phi-1)^3*(phi+1)*tau[j]^2)}
 }
+
 \examples{
 deriv_ar1(.3, 1, 2^(1:5))
 }
 \author{
 James Joseph Balamuta (JJB)
 }
-

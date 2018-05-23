@@ -56,4 +56,3 @@ A \code{field<mat>} that contains bootstrapped / asymptotic GoF results as well 
 Gets all the data for the summary.gmwm function.
 }
 \keyword{internal}
-

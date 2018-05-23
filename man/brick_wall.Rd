@@ -30,4 +30,3 @@ me = modwt_cpp(x, filter_name = "haar", nlevels = 4, boundary = "periodic", bric
 brick_wall(me, select_filter("haar"), "modwt")
 }
 \keyword{internal}
-

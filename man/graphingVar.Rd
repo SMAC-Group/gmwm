@@ -67,4 +67,3 @@ Hadamard Variance
 Wenchao
 }
 \keyword{internal}
-

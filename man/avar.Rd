@@ -48,6 +48,7 @@ The tau-overlap estimator is given by:
 
 where \eqn{ {{\bar y}_t}\left( \tau  \right) = \frac{1}{\tau }\sum\limits_{i = 0}^{\tau  - 1} {{{\bar y}_{t - i}}} }{See PDF Manual}.
 }
+
 \examples{
 # Set seed for reproducibility
 set.seed(999)
@@ -62,10 +63,9 @@ av_mat_mo = avar(ts, type = "mo")
 # Tau overlap
 av_mat_tau = avar(ts, type = "to")
 }
-\author{
-JJB
-}
 \references{
 Long-Memory Processes, the Allan Variance and Wavelets, D. B. Percival and P. Guttorp
 }
-
+\author{
+JJB
+}

@@ -32,4 +32,3 @@ rev_col_subset(x, 1, 0)
 JJB
 }
 \keyword{internal}
-

@@ -30,11 +30,10 @@ A \code{field<mat>} that contains the parameter estimates from GMWM estimator.
 \description{
 This function uses information obtained previously (e.g. WV covariance matrix) to re-estimate a different model parameterization
 }
-\author{
-JJB
-}
 \references{
 Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
 }
+\author{
+JJB
+}
 \keyword{internal}
-

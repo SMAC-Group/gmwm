@@ -26,4 +26,3 @@ quantile(c(1,2,3,4,5,6,7), c(.25,.5,.75))
 James J Balamuta
 }
 \keyword{internal}
-

@@ -32,4 +32,3 @@ x = gen_gts(1000, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
 obj = rgmwm(2*AR1()+WN(), data = x)
 compare_eff(obj)
 }
-

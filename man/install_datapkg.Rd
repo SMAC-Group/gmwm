@@ -26,4 +26,3 @@ install_datapkg("LOCAL","C:/Users/James/Documents/datapkg_x.y.z.tar.gz")
 \author{
 JJB
 }
-

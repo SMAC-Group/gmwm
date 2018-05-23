@@ -44,4 +44,3 @@ filter(x, rep(1, 3), sides = 1, circular = TRUE)
 R Core Team and JJB
 }
 \keyword{internal}
-

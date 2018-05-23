@@ -28,4 +28,3 @@ A \code{field<vec>} that contains the expansion.
 (Internal) Expand the SARMA Parameters
 }
 \keyword{internal}
-

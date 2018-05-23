@@ -26,4 +26,3 @@ dwt(x)
 JJB
 }
 \keyword{internal}
-

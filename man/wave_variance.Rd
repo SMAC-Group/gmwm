@@ -28,4 +28,3 @@ wave_variance(decomp)
 wave_variance(decomp, robust = TRUE, eff = 0.6)
 }
 \keyword{internal}
-

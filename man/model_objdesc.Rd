@@ -21,4 +21,3 @@ That is, there is no support for ARMA(P,Q), AR(P), or MA(Q).
 There is support for ARMA11, AR1, MA1, GM, WN, DR, QN, and RW.
 }
 \keyword{internal}
-

@@ -27,9 +27,9 @@ The Gaussian White Noise (WN) process has a Haar Wavelet Variance given by:
 
 For more information, please see: \href{http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae}{Supported Haar Wavelet Formulae} (Internet Connection Required).
 }
+
 \examples{
 ntau = 8
 tau = 2^(1:ntau)
 wv.theo = wn_to_wv(1, tau)
 }
-

@@ -26,4 +26,3 @@ print( out )
 \author{
 JJB
 }
-

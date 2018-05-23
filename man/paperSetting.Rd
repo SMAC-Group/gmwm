@@ -13,4 +13,3 @@ A ggplot2 panel containing the frequent graph setting for paper.
 This function sets some parameters such as plot.margin.
 }
 \keyword{internal}
-

@@ -17,4 +17,3 @@ This function takes numbers that are very small and sets them to the minimal tol
 Doing this prevents NaN from entering the optim routine.
 }
 \keyword{internal}
-

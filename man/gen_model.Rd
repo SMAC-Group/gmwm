@@ -27,4 +27,3 @@ set.seed(1336)
 gen_model(1000, c(.9,1), "AR1", list(c(1,1)))
 }
 \keyword{internal}
-

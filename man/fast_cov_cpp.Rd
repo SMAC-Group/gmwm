@@ -25,4 +25,3 @@ fast_cov_cpp(y,x)
 }
 }
 \keyword{internal}
-

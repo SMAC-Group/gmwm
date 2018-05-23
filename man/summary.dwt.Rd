@@ -26,4 +26,3 @@ summary(dwt(x))
 JJB
 }
 \keyword{internal}
-

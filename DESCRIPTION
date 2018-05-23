@@ -44,7 +44,7 @@ Suggests:
     rmarkdown,
     imudata (>= 2.0.0)
 Additional_repositories: http://smac-group.com/datarepo
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Remotes: coatless/balamuta
 SystemRequirements: C++11

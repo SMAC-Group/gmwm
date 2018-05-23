@@ -31,4 +31,3 @@ An \code{imu} object class.
 Internal quick build for imu object.
 }
 \keyword{internal}
-

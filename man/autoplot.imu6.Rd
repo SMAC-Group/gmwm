@@ -60,4 +60,3 @@ A panel containing the split graphs of an IMU sensor.
 Plot each WV variance in a split graph
 }
 \keyword{internal}
-

@@ -22,4 +22,3 @@ x=rnorm(100)
 JJB
 }
 \keyword{internal}
-

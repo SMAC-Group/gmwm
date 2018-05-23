@@ -77,4 +77,3 @@ autoplot( out )
 JJB, Wenchao
 }
 \keyword{internal}
-

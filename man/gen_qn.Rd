@@ -45,8 +45,8 @@ Thus, we end up with:
 \deqn{{x_k} = \sqrt Q {{\dot U}_k}\Delta t}{x_k = sqrt(Q)*U_k^.*(delta)t}
 \deqn{{x_k} = \sqrt Q \left( {{U_{k + 1}} - {U_k}} \right)}{x_k = sqrt(Q)* (U_(k+1) - U_(k))}
 }
+
 \examples{
 gen_qn(10, 5)
 }
 \keyword{internal}
-

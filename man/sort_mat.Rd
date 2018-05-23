@@ -23,4 +23,3 @@ sort() will sort each column without respect to the rows.
 Using sort_matrix will sort only 1 column and retain the other elements to be in the same row.
 }
 \keyword{internal}
-

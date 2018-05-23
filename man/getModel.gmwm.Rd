@@ -16,4 +16,3 @@ A \code{string} containing the model
 Extracts and formats the model string.
 }
 \keyword{internal}
-

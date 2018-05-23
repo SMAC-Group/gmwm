@@ -28,4 +28,3 @@ The equation is slightly different than that stated in the paper due to the boot
 N.
 }
 \keyword{internal}
-

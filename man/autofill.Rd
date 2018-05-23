@@ -26,4 +26,3 @@ If the length of \code{v} is less than \code{len}, the function will introduce
 Nothing will be done if the length of \code{v} is equal to or larger than \code{len}.
 }
 \keyword{internal}
-

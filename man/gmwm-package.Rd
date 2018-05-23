@@ -35,6 +35,7 @@ We would like to thank the following individuals for their contributions and adv
 
 Furthermore, we are also greatful to Dr. Jan Skaloud and Philipp Clausen of Geodetic Engineering Laboratory (TOPO), Swiss Federal Institute of Technology Lausanne (EPFL), topo.epfl.ch, Tel:+41(0)21 693 27 55 for providing data, which motivated the research and development of this package.
 }
+
 \author{
 James Balamuta \email{balamut2@illinois.edu},
 Stephane Guerrier \email{stephane@illinois.edu},
@@ -43,4 +44,3 @@ Wenchao Yang \email{wyang40@illinois.edu}
 
 Stephane Guerrier \email{stephane@illinois.edu}
 }
-

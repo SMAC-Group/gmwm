@@ -56,4 +56,3 @@ summary(mod)
 \author{
 JJB
 }
-

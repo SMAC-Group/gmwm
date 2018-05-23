@@ -70,11 +70,10 @@
 Compare the estimates given by the classical and robust methods of 
 calculating the wavelet variance.
 }
-\author{
-JJB, Wenchao
-}
 \seealso{
 \code{\link{compare_wvar}}
 }
+\author{
+JJB, Wenchao
+}
 \keyword{internal}
-

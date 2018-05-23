@@ -26,4 +26,3 @@ reverse_vec(x)
 JJB
 }
 \keyword{internal}
-

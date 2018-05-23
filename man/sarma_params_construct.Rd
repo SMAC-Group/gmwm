@@ -10,4 +10,3 @@ sarma_params_construct(ar, ma, sar, sma)
 Efficient way to merge items together
 }
 \keyword{internal}
-

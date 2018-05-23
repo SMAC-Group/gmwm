@@ -50,4 +50,3 @@ Thanks goes to Philipp Clausen of Labo TOPO, EPFL, Switzerland, topo.epfl.ch, Te
 for providing a matlab function that reads in IMUs.
 This function is a heavily modified port of MATLAB code into Armadillo/C++.
 }
-

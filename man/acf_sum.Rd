@@ -25,4 +25,3 @@ Indicates where the minimum ARMAacf value is and returns that as an index.
 \code{\link{arma_to_wv_app}}
 }
 \keyword{internal}
-

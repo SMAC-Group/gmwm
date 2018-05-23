@@ -33,4 +33,3 @@ obj.list = list(GMWM1, GMWM2, GMWM3)
 getEff(obj.list)
 }
 \keyword{internal}
-

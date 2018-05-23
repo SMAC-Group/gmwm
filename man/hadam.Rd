@@ -63,4 +63,3 @@ hadam_to = hadam(combined.ts, type = "to")
 \author{
 Avinash Balakrishnan, JJB
 }
-

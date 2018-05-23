@@ -18,4 +18,3 @@ An updated matrix in the ith position of the list.
 The model score matrix receives the appropriate model numbering, col descriptors, and ordering of models.
 }
 \keyword{internal}
-

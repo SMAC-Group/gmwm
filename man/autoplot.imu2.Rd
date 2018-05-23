@@ -69,4 +69,3 @@ A panel containing the combined graphs of an IMU sensor.
 Plot each WV variance in a combined graph
 }
 \keyword{internal}
-

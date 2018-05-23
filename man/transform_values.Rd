@@ -25,4 +25,3 @@ Transform parameter guesses prior to estimating with GMWM
 James Joseph Balamuta (JJB)
 }
 \keyword{internal}
-

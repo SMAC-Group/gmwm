@@ -19,4 +19,3 @@ Generates a matrix containing all the combination listings
 Port expand.grid to C++ at a later time...
 }
 \keyword{internal}
-

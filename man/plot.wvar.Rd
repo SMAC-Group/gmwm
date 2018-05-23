@@ -73,10 +73,9 @@ x=rnorm(100)
 out = wvar(x)
 plot( out )
 }
-\author{
-JJB, Wenchao
-}
 \seealso{
 \code{\link{autoplot.wvar}}
 }
-
+\author{
+JJB, Wenchao
+}

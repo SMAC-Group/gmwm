@@ -13,4 +13,3 @@ do_polyroot_cpp(z)
 Vroom Vroom
 }
 \keyword{internal}
-

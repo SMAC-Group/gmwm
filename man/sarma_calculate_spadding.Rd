@@ -29,4 +29,3 @@ Computes the total phi and total theta vector length.
 \code{\link{sarma_components}}
 }
 \keyword{internal}
-

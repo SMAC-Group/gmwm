@@ -18,4 +18,3 @@ Add corresponding units for gyroscope and accelerometer sensors.
 This function is used in \code{plot.wvar.imu} and \code{plot.auto.imu}.
 }
 \keyword{internal}
-

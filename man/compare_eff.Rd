@@ -95,6 +95,7 @@ If you meet the error "polygon edge not found", it is complaining that you don't
 plot the graph. If you are using RStudio, you can adjust the plot window. You can also open graphical window by using
 \code{quartz()} (Mac/Linux) or \code{windows()} (Windows PC).
 }
+
 \examples{
 \dontrun{
 #Simulate data
@@ -126,4 +127,3 @@ compare_eff(GMWM2, GMWM3, order.eff = TRUE, CI.color = c("#F47F24", "#003C7D"),
 \author{
 Wenchao
 }
-

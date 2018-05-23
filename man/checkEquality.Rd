@@ -22,4 +22,3 @@ This function is used in \code{\link{compare.models}}.
 Wenchao
 }
 \keyword{internal}
-

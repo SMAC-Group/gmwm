@@ -63,4 +63,3 @@ plot(x2, to.unit = 'min')
 # Same time series
 all.equal(x, x2, check.attributes = FALSE)
 }
-

@@ -33,4 +33,3 @@ A \code{vec} that has
 yaya
 }
 \keyword{internal}
-

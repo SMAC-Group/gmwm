@@ -44,4 +44,3 @@ out = wvcov(decomp, wv, compute.v="diag")
 \author{
 JJB
 }
-

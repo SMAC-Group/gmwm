@@ -21,4 +21,3 @@ This function computes the variance of a drift process.
 var_drift(1, 200)
 }
 \keyword{internal}
-

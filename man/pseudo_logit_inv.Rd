@@ -31,11 +31,10 @@ x.sim.untransformed = pseudo_logit_inv(x.sim.transformed)
 # Compare results
 results = cbind(x.sim, x.sim.untransformed)
 }
-\author{
-James Joseph Balamuta (JJB)
-}
 \seealso{
 \code{\link{pseudo_logit}}
 }
+\author{
+James Joseph Balamuta (JJB)
+}
 \keyword{internal}
-

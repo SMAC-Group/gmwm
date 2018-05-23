@@ -53,4 +53,3 @@ autoplot(x, to.unit = 'ns', line.type = 'dashed', line.color = 'black', point.si
 Wenchao
 }
 \keyword{internal}
-

@@ -25,4 +25,3 @@ x=rnorm(10)
 dft_acf(x)
 }
 \keyword{internal}
-

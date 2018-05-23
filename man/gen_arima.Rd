@@ -35,9 +35,9 @@ This differs from R's use of the standard deviation, \eqn{\sigma}.
 Please note, this function will generate a sum of \eqn{N + d} number of observations,
 where \eqn{d} denotes the number of differences necessary.
 }
+
 \examples{
 # Generate an ARIMA model
 xt = gen_arima(10, c(.3,.5), 1, c(.1), 1.5, 0)
 }
 \keyword{internal}
-

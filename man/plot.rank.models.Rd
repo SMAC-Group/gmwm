@@ -64,4 +64,3 @@
 \description{
 Creates a `rank.models` graph.
 }
-

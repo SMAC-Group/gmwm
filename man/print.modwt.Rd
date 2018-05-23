@@ -26,4 +26,3 @@ print(modwt(x))
 JJB
 }
 \keyword{internal}
-

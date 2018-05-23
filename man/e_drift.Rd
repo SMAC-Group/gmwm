@@ -21,4 +21,3 @@ This function computes the expected value of a drift process.
 e_drift(1,200)
 }
 \keyword{internal}
-

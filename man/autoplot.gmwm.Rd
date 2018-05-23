@@ -82,4 +82,3 @@ autoplot(mod)
 JJB, Wenchao
 }
 \keyword{internal}
-

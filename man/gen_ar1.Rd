@@ -39,8 +39,8 @@ autoregressive values under the above process definition.
 
 The \eqn{X_0}{X[0]} (first value of \eqn{X_t}{X[t]}) is discarded.
 }
+
 \examples{
 gen_ar1(10, 5, 1.2)
 }
 \keyword{internal}
-

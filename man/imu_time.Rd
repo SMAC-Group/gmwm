@@ -15,4 +15,3 @@ A \code{vector} with numeric information.
 \description{
 Helper function for the IMU object to access \code{rownames()} with a numeric conversion.
 }
-

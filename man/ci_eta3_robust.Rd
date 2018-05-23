@@ -37,4 +37,3 @@ y = wave_variance(decomp, robust = TRUE,  eff = 0.6)
 ci_wave_variance(decomp, y, type = "eta3", alpha_ov_2 = 0.025, robust = TRUE, eff = 0.6)
 }
 \keyword{internal}
-

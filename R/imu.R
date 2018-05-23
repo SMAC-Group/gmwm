@@ -103,7 +103,7 @@ imu = function(data, gyros = NULL, accels = NULL, axis = NULL, freq = NULL, unit
   # Merge indices
   index = c(gyro, acce)
   
-  if(!is.whole(index)){
+  if(!is_whole(index)){
     stop("Paramater 'gyros' and 'accels' must be vectors of integers.")
   }
   

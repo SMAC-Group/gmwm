@@ -20,4 +20,3 @@ A \code{field<vec>} containing the breakdown of the object.
 Extracts the object information and returns it.
 }
 \keyword{internal}
-

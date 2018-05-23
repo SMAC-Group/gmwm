@@ -20,4 +20,3 @@ A \code{mat} that has the first column
 Computes the Psi matrix using supplied parameters
 }
 \keyword{internal}
-

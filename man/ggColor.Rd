@@ -19,4 +19,3 @@ Autogenerate a colors according to the ggplot selection mechanism.
 John Colby
 }
 \keyword{internal}
-

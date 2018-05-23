@@ -28,4 +28,3 @@ A \code{vec} with the indirect inference results.
 Option for indirect inference
 }
 \keyword{internal}
-

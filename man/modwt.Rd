@@ -40,4 +40,3 @@ a = modwt(x)
 \author{
 JJB
 }
-

@@ -31,4 +31,3 @@ summary(mod)
 JJB
 }
 \keyword{internal}
-

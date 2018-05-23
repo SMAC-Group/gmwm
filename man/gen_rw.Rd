@@ -30,8 +30,8 @@ To generate we first obtain the standard deviation from the variance by taking a
 sample \eqn{N} times from a \eqn{N(0,\sigma^2)}{N(0,sigma^2)} distribution. Lastly, we take the
 cumulative sum over the vector.
 }
+
 \examples{
 gen_rw(10, 8.2)
 }
 \keyword{internal}
-

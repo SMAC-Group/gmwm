@@ -27,4 +27,3 @@ d6_filter()
 JJB
 }
 \keyword{internal}
-

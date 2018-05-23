@@ -22,4 +22,3 @@ A \code{vec} that has the alpha/2.0 quantile and then the 1-alpha/2.0 quantile.
 yaya
 }
 \keyword{internal}
-

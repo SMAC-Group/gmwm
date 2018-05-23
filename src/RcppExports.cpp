@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // e_drift
 arma::vec e_drift(double omega, int n_ts);
-RcppExport SEXP gmwm_e_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
+RcppExport SEXP _gmwm_e_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // m2_drift
 arma::vec m2_drift(double omega, int n_ts);
-RcppExport SEXP gmwm_m2_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
+RcppExport SEXP _gmwm_m2_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,7 @@ END_RCPP
 }
 // var_drift
 arma::vec var_drift(double omega, int n_ts);
-RcppExport SEXP gmwm_var_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
+RcppExport SEXP _gmwm_var_drift(SEXP omegaSEXP, SEXP n_tsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -44,7 +44,7 @@ END_RCPP
 }
 // avar_to_cpp
 arma::mat avar_to_cpp(arma::vec x);
-RcppExport SEXP gmwm_avar_to_cpp(SEXP xSEXP) {
+RcppExport SEXP _gmwm_avar_to_cpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,7 +55,7 @@ END_RCPP
 }
 // avar_mo_cpp
 arma::mat avar_mo_cpp(arma::vec x);
-RcppExport SEXP gmwm_avar_mo_cpp(SEXP xSEXP) {
+RcppExport SEXP _gmwm_avar_mo_cpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -66,7 +66,7 @@ END_RCPP
 }
 // arma_adapter
 arma::vec arma_adapter(const arma::vec& theta, unsigned int p, unsigned int q, const arma::vec& tau);
-RcppExport SEXP gmwm_arma_adapter(SEXP thetaSEXP, SEXP pSEXP, SEXP qSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_arma_adapter(SEXP thetaSEXP, SEXP pSEXP, SEXP qSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -80,7 +80,7 @@ END_RCPP
 }
 // jacobian_arma
 arma::mat jacobian_arma(const arma::vec& theta, unsigned int p, unsigned int q, const arma::vec& tau);
-RcppExport SEXP gmwm_jacobian_arma(SEXP thetaSEXP, SEXP pSEXP, SEXP qSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_jacobian_arma(SEXP thetaSEXP, SEXP pSEXP, SEXP qSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -94,7 +94,7 @@ END_RCPP
 }
 // deriv_arma11
 arma::mat deriv_arma11(double phi, double theta, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_arma11(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_arma11(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -108,7 +108,7 @@ END_RCPP
 }
 // deriv_2nd_arma11
 arma::mat deriv_2nd_arma11(double phi, double theta, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_2nd_arma11(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_2nd_arma11(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -122,7 +122,7 @@ END_RCPP
 }
 // deriv_ar1
 arma::mat deriv_ar1(double phi, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -135,7 +135,7 @@ END_RCPP
 }
 // deriv_2nd_ar1
 arma::mat deriv_2nd_ar1(double phi, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_2nd_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_2nd_ar1(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -148,7 +148,7 @@ END_RCPP
 }
 // deriv_ma1
 arma::mat deriv_ma1(double theta, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_ma1(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_ma1(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -161,7 +161,7 @@ END_RCPP
 }
 // deriv_2nd_ma1
 arma::mat deriv_2nd_ma1(double theta, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_2nd_ma1(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_2nd_ma1(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -174,7 +174,7 @@ END_RCPP
 }
 // deriv_dr
 arma::mat deriv_dr(double omega, const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_dr(SEXP omegaSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_dr(SEXP omegaSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -186,7 +186,7 @@ END_RCPP
 }
 // deriv_2nd_dr
 arma::mat deriv_2nd_dr(const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_2nd_dr(SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_2nd_dr(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -197,7 +197,7 @@ END_RCPP
 }
 // deriv_qn
 arma::mat deriv_qn(const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_qn(SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_qn(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -208,7 +208,7 @@ END_RCPP
 }
 // deriv_rw
 arma::mat deriv_rw(const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_rw(SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_rw(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -219,7 +219,7 @@ END_RCPP
 }
 // deriv_wn
 arma::mat deriv_wn(const arma::vec& tau);
-RcppExport SEXP gmwm_deriv_wn(SEXP tauSEXP) {
+RcppExport SEXP _gmwm_deriv_wn(SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -230,7 +230,7 @@ END_RCPP
 }
 // derivative_first_matrix
 arma::mat derivative_first_matrix(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& tau);
-RcppExport SEXP gmwm_derivative_first_matrix(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_derivative_first_matrix(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -244,7 +244,7 @@ END_RCPP
 }
 // D_matrix
 arma::mat D_matrix(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& tau, const arma::vec& omegadiff);
-RcppExport SEXP gmwm_D_matrix(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP, SEXP omegadiffSEXP) {
+RcppExport SEXP _gmwm_D_matrix(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP, SEXP omegadiffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -259,7 +259,7 @@ END_RCPP
 }
 // Rcpp_ARIMA
 arma::vec Rcpp_ARIMA(const arma::vec& data, const arma::vec& params);
-RcppExport SEXP gmwm_Rcpp_ARIMA(SEXP dataSEXP, SEXP paramsSEXP) {
+RcppExport SEXP _gmwm_Rcpp_ARIMA(SEXP dataSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -271,7 +271,7 @@ END_RCPP
 }
 // sort_mat
 arma::mat sort_mat(arma::mat x, unsigned int col);
-RcppExport SEXP gmwm_sort_mat(SEXP xSEXP, SEXP colSEXP) {
+RcppExport SEXP _gmwm_sort_mat(SEXP xSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -283,7 +283,7 @@ END_RCPP
 }
 // rev_col_subset
 arma::mat rev_col_subset(arma::mat x, unsigned int start, unsigned int end);
-RcppExport SEXP gmwm_rev_col_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _gmwm_rev_col_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -296,7 +296,7 @@ END_RCPP
 }
 // rev_row_subset
 arma::mat rev_row_subset(arma::mat x, unsigned int start, unsigned int end);
-RcppExport SEXP gmwm_rev_row_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _gmwm_rev_row_subset(SEXP xSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -309,7 +309,7 @@ END_RCPP
 }
 // reverse_vec
 arma::vec reverse_vec(arma::vec x);
-RcppExport SEXP gmwm_reverse_vec(SEXP xSEXP) {
+RcppExport SEXP _gmwm_reverse_vec(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -320,7 +320,7 @@ END_RCPP
 }
 // field_to_matrix
 arma::mat field_to_matrix(arma::field<arma::vec> x);
-RcppExport SEXP gmwm_field_to_matrix(SEXP xSEXP) {
+RcppExport SEXP _gmwm_field_to_matrix(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -331,7 +331,7 @@ END_RCPP
 }
 // sum_field_vec
 double sum_field_vec(const arma::field<arma::vec>& x);
-RcppExport SEXP gmwm_sum_field_vec(SEXP xSEXP) {
+RcppExport SEXP _gmwm_sum_field_vec(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -342,7 +342,7 @@ END_RCPP
 }
 // build_model_set
 std::set<std::vector<std::string > > build_model_set(const arma::mat& combs, std::vector <std::string> x);
-RcppExport SEXP gmwm_build_model_set(SEXP combsSEXP, SEXP xSEXP) {
+RcppExport SEXP _gmwm_build_model_set(SEXP combsSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -354,7 +354,7 @@ END_RCPP
 }
 // set_seed
 void set_seed(unsigned int seed);
-RcppExport SEXP gmwm_set_seed(SEXP seedSEXP) {
+RcppExport SEXP _gmwm_set_seed(SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
@@ -364,7 +364,7 @@ END_RCPP
 }
 // vector_to_set
 std::set<std::vector<std::string> > vector_to_set(std::vector<std::vector<std::string > > model_str);
-RcppExport SEXP gmwm_vector_to_set(SEXP model_strSEXP) {
+RcppExport SEXP _gmwm_vector_to_set(SEXP model_strSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -375,7 +375,7 @@ END_RCPP
 }
 // find_full_model
 std::vector<std::string> find_full_model(std::vector<std::vector<std::string> > x);
-RcppExport SEXP gmwm_find_full_model(SEXP xSEXP) {
+RcppExport SEXP _gmwm_find_full_model(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -386,7 +386,7 @@ END_RCPP
 }
 // rank_models_cpp
 arma::field< arma::field<arma::field<arma::mat> > > rank_models_cpp(arma::vec& data, const std::vector<std::vector < std::string > >& model_str, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
-RcppExport SEXP gmwm_rank_models_cpp(SEXP dataSEXP, SEXP model_strSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
+RcppExport SEXP _gmwm_rank_models_cpp(SEXP dataSEXP, SEXP model_strSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -409,7 +409,7 @@ END_RCPP
 }
 // auto_imu_cpp
 arma::field< arma::field<arma::field<arma::mat> > > auto_imu_cpp(arma::mat& data, const arma::mat& combs, const std::vector< std::string >& full_model, double alpha, std::string compute_v, std::string model_type, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff, bool bs_optimism, unsigned int seed);
-RcppExport SEXP gmwm_auto_imu_cpp(SEXP dataSEXP, SEXP combsSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
+RcppExport SEXP _gmwm_auto_imu_cpp(SEXP dataSEXP, SEXP combsSEXP, SEXP full_modelSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP model_typeSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP bs_optimismSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -432,7 +432,7 @@ END_RCPP
 }
 // cov_bootstrapper
 arma::mat cov_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, unsigned int N, bool robust, double eff, unsigned int H, bool diagonal_matrix);
-RcppExport SEXP gmwm_cov_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP, SEXP diagonal_matrixSEXP) {
+RcppExport SEXP _gmwm_cov_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP, SEXP diagonal_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -450,7 +450,7 @@ END_RCPP
 }
 // optimism_bootstrapper
 arma::mat optimism_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& scales, std::string model_type, unsigned int N, bool robust, double eff, double alpha, unsigned int H);
-RcppExport SEXP gmwm_optimism_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_optimism_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -470,7 +470,7 @@ END_RCPP
 }
 // opt_n_gof_bootstrapper
 arma::field<arma::mat> opt_n_gof_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& scales, std::string model_type, unsigned int N, bool robust, double eff, double alpha, unsigned int H);
-RcppExport SEXP gmwm_opt_n_gof_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_opt_n_gof_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -490,7 +490,7 @@ END_RCPP
 }
 // gmwm_sd_bootstrapper
 arma::vec gmwm_sd_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& scales, std::string model_type, unsigned int N, bool robust, double eff, double alpha, unsigned int H);
-RcppExport SEXP gmwm_gmwm_sd_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_gmwm_sd_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -510,7 +510,7 @@ END_RCPP
 }
 // boot_pval_gof
 arma::vec boot_pval_gof(double obj, const arma::vec& obj_boot, unsigned int B, double alpha);
-RcppExport SEXP gmwm_boot_pval_gof(SEXP objSEXP, SEXP obj_bootSEXP, SEXP BSEXP, SEXP alphaSEXP) {
+RcppExport SEXP _gmwm_boot_pval_gof(SEXP objSEXP, SEXP obj_bootSEXP, SEXP BSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -524,7 +524,7 @@ END_RCPP
 }
 // gmwm_param_bootstrapper
 arma::field<arma::mat> gmwm_param_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& scales, std::string model_type, unsigned int N, bool robust, double eff, double alpha, unsigned int H);
-RcppExport SEXP gmwm_gmwm_param_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_gmwm_param_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -544,7 +544,7 @@ END_RCPP
 }
 // all_bootstrapper
 arma::field<arma::mat> all_bootstrapper(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& scales, std::string model_type, unsigned int N, bool robust, double eff, double alpha, unsigned int H);
-RcppExport SEXP gmwm_all_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_all_bootstrapper(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP scalesSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -564,7 +564,7 @@ END_RCPP
 }
 // Mod_squared_cpp
 arma::vec Mod_squared_cpp(const arma::cx_vec& x);
-RcppExport SEXP gmwm_Mod_squared_cpp(SEXP xSEXP) {
+RcppExport SEXP _gmwm_Mod_squared_cpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -575,7 +575,7 @@ END_RCPP
 }
 // Mod_cpp
 arma::vec Mod_cpp(const arma::cx_vec& x);
-RcppExport SEXP gmwm_Mod_cpp(SEXP xSEXP) {
+RcppExport SEXP _gmwm_Mod_cpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -586,7 +586,7 @@ END_RCPP
 }
 // compute_cov_cpp
 arma::field<arma::mat> compute_cov_cpp(arma::field<arma::vec> signal_modwt, unsigned int nb_level, std::string compute_v, bool robust, double eff);
-RcppExport SEXP gmwm_compute_cov_cpp(SEXP signal_modwtSEXP, SEXP nb_levelSEXP, SEXP compute_vSEXP, SEXP robustSEXP, SEXP effSEXP) {
+RcppExport SEXP _gmwm_compute_cov_cpp(SEXP signal_modwtSEXP, SEXP nb_levelSEXP, SEXP compute_vSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -601,7 +601,7 @@ END_RCPP
 }
 // fast_cov_cpp
 arma::mat fast_cov_cpp(const arma::vec& ci_hi, const arma::vec& ci_lo);
-RcppExport SEXP gmwm_fast_cov_cpp(SEXP ci_hiSEXP, SEXP ci_loSEXP) {
+RcppExport SEXP _gmwm_fast_cov_cpp(SEXP ci_hiSEXP, SEXP ci_loSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -613,7 +613,7 @@ END_RCPP
 }
 // dwt_cpp
 arma::field<arma::vec> dwt_cpp(arma::vec x, std::string filter_name, unsigned int nlevels, std::string boundary, bool brickwall);
-RcppExport SEXP gmwm_dwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP, SEXP brickwallSEXP) {
+RcppExport SEXP _gmwm_dwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP, SEXP brickwallSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -628,7 +628,7 @@ END_RCPP
 }
 // modwt_cpp
 arma::field<arma::vec> modwt_cpp(arma::vec x, std::string filter_name, unsigned int nlevels, std::string boundary, bool brickwall);
-RcppExport SEXP gmwm_modwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP, SEXP brickwallSEXP) {
+RcppExport SEXP _gmwm_modwt_cpp(SEXP xSEXP, SEXP filter_nameSEXP, SEXP nlevelsSEXP, SEXP boundarySEXP, SEXP brickwallSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -643,7 +643,7 @@ END_RCPP
 }
 // brick_wall
 arma::field<arma::vec> brick_wall(arma::field<arma::vec> x, arma::field<arma::vec> wave_filter, std::string method);
-RcppExport SEXP gmwm_brick_wall(SEXP xSEXP, SEXP wave_filterSEXP, SEXP methodSEXP) {
+RcppExport SEXP _gmwm_brick_wall(SEXP xSEXP, SEXP wave_filterSEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -656,7 +656,7 @@ END_RCPP
 }
 // gen_wn
 arma::vec gen_wn(const unsigned int N, const double sigma2);
-RcppExport SEXP gmwm_gen_wn(SEXP NSEXP, SEXP sigma2SEXP) {
+RcppExport SEXP _gmwm_gen_wn(SEXP NSEXP, SEXP sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -668,7 +668,7 @@ END_RCPP
 }
 // gen_dr
 arma::vec gen_dr(const unsigned int N, const double omega);
-RcppExport SEXP gmwm_gen_dr(SEXP NSEXP, SEXP omegaSEXP) {
+RcppExport SEXP _gmwm_gen_dr(SEXP NSEXP, SEXP omegaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -680,7 +680,7 @@ END_RCPP
 }
 // gen_qn
 arma::vec gen_qn(const unsigned int N, double q2);
-RcppExport SEXP gmwm_gen_qn(SEXP NSEXP, SEXP q2SEXP) {
+RcppExport SEXP _gmwm_gen_qn(SEXP NSEXP, SEXP q2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -692,7 +692,7 @@ END_RCPP
 }
 // gen_ar1
 arma::vec gen_ar1(const unsigned int N, const double phi, const double sigma2);
-RcppExport SEXP gmwm_gen_ar1(SEXP NSEXP, SEXP phiSEXP, SEXP sigma2SEXP) {
+RcppExport SEXP _gmwm_gen_ar1(SEXP NSEXP, SEXP phiSEXP, SEXP sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -705,7 +705,7 @@ END_RCPP
 }
 // gen_rw
 arma::vec gen_rw(const unsigned int N, const double sigma2);
-RcppExport SEXP gmwm_gen_rw(SEXP NSEXP, SEXP sigma2SEXP) {
+RcppExport SEXP _gmwm_gen_rw(SEXP NSEXP, SEXP sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -717,7 +717,7 @@ END_RCPP
 }
 // gen_ma1
 arma::vec gen_ma1(const unsigned int N, const double theta, const double sigma2);
-RcppExport SEXP gmwm_gen_ma1(SEXP NSEXP, SEXP thetaSEXP, SEXP sigma2SEXP) {
+RcppExport SEXP _gmwm_gen_ma1(SEXP NSEXP, SEXP thetaSEXP, SEXP sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -730,7 +730,7 @@ END_RCPP
 }
 // gen_arma11
 arma::vec gen_arma11(const unsigned int N, const double phi, const double theta, const double sigma2);
-RcppExport SEXP gmwm_gen_arma11(SEXP NSEXP, SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP) {
+RcppExport SEXP _gmwm_gen_arma11(SEXP NSEXP, SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -744,7 +744,7 @@ END_RCPP
 }
 // gen_arma
 arma::vec gen_arma(const unsigned int N, const arma::vec& ar, const arma::vec& ma, const double sigma2, unsigned int n_start);
-RcppExport SEXP gmwm_gen_arma(SEXP NSEXP, SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
+RcppExport SEXP _gmwm_gen_arma(SEXP NSEXP, SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -759,7 +759,7 @@ END_RCPP
 }
 // gen_sarma
 arma::vec gen_sarma(const unsigned int N, const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma, const double sigma2, unsigned int s, unsigned int n_start);
-RcppExport SEXP gmwm_gen_sarma(SEXP NSEXP, SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sigma2SEXP, SEXP sSEXP, SEXP n_startSEXP) {
+RcppExport SEXP _gmwm_gen_sarma(SEXP NSEXP, SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sigma2SEXP, SEXP sSEXP, SEXP n_startSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -777,7 +777,7 @@ END_RCPP
 }
 // gen_arima
 arma::vec gen_arima(const unsigned int N, const arma::vec& ar, const unsigned int d, const arma::vec& ma, const double sigma2, unsigned int n_start);
-RcppExport SEXP gmwm_gen_arima(SEXP NSEXP, SEXP arSEXP, SEXP dSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
+RcppExport SEXP _gmwm_gen_arima(SEXP NSEXP, SEXP arSEXP, SEXP dSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -793,7 +793,7 @@ END_RCPP
 }
 // gen_sarima
 arma::vec gen_sarima(const unsigned int N, const arma::vec& ar, unsigned int d, const arma::vec& ma, const arma::vec& sar, unsigned int sd, const arma::vec& sma, const double sigma2, unsigned int s, unsigned int n_start);
-RcppExport SEXP gmwm_gen_sarima(SEXP NSEXP, SEXP arSEXP, SEXP dSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP sdSEXP, SEXP smaSEXP, SEXP sigma2SEXP, SEXP sSEXP, SEXP n_startSEXP) {
+RcppExport SEXP _gmwm_gen_sarima(SEXP NSEXP, SEXP arSEXP, SEXP dSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP sdSEXP, SEXP smaSEXP, SEXP sigma2SEXP, SEXP sSEXP, SEXP n_startSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -813,7 +813,7 @@ END_RCPP
 }
 // gen_generic_sarima
 arma::vec gen_generic_sarima(const unsigned int N, const arma::vec& theta_values, const arma::vec& objdesc, double sigma2, unsigned int n_start);
-RcppExport SEXP gmwm_gen_generic_sarima(SEXP NSEXP, SEXP theta_valuesSEXP, SEXP objdescSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
+RcppExport SEXP _gmwm_gen_generic_sarima(SEXP NSEXP, SEXP theta_valuesSEXP, SEXP objdescSEXP, SEXP sigma2SEXP, SEXP n_startSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -828,7 +828,7 @@ END_RCPP
 }
 // gen_model
 arma::vec gen_model(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
-RcppExport SEXP gmwm_gen_model(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
+RcppExport SEXP _gmwm_gen_model(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -842,7 +842,7 @@ END_RCPP
 }
 // gen_lts_cpp
 arma::mat gen_lts_cpp(unsigned int N, const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc);
-RcppExport SEXP gmwm_gen_lts_cpp(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
+RcppExport SEXP _gmwm_gen_lts_cpp(SEXP NSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -856,7 +856,7 @@ END_RCPP
 }
 // code_zero
 arma::vec code_zero(arma::vec theta);
-RcppExport SEXP gmwm_code_zero(SEXP thetaSEXP) {
+RcppExport SEXP _gmwm_code_zero(SEXP thetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -867,7 +867,7 @@ END_RCPP
 }
 // gmwm_engine
 arma::vec gmwm_engine(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, arma::vec wv_empir, arma::mat omega, arma::vec scales, bool starting);
-RcppExport SEXP gmwm_gmwm_engine(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP omegaSEXP, SEXP scalesSEXP, SEXP startingSEXP) {
+RcppExport SEXP _gmwm_gmwm_engine(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP omegaSEXP, SEXP scalesSEXP, SEXP startingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -885,7 +885,7 @@ END_RCPP
 }
 // gmwm_update_cpp
 arma::field<arma::mat> gmwm_update_cpp(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int N, double expect_diff, double ranged, const arma::mat& orgV, const arma::vec& scales, const arma::mat& wv, bool starting, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
-RcppExport SEXP gmwm_gmwm_update_cpp(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP expect_diffSEXP, SEXP rangedSEXP, SEXP orgVSEXP, SEXP scalesSEXP, SEXP wvSEXP, SEXP startingSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
+RcppExport SEXP _gmwm_gmwm_update_cpp(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP NSEXP, SEXP expect_diffSEXP, SEXP rangedSEXP, SEXP orgVSEXP, SEXP scalesSEXP, SEXP wvSEXP, SEXP startingSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -912,7 +912,7 @@ END_RCPP
 }
 // gmwm_master_cpp
 arma::field<arma::mat> gmwm_master_cpp(arma::vec& data, arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, bool starting, double alpha, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
-RcppExport SEXP gmwm_gmwm_master_cpp(SEXP dataSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP startingSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
+RcppExport SEXP _gmwm_gmwm_master_cpp(SEXP dataSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP startingSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -935,7 +935,7 @@ END_RCPP
 }
 // guess_initial
 arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::mat& wv, const arma::vec& tau, double ranged, unsigned int G);
-RcppExport SEXP gmwm_guess_initial(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wvSEXP, SEXP tauSEXP, SEXP rangedSEXP, SEXP GSEXP) {
+RcppExport SEXP _gmwm_guess_initial(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wvSEXP, SEXP tauSEXP, SEXP rangedSEXP, SEXP GSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -955,7 +955,7 @@ END_RCPP
 }
 // ar1_draw
 arma::vec ar1_draw(unsigned int draw_id, double last_phi, double sigma2_total, std::string model_type);
-RcppExport SEXP gmwm_ar1_draw(SEXP draw_idSEXP, SEXP last_phiSEXP, SEXP sigma2_totalSEXP, SEXP model_typeSEXP) {
+RcppExport SEXP _gmwm_ar1_draw(SEXP draw_idSEXP, SEXP last_phiSEXP, SEXP sigma2_totalSEXP, SEXP model_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -969,7 +969,7 @@ END_RCPP
 }
 // arma_draws
 arma::vec arma_draws(unsigned int p, unsigned int q, double sigma2_total);
-RcppExport SEXP gmwm_arma_draws(SEXP pSEXP, SEXP qSEXP, SEXP sigma2_totalSEXP) {
+RcppExport SEXP _gmwm_arma_draws(SEXP pSEXP, SEXP qSEXP, SEXP sigma2_totalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -982,7 +982,7 @@ END_RCPP
 }
 // guess_initial_old
 arma::vec guess_initial_old(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::vec& wv_empir, const arma::vec& tau, unsigned int B);
-RcppExport SEXP gmwm_guess_initial_old(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP BSEXP) {
+RcppExport SEXP _gmwm_guess_initial_old(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wv_empirSEXP, SEXP tauSEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1001,7 +1001,7 @@ END_RCPP
 }
 // hadam_to_cpp
 arma::mat hadam_to_cpp(arma::vec x);
-RcppExport SEXP gmwm_hadam_to_cpp(SEXP xSEXP) {
+RcppExport SEXP _gmwm_hadam_to_cpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1012,7 +1012,7 @@ END_RCPP
 }
 // hadam_mo_cpp
 arma::mat hadam_mo_cpp(arma::vec x);
-RcppExport SEXP gmwm_hadam_mo_cpp(SEXP xSEXP) {
+RcppExport SEXP _gmwm_hadam_mo_cpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1023,7 +1023,7 @@ END_RCPP
 }
 // idf_arma
 arma::vec idf_arma(const arma::vec& ar, const arma::vec& ma, const double sigma2, unsigned int N, bool robust, double eff, unsigned int H);
-RcppExport SEXP gmwm_idf_arma(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_idf_arma(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1040,7 +1040,7 @@ END_RCPP
 }
 // idf_arma_total
 arma::vec idf_arma_total(const arma::vec& ar, const arma::vec& ma, const double sigma2, unsigned int N, bool robust, double eff, unsigned int H);
-RcppExport SEXP gmwm_idf_arma_total(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP) {
+RcppExport SEXP _gmwm_idf_arma_total(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP NSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP HSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1057,7 +1057,7 @@ END_RCPP
 }
 // calculate_psi_matrix
 arma::mat calculate_psi_matrix(const arma::mat& A, const arma::mat& v_hat, const arma::mat& omega);
-RcppExport SEXP gmwm_calculate_psi_matrix(SEXP ASEXP, SEXP v_hatSEXP, SEXP omegaSEXP) {
+RcppExport SEXP _gmwm_calculate_psi_matrix(SEXP ASEXP, SEXP v_hatSEXP, SEXP omegaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1070,7 +1070,7 @@ END_RCPP
 }
 // format_ci
 arma::mat format_ci(const arma::vec& theta, const arma::vec& se, double alpha);
-RcppExport SEXP gmwm_format_ci(SEXP thetaSEXP, SEXP seSEXP, SEXP alphaSEXP) {
+RcppExport SEXP _gmwm_format_ci(SEXP thetaSEXP, SEXP seSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1083,7 +1083,7 @@ END_RCPP
 }
 // theta_ci
 arma::mat theta_ci(const arma::vec& theta, const arma::mat& A, const arma::mat& v_hat, const arma::mat& omega, double alpha);
-RcppExport SEXP gmwm_theta_ci(SEXP thetaSEXP, SEXP ASEXP, SEXP v_hatSEXP, SEXP omegaSEXP, SEXP alphaSEXP) {
+RcppExport SEXP _gmwm_theta_ci(SEXP thetaSEXP, SEXP ASEXP, SEXP v_hatSEXP, SEXP omegaSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1098,7 +1098,7 @@ END_RCPP
 }
 // gof_test
 arma::vec gof_test(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, const arma::vec& tau, const arma::mat& v_hat, const arma::vec& wv_empir);
-RcppExport SEXP gmwm_gof_test(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP tauSEXP, SEXP v_hatSEXP, SEXP wv_empirSEXP) {
+RcppExport SEXP _gmwm_gof_test(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP tauSEXP, SEXP v_hatSEXP, SEXP wv_empirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1115,7 +1115,7 @@ END_RCPP
 }
 // bootstrap_gof_test
 arma::vec bootstrap_gof_test(double obj_value, arma::vec bs_obj_values, double alpha, bool bs_gof_p_ci);
-RcppExport SEXP gmwm_bootstrap_gof_test(SEXP obj_valueSEXP, SEXP bs_obj_valuesSEXP, SEXP alphaSEXP, SEXP bs_gof_p_ciSEXP) {
+RcppExport SEXP _gmwm_bootstrap_gof_test(SEXP obj_valueSEXP, SEXP bs_obj_valuesSEXP, SEXP alphaSEXP, SEXP bs_gof_p_ciSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1129,7 +1129,7 @@ END_RCPP
 }
 // lm_arma
 arma::field<arma::vec> lm_arma(const arma::vec& y, const arma::mat& X);
-RcppExport SEXP gmwm_lm_arma(SEXP ySEXP, SEXP XSEXP) {
+RcppExport SEXP _gmwm_lm_arma(SEXP ySEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1141,7 +1141,7 @@ END_RCPP
 }
 // lm_dr
 arma::field<arma::vec> lm_dr(const arma::vec& x);
-RcppExport SEXP gmwm_lm_dr(SEXP xSEXP) {
+RcppExport SEXP _gmwm_lm_dr(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1152,7 +1152,7 @@ END_RCPP
 }
 // B_matrix
 arma::mat B_matrix(const arma::mat& A, const arma::mat& at_omega);
-RcppExport SEXP gmwm_B_matrix(SEXP ASEXP, SEXP at_omegaSEXP) {
+RcppExport SEXP _gmwm_B_matrix(SEXP ASEXP, SEXP at_omegaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1164,7 +1164,7 @@ END_RCPP
 }
 // model_score
 arma::vec model_score(arma::mat A, arma::mat D, arma::mat omega, arma::mat v_hat, double obj_value);
-RcppExport SEXP gmwm_model_score(SEXP ASEXP, SEXP DSEXP, SEXP omegaSEXP, SEXP v_hatSEXP, SEXP obj_valueSEXP) {
+RcppExport SEXP _gmwm_model_score(SEXP ASEXP, SEXP DSEXP, SEXP omegaSEXP, SEXP v_hatSEXP, SEXP obj_valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1179,7 +1179,7 @@ END_RCPP
 }
 // obj_extract
 arma::field<arma::vec> obj_extract(arma::vec theta, arma::vec objdesc, unsigned int& cur_position);
-RcppExport SEXP gmwm_obj_extract(SEXP thetaSEXP, SEXP objdescSEXP, SEXP cur_positionSEXP) {
+RcppExport SEXP _gmwm_obj_extract(SEXP thetaSEXP, SEXP objdescSEXP, SEXP cur_positionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1192,7 +1192,7 @@ END_RCPP
 }
 // getObjFunStarting
 double getObjFunStarting(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, const arma::vec& wv_empir, const arma::vec& tau);
-RcppExport SEXP gmwm_getObjFunStarting(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_getObjFunStarting(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1208,7 +1208,7 @@ END_RCPP
 }
 // getObjFun
 double getObjFun(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, const arma::mat& omega, const arma::vec& wv_empir, const arma::vec& tau);
-RcppExport SEXP gmwm_getObjFun(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP omegaSEXP, SEXP wv_empirSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_getObjFun(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP omegaSEXP, SEXP wv_empirSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1225,7 +1225,7 @@ END_RCPP
 }
 // do_polyroot_arma
 arma::cx_vec do_polyroot_arma(const arma::cx_vec& z);
-RcppExport SEXP gmwm_do_polyroot_arma(SEXP zSEXP) {
+RcppExport SEXP _gmwm_do_polyroot_arma(SEXP zSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1236,7 +1236,7 @@ END_RCPP
 }
 // do_polyroot_cpp
 std::vector< std::complex<double> > do_polyroot_cpp(const std::vector< std::complex<double> >& z);
-RcppExport SEXP gmwm_do_polyroot_cpp(SEXP zSEXP) {
+RcppExport SEXP _gmwm_do_polyroot_cpp(SEXP zSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1247,7 +1247,7 @@ END_RCPP
 }
 // arma_to_wv
 arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau);
-RcppExport SEXP gmwm_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_arma_to_wv(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1261,7 +1261,7 @@ END_RCPP
 }
 // acf_sum
 double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha);
-RcppExport SEXP gmwm_acf_sum(SEXP arSEXP, SEXP maSEXP, SEXP last_tauSEXP, SEXP alphaSEXP) {
+RcppExport SEXP _gmwm_acf_sum(SEXP arSEXP, SEXP maSEXP, SEXP last_tauSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1275,7 +1275,7 @@ END_RCPP
 }
 // arma_to_wv_app
 arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau, double alpha);
-RcppExport SEXP gmwm_arma_to_wv_app(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP tauSEXP, SEXP alphaSEXP) {
+RcppExport SEXP _gmwm_arma_to_wv_app(SEXP arSEXP, SEXP maSEXP, SEXP sigma2SEXP, SEXP tauSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1290,7 +1290,7 @@ END_RCPP
 }
 // arma11_to_wv
 arma::vec arma11_to_wv(double phi, double theta, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_arma11_to_wv(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_arma11_to_wv(SEXP phiSEXP, SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1304,7 +1304,7 @@ END_RCPP
 }
 // ar1_to_wv
 arma::vec ar1_to_wv(double phi, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_ar1_to_wv(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_ar1_to_wv(SEXP phiSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1317,7 +1317,7 @@ END_RCPP
 }
 // ma1_to_wv
 arma::vec ma1_to_wv(double theta, double sigma2, const arma::vec& tau);
-RcppExport SEXP gmwm_ma1_to_wv(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_ma1_to_wv(SEXP thetaSEXP, SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1330,7 +1330,7 @@ END_RCPP
 }
 // qn_to_wv
 arma::vec qn_to_wv(double q2, const arma::vec& tau);
-RcppExport SEXP gmwm_qn_to_wv(SEXP q2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_qn_to_wv(SEXP q2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1342,7 +1342,7 @@ END_RCPP
 }
 // wn_to_wv
 arma::vec wn_to_wv(double sigma2, arma::vec tau);
-RcppExport SEXP gmwm_wn_to_wv(SEXP sigma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_wn_to_wv(SEXP sigma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1354,7 +1354,7 @@ END_RCPP
 }
 // rw_to_wv
 arma::vec rw_to_wv(double gamma2, const arma::vec& tau);
-RcppExport SEXP gmwm_rw_to_wv(SEXP gamma2SEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_rw_to_wv(SEXP gamma2SEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1366,7 +1366,7 @@ END_RCPP
 }
 // dr_to_wv
 arma::vec dr_to_wv(double omega, const arma::vec& tau);
-RcppExport SEXP gmwm_dr_to_wv(SEXP omegaSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_dr_to_wv(SEXP omegaSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1378,7 +1378,7 @@ END_RCPP
 }
 // theoretical_wv
 arma::vec theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& tau);
-RcppExport SEXP gmwm_theoretical_wv(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_theoretical_wv(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1392,7 +1392,7 @@ END_RCPP
 }
 // decomp_theoretical_wv
 arma::mat decomp_theoretical_wv(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, const arma::vec& tau);
-RcppExport SEXP gmwm_decomp_theoretical_wv(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
+RcppExport SEXP _gmwm_decomp_theoretical_wv(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1406,7 +1406,7 @@ END_RCPP
 }
 // decomp_to_theo_wv
 arma::vec decomp_to_theo_wv(const arma::mat& decomp);
-RcppExport SEXP gmwm_decomp_to_theo_wv(SEXP decompSEXP) {
+RcppExport SEXP _gmwm_decomp_to_theo_wv(SEXP decompSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1417,7 +1417,7 @@ END_RCPP
 }
 // read_imu
 arma::field<arma::mat> read_imu(std::string file_path, std::string imu_type);
-RcppExport SEXP gmwm_read_imu(SEXP file_pathSEXP, SEXP imu_typeSEXP) {
+RcppExport SEXP _gmwm_read_imu(SEXP file_pathSEXP, SEXP imu_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1429,7 +1429,7 @@ END_RCPP
 }
 // seq_cpp
 arma::vec seq_cpp(int a, int b);
-RcppExport SEXP gmwm_seq_cpp(SEXP aSEXP, SEXP bSEXP) {
+RcppExport SEXP _gmwm_seq_cpp(SEXP aSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1441,7 +1441,7 @@ END_RCPP
 }
 // seq_len_cpp
 arma::vec seq_len_cpp(unsigned int n);
-RcppExport SEXP gmwm_seq_len_cpp(SEXP nSEXP) {
+RcppExport SEXP _gmwm_seq_len_cpp(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1452,7 +1452,7 @@ END_RCPP
 }
 // quantile_cpp
 arma::vec quantile_cpp(arma::vec x, const arma::vec& probs);
-RcppExport SEXP gmwm_quantile_cpp(SEXP xSEXP, SEXP probsSEXP) {
+RcppExport SEXP _gmwm_quantile_cpp(SEXP xSEXP, SEXP probsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1464,7 +1464,7 @@ END_RCPP
 }
 // diff_cpp
 arma::vec diff_cpp(arma::vec x, unsigned int lag, unsigned int differences);
-RcppExport SEXP gmwm_diff_cpp(SEXP xSEXP, SEXP lagSEXP, SEXP differencesSEXP) {
+RcppExport SEXP _gmwm_diff_cpp(SEXP xSEXP, SEXP lagSEXP, SEXP differencesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1477,7 +1477,7 @@ END_RCPP
 }
 // ARMAtoMA_cpp
 arma::vec ARMAtoMA_cpp(arma::vec ar, arma::vec ma, int lag_max);
-RcppExport SEXP gmwm_ARMAtoMA_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
+RcppExport SEXP _gmwm_ARMAtoMA_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1490,7 +1490,7 @@ END_RCPP
 }
 // cfilter
 arma::vec cfilter(arma::vec x, arma::vec filter, int sides, bool circular);
-RcppExport SEXP gmwm_cfilter(SEXP xSEXP, SEXP filterSEXP, SEXP sidesSEXP, SEXP circularSEXP) {
+RcppExport SEXP _gmwm_cfilter(SEXP xSEXP, SEXP filterSEXP, SEXP sidesSEXP, SEXP circularSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1504,7 +1504,7 @@ END_RCPP
 }
 // rfilter
 arma::vec rfilter(arma::vec x, arma::vec filter, arma::vec init);
-RcppExport SEXP gmwm_rfilter(SEXP xSEXP, SEXP filterSEXP, SEXP initSEXP) {
+RcppExport SEXP _gmwm_rfilter(SEXP xSEXP, SEXP filterSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1517,7 +1517,7 @@ END_RCPP
 }
 // ARMAacf_cpp
 arma::vec ARMAacf_cpp(arma::vec ar, arma::vec ma, unsigned int lag_max);
-RcppExport SEXP gmwm_ARMAacf_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
+RcppExport SEXP _gmwm_ARMAacf_cpp(SEXP arSEXP, SEXP maSEXP, SEXP lag_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1530,7 +1530,7 @@ END_RCPP
 }
 // dft_acf
 arma::vec dft_acf(const arma::vec& x);
-RcppExport SEXP gmwm_dft_acf(SEXP xSEXP) {
+RcppExport SEXP _gmwm_dft_acf(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1541,7 +1541,7 @@ END_RCPP
 }
 // mean_diff
 double mean_diff(const arma::vec& x);
-RcppExport SEXP gmwm_mean_diff(SEXP xSEXP) {
+RcppExport SEXP _gmwm_mean_diff(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1552,7 +1552,7 @@ END_RCPP
 }
 // num_rep
 arma::vec num_rep(const arma::vec& x, unsigned int n);
-RcppExport SEXP gmwm_num_rep(SEXP xSEXP, SEXP nSEXP) {
+RcppExport SEXP _gmwm_num_rep(SEXP xSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1564,7 +1564,7 @@ END_RCPP
 }
 // intgr_vec
 arma::vec intgr_vec(const arma::vec& x, const arma::vec& xi, unsigned int lag);
-RcppExport SEXP gmwm_intgr_vec(SEXP xSEXP, SEXP xiSEXP, SEXP lagSEXP) {
+RcppExport SEXP _gmwm_intgr_vec(SEXP xSEXP, SEXP xiSEXP, SEXP lagSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1577,7 +1577,7 @@ END_RCPP
 }
 // diff_inv_values
 arma::vec diff_inv_values(const arma::vec& x, unsigned int lag, unsigned int d, const arma::vec& xi);
-RcppExport SEXP gmwm_diff_inv_values(SEXP xSEXP, SEXP lagSEXP, SEXP dSEXP, SEXP xiSEXP) {
+RcppExport SEXP _gmwm_diff_inv_values(SEXP xSEXP, SEXP lagSEXP, SEXP dSEXP, SEXP xiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1591,7 +1591,7 @@ END_RCPP
 }
 // diff_inv
 arma::vec diff_inv(const arma::vec& x, unsigned int lag, unsigned int d);
-RcppExport SEXP gmwm_diff_inv(SEXP xSEXP, SEXP lagSEXP, SEXP dSEXP) {
+RcppExport SEXP _gmwm_diff_inv(SEXP xSEXP, SEXP lagSEXP, SEXP dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1604,7 +1604,7 @@ END_RCPP
 }
 // acf
 arma::cube acf(arma::mat& x, int lagmax, bool cor, bool demean);
-RcppExport SEXP gmwm_acf(SEXP xSEXP, SEXP lagmaxSEXP, SEXP corSEXP, SEXP demeanSEXP) {
+RcppExport SEXP _gmwm_acf(SEXP xSEXP, SEXP lagmaxSEXP, SEXP corSEXP, SEXP demeanSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1618,7 +1618,7 @@ END_RCPP
 }
 // rtruncated_normal
 arma::vec rtruncated_normal(unsigned int n, double mu, double sigma, double a, double b);
-RcppExport SEXP gmwm_rtruncated_normal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP aSEXP, SEXP bSEXP) {
+RcppExport SEXP _gmwm_rtruncated_normal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP aSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1633,7 +1633,7 @@ END_RCPP
 }
 // sarma_objdesc
 arma::vec sarma_objdesc(const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma, int s, int i, int si);
-RcppExport SEXP gmwm_sarma_objdesc(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sSEXP, SEXP iSEXP, SEXP siSEXP) {
+RcppExport SEXP _gmwm_sarma_objdesc(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP, SEXP sSEXP, SEXP iSEXP, SEXP siSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1650,7 +1650,7 @@ END_RCPP
 }
 // sarma_calculate_spadding
 arma::vec sarma_calculate_spadding(unsigned int np, unsigned int nq, unsigned int nsp, unsigned int nsq, unsigned int ns);
-RcppExport SEXP gmwm_sarma_calculate_spadding(SEXP npSEXP, SEXP nqSEXP, SEXP nspSEXP, SEXP nsqSEXP, SEXP nsSEXP) {
+RcppExport SEXP _gmwm_sarma_calculate_spadding(SEXP npSEXP, SEXP nqSEXP, SEXP nspSEXP, SEXP nsqSEXP, SEXP nsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1665,7 +1665,7 @@ END_RCPP
 }
 // sarma_components
 arma::vec sarma_components(const arma::vec& objdesc);
-RcppExport SEXP gmwm_sarma_components(SEXP objdescSEXP) {
+RcppExport SEXP _gmwm_sarma_components(SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1676,7 +1676,7 @@ END_RCPP
 }
 // sarma_params_construct
 arma::vec sarma_params_construct(const arma::vec& ar, const arma::vec& ma, const arma::vec& sar, const arma::vec& sma);
-RcppExport SEXP gmwm_sarma_params_construct(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP) {
+RcppExport SEXP _gmwm_sarma_params_construct(SEXP arSEXP, SEXP maSEXP, SEXP sarSEXP, SEXP smaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1690,7 +1690,7 @@ END_RCPP
 }
 // sarma_expand_unguided
 arma::field<arma::vec> sarma_expand_unguided(const arma::vec& params, unsigned int np, unsigned int nq, unsigned int nsp, unsigned int nsq, unsigned int ns, unsigned int p, unsigned int q);
-RcppExport SEXP gmwm_sarma_expand_unguided(SEXP paramsSEXP, SEXP npSEXP, SEXP nqSEXP, SEXP nspSEXP, SEXP nsqSEXP, SEXP nsSEXP, SEXP pSEXP, SEXP qSEXP) {
+RcppExport SEXP _gmwm_sarma_expand_unguided(SEXP paramsSEXP, SEXP npSEXP, SEXP nqSEXP, SEXP nspSEXP, SEXP nsqSEXP, SEXP nsSEXP, SEXP pSEXP, SEXP qSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1708,7 +1708,7 @@ END_RCPP
 }
 // sarma_expand
 arma::field<arma::vec> sarma_expand(const arma::vec& params, const arma::vec& objdesc);
-RcppExport SEXP gmwm_sarma_expand(SEXP paramsSEXP, SEXP objdescSEXP) {
+RcppExport SEXP _gmwm_sarma_expand(SEXP paramsSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1720,7 +1720,7 @@ END_RCPP
 }
 // get_summary
 arma::field<arma::mat> get_summary(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, const arma::vec& wv_empir, const arma::vec& theo, const arma::vec& scales, arma::mat V, const arma::mat& omega, double obj_value, unsigned int N, double alpha, bool robust, double eff, bool inference, bool fullV, bool bs_gof, bool bs_gof_p_ci, bool bs_theta_est, bool bs_ci, unsigned int B);
-RcppExport SEXP gmwm_get_summary(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP theoSEXP, SEXP scalesSEXP, SEXP VSEXP, SEXP omegaSEXP, SEXP obj_valueSEXP, SEXP NSEXP, SEXP alphaSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP inferenceSEXP, SEXP fullVSEXP, SEXP bs_gofSEXP, SEXP bs_gof_p_ciSEXP, SEXP bs_theta_estSEXP, SEXP bs_ciSEXP, SEXP BSEXP) {
+RcppExport SEXP _gmwm_get_summary(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP wv_empirSEXP, SEXP theoSEXP, SEXP scalesSEXP, SEXP VSEXP, SEXP omegaSEXP, SEXP obj_valueSEXP, SEXP NSEXP, SEXP alphaSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP inferenceSEXP, SEXP fullVSEXP, SEXP bs_gofSEXP, SEXP bs_gof_p_ciSEXP, SEXP bs_theta_estSEXP, SEXP bs_ciSEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1751,7 +1751,7 @@ END_RCPP
 }
 // pseudo_logit_inv
 arma::vec pseudo_logit_inv(const arma::vec& x);
-RcppExport SEXP gmwm_pseudo_logit_inv(SEXP xSEXP) {
+RcppExport SEXP _gmwm_pseudo_logit_inv(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1762,7 +1762,7 @@ END_RCPP
 }
 // logit_inv
 arma::vec logit_inv(const arma::vec& x);
-RcppExport SEXP gmwm_logit_inv(SEXP xSEXP) {
+RcppExport SEXP _gmwm_logit_inv(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1773,7 +1773,7 @@ END_RCPP
 }
 // pseudo_logit
 arma::vec pseudo_logit(const arma::vec& x);
-RcppExport SEXP gmwm_pseudo_logit(SEXP xSEXP) {
+RcppExport SEXP _gmwm_pseudo_logit(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1784,7 +1784,7 @@ END_RCPP
 }
 // logit
 arma::vec logit(const arma::vec& x);
-RcppExport SEXP gmwm_logit(SEXP xSEXP) {
+RcppExport SEXP _gmwm_logit(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1795,7 +1795,7 @@ END_RCPP
 }
 // logit2
 arma::vec logit2(const arma::vec& x);
-RcppExport SEXP gmwm_logit2(SEXP xSEXP) {
+RcppExport SEXP _gmwm_logit2(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1806,7 +1806,7 @@ END_RCPP
 }
 // logit2_inv
 arma::vec logit2_inv(const arma::vec& x);
-RcppExport SEXP gmwm_logit2_inv(SEXP xSEXP) {
+RcppExport SEXP _gmwm_logit2_inv(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1817,7 +1817,7 @@ END_RCPP
 }
 // transform_values
 arma::vec transform_values(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type);
-RcppExport SEXP gmwm_transform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
+RcppExport SEXP _gmwm_transform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1831,7 +1831,7 @@ END_RCPP
 }
 // untransform_values
 arma::vec untransform_values(const arma::vec& theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type);
-RcppExport SEXP gmwm_untransform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
+RcppExport SEXP _gmwm_untransform_values(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1845,7 +1845,7 @@ END_RCPP
 }
 // minroot
 double minroot(const arma::cx_vec& x);
-RcppExport SEXP gmwm_minroot(SEXP xSEXP) {
+RcppExport SEXP _gmwm_minroot(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1856,7 +1856,7 @@ END_RCPP
 }
 // invert_check
 bool invert_check(const arma::vec& x);
-RcppExport SEXP gmwm_invert_check(SEXP xSEXP) {
+RcppExport SEXP _gmwm_invert_check(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1867,7 +1867,7 @@ END_RCPP
 }
 // count_models
 std::map<std::string, int> count_models(const std::vector<std::string>& desc);
-RcppExport SEXP gmwm_count_models(SEXP descSEXP) {
+RcppExport SEXP _gmwm_count_models(SEXP descSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1878,7 +1878,7 @@ END_RCPP
 }
 // order_AR1s
 arma::vec order_AR1s(arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec> objdesc);
-RcppExport SEXP gmwm_order_AR1s(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
+RcppExport SEXP _gmwm_order_AR1s(SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1891,7 +1891,7 @@ END_RCPP
 }
 // ar1_to_gm
 arma::vec ar1_to_gm(arma::vec theta, double freq);
-RcppExport SEXP gmwm_ar1_to_gm(SEXP thetaSEXP, SEXP freqSEXP) {
+RcppExport SEXP _gmwm_ar1_to_gm(SEXP thetaSEXP, SEXP freqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1903,7 +1903,7 @@ END_RCPP
 }
 // gm_to_ar1
 arma::vec gm_to_ar1(arma::vec theta, double freq);
-RcppExport SEXP gmwm_gm_to_ar1(SEXP thetaSEXP, SEXP freqSEXP) {
+RcppExport SEXP _gmwm_gm_to_ar1(SEXP thetaSEXP, SEXP freqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1915,7 +1915,7 @@ END_RCPP
 }
 // model_objdesc
 arma::field<arma::vec> model_objdesc(std::vector<std::string> desc);
-RcppExport SEXP gmwm_model_objdesc(SEXP descSEXP) {
+RcppExport SEXP _gmwm_model_objdesc(SEXP descSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1926,7 +1926,7 @@ END_RCPP
 }
 // model_theta
 arma::vec model_theta(std::vector<std::string> desc);
-RcppExport SEXP gmwm_model_theta(SEXP descSEXP) {
+RcppExport SEXP _gmwm_model_theta(SEXP descSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1937,7 +1937,7 @@ END_RCPP
 }
 // model_process_desc
 std::vector<std::string> model_process_desc(std::vector<std::string> desc);
-RcppExport SEXP gmwm_model_process_desc(SEXP descSEXP) {
+RcppExport SEXP _gmwm_model_process_desc(SEXP descSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1948,7 +1948,7 @@ END_RCPP
 }
 // ci_eta3
 arma::mat ci_eta3(const arma::vec& y, const arma::vec& dims, double alpha_ov_2);
-RcppExport SEXP gmwm_ci_eta3(SEXP ySEXP, SEXP dimsSEXP, SEXP alpha_ov_2SEXP) {
+RcppExport SEXP _gmwm_ci_eta3(SEXP ySEXP, SEXP dimsSEXP, SEXP alpha_ov_2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1961,7 +1961,7 @@ END_RCPP
 }
 // ci_eta3_robust
 arma::mat ci_eta3_robust(const arma::vec& wv_robust, const arma::mat& wv_ci_class, double alpha_ov_2, double eff);
-RcppExport SEXP gmwm_ci_eta3_robust(SEXP wv_robustSEXP, SEXP wv_ci_classSEXP, SEXP alpha_ov_2SEXP, SEXP effSEXP) {
+RcppExport SEXP _gmwm_ci_eta3_robust(SEXP wv_robustSEXP, SEXP wv_ci_classSEXP, SEXP alpha_ov_2SEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1975,7 +1975,7 @@ END_RCPP
 }
 // ci_wave_variance
 arma::mat ci_wave_variance(const arma::field<arma::vec>& signal_modwt_bw, const arma::vec& wv, std::string type, double alpha_ov_2, bool robust, double eff);
-RcppExport SEXP gmwm_ci_wave_variance(SEXP signal_modwt_bwSEXP, SEXP wvSEXP, SEXP typeSEXP, SEXP alpha_ov_2SEXP, SEXP robustSEXP, SEXP effSEXP) {
+RcppExport SEXP _gmwm_ci_wave_variance(SEXP signal_modwt_bwSEXP, SEXP wvSEXP, SEXP typeSEXP, SEXP alpha_ov_2SEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1991,7 +1991,7 @@ END_RCPP
 }
 // wave_variance
 arma::vec wave_variance(const arma::field<arma::vec>& signal_modwt_bw, bool robust, double eff);
-RcppExport SEXP gmwm_wave_variance(SEXP signal_modwt_bwSEXP, SEXP robustSEXP, SEXP effSEXP) {
+RcppExport SEXP _gmwm_wave_variance(SEXP signal_modwt_bwSEXP, SEXP robustSEXP, SEXP effSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2004,7 +2004,7 @@ END_RCPP
 }
 // wvar_cpp
 arma::mat wvar_cpp(const arma::field<arma::vec>& signal_modwt_bw, bool robust, double eff, double alpha, std::string ci_type);
-RcppExport SEXP gmwm_wvar_cpp(SEXP signal_modwt_bwSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP ci_typeSEXP) {
+RcppExport SEXP _gmwm_wvar_cpp(SEXP signal_modwt_bwSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP ci_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2019,7 +2019,7 @@ END_RCPP
 }
 // modwt_wvar_cpp
 arma::mat modwt_wvar_cpp(const arma::vec& signal, unsigned int nlevels, bool robust, double eff, double alpha, std::string ci_type, std::string strWavelet, std::string decomp);
-RcppExport SEXP gmwm_modwt_wvar_cpp(SEXP signalSEXP, SEXP nlevelsSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP ci_typeSEXP, SEXP strWaveletSEXP, SEXP decompSEXP) {
+RcppExport SEXP _gmwm_modwt_wvar_cpp(SEXP signalSEXP, SEXP nlevelsSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP ci_typeSEXP, SEXP strWaveletSEXP, SEXP decompSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2037,7 +2037,7 @@ END_RCPP
 }
 // batch_modwt_wvar_cpp
 arma::field<arma::mat> batch_modwt_wvar_cpp(const arma::mat& signal, unsigned int nlevels, bool robust, double eff, double alpha, std::string ci_type, std::string strWavelet, std::string decomp);
-RcppExport SEXP gmwm_batch_modwt_wvar_cpp(SEXP signalSEXP, SEXP nlevelsSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP ci_typeSEXP, SEXP strWaveletSEXP, SEXP decompSEXP) {
+RcppExport SEXP _gmwm_batch_modwt_wvar_cpp(SEXP signalSEXP, SEXP nlevelsSEXP, SEXP robustSEXP, SEXP effSEXP, SEXP alphaSEXP, SEXP ci_typeSEXP, SEXP strWaveletSEXP, SEXP decompSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2055,7 +2055,7 @@ END_RCPP
 }
 // scales_cpp
 arma::vec scales_cpp(unsigned int nb_level);
-RcppExport SEXP gmwm_scales_cpp(SEXP nb_levelSEXP) {
+RcppExport SEXP _gmwm_scales_cpp(SEXP nb_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2066,7 +2066,7 @@ END_RCPP
 }
 // qmf
 arma::vec qmf(arma::vec g, bool inverse);
-RcppExport SEXP gmwm_qmf(SEXP gSEXP, SEXP inverseSEXP) {
+RcppExport SEXP _gmwm_qmf(SEXP gSEXP, SEXP inverseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2078,7 +2078,7 @@ END_RCPP
 }
 // haar_filter
 arma::field<arma::vec> haar_filter();
-RcppExport SEXP gmwm_haar_filter() {
+RcppExport SEXP _gmwm_haar_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2088,7 +2088,7 @@ END_RCPP
 }
 // d4_filter
 arma::field<arma::vec> d4_filter();
-RcppExport SEXP gmwm_d4_filter() {
+RcppExport SEXP _gmwm_d4_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2098,7 +2098,7 @@ END_RCPP
 }
 // mb4_filter
 arma::field<arma::vec> mb4_filter();
-RcppExport SEXP gmwm_mb4_filter() {
+RcppExport SEXP _gmwm_mb4_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2108,7 +2108,7 @@ END_RCPP
 }
 // w4_filter
 arma::field<arma::vec> w4_filter();
-RcppExport SEXP gmwm_w4_filter() {
+RcppExport SEXP _gmwm_w4_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2118,7 +2118,7 @@ END_RCPP
 }
 // fk4_filter
 arma::field<arma::vec> fk4_filter();
-RcppExport SEXP gmwm_fk4_filter() {
+RcppExport SEXP _gmwm_fk4_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2128,7 +2128,7 @@ END_RCPP
 }
 // d6_filter
 arma::field<arma::vec> d6_filter();
-RcppExport SEXP gmwm_d6_filter() {
+RcppExport SEXP _gmwm_d6_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2138,7 +2138,7 @@ END_RCPP
 }
 // fk6_filter
 arma::field<arma::vec> fk6_filter();
-RcppExport SEXP gmwm_fk6_filter() {
+RcppExport SEXP _gmwm_fk6_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2148,7 +2148,7 @@ END_RCPP
 }
 // d8_filter
 arma::field<arma::vec> d8_filter();
-RcppExport SEXP gmwm_d8_filter() {
+RcppExport SEXP _gmwm_d8_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2158,7 +2158,7 @@ END_RCPP
 }
 // fk8_filter
 arma::field<arma::vec> fk8_filter();
-RcppExport SEXP gmwm_fk8_filter() {
+RcppExport SEXP _gmwm_fk8_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2168,7 +2168,7 @@ END_RCPP
 }
 // la8_filter
 arma::field<arma::vec> la8_filter();
-RcppExport SEXP gmwm_la8_filter() {
+RcppExport SEXP _gmwm_la8_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2178,7 +2178,7 @@ END_RCPP
 }
 // mb8_filter
 arma::field<arma::vec> mb8_filter();
-RcppExport SEXP gmwm_mb8_filter() {
+RcppExport SEXP _gmwm_mb8_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2188,7 +2188,7 @@ END_RCPP
 }
 // bl14_filter
 arma::field<arma::vec> bl14_filter();
-RcppExport SEXP gmwm_bl14_filter() {
+RcppExport SEXP _gmwm_bl14_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2198,7 +2198,7 @@ END_RCPP
 }
 // fk14_filter
 arma::field<arma::vec> fk14_filter();
-RcppExport SEXP gmwm_fk14_filter() {
+RcppExport SEXP _gmwm_fk14_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2208,7 +2208,7 @@ END_RCPP
 }
 // d16_filter
 arma::field<arma::vec> d16_filter();
-RcppExport SEXP gmwm_d16_filter() {
+RcppExport SEXP _gmwm_d16_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2218,7 +2218,7 @@ END_RCPP
 }
 // la16_filter
 arma::field<arma::vec> la16_filter();
-RcppExport SEXP gmwm_la16_filter() {
+RcppExport SEXP _gmwm_la16_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2228,7 +2228,7 @@ END_RCPP
 }
 // mb16_filter
 arma::field<arma::vec> mb16_filter();
-RcppExport SEXP gmwm_mb16_filter() {
+RcppExport SEXP _gmwm_mb16_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2238,7 +2238,7 @@ END_RCPP
 }
 // la20_filter
 arma::field<arma::vec> la20_filter();
-RcppExport SEXP gmwm_la20_filter() {
+RcppExport SEXP _gmwm_la20_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2248,7 +2248,7 @@ END_RCPP
 }
 // bl20_filter
 arma::field<arma::vec> bl20_filter();
-RcppExport SEXP gmwm_bl20_filter() {
+RcppExport SEXP _gmwm_bl20_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2258,7 +2258,7 @@ END_RCPP
 }
 // fk22_filter
 arma::field<arma::vec> fk22_filter();
-RcppExport SEXP gmwm_fk22_filter() {
+RcppExport SEXP _gmwm_fk22_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2268,7 +2268,7 @@ END_RCPP
 }
 // mb24_filter
 arma::field<arma::vec> mb24_filter();
-RcppExport SEXP gmwm_mb24_filter() {
+RcppExport SEXP _gmwm_mb24_filter() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2278,7 +2278,7 @@ END_RCPP
 }
 // select_filter
 arma::field<arma::vec> select_filter(std::string filter_name);
-RcppExport SEXP gmwm_select_filter(SEXP filter_nameSEXP) {
+RcppExport SEXP _gmwm_select_filter(SEXP filter_nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2286,4 +2286,231 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(select_filter(filter_name));
     return rcpp_result_gen;
 END_RCPP
+}
+
+RcppExport SEXP gmwm_auto_imu_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_avar_mo_cpp(SEXP);
+RcppExport SEXP gmwm_avar_to_cpp(SEXP);
+RcppExport SEXP gmwm_batch_modwt_wvar_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_brick_wall(SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_compute_cov_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_dwt_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_find_full_model(SEXP);
+RcppExport SEXP gmwm_gen_lts_cpp(SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_gen_model(SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_get_summary(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_gmwm_master_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_gmwm_update_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_hadam_mo_cpp(SEXP);
+RcppExport SEXP gmwm_hadam_to_cpp(SEXP);
+RcppExport SEXP gmwm_model_objdesc(SEXP);
+RcppExport SEXP gmwm_model_process_desc(SEXP);
+RcppExport SEXP gmwm_model_theta(SEXP);
+RcppExport SEXP gmwm_modwt_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_modwt_wvar_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_rank_models_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP gmwm_read_imu(SEXP, SEXP);
+RcppExport SEXP gmwm_scales_cpp(SEXP);
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_gmwm_e_drift", (DL_FUNC) &_gmwm_e_drift, 2},
+    {"_gmwm_m2_drift", (DL_FUNC) &_gmwm_m2_drift, 2},
+    {"_gmwm_var_drift", (DL_FUNC) &_gmwm_var_drift, 2},
+    {"_gmwm_avar_to_cpp", (DL_FUNC) &_gmwm_avar_to_cpp, 1},
+    {"_gmwm_avar_mo_cpp", (DL_FUNC) &_gmwm_avar_mo_cpp, 1},
+    {"_gmwm_arma_adapter", (DL_FUNC) &_gmwm_arma_adapter, 4},
+    {"_gmwm_jacobian_arma", (DL_FUNC) &_gmwm_jacobian_arma, 4},
+    {"_gmwm_deriv_arma11", (DL_FUNC) &_gmwm_deriv_arma11, 4},
+    {"_gmwm_deriv_2nd_arma11", (DL_FUNC) &_gmwm_deriv_2nd_arma11, 4},
+    {"_gmwm_deriv_ar1", (DL_FUNC) &_gmwm_deriv_ar1, 3},
+    {"_gmwm_deriv_2nd_ar1", (DL_FUNC) &_gmwm_deriv_2nd_ar1, 3},
+    {"_gmwm_deriv_ma1", (DL_FUNC) &_gmwm_deriv_ma1, 3},
+    {"_gmwm_deriv_2nd_ma1", (DL_FUNC) &_gmwm_deriv_2nd_ma1, 3},
+    {"_gmwm_deriv_dr", (DL_FUNC) &_gmwm_deriv_dr, 2},
+    {"_gmwm_deriv_2nd_dr", (DL_FUNC) &_gmwm_deriv_2nd_dr, 1},
+    {"_gmwm_deriv_qn", (DL_FUNC) &_gmwm_deriv_qn, 1},
+    {"_gmwm_deriv_rw", (DL_FUNC) &_gmwm_deriv_rw, 1},
+    {"_gmwm_deriv_wn", (DL_FUNC) &_gmwm_deriv_wn, 1},
+    {"_gmwm_derivative_first_matrix", (DL_FUNC) &_gmwm_derivative_first_matrix, 4},
+    {"_gmwm_D_matrix", (DL_FUNC) &_gmwm_D_matrix, 5},
+    {"_gmwm_Rcpp_ARIMA", (DL_FUNC) &_gmwm_Rcpp_ARIMA, 2},
+    {"_gmwm_sort_mat", (DL_FUNC) &_gmwm_sort_mat, 2},
+    {"_gmwm_rev_col_subset", (DL_FUNC) &_gmwm_rev_col_subset, 3},
+    {"_gmwm_rev_row_subset", (DL_FUNC) &_gmwm_rev_row_subset, 3},
+    {"_gmwm_reverse_vec", (DL_FUNC) &_gmwm_reverse_vec, 1},
+    {"_gmwm_field_to_matrix", (DL_FUNC) &_gmwm_field_to_matrix, 1},
+    {"_gmwm_sum_field_vec", (DL_FUNC) &_gmwm_sum_field_vec, 1},
+    {"_gmwm_build_model_set", (DL_FUNC) &_gmwm_build_model_set, 2},
+    {"_gmwm_set_seed", (DL_FUNC) &_gmwm_set_seed, 1},
+    {"_gmwm_vector_to_set", (DL_FUNC) &_gmwm_vector_to_set, 1},
+    {"_gmwm_find_full_model", (DL_FUNC) &_gmwm_find_full_model, 1},
+    {"_gmwm_rank_models_cpp", (DL_FUNC) &_gmwm_rank_models_cpp, 13},
+    {"_gmwm_auto_imu_cpp", (DL_FUNC) &_gmwm_auto_imu_cpp, 13},
+    {"_gmwm_cov_bootstrapper", (DL_FUNC) &_gmwm_cov_bootstrapper, 8},
+    {"_gmwm_optimism_bootstrapper", (DL_FUNC) &_gmwm_optimism_bootstrapper, 10},
+    {"_gmwm_opt_n_gof_bootstrapper", (DL_FUNC) &_gmwm_opt_n_gof_bootstrapper, 10},
+    {"_gmwm_gmwm_sd_bootstrapper", (DL_FUNC) &_gmwm_gmwm_sd_bootstrapper, 10},
+    {"_gmwm_boot_pval_gof", (DL_FUNC) &_gmwm_boot_pval_gof, 4},
+    {"_gmwm_gmwm_param_bootstrapper", (DL_FUNC) &_gmwm_gmwm_param_bootstrapper, 10},
+    {"_gmwm_all_bootstrapper", (DL_FUNC) &_gmwm_all_bootstrapper, 10},
+    {"_gmwm_Mod_squared_cpp", (DL_FUNC) &_gmwm_Mod_squared_cpp, 1},
+    {"_gmwm_Mod_cpp", (DL_FUNC) &_gmwm_Mod_cpp, 1},
+    {"_gmwm_compute_cov_cpp", (DL_FUNC) &_gmwm_compute_cov_cpp, 5},
+    {"_gmwm_fast_cov_cpp", (DL_FUNC) &_gmwm_fast_cov_cpp, 2},
+    {"_gmwm_dwt_cpp", (DL_FUNC) &_gmwm_dwt_cpp, 5},
+    {"_gmwm_modwt_cpp", (DL_FUNC) &_gmwm_modwt_cpp, 5},
+    {"_gmwm_brick_wall", (DL_FUNC) &_gmwm_brick_wall, 3},
+    {"_gmwm_gen_wn", (DL_FUNC) &_gmwm_gen_wn, 2},
+    {"_gmwm_gen_dr", (DL_FUNC) &_gmwm_gen_dr, 2},
+    {"_gmwm_gen_qn", (DL_FUNC) &_gmwm_gen_qn, 2},
+    {"_gmwm_gen_ar1", (DL_FUNC) &_gmwm_gen_ar1, 3},
+    {"_gmwm_gen_rw", (DL_FUNC) &_gmwm_gen_rw, 2},
+    {"_gmwm_gen_ma1", (DL_FUNC) &_gmwm_gen_ma1, 3},
+    {"_gmwm_gen_arma11", (DL_FUNC) &_gmwm_gen_arma11, 4},
+    {"_gmwm_gen_arma", (DL_FUNC) &_gmwm_gen_arma, 5},
+    {"_gmwm_gen_sarma", (DL_FUNC) &_gmwm_gen_sarma, 8},
+    {"_gmwm_gen_arima", (DL_FUNC) &_gmwm_gen_arima, 6},
+    {"_gmwm_gen_sarima", (DL_FUNC) &_gmwm_gen_sarima, 10},
+    {"_gmwm_gen_generic_sarima", (DL_FUNC) &_gmwm_gen_generic_sarima, 5},
+    {"_gmwm_gen_model", (DL_FUNC) &_gmwm_gen_model, 4},
+    {"_gmwm_gen_lts_cpp", (DL_FUNC) &_gmwm_gen_lts_cpp, 4},
+    {"_gmwm_code_zero", (DL_FUNC) &_gmwm_code_zero, 1},
+    {"_gmwm_gmwm_engine", (DL_FUNC) &_gmwm_gmwm_engine, 8},
+    {"_gmwm_gmwm_update_cpp", (DL_FUNC) &_gmwm_gmwm_update_cpp, 17},
+    {"_gmwm_gmwm_master_cpp", (DL_FUNC) &_gmwm_gmwm_master_cpp, 13},
+    {"_gmwm_guess_initial", (DL_FUNC) &_gmwm_guess_initial, 10},
+    {"_gmwm_ar1_draw", (DL_FUNC) &_gmwm_ar1_draw, 4},
+    {"_gmwm_arma_draws", (DL_FUNC) &_gmwm_arma_draws, 3},
+    {"_gmwm_guess_initial_old", (DL_FUNC) &_gmwm_guess_initial_old, 9},
+    {"_gmwm_hadam_to_cpp", (DL_FUNC) &_gmwm_hadam_to_cpp, 1},
+    {"_gmwm_hadam_mo_cpp", (DL_FUNC) &_gmwm_hadam_mo_cpp, 1},
+    {"_gmwm_idf_arma", (DL_FUNC) &_gmwm_idf_arma, 7},
+    {"_gmwm_idf_arma_total", (DL_FUNC) &_gmwm_idf_arma_total, 7},
+    {"_gmwm_calculate_psi_matrix", (DL_FUNC) &_gmwm_calculate_psi_matrix, 3},
+    {"_gmwm_format_ci", (DL_FUNC) &_gmwm_format_ci, 3},
+    {"_gmwm_theta_ci", (DL_FUNC) &_gmwm_theta_ci, 5},
+    {"_gmwm_gof_test", (DL_FUNC) &_gmwm_gof_test, 7},
+    {"_gmwm_bootstrap_gof_test", (DL_FUNC) &_gmwm_bootstrap_gof_test, 4},
+    {"_gmwm_lm_arma", (DL_FUNC) &_gmwm_lm_arma, 2},
+    {"_gmwm_lm_dr", (DL_FUNC) &_gmwm_lm_dr, 1},
+    {"_gmwm_B_matrix", (DL_FUNC) &_gmwm_B_matrix, 2},
+    {"_gmwm_model_score", (DL_FUNC) &_gmwm_model_score, 5},
+    {"_gmwm_obj_extract", (DL_FUNC) &_gmwm_obj_extract, 3},
+    {"_gmwm_getObjFunStarting", (DL_FUNC) &_gmwm_getObjFunStarting, 6},
+    {"_gmwm_getObjFun", (DL_FUNC) &_gmwm_getObjFun, 7},
+    {"_gmwm_do_polyroot_arma", (DL_FUNC) &_gmwm_do_polyroot_arma, 1},
+    {"_gmwm_do_polyroot_cpp", (DL_FUNC) &_gmwm_do_polyroot_cpp, 1},
+    {"_gmwm_arma_to_wv", (DL_FUNC) &_gmwm_arma_to_wv, 4},
+    {"_gmwm_acf_sum", (DL_FUNC) &_gmwm_acf_sum, 4},
+    {"_gmwm_arma_to_wv_app", (DL_FUNC) &_gmwm_arma_to_wv_app, 5},
+    {"_gmwm_arma11_to_wv", (DL_FUNC) &_gmwm_arma11_to_wv, 4},
+    {"_gmwm_ar1_to_wv", (DL_FUNC) &_gmwm_ar1_to_wv, 3},
+    {"_gmwm_ma1_to_wv", (DL_FUNC) &_gmwm_ma1_to_wv, 3},
+    {"_gmwm_qn_to_wv", (DL_FUNC) &_gmwm_qn_to_wv, 2},
+    {"_gmwm_wn_to_wv", (DL_FUNC) &_gmwm_wn_to_wv, 2},
+    {"_gmwm_rw_to_wv", (DL_FUNC) &_gmwm_rw_to_wv, 2},
+    {"_gmwm_dr_to_wv", (DL_FUNC) &_gmwm_dr_to_wv, 2},
+    {"_gmwm_theoretical_wv", (DL_FUNC) &_gmwm_theoretical_wv, 4},
+    {"_gmwm_decomp_theoretical_wv", (DL_FUNC) &_gmwm_decomp_theoretical_wv, 4},
+    {"_gmwm_decomp_to_theo_wv", (DL_FUNC) &_gmwm_decomp_to_theo_wv, 1},
+    {"_gmwm_read_imu", (DL_FUNC) &_gmwm_read_imu, 2},
+    {"_gmwm_seq_cpp", (DL_FUNC) &_gmwm_seq_cpp, 2},
+    {"_gmwm_seq_len_cpp", (DL_FUNC) &_gmwm_seq_len_cpp, 1},
+    {"_gmwm_quantile_cpp", (DL_FUNC) &_gmwm_quantile_cpp, 2},
+    {"_gmwm_diff_cpp", (DL_FUNC) &_gmwm_diff_cpp, 3},
+    {"_gmwm_ARMAtoMA_cpp", (DL_FUNC) &_gmwm_ARMAtoMA_cpp, 3},
+    {"_gmwm_cfilter", (DL_FUNC) &_gmwm_cfilter, 4},
+    {"_gmwm_rfilter", (DL_FUNC) &_gmwm_rfilter, 3},
+    {"_gmwm_ARMAacf_cpp", (DL_FUNC) &_gmwm_ARMAacf_cpp, 3},
+    {"_gmwm_dft_acf", (DL_FUNC) &_gmwm_dft_acf, 1},
+    {"_gmwm_mean_diff", (DL_FUNC) &_gmwm_mean_diff, 1},
+    {"_gmwm_num_rep", (DL_FUNC) &_gmwm_num_rep, 2},
+    {"_gmwm_intgr_vec", (DL_FUNC) &_gmwm_intgr_vec, 3},
+    {"_gmwm_diff_inv_values", (DL_FUNC) &_gmwm_diff_inv_values, 4},
+    {"_gmwm_diff_inv", (DL_FUNC) &_gmwm_diff_inv, 3},
+    {"_gmwm_acf", (DL_FUNC) &_gmwm_acf, 4},
+    {"_gmwm_rtruncated_normal", (DL_FUNC) &_gmwm_rtruncated_normal, 5},
+    {"_gmwm_sarma_objdesc", (DL_FUNC) &_gmwm_sarma_objdesc, 7},
+    {"_gmwm_sarma_calculate_spadding", (DL_FUNC) &_gmwm_sarma_calculate_spadding, 5},
+    {"_gmwm_sarma_components", (DL_FUNC) &_gmwm_sarma_components, 1},
+    {"_gmwm_sarma_params_construct", (DL_FUNC) &_gmwm_sarma_params_construct, 4},
+    {"_gmwm_sarma_expand_unguided", (DL_FUNC) &_gmwm_sarma_expand_unguided, 8},
+    {"_gmwm_sarma_expand", (DL_FUNC) &_gmwm_sarma_expand, 2},
+    {"_gmwm_get_summary", (DL_FUNC) &_gmwm_get_summary, 21},
+    {"_gmwm_pseudo_logit_inv", (DL_FUNC) &_gmwm_pseudo_logit_inv, 1},
+    {"_gmwm_logit_inv", (DL_FUNC) &_gmwm_logit_inv, 1},
+    {"_gmwm_pseudo_logit", (DL_FUNC) &_gmwm_pseudo_logit, 1},
+    {"_gmwm_logit", (DL_FUNC) &_gmwm_logit, 1},
+    {"_gmwm_logit2", (DL_FUNC) &_gmwm_logit2, 1},
+    {"_gmwm_logit2_inv", (DL_FUNC) &_gmwm_logit2_inv, 1},
+    {"_gmwm_transform_values", (DL_FUNC) &_gmwm_transform_values, 4},
+    {"_gmwm_untransform_values", (DL_FUNC) &_gmwm_untransform_values, 4},
+    {"_gmwm_minroot", (DL_FUNC) &_gmwm_minroot, 1},
+    {"_gmwm_invert_check", (DL_FUNC) &_gmwm_invert_check, 1},
+    {"_gmwm_count_models", (DL_FUNC) &_gmwm_count_models, 1},
+    {"_gmwm_order_AR1s", (DL_FUNC) &_gmwm_order_AR1s, 3},
+    {"_gmwm_ar1_to_gm", (DL_FUNC) &_gmwm_ar1_to_gm, 2},
+    {"_gmwm_gm_to_ar1", (DL_FUNC) &_gmwm_gm_to_ar1, 2},
+    {"_gmwm_model_objdesc", (DL_FUNC) &_gmwm_model_objdesc, 1},
+    {"_gmwm_model_theta", (DL_FUNC) &_gmwm_model_theta, 1},
+    {"_gmwm_model_process_desc", (DL_FUNC) &_gmwm_model_process_desc, 1},
+    {"_gmwm_ci_eta3", (DL_FUNC) &_gmwm_ci_eta3, 3},
+    {"_gmwm_ci_eta3_robust", (DL_FUNC) &_gmwm_ci_eta3_robust, 4},
+    {"_gmwm_ci_wave_variance", (DL_FUNC) &_gmwm_ci_wave_variance, 6},
+    {"_gmwm_wave_variance", (DL_FUNC) &_gmwm_wave_variance, 3},
+    {"_gmwm_wvar_cpp", (DL_FUNC) &_gmwm_wvar_cpp, 5},
+    {"_gmwm_modwt_wvar_cpp", (DL_FUNC) &_gmwm_modwt_wvar_cpp, 8},
+    {"_gmwm_batch_modwt_wvar_cpp", (DL_FUNC) &_gmwm_batch_modwt_wvar_cpp, 8},
+    {"_gmwm_scales_cpp", (DL_FUNC) &_gmwm_scales_cpp, 1},
+    {"_gmwm_qmf", (DL_FUNC) &_gmwm_qmf, 2},
+    {"_gmwm_haar_filter", (DL_FUNC) &_gmwm_haar_filter, 0},
+    {"_gmwm_d4_filter", (DL_FUNC) &_gmwm_d4_filter, 0},
+    {"_gmwm_mb4_filter", (DL_FUNC) &_gmwm_mb4_filter, 0},
+    {"_gmwm_w4_filter", (DL_FUNC) &_gmwm_w4_filter, 0},
+    {"_gmwm_fk4_filter", (DL_FUNC) &_gmwm_fk4_filter, 0},
+    {"_gmwm_d6_filter", (DL_FUNC) &_gmwm_d6_filter, 0},
+    {"_gmwm_fk6_filter", (DL_FUNC) &_gmwm_fk6_filter, 0},
+    {"_gmwm_d8_filter", (DL_FUNC) &_gmwm_d8_filter, 0},
+    {"_gmwm_fk8_filter", (DL_FUNC) &_gmwm_fk8_filter, 0},
+    {"_gmwm_la8_filter", (DL_FUNC) &_gmwm_la8_filter, 0},
+    {"_gmwm_mb8_filter", (DL_FUNC) &_gmwm_mb8_filter, 0},
+    {"_gmwm_bl14_filter", (DL_FUNC) &_gmwm_bl14_filter, 0},
+    {"_gmwm_fk14_filter", (DL_FUNC) &_gmwm_fk14_filter, 0},
+    {"_gmwm_d16_filter", (DL_FUNC) &_gmwm_d16_filter, 0},
+    {"_gmwm_la16_filter", (DL_FUNC) &_gmwm_la16_filter, 0},
+    {"_gmwm_mb16_filter", (DL_FUNC) &_gmwm_mb16_filter, 0},
+    {"_gmwm_la20_filter", (DL_FUNC) &_gmwm_la20_filter, 0},
+    {"_gmwm_bl20_filter", (DL_FUNC) &_gmwm_bl20_filter, 0},
+    {"_gmwm_fk22_filter", (DL_FUNC) &_gmwm_fk22_filter, 0},
+    {"_gmwm_mb24_filter", (DL_FUNC) &_gmwm_mb24_filter, 0},
+    {"_gmwm_select_filter", (DL_FUNC) &_gmwm_select_filter, 1},
+    {"gmwm_auto_imu_cpp",              (DL_FUNC) &gmwm_auto_imu_cpp,              13},
+    {"gmwm_avar_mo_cpp",               (DL_FUNC) &gmwm_avar_mo_cpp,                1},
+    {"gmwm_avar_to_cpp",               (DL_FUNC) &gmwm_avar_to_cpp,                1},
+    {"gmwm_batch_modwt_wvar_cpp",      (DL_FUNC) &gmwm_batch_modwt_wvar_cpp,       8},
+    {"gmwm_brick_wall",                (DL_FUNC) &gmwm_brick_wall,                 3},
+    {"gmwm_compute_cov_cpp",           (DL_FUNC) &gmwm_compute_cov_cpp,            5},
+    {"gmwm_dwt_cpp",                   (DL_FUNC) &gmwm_dwt_cpp,                    5},
+    {"gmwm_find_full_model",           (DL_FUNC) &gmwm_find_full_model,            1},
+    {"gmwm_gen_lts_cpp",               (DL_FUNC) &gmwm_gen_lts_cpp,                4},
+    {"gmwm_gen_model",                 (DL_FUNC) &gmwm_gen_model,                  4},
+    {"gmwm_get_summary",               (DL_FUNC) &gmwm_get_summary,               21},
+    {"gmwm_gmwm_master_cpp",           (DL_FUNC) &gmwm_gmwm_master_cpp,           13},
+    {"gmwm_gmwm_update_cpp",           (DL_FUNC) &gmwm_gmwm_update_cpp,           17},
+    {"gmwm_hadam_mo_cpp",              (DL_FUNC) &gmwm_hadam_mo_cpp,               1},
+    {"gmwm_hadam_to_cpp",              (DL_FUNC) &gmwm_hadam_to_cpp,               1},
+    {"gmwm_model_objdesc",             (DL_FUNC) &gmwm_model_objdesc,              1},
+    {"gmwm_model_process_desc",        (DL_FUNC) &gmwm_model_process_desc,         1},
+    {"gmwm_model_theta",               (DL_FUNC) &gmwm_model_theta,                1},
+    {"gmwm_modwt_cpp",                 (DL_FUNC) &gmwm_modwt_cpp,                  5},
+    {"gmwm_modwt_wvar_cpp",            (DL_FUNC) &gmwm_modwt_wvar_cpp,             8},
+    {"gmwm_rank_models_cpp",           (DL_FUNC) &gmwm_rank_models_cpp,           13},
+    {"gmwm_read_imu",                  (DL_FUNC) &gmwm_read_imu,                   2},
+    {"gmwm_scales_cpp",                (DL_FUNC) &gmwm_scales_cpp,                 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_gmwm(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

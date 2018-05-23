@@ -28,4 +28,3 @@ print(wvcov(decomp,wv,compute.v="diag"))
 JJB
 }
 \keyword{internal}
-

@@ -29,4 +29,3 @@ will repeat the palette until \code{n} colors is created.
 getColors('Set1', 10)
 }
 \keyword{internal}
-

@@ -16,4 +16,3 @@ A \code{set<vector<string>>} that contains the list of unique models.
 Converts a vector into a set
 }
 \keyword{internal}
-

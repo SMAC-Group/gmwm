@@ -45,4 +45,3 @@ plot(x)
 \author{
 JJB, Wenchao
 }
-

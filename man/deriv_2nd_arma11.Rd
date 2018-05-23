@@ -91,10 +91,10 @@ Taking the derivative with respect to \eqn{\phi}{phi} and \eqn{\theta}{theta} yi
     phi^(tau[j] - 1)*(-1 + phi^2)*
     (1 + 2*theta*phi + phi^2))*tau[j])}
 }
+
 \examples{
 deriv_2nd_arma11(.3, .4, 1, 2^(1:5))
 }
 \author{
 James Joseph Balamuta (JJB)
 }
-

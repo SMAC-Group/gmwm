@@ -22,4 +22,3 @@ Used in wvar object.
 scales_cpp(5)
 }
 \keyword{internal}
-

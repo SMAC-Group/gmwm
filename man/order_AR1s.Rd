@@ -20,4 +20,3 @@ A \code{vec} that has AR1s shown in descending parameter value.
 Changes the order of AR1s in a string by size.
 }
 \keyword{internal}
-

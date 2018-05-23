@@ -30,4 +30,3 @@ select_filter("haar")
 JJB
 }
 \keyword{internal}
-

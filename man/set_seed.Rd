@@ -24,4 +24,3 @@ y = rnorm(5,0,1)
 all.equal(x,y, check.attributes = FALSE)
 }
 \keyword{internal}
-
