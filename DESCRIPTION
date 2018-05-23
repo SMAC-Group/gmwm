@@ -34,7 +34,7 @@ Imports:
     methods,
     graphics,
     grDevices,
-    balamuta
+    bmisc
 LinkingTo: 
     Rcpp,
     RcppArmadillo
