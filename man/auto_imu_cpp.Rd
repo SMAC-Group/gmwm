@@ -4,8 +4,8 @@
 \alias{auto_imu_cpp}
 \title{Find the auto imu result}
 \usage{
-auto_imu_cpp(data, combs, full_model, alpha, compute_v, model_type, K, H, G,
-  robust, eff, bs_optimism, seed)
+auto_imu_cpp(data, combs, full_model, alpha, compute_v, model_type, K, H,
+  G, robust, eff, bs_optimism, seed)
 }
 \arguments{
 \item{data}{A \code{mat} containing multiple columns of independent data with the same number of observations.}

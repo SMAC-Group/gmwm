@@ -4,7 +4,8 @@
 \alias{gmwm_engine}
 \title{Engine for obtaining the GMWM Estimator}
 \usage{
-gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, starting)
+gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales,
+  starting)
 }
 \arguments{
 \item{theta}{A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters}

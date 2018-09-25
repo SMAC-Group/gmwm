@@ -4,12 +4,14 @@
 \alias{graphingVar}
 \title{Graphical Function for Allan Variance, Wavelet Variance and Hadamard Variance}
 \usage{
-graphingVar(object, CI = TRUE, transparence = 0.1, background = "white",
-  bw = FALSE, CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-  point.size = NULL, point.shape = NULL, title = NA, title.size = 15,
+graphingVar(object, CI = TRUE, transparence = 0.1,
+  background = "white", bw = FALSE, CI.color = "#003C7D",
+  line.type = NULL, line.color = NULL, point.size = NULL,
+  point.shape = NULL, title = NA, title.size = 15,
   axis.label.size = 13, axis.tick.size = 11, axis.x.label = NULL,
   axis.y.label = NULL, legend.title = "", legend.label = NULL,
-  legend.key.size = 1, legend.title.size = 13, legend.text.size = 13, ...)
+  legend.key.size = 1, legend.title.size = 13, legend.text.size = 13,
+  ...)
 }
 \arguments{
 \item{object}{A \code{wvar}, or \code{avar}, or \code{hadam} object.}

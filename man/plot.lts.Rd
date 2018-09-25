@@ -6,9 +6,9 @@
 \usage{
 \method{plot}{lts}(x, to.unit = NULL, background = "white",
   scales = "free", line.type = NULL, line.color = NULL,
-  point.size = NULL, point.shape = NULL, title = NULL, title.size = 15,
-  axis.label.size = 13, axis.tick.size = 11, axis.x.label = NULL,
-  axis.y.label = NULL, facet.label.size = 13,
+  point.size = NULL, point.shape = NULL, title = NULL,
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = NULL, axis.y.label = NULL, facet.label.size = 13,
   facet.label.background = "#003C7D33", ncol = 1, nrow = NULL, ...)
 }
 \arguments{

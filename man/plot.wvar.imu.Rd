@@ -4,17 +4,17 @@
 \alias{plot.wvar.imu}
 \title{Wrapper Function to Plot the Wavelet Variances of IMU Object}
 \usage{
-\method{plot}{wvar.imu}(x, split = TRUE, CI = TRUE, background = "white",
-  transparence = 0.1, line.color = NULL, line.type = NULL,
-  point.size = NULL, point.shape = NULL, CI.color = NULL,
-  title = "Haar Wavelet Variance Representation", title.size = 15,
-  axis.label.size = 13, axis.tick.size = 11,
+\method{plot}{wvar.imu}(x, split = TRUE, CI = TRUE,
+  background = "white", transparence = 0.1, line.color = NULL,
+  line.type = NULL, point.size = NULL, point.shape = NULL,
+  CI.color = NULL, title = "Haar Wavelet Variance Representation",
+  title.size = 15, axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
   units = c(bquote(rad^2/s^2), bquote(m^2/s^4)), facet.label.size = 13,
   facet.label.background = "#003C7D33", legend.title = "Axis",
-  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
-  scales = "free_y", ...)
+  legend.key.size = 1.3, legend.title.size = 13,
+  legend.text.size = 13, scales = "free_y", ...)
 }
 \arguments{
 \item{x}{A \code{wvar.imu} object.}

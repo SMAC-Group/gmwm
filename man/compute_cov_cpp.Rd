@@ -4,8 +4,8 @@
 \alias{compute_cov_cpp}
 \title{Computes the (MODWT) wavelet covariance matrix}
 \usage{
-compute_cov_cpp(signal_modwt, nb_level, compute_v = "diag", robust = TRUE,
-  eff = 0.6)
+compute_cov_cpp(signal_modwt, nb_level, compute_v = "diag",
+  robust = TRUE, eff = 0.6)
 }
 \arguments{
 \item{signal_modwt}{A \code{field<vec>} that contains the modwt decomposition.}

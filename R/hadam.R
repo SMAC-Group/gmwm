@@ -67,9 +67,9 @@ hadam = function(x, type = "mo") {
   x = as.vector(x)
   
   if(type == "mo"){
-    hv = .Call('gmwm_hadam_mo_cpp', PACKAGE = 'gmwm', x)
+    hv = .Call('_gmwm_hadam_mo_cpp', PACKAGE = 'gmwm', x)
   }else{
-    hv = .Call('gmwm_hadam_to_cpp', PACKAGE = 'gmwm', x)
+    hv = .Call('_gmwm_hadam_to_cpp', PACKAGE = 'gmwm', x)
   }
   
   hv = list(clusters = hv[,1], hadamard=hv[,2], errors=hv[,3])

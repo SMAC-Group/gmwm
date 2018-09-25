@@ -11,9 +11,10 @@
   axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
-  facet.label.size = 13, legend.title = "Axis", legend.key.size = 1.3,
-  legend.title.size = 13, legend.text.size = 13,
-  facet.label.background = "#003C7D33", scales = "free_y", ...)
+  facet.label.size = 13, legend.title = "Axis",
+  legend.key.size = 1.3, legend.title.size = 13,
+  legend.text.size = 13, facet.label.background = "#003C7D33",
+  scales = "free_y", ...)
 }
 \arguments{
 \item{object}{An \code{wvar.imu} object.}

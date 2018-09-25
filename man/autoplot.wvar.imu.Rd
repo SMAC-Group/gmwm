@@ -13,8 +13,8 @@
   axis.y.label = expression(paste("Wavelet Variance ", nu)),
   units = c(bquote(rad^2/s^2), bquote(m^2/s^4)), facet.label.size = 13,
   facet.label.background = "#003C7D33", legend.title = "Axis",
-  legend.key.size = 1.3, legend.title.size = 13, legend.text.size = 13,
-  scales = "free_y", ...)
+  legend.key.size = 1.3, legend.title.size = 13,
+  legend.text.size = 13, scales = "free_y", ...)
 }
 \arguments{
 \item{object}{A \code{wvar.imu} object}

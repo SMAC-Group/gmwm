@@ -5,7 +5,8 @@
 \title{Summary of GMWM object}
 \usage{
 \method{summary}{gmwm}(object, inference = NULL, bs.gof = NULL,
-  bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL, B = 100, ...)
+  bs.gof.p.ci = NULL, bs.theta.est = NULL, bs.ci = NULL, B = 100,
+  ...)
 }
 \arguments{
 \item{object}{A \code{GMWM} object}

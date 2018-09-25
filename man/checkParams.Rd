@@ -4,7 +4,8 @@
 \alias{checkParams}
 \title{Check the Parameters}
 \usage{
-checkParams(params, require.len, default, null.is.fine, env = parent.frame())
+checkParams(params, require.len, default, null.is.fine,
+  env = parent.frame())
 }
 \arguments{
 \item{params}{A \code{character vector} that specifies the user supplied parameters.}

@@ -4,8 +4,8 @@
 \alias{SARIMA}
 \title{Create a Seasonal Autoregressive Integrated Moving Average (SARIMA) Process}
 \usage{
-SARIMA(ar = 1, i = 0, ma = 1, sar = 1, si = 0, sma = 1, s = 12,
-  sigma2 = 1)
+SARIMA(ar = 1, i = 0, ma = 1, sar = 1, si = 0, sma = 1,
+  s = 12, sigma2 = 1)
 }
 \arguments{
 \item{ar}{A \code{vector} or \code{integer} containing either the coefficients for \eqn{\phi}{phi}'s or the process number \eqn{p} for the Autoregressive (AR) term.}

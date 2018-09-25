@@ -2288,30 +2288,6 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP gmwm_auto_imu_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_avar_mo_cpp(SEXP);
-RcppExport SEXP gmwm_avar_to_cpp(SEXP);
-RcppExport SEXP gmwm_batch_modwt_wvar_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_brick_wall(SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_compute_cov_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_dwt_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_find_full_model(SEXP);
-RcppExport SEXP gmwm_gen_lts_cpp(SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_gen_model(SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_get_summary(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_gmwm_master_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_gmwm_update_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_hadam_mo_cpp(SEXP);
-RcppExport SEXP gmwm_hadam_to_cpp(SEXP);
-RcppExport SEXP gmwm_model_objdesc(SEXP);
-RcppExport SEXP gmwm_model_process_desc(SEXP);
-RcppExport SEXP gmwm_model_theta(SEXP);
-RcppExport SEXP gmwm_modwt_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_modwt_wvar_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_rank_models_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP gmwm_read_imu(SEXP, SEXP);
-RcppExport SEXP gmwm_scales_cpp(SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_gmwm_e_drift", (DL_FUNC) &_gmwm_e_drift, 2},
     {"_gmwm_m2_drift", (DL_FUNC) &_gmwm_m2_drift, 2},
@@ -2484,29 +2460,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_gmwm_fk22_filter", (DL_FUNC) &_gmwm_fk22_filter, 0},
     {"_gmwm_mb24_filter", (DL_FUNC) &_gmwm_mb24_filter, 0},
     {"_gmwm_select_filter", (DL_FUNC) &_gmwm_select_filter, 1},
-    {"gmwm_auto_imu_cpp",              (DL_FUNC) &gmwm_auto_imu_cpp,              13},
-    {"gmwm_avar_mo_cpp",               (DL_FUNC) &gmwm_avar_mo_cpp,                1},
-    {"gmwm_avar_to_cpp",               (DL_FUNC) &gmwm_avar_to_cpp,                1},
-    {"gmwm_batch_modwt_wvar_cpp",      (DL_FUNC) &gmwm_batch_modwt_wvar_cpp,       8},
-    {"gmwm_brick_wall",                (DL_FUNC) &gmwm_brick_wall,                 3},
-    {"gmwm_compute_cov_cpp",           (DL_FUNC) &gmwm_compute_cov_cpp,            5},
-    {"gmwm_dwt_cpp",                   (DL_FUNC) &gmwm_dwt_cpp,                    5},
-    {"gmwm_find_full_model",           (DL_FUNC) &gmwm_find_full_model,            1},
-    {"gmwm_gen_lts_cpp",               (DL_FUNC) &gmwm_gen_lts_cpp,                4},
-    {"gmwm_gen_model",                 (DL_FUNC) &gmwm_gen_model,                  4},
-    {"gmwm_get_summary",               (DL_FUNC) &gmwm_get_summary,               21},
-    {"gmwm_gmwm_master_cpp",           (DL_FUNC) &gmwm_gmwm_master_cpp,           13},
-    {"gmwm_gmwm_update_cpp",           (DL_FUNC) &gmwm_gmwm_update_cpp,           17},
-    {"gmwm_hadam_mo_cpp",              (DL_FUNC) &gmwm_hadam_mo_cpp,               1},
-    {"gmwm_hadam_to_cpp",              (DL_FUNC) &gmwm_hadam_to_cpp,               1},
-    {"gmwm_model_objdesc",             (DL_FUNC) &gmwm_model_objdesc,              1},
-    {"gmwm_model_process_desc",        (DL_FUNC) &gmwm_model_process_desc,         1},
-    {"gmwm_model_theta",               (DL_FUNC) &gmwm_model_theta,                1},
-    {"gmwm_modwt_cpp",                 (DL_FUNC) &gmwm_modwt_cpp,                  5},
-    {"gmwm_modwt_wvar_cpp",            (DL_FUNC) &gmwm_modwt_wvar_cpp,             8},
-    {"gmwm_rank_models_cpp",           (DL_FUNC) &gmwm_rank_models_cpp,           13},
-    {"gmwm_read_imu",                  (DL_FUNC) &gmwm_read_imu,                   2},
-    {"gmwm_scales_cpp",                (DL_FUNC) &gmwm_scales_cpp,                 1},
     {NULL, NULL, 0}
 };
 

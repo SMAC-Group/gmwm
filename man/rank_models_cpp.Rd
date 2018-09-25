@@ -4,8 +4,8 @@
 \alias{rank_models_cpp}
 \title{Find the Rank Models result}
 \usage{
-rank_models_cpp(data, model_str, full_model, alpha, compute_v, model_type, K, H,
-  G, robust, eff, bs_optimism, seed)
+rank_models_cpp(data, model_str, full_model, alpha, compute_v, model_type,
+  K, H, G, robust, eff, bs_optimism, seed)
 }
 \arguments{
 \item{data}{A \code{vec} of data.}

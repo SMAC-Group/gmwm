@@ -321,7 +321,7 @@ create_imu = function(data, ngyros, nacces, axis, freq, unit = NULL, name = NULL
 #' b = read.imu(file = "F:/Desktop/short_test_data.imu", type = "IXSEA")
 #' }
 read.imu = function(file, type, unit = NULL, name = NULL){
-  d = .Call('gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
+  d = .Call('_gmwm_read_imu', PACKAGE = 'gmwm', file_path = file, imu_type = type)
   
   obj = create_imu(d[[1]][,-1], 3, 3, c('X','Y','Z','X','Y','Z'), d[[2]][1], unit = unit, name = name, stype = type)
   

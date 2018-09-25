@@ -262,7 +262,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
     theta = conv.gm.to.ar1(theta, model$process.desc, freq)
   }
   
-  out = .Call('gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
+  out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                                                          p = alpha, compute_v = compute.v, K = K, H = H, G = G,
                                                          robust=robust, eff = eff)
 
@@ -281,7 +281,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   }
   
   # Wrap this into the C++ Lib
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
+  scales = .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   # Create a new model object.
   model.hat = model
@@ -439,7 +439,7 @@ update.gmwm = function(object, model, ...){
     model$theta = conv.gm.to.ar1(model$theta, model$process.desc, object$freq)
   }
   
-  out = .Call('gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
+  out = .Call('_gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
                   model$theta,
                   desc, obj, 
                   object$model.type, object$N, object$expect.diff, object$dr.slope,
@@ -705,7 +705,7 @@ summary.gmwm = function(object, inference = NULL,
       object$estimate[,1] = conv.gm.to.ar1(object$estimate[,1], object$model$process.desc, object$freq)
     }
     
-    mm = .Call('gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
+    mm = .Call('_gmwm_get_summary', PACKAGE = 'gmwm',object$estimate,
                                                     object$model$desc, object$model$obj.desc,
                                                     object$model.type, 
                                                     object$wv.empir, object$theo,object$scales,

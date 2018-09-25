@@ -4,9 +4,10 @@
 \alias{plot.wvar}
 \title{Wrapper to ggplot Wavelet Variances Graph}
 \usage{
-\method{plot}{wvar}(x, CI = T, transparence = 0.1, background = "white",
-  bw = F, CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-  point.size = NULL, point.shape = NULL, title = NA, title.size = 15,
+\method{plot}{wvar}(x, CI = T, transparence = 0.1,
+  background = "white", bw = F, CI.color = "#003C7D",
+  line.type = NULL, line.color = NULL, point.size = NULL,
+  point.shape = NULL, title = NA, title.size = 15,
   axis.label.size = 13, axis.tick.size = 11,
   axis.x.label = expression(paste("Scale ", tau)),
   axis.y.label = expression(paste("Wavelet Variance ", nu)),

@@ -4,8 +4,8 @@
 \alias{gmwm_param_bootstrapper}
 \title{Bootstrap for Estimating Both Theta and Theta SD}
 \usage{
-gmwm_param_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust,
-  eff, alpha, H)
+gmwm_param_bootstrapper(theta, desc, objdesc, scales, model_type, N,
+  robust, eff, alpha, H)
 }
 \arguments{
 \item{theta}{A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters}

@@ -6,8 +6,9 @@
 \usage{
 \method{autoplot}{gts}(object, to.unit = NULL, background = "white",
   line.type = "solid", line.color = "#003C7D", point.size = 0,
-  point.shape = 20, title = NULL, title.size = 15, axis.label.size = 13,
-  axis.tick.size = 11, axis.x.label = NULL, axis.y.label = NULL, ...)
+  point.shape = 20, title = NULL, title.size = 15,
+  axis.label.size = 13, axis.tick.size = 11, axis.x.label = NULL,
+  axis.y.label = NULL, ...)
 }
 \arguments{
 \item{object}{A \code{gts} object}

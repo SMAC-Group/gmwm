@@ -4,8 +4,8 @@
 \alias{lts}
 \title{Generate Latent Time Series Object Based on Data}
 \usage{
-lts(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL,
-  process = NULL)
+lts(data, start = 0, end = NULL, freq = 1, unit = NULL,
+  name = NULL, process = NULL)
 }
 \arguments{
 \item{data}{A multiple-column \code{matrix} or \code{data.frame}. It must contain at least 2 columns. The last column must equal to the sum of all previous columns.}

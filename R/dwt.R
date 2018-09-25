@@ -44,7 +44,7 @@ dwt = function(x, nlevels = floor(log2(length(x))), filter = "haar", boundary="p
       x[idx,1] = x[idx,1]
     }
   }
-  out = .Call('gmwm_dwt_cpp', PACKAGE = 'gmwm', x, filter_name = filter, nlevels, boundary = boundary, brickwall = bw)
+  out = .Call('_gmwm_dwt_cpp', PACKAGE = 'gmwm', x, filter_name = filter, nlevels, boundary = boundary, brickwall = bw)
   names(out) = paste0("S",1:nlevels)
   mostattributes(out) = list(J=nlevels, filter = filter, boundary = boundary, brick.wall = bw, class=c("dwt","list"))
   out

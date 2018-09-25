@@ -4,8 +4,8 @@
 \alias{opt_n_gof_bootstrapper}
 \title{Bootstrap for Optimism and GoF}
 \usage{
-opt_n_gof_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust, eff,
-  alpha, H)
+opt_n_gof_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust,
+  eff, alpha, H)
 }
 \arguments{
 \item{theta}{A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters}

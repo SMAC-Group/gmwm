@@ -4,8 +4,8 @@
 \alias{guess_initial}
 \title{Randomly guess a starting parameter}
 \usage{
-guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv, tau,
-  ranged, G)
+guess_initial(desc, objdesc, model_type, num_param, expect_diff, N, wv,
+  tau, ranged, G)
 }
 \arguments{
 \item{desc}{A \code{vector<string>} that contains the model's components.}

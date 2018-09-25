@@ -127,11 +127,11 @@ wvar.default = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, al
     }
   }
   
-  obj =  .Call('gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
+  obj =  .Call('_gmwm_modwt_wvar_cpp', PACKAGE = 'gmwm',
                signal=x, nlevels=nlevels, robust=robust, eff=eff, alpha=alpha, 
                ci_type="eta3", strWavelet=filter, decomp = decomp)
 
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/freq
+  scales = .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/freq
   
   # NO unit conversion
   if( is.null(from.unit) && is.null(to.unit)==F ){
@@ -184,7 +184,7 @@ wvar.imu = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha 
   
   # freq conversion
   x.freq = attr(x, 'freq')
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/x.freq
+  scales = .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)/x.freq
   
   # NO unit conversion
   from.unit = attr(x, 'unit')
@@ -207,7 +207,7 @@ wvar.imu = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha 
     }
   }
   
-  obj.mat = .Call('gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
+  obj.mat = .Call('_gmwm_batch_modwt_wvar_cpp', PACKAGE = 'gmwm', 
                    x, nlevels, robust, eff, alpha, ci_type="eta3", strWavelet="haar", decomp)
   
   # The correct unit

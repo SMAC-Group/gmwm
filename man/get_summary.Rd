@@ -4,9 +4,9 @@
 \alias{get_summary}
 \title{Routing function for summary info}
 \usage{
-get_summary(theta, desc, objdesc, model_type, wv_empir, theo, scales, V, omega,
-  obj_value, N, alpha, robust, eff, inference, fullV, bs_gof, bs_gof_p_ci,
-  bs_theta_est, bs_ci, B)
+get_summary(theta, desc, objdesc, model_type, wv_empir, theo, scales, V,
+  omega, obj_value, N, alpha, robust, eff, inference, fullV, bs_gof,
+  bs_gof_p_ci, bs_theta_est, bs_ci, B)
 }
 \arguments{
 \item{theta}{A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters}

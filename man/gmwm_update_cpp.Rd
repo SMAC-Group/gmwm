@@ -4,8 +4,8 @@
 \alias{gmwm_update_cpp}
 \title{Update Wrapper for the GMWM Estimator}
 \usage{
-gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, ranged, orgV,
-  scales, wv, starting, compute_v, K, H, G, robust, eff)
+gmwm_update_cpp(theta, desc, objdesc, model_type, N, expect_diff, ranged,
+  orgV, scales, wv, starting, compute_v, K, H, G, robust, eff)
 }
 \arguments{
 \item{theta}{A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters}

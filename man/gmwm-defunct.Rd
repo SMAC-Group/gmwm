@@ -10,14 +10,7 @@
 \alias{gmwm.imu}
 \alias{auto.imu}
 \alias{rank.models}
-\alias{compare.wvar}
-\alias{compare.models}
-\alias{gen.gts}
-\alias{gen.lts}
 \alias{demo.lts}
-\alias{gmwm.imu}
-\alias{rank.models}
-\alias{auto.imu}
 \title{Defunct function(s) in the gmwm package}
 \usage{
 compare.gmwm(...)

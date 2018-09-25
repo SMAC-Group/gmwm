@@ -217,7 +217,7 @@ rank_models = function(..., data = NULL, nested = F, bootstrap = F,
   if(nested == F){
     
     # Figure out the full string
-    full.str = .Call('gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
+    full.str = .Call('_gmwm_find_full_model', PACKAGE = 'gmwm', x = desc)
     
     # Get the breakdown of each component.
     n.full = count_models(full.str)
@@ -247,11 +247,11 @@ rank_models = function(..., data = NULL, nested = F, bootstrap = F,
     
   }
   
-  out = .Call('gmwm_rank_models_cpp', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap, seed)
+  out = .Call('_gmwm_rank_models_cpp', PACKAGE = 'gmwm', data, model_str=desc, full_model=full.str, alpha, compute_v = "fast", model_type = model.type, K=1, H=B, G, robust, eff, bootstrap, seed)
   
   N = length(data)
   nlevels =  floor(log2(N))
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
+  scales = .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   out[[1]] = output.format(out[[1]], desc, scales, N, alpha, robust, eff, B, G, seed, freq)  
   
@@ -324,7 +324,7 @@ auto_imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   m = as.matrix(comb.mat(length(full.str)))
   m = m[-nrow(m),]
   
-  out = .Call('gmwm_auto_imu_cpp', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap, seed)
+  out = .Call('_gmwm_auto_imu_cpp', PACKAGE = 'gmwm', data, combs=m, full_model=full.str, alpha, compute_v = "fast", model_type = "imu", K=1, H=B, G, robust, eff, bootstrap, seed)
   
   # Handle post processing
   
@@ -334,7 +334,7 @@ auto_imu = function(data, model = 3*AR1()+WN()+RW()+QN()+DR(), bootstrap = F, al
   # Get basic data info
   N = nrow(data)
   nlevels =  floor(log2(N))
-  scales = .Call('gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
+  scales = .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
   
   # Get set statements for Wenchao
   n.gyro = num.sensor[1]

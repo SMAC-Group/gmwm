@@ -5,11 +5,12 @@
 \title{Graph Allan Variance}
 \usage{
 \method{autoplot}{avar}(object, CI = F, transparence = 0.1,
-  background = "white", bw = F, CI.color = "#003C7D", line.type = NULL,
-  line.color = NULL, point.size = NULL, point.shape = NULL,
-  title = NULL, title.size = 15, axis.label.size = 13,
-  axis.tick.size = 11, axis.x.label = expression("Cluster " ~ tau ~
-  "(sec)"), axis.y.label = expression("Allan Variance " ~ phi[tau]),
+  background = "white", bw = F, CI.color = "#003C7D",
+  line.type = NULL, line.color = NULL, point.size = NULL,
+  point.shape = NULL, title = NULL, title.size = 15,
+  axis.label.size = 13, axis.tick.size = 11,
+  axis.x.label = expression("Cluster " ~ tau ~ "(sec)"),
+  axis.y.label = expression("Allan Variance " ~ phi[tau]),
   legend.title = "", legend.label = NULL, legend.key.size = 1,
   legend.title.size = 13, legend.text.size = 13, ...)
 }

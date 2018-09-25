@@ -4,7 +4,8 @@
 \alias{gts}
 \title{Create a GMWM TS Object based on data}
 \usage{
-gts(data, start = 0, end = NULL, freq = 1, unit = NULL, name = NULL)
+gts(data, start = 0, end = NULL, freq = 1, unit = NULL,
+  name = NULL)
 }
 \arguments{
 \item{data}{A one-column \code{matrix}, \code{data.frame}, or a numeric \code{vector}.}

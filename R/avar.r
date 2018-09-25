@@ -67,9 +67,9 @@ avar = function(x, type = "mo") {
   x = as.vector(x)
   
   if(type == "mo"){
-    av = .Call('gmwm_avar_mo_cpp', PACKAGE = 'gmwm', x)
+    av = .Call('_gmwm_avar_mo_cpp', PACKAGE = 'gmwm', x)
   }else{
-    av = .Call('gmwm_avar_to_cpp', PACKAGE = 'gmwm', x)
+    av = .Call('_gmwm_avar_to_cpp', PACKAGE = 'gmwm', x)
   }
   
   av = list(clusters = av[,1], allan=av[,2], errors=av[,3])
