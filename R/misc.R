@@ -14,6 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#' @title Check Integer Values
+#' @description This function is taken from the examples of the `integer` function from the `base` package.
+#' @param x A `numeric` value which needs to be checked to understand if it is an `integer`.
+#' @return A `boolean` value that specifies whether the supplied value is an `integer` or not.
+#' @author `base` R package
+#' 
+#' @export
+#' @examples
+#' is.wholenumber(4.2)
+#' is.wholenumber(6)
+#' is.wholenumber(seq(1, 5, by = 0.5))
+is.wholenumber = function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
+
 #' @title Place Legend
 #' @description This function decides where the legend should be put (top left or bottom left)
 #' @param wv_1 A \code{double} that indicates the first value of \code{wv.empir}

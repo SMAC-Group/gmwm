@@ -192,7 +192,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   starting = model$starting
   
   # Input guessing
-  if((is.null(G) & starting) || !is_whole(G)){
+  if((is.null(G) & starting) || !is.wholenumber(G)){
     if(N > 10000){
       G = 1e6
     }else{

@@ -534,13 +534,13 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
   ds = length(si)
   
   if(d > 1 || ds > 1){stop("`i` or `si` must have a length of 1.")}
-  else if(!is_whole(i) || !is_whole(si)){stop("`i` or `si` must be integers.")}
+  else if(!iis.wholenumber(i) || !iis.wholenumber(si)){stop("`i` or `si` must be integers.")}
   
   
   # If P or Q == 1, this implies we might have a starting guess. 
   if( p == 1 || q == 1 || P == 1 || Q == 1 ){
     if(p == 1){
-      if(is_whole(ar) & ar != 0){
+      if(is.wholenumber(ar) & ar != 0){
         ar = rep(-1, ar)
         starting = TRUE
       }else if(ar == 0){
@@ -549,7 +549,7 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
     }
     
     if(q == 1){
-      if(is_whole(ma) & ma != 0){
+      if(is.wholenumber(ma) & ma != 0){
         ma = rep(-2, ma)
         starting = TRUE
       }else if(ma == 0){
@@ -558,7 +558,7 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
     }
     
     if(P == 1){
-      if(is_whole(sar) & sar != 0){
+      if(is.wholenumber(sar) & sar != 0){
         sar = rep(-1, sar)
         starting = TRUE
       }else if(sar == 0){
@@ -567,7 +567,7 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
     }
     
     if(Q == 1){
-      if(is_whole(sma) & sma != 0){
+      if(is.wholenumber(sma) & sma != 0){
         sma = rep(-2, sma)
         starting = TRUE
       }else if(sma == 0){

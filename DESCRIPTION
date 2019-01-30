@@ -5,8 +5,8 @@ Version: 3.0.0.1000
 Date: 2016-11-05
 Authors@R: c(
     person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
-    person("Stephane", "Guerrier", , "stephane@illinois.edu", c("ctb","cre","cph")),
-    person("Roberto", "Molinari", , "roberto.molinari@unige.ch", c("ctb", "cph")),
+    person("Stephane", "Guerrier", , "stef.guerrier@gmail.com", c("ctb","cre","cph")),
+    person("Roberto", "Molinari", , "roberto.molinari@hotmail.it", c("ctb", "cph")),
     person("Wenchao", "Yang", , "wyang40@illinois.edu", c("ctb"))
     )
 URL: https://github.com/SMAC-Group/gmwm
@@ -14,13 +14,13 @@ BugReports: https://github.com/SMAC-Group/gmwm/issues
 Description: Generalized Method of Wavelet Moments (GMWM) is an estimation
     technique for the parameters of time series models. It uses the wavelet variance
     in a moment matching approach that makes it particularly suitable for the
-    estimation of certain state-space models. Furthermore, there exists a robust
-    implementation of GMWM, which allows the robust estimation of some state-space
-    models and ARIMA models. Lastly, the package provides the ability to quickly
-    generate time series data, perform different wavelet decompositions, and
+    estimation of standard time series and certain state-space models. Furthermore, there exists a robust
+    implementation of GMWM, which allows the robust estimation of various state-space
+    models and ARIMA models. Lastly, the package allows to easily
+    generate complex time series data, perform different wavelet decompositions, and
     visualizations.
 License: AGPL-3
-Maintainer: Stephane Guerrier <stephane@illinois.edu>
+Maintainer: Stephane Guerrier <stef.guerrier@gmail.com>
 Depends: 
     R (>= 3.3),
     ggplot2 (>= 2.1.0)
@@ -33,8 +33,7 @@ Imports:
     stats,
     methods,
     graphics,
-    grDevices,
-    bmisc
+    grDevices
 LinkingTo: 
     Rcpp,
     RcppArmadillo
@@ -44,7 +43,6 @@ Suggests:
     rmarkdown,
     imudata (>= 2.0.0)
 Additional_repositories: http://smac-group.com/datarepo
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
-Remotes: coatless/bmisc
 SystemRequirements: C++11

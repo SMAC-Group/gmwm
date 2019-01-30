@@ -771,7 +771,7 @@ autoplot.wvarComp = function(object, split = TRUE, CI = TRUE, background = 'whit
 #' @note
 #' If you meet the error "polygon edge not found", RStudio is complaining that you don't have enough 
 #' space to plot the graph. You can adjust the graphics window, or open an external window. The 
-#' function \code{\link{external_graphs}} can be used and it works for all operating systems.
+#' function \code{\link{open_plots}} can be used and it works for all operating systems.
 #' 
 #' When \code{wvar.imu} objects are supplied, some parameters, e.g. \code{split} and \code{nrow}, are 
 #' invalid, since the graph is plot seperately and put in 2 rows by default.
