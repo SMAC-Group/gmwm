@@ -42,7 +42,6 @@ Suggests:
     knitr,
     rmarkdown,
     imudata (>= 2.0.0)
-Additional_repositories: http://smac-group.com/datarepo
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 SystemRequirements: C++11
