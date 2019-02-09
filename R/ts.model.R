@@ -534,7 +534,7 @@ SARIMA = function(ar = 1, i = 0,  ma = 1, sar = 1, si = 0,  sma = 1, s = 12, sig
   ds = length(si)
   
   if(d > 1 || ds > 1){stop("`i` or `si` must have a length of 1.")}
-  else if(!iis.wholenumber(i) || !iis.wholenumber(si)){stop("`i` or `si` must be integers.")}
+  else if(!is.wholenumber(i) || !is.wholenumber(si)){stop("`i` or `si` must be integers.")}
   
   
   # If P or Q == 1, this implies we might have a starting guess. 
