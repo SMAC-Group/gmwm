@@ -14,6 +14,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Define functions used in gmwm fct when processes can be expressed linearly w/ parameters but that do not need to be called by the user
+return_matrix = function(model, y){
+  #define tau
+  n = length(y)
+  J = floor(log2(n))
+  J_vec = seq(J)
+  
+  #define matrix X for linear in parameter processes
+  qn_p = 3 / (2^(2*J_vec))
+  wn_p = 1/(2^(J_vec))
+  rw_p = 2^(J_vec)/3
+  dr_p = 2^((2*J_vec)-1)
+  complete_X_mat = cbind(qn_p, wn_p, rw_p, dr_p)
+  colnames(complete_X_mat) = c('QN', 'WN', 'RW', 'DR')
+  
+  #define X_mat
+  X_mat = complete_X_mat[, model$process.desc]
+  
+  #return matrix
+  return(X_mat)
+}
+
+return_Omega = function(y){
+  wv_y = gmwm::wvar(y)
+  return(diag(1/(wv_y$ci_high - wv_y$ci_low)^2))
+}
+
 #' Generalized Method of Wavelet Moments (GMWM) for IMUs, ARMA, SSM, and Robust
 #' 
 #' Performs estimation of time series models by using the GMWM estimator.
@@ -150,10 +177,10 @@
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
+
 gmwm = function(model, data, model.type="ssm", compute.v="auto", 
                 robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
                 freq = 1){
-  
 
   # Check data object
   if(is.gts(data)){
@@ -192,6 +219,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   starting = model$starting
   
   # Input guessing
+  G=0 #modified because caused error : Error in round(x) : non-numeric argument to mathematical function"
   if((is.null(G) & starting) || !is.wholenumber(G)){
     if(N > 10000){
       G = 1e6
@@ -262,17 +290,61 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
     theta = conv.gm.to.ar1(theta, model$process.desc, freq)
   }
   
-  out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
-                                                         p = alpha, compute_v = compute.v, K = K, H = H, G = G,
-                                                         robust=robust, eff = eff)
-
-  estimate = out[[1]]
-  rownames(estimate) = model$process.desc
-  colnames(estimate) = "Estimates" 
-  
-  init.guess = out[[2]]
-  rownames(init.guess) = model$process.desc
-  colnames(init.guess) = "Starting" 
+  #if sub processes are linear, fit using weighted least squares, otherwise call c++ code
+  if(all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
+    X_mat  = return_matrix(model = model, y = data)
+    Omega  = return_Omega(data)
+    nu_hat = gmwm::wvar(data)$variance
+    theta_hat = solve(t(X_mat) %*% Omega %*% X_mat) %*% t(X_mat) %*% Omega %*% nu_hat
+    colnames(theta_hat) = 'Estimates'
+    rownames(theta_hat) = model$process.desc
+    ci_h = gmwm::wvar(data)$ci_high
+    ci_l = gmwm::wvar(data)$ci_low
+    sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
+    out = list('estimate' = theta_hat,
+                   'init.guess' = NA,
+                   'wv.empir' = nu_hat,
+                   'ci.low' = ci_l,
+                   'ci.high' = ci_h,
+                   'orgV' = NA,
+                   'V' = NA,
+                   'omega' = NA,
+                   'obj.fun' = NA,
+                   'theo' = sum_theo,
+                   'decomp.theo' = X_mat,
+                   'scales' = 2^seq(floor(log(length(data), 2))), 
+                   'robust' = robust,
+                   'eff' = eff,
+                   'model.type' = model.type,
+                   'compute.v' = compute.v,
+                   'alpha' = alpha,
+                   'expect.diff' = NA,
+                   'N' = N,
+                   'G' = G,
+                   'H' = H,
+                   'K' = K,
+                   'model' = model,
+                   'model.hat' = NA,
+                   'starting' = model$starting,
+                   'seed' = seed,
+                   'freq' = freq,
+                   'dr.slope' = NA, class = "gmwm")
+    estimate = out[[1]]
+    rownames(estimate) = model$process.desc
+    colnames(estimate) = "Estimates" 
+    
+  }else{
+    out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
+                p = alpha, compute_v = compute.v, K = K, H = H, G = G,
+                robust=robust, eff = eff)
+    estimate = out[[1]]
+    rownames(estimate) = model$process.desc
+    colnames(estimate) = "Estimates" 
+    
+    init.guess = out[[2]]
+    rownames(init.guess) = model$process.desc
+    colnames(init.guess) = "Starting" 
+  }
   
   # Convert from AR1 to GM
   if(detected_gm){
@@ -291,36 +363,39 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   model.hat$theta = as.numeric(estimate)
   
   # Release model
-  out = structure(list(estimate = estimate,
-                       init.guess = init.guess,
-                       wv.empir = out[[3]], 
-                       ci.low = out[[4]], 
-                       ci.high = out[[5]],
-                       orgV = out[[7]],
-                       V = out[[6]],
-                       omega = out[[12]],
-                       obj.fun = out[[11]],
-                       theo = out[[9]],
-                       decomp.theo = out[[10]],
-                       scales = scales, 
-                       robust = robust,
-                       eff = eff,
-                       model.type = model.type,
-                       compute.v = compute.v,
-                       alpha = alpha,
-                       expect.diff = out[[8]],
-                       N = N,
-                       G = G,
-                       H = H,
-                       K = K,
-                       model = model,
-                       model.hat = model.hat,
-                       starting = model$starting,
-                       seed = seed,
-                       freq = freq,
-                       dr.slope = out[[13]]), class = "gmwm")
+  if(!all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
+    out = structure(list(estimate = estimate,
+                         init.guess = init.guess,
+                         wv.empir = out[[3]], 
+                         ci.low = out[[4]], 
+                         ci.high = out[[5]],
+                         orgV = out[[7]],
+                         V = out[[6]],
+                         omega = out[[12]],
+                         obj.fun = out[[11]],
+                         theo = out[[9]],
+                         decomp.theo = out[[10]],
+                         scales = scales, 
+                         robust = robust,
+                         eff = eff,
+                         model.type = model.type,
+                         compute.v = compute.v,
+                         alpha = alpha,
+                         expect.diff = out[[8]],
+                         N = N,
+                         G = G,
+                         H = H,
+                         K = K,
+                         model = model,
+                         model.hat = model.hat,
+                         starting = model$starting,
+                         seed = seed,
+                         freq = freq,
+                         dr.slope = out[[13]]), class = "gmwm")
+  }
   invisible(out)
 }
+
 
 #' Update (Robust) GMWM object for IMU or SSM 
 #' 
