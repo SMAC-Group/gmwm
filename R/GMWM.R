@@ -181,7 +181,7 @@ return_Omega = function(y){
 gmwm = function(model, data, model.type="ssm", compute.v="auto", 
                 robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
                 freq = 1){
-
+  
   # Check data object
   if(is.gts(data)){
     freq = attr(data, 'freq')
@@ -223,14 +223,12 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   #if starting, g = 0
   #else is.null(G) 
   #virer le starting et mettre dans eslse
-  if((is.null(G) & starting) || !is.wholenumber(G)){
+  if((is.null(G)) || !is.wholenumber(G)){
     if(N > 10000){
       G = 1e6
     }else{
       G = 20000
     }
-  }else if(!starting){
-    G = 0
   }
   
   # For reproducibility
