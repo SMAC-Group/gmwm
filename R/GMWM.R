@@ -219,7 +219,10 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
   starting = model$starting
   
   # Input guessing
-  G=0 #modified because caused error : Error in round(x) : non-numeric argument to mathematical function"
+  #G=0 #modified because caused error : Error in round(x) : non-numeric argument to mathematical function"
+  #if starting, g = 0
+  #else is.null(G) 
+  #virer le starting et mettre dans eslse
   if((is.null(G) & starting) || !is.wholenumber(G)){
     if(N > 10000){
       G = 1e6
@@ -301,7 +304,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
     ci_h = gmwm::wvar(data)$ci_high
     ci_l = gmwm::wvar(data)$ci_low
     sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
-    out = list('estimate' = theta_hat,
+    out = structure(list('estimate' = theta_hat,
                    'init.guess' = NA,
                    'wv.empir' = nu_hat,
                    'ci.low' = ci_l,
@@ -328,7 +331,7 @@ gmwm = function(model, data, model.type="ssm", compute.v="auto",
                    'starting' = model$starting,
                    'seed' = seed,
                    'freq' = freq,
-                   'dr.slope' = NA, class = "gmwm")
+                   'dr.slope' = NA), class = "gmwm")
     estimate = out[[1]]
     rownames(estimate) = model$process.desc
     colnames(estimate) = "Estimates" 
