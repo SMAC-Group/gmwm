@@ -100,7 +100,7 @@ arma::mat jacobian_arma(const arma::vec& theta,
     for (unsigned int m = 1; m <= r - 1; m++){
       arma::mat act = st(i);
 
-      st(i) = ( act.cols(1, r - m) * pow(4,m) - act.cols(0,(r - m - 1)) )/(pow(4,m) - 1);
+      st(i) = ( act.cols(1, r - m) * pow(4,double(m)) - act.cols(0,(r - m - 1)) )/(pow(4,double(m)) - 1);
     }
     
     out.col(i) = st(i);

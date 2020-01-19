@@ -230,10 +230,10 @@ arma::vec ar1_to_wv(double phi, double sigma2, const arma::vec& tau){
   arma::vec temp_term(size_tau);
   arma::vec temp_term_redux(size_tau);
   for(unsigned int i=0; i< size_tau; i++){
-    temp_term(i) = 4*pow(phi,(tau(i)/2 + 1));
-    temp_term_redux(i) = pow(phi,(tau(i)+1));
+    temp_term(i) = 4*pow(phi,(tau(i)/2.0 + 1.0));
+    temp_term_redux(i) = pow(phi,(tau(i)+1.0));
   }
-  return ((tau/2.0 - 3.0*phi - tau/2.0*pow(phi,2) + temp_term - temp_term_redux)/(arma::square(tau/2.0)*pow(1-phi,2)*(1-pow(phi,2)))*sigma2)/2.0;
+  return ((tau/2.0 - 3.0*phi - tau/2.0*pow(phi,2.0) + temp_term - temp_term_redux)/(arma::square(tau/2.0)*pow(1.0-phi,2.0)*(1-pow(phi,2.0)))*sigma2)/2.0;
 }
 
 

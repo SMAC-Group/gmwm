@@ -97,7 +97,7 @@ arma::vec gen_dr(const unsigned int N, const double omega = 5)
 // [[Rcpp::export]]
 arma::vec gen_qn(const unsigned int N, double q2 = .1)
 {
-  double sqrt12 = sqrt(12);
+  double sqrt12 = sqrt(12.0);
   
   arma::vec gu(N+1);
   

@@ -35,7 +35,7 @@ arma::mat ci_eta3(const arma::vec& y, const arma::vec& dims, double alpha_ov_2) 
     arma::mat out(num_elem, 3);
 
     for(unsigned int i = 0; i<num_elem;i++){
-      double eta3 = std::max(dims(i)/pow(2,i+1),1.0);
+      double eta3 = std::max(dims(i)/pow(2.0,double(i)+1.0),1.0);
       out(i,1) = eta3 * y(i)/R::qchisq(1-alpha_ov_2, eta3, 1, 0); // Lower CI
       out(i,2) = eta3 * y(i)/R::qchisq(alpha_ov_2, eta3, 1, 0); // Upper CI
     }
@@ -331,7 +331,7 @@ arma::vec scales_cpp(unsigned int nb_level){
   // Define scales
   arma::vec scales(nb_level);
   for(unsigned int i=0; i< nb_level;i++){
-    scales(i) = pow(2,i+1);
+    scales(i) = pow(2.0,double(i)+1.0);
   }
   return scales;
 }
