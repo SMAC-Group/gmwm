@@ -162,7 +162,7 @@ return_Omega = function(y){
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
 
-gmwm = function(model, data, model.type="ssm", compute.v="auto", 
+gmwm = function(model, data, model.type="imu", compute.v="auto", 
                 robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
                 freq = 1){
   
@@ -942,7 +942,7 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
 #' mod = gmwm(AR1(), data=x, model.type="imu")
 #' plot(mod)
-plot.gmwm = function(x, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
+plot.gmwm = function(x, process.decomp = TRUE, background = 'white', CI = T, transparence = 0.1, bw = F, 
                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
                          point.size = NULL,point.shape = NULL,
                          title = NULL, title.size= 15, 
