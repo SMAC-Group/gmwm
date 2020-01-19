@@ -16,6 +16,8 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/gmwm)](http://www.r-pkg
 
 # `gmwm` R Package <a href="https://smac-group.com/"><img src="man/figures/logo.png" align="right" style="width: 16%; height: 16%"/></a>
 
+<img src="man/figures/logo.png" alt="alt text" width="200" height="200">
+
 This repository holds the Generalized Method of Wavelet Moments (GMWM) R
 package. This estimation technique uses the wavelet variance in a
 moment-matching spirit to estimate parameters of time series models such
