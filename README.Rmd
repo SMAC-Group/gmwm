@@ -5,12 +5,16 @@ bibliography: references.bib
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  dpi = 300,
+  out.width = "100%",
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "man/figures/README-"
 )
+
+library(gmwm)
 ```
 
 [![Travis-CI Build Status](https://travis-ci.org/SMAC-Group/gmwm.svg?branch=master)](https://travis-ci.org/SMAC-Group/gmwm)
