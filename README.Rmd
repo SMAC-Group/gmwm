@@ -1,7 +1,6 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
+output: github_document
+bibliography: references.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -14,11 +13,18 @@ knitr::opts_chunk$set(
 )
 ```
 
+[![Travis-CI Build Status](https://travis-ci.org/SMAC-Group/gmwm.svg?branch=master)](https://travis-ci.org/SMAC-Group/gmwm)
+[![Project Status: Active](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Licence](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](https://opensource.org/licenses/AGPL-3.0)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/gmwm)](http://www.r-pkg.org/pkg/gmwm)
+[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](https://github.com/SMAC-Group/gmwm)
 
-[![Linux Build Status](https://travis-ci.org/SMAC-Group/gmwm.svg?branch=master)](https://travis-ci.org/SMAC-Group/gmwm)[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm)[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/gmwm)](http://cran.r-project.org/package=gmwm)
 
-# `gmwm` R Package
-This repository holds the Generalized Method of Wavelet Moments (GMWM) R package. This estimation technique uses the wavelet variance in a moment-matching spirit to estimate parameters of time series models such as ARMA or state-space models. A robust version of the GMWM is also implemented in this package together with a tailored made method for inertial sensors calibration, which typically deals with very large sample sizes. 
+# `gmwm` R Package <a href="https://data-analytics-lab.net/"><img src="man/figures/logo_dal_github.png" align="right" style="width: 25%; height: 25%"/></a>
+
+This repository holds the Generalized Method of Wavelet Moments (GMWM) R package. This estimation technique uses the wavelet variance in a moment-matching spirit to estimate parameters of time series models such as ARMA or state-space models. A robust version of the GMWM is also implemented in this package together with a tailored made method for inertial sensors calibration, which typically deals with very large sample sizes.  [@guerrier2013wavelet]
 
 Below are examples of the capabilities of the `gmwm` package.
 

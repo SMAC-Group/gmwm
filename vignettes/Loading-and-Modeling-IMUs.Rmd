@@ -73,7 +73,7 @@ Let us consider the Gyro on the axis X and, given the estimated WV from the plot
 TS.mod.imu = 3*AR1()
 
 # Compute GMWM estimator
-model.imu = gmwm_imu(TS.mod.imu, data = imu6[,1])
+model.imu = gmwm(TS.mod.imu, data = imu6[,1])
 ```
 
 **Note: The gmwm.imu function only is able to handle one sensor at a time.**

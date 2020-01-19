@@ -4,7 +4,7 @@
 \alias{plot.gmwm}
 \title{Wrapper to Graph Solution of the Generalized Method of Wavelet Moments}
 \usage{
-\method{plot}{gmwm}(x, process.decomp = FALSE, background = "white",
+\method{plot}{gmwm}(x, process.decomp = TRUE, background = "white",
   CI = T, transparence = 0.1, bw = F, CI.color = "#003C7D",
   line.type = NULL, line.color = NULL, point.size = NULL,
   point.shape = NULL, title = NULL, title.size = 15,

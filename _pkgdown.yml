@@ -1,7 +1,7 @@
 title: gmwm
 
 template:
-  bootswatch: cerulean
+  bootswatch: flatly
 
 reference:
 - title: Models 
@@ -87,13 +87,6 @@ reference:
   - plot.rank.models
   - plot.auto.imu
 
-- title: Supplementary Data Packages
-  desc: >
-    Helpers to install different SMAC-Group data packages
-  contents:
-  - install_datapkg
-  - install_imudata
-
 - title: Process to Haar Wavelet Variance
   desc: >
     Functions that compute the theoretical Haar Wavelet Variance
@@ -136,14 +129,10 @@ navbar:
   left:
   - text: Home
     href: index.html
-  - text: Reference
-    href: reference/index.html
   - text: Quick Start
     href: articles/Quick-Start-Guide.html
-  - text: News
-    menu:
-      - text: "Change log"
-        href: news/index.html
+  - text: Reference
+    href: reference/index.html
   right:
   - icon: fa-github fa-lg
     href: https://github.com/SMAC-Group/gmwm

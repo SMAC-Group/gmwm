@@ -1,14 +1,32 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Linux Build Status](https://travis-ci.org/SMAC-Group/gmwm.svg?branch=master)](https://travis-ci.org/SMAC-Group/gmwm)[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm)[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/gmwm)](http://cran.r-project.org/package=gmwm)
 
-`gmwm` R Package
-================
+[![Travis-CI Build
+Status](https://travis-ci.org/SMAC-Group/gmwm.svg?branch=master)](https://travis-ci.org/SMAC-Group/gmwm)
+[![Project Status:
+Active](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Licence](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](https://opensource.org/licenses/AGPL-3.0)
+[![minimal R
+version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
+[![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm)
+[![CRAN RStudio mirror
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/gmwm)](http://www.r-pkg.org/pkg/gmwm)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--19-yellowgreen.svg)](https://github.com/SMAC-Group/gmwm)
 
-This repository holds the Generalized Method of Wavelet Moments (GMWM) R package. This estimation technique uses the wavelet variance in a moment-matching spirit to estimate parameters of time series models such as ARMA or state-space models. A robust version of the GMWM is also implemented in this package together with a tailored made method for inertial sensors calibration, which typically deals with very large sample sizes.
+# `gmwm` R Package <a href="https://data-analytics-lab.net/"><img src="man/figures/logo_dal_github.png" align="right" style="width: 25%; height: 25%"/></a>
+
+This repository holds the Generalized Method of Wavelet Moments (GMWM) R
+package. This estimation technique uses the wavelet variance in a
+moment-matching spirit to estimate parameters of time series models such
+as ARMA or state-space models. A robust version of the GMWM is also
+implemented in this package together with a tailored made method for
+inertial sensors calibration, which typically deals with very large
+sample sizes. (Guerrier et al. 2013)
 
 Below are examples of the capabilities of the `gmwm` package.
 
-To start, let's generate some data:
+To start, let’s generate some data:
 
 ``` r
 ## Data generation ##
@@ -19,7 +37,8 @@ m = AR1(phi = .98, sigma2 = .01) + WN(sigma2 = 1)
 d = gen_gts(10000, m)
 ```
 
-Once we have data, we can see what the wavelet variance looks like for the data with the classical and robust wavelet variances.
+Once we have data, we can see what the wavelet variance looks like for
+the data with the classical and robust wavelet variances.
 
 ``` r
 # Calculate the classical wavelet variance with the Haar filter
@@ -35,7 +54,8 @@ wv.robust = wvar(d, robust = TRUE, eff = 0.6)
 compare_wvar(wv.classical, wv.robust)
 ```
 
-Now, let's try to estimate it with specific (e.g. user supplied) and guessed (e.g. program generated) parameters.
+Now, let’s try to estimate it with specific (e.g. user supplied) and
+guessed (e.g. program generated) parameters.
 
 ``` r
 ## Estimation Modes ##
@@ -62,7 +82,8 @@ summary(o.specific, inference = T)
 summary(o.specific, inference = T, bs.gof = T)
 ```
 
-Alternatively, we can let the program try to figure out the best model for the data using the Wavelet Information Criteria (WIC):
+Alternatively, we can let the program try to figure out the best model
+for the data using the Wavelet Information Criteria (WIC):
 
 ``` r
 ## Model selection ##
@@ -84,7 +105,8 @@ plot(ms.sep)
 summary(ms.sep)
 ```
 
-Last, but certainly not least, we can also approximate a contaminated sample with robust methodology:
+Last, but certainly not least, we can also approximate a contaminated
+sample with robust methodology:
 
 ``` r
 ## Data generation ##
@@ -120,18 +142,18 @@ o = gmwm_imu(model, sim.ts, robust = TRUE, eff = 0.6)
 summary(o)
 ```
 
-Install Instructions
-====================
+# Install Instructions
 
-To install the `gmwm` package, there are three options: CRAN (Stable), GitHub (Developmental), or SMAC (stable - offline).
+To install the `gmwm` package, there are three options: CRAN (Stable),
+GitHub (Developmental), or SMAC (stable - offline).
 
-Recommended R Interface
------------------------
+## Recommended R Interface
 
-We firmly recommend that any users of this package use the [RStudio IDE](https://www.rstudio.com/products/rstudio/download/) over the default R GUI.
+We firmly recommend that any users of this package use the [RStudio
+IDE](https://www.rstudio.com/products/rstudio/download/) over the
+default R GUI.
 
-Installing the package through CRAN (Stable)
---------------------------------------------
+## Installing the package through CRAN (Stable)
 
 The installation process with CRAN is the simplest
 
@@ -139,25 +161,35 @@ The installation process with CRAN is the simplest
 install.packages("gmwm")
 ```
 
-Installing the package this way gives you access to stable features. Furthermore, the installation itself does not require a compiler or preinstalling any dependencies. However, we are limited to updating the package on CRAN to once every month. Thus, there may be some lag between when features are developed and when they are available on this version.
+Installing the package this way gives you access to stable features.
+Furthermore, the installation itself does not require a compiler or
+preinstalling any dependencies. However, we are limited to updating the
+package on CRAN to once every month. Thus, there may be some lag between
+when features are developed and when they are available on this version.
 
-Installing the package through GitHub (Developmental)
------------------------------------------------------
+## Installing the package through GitHub (Developmental)
 
-For users who are interested in having the latest and greatest developments withing wavelets or GMWM methodology, this option is ideal. Though, there is considerably more work that a user must do to have a stable version of the package. **The setup to obtain the development version is platform dependent.**
+For users who are interested in having the latest and greatest
+developments withing wavelets or GMWM methodology, this option is ideal.
+Though, there is considerably more work that a user must do to have a
+stable version of the package. **The setup to obtain the development
+version is platform dependent.**
 
-Specifically, one **must** have a compiler installed on your system that is compatible with R.
+Specifically, one **must** have a compiler installed on your system that
+is compatible with R.
 
 For help on obtaining a compiler consult:
 
--   [OS X](http://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-os-x/)
--   [Windows](https://cran.r-project.org/bin/windows/Rtools/)
+  - [OS
+    X](http://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-os-x/)
+  - [Windows](https://cran.r-project.org/bin/windows/Rtools/)
 
 Depending on your operating system, further requirements exist such as:
 
 **OS X**
 
-Some user report the need to use X11 to suppress shared library errors. To install X11, visit [xquartz.org](http://www.xquartz.org/)
+Some user report the need to use X11 to suppress shared library errors.
+To install X11, visit [xquartz.org](http://www.xquartz.org/)
 
 **Linux**
 
@@ -177,7 +209,9 @@ sudo yum install curl curl-devel libxml2 libxml2-dev
 
 **All Systems**
 
-With the system dependency taken care of, we continue on by installing the R specific package dependencies and finally the package itself by doing the following in an R session:
+With the system dependency taken care of, we continue on by installing
+the R specific package dependencies and finally the package itself by
+doing the following in an R session:
 
 ``` r
 # Install dependencies
@@ -191,10 +225,11 @@ devtools::install_github("SMAC-Group/gmwm")
 devtools::install_github("SMAC-Group/gmwm", build_vignettes = TRUE)
 ```
 
-Installing the package from SMAC-Group.com (Stable - offline)
--------------------------------------------------------------
+## Installing the package from SMAC-Group.com (Stable - offline)
 
-Lastly, we will be offering a source .tar that is able to be install offline - after being downloaded - on the [smac-group.com](http://www.smac-group.com) website.
+Lastly, we will be offering a source .tar that is able to be install
+offline - after being downloaded - on the
+[smac-group.com](http://www.smac-group.com) website.
 
 ``` r
 # Install the dependencies
@@ -205,12 +240,14 @@ setwd("path_to_file_GMWM_2.0.0.tar.gz")
 install.packages("GMWM", repos = NULL, type="source")
 ```
 
-Supplementary data package
---------------------------
+## Supplementary data package
 
-To test the package performance on real-world data that is *stationary* or work with some of the examples, you will need to download and install the `imudata` and/or the `datapkg` R package.
+To test the package performance on real-world data that is *stationary*
+or work with some of the examples, you will need to download and install
+the `imudata` and/or the `datapkg` R package.
 
-To do so, please use the following installation method within the `gmwm` R package:
+To do so, please use the following installation method within the `gmwm`
+R package:
 
 ``` r
 # Install the imudata package containing real world IMU data sets
@@ -220,16 +257,45 @@ gmwm::install_imudata()
 gmwm::install_datapkg()
 ```
 
-For more information about the `imudata` and `datapkg` package, see the <https://github.com/SMAC-Group/imudata> and <https://github.com/SMAC-Group/datapkg>.
+For more information about the `imudata` and `datapkg` package, see the
+<https://github.com/SMAC-Group/imudata> and
+<https://github.com/SMAC-Group/datapkg>.
 
-User Guides
-===========
+# User Guides
 
-Various guides ship with package or are available on <http://smac-group.com/> to provide insight into how to use the different methods. At the present time, the following vignettes are available:
+Various guides ship with package or are available on
+<http://smac-group.com/> to provide insight into how to use the
+different methods. At the present time, the following vignettes are
+available:
 
-1.  Process to Haar Wavelet Variance [(Online)](http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae)
+1.  Process to Haar Wavelet Variance
+    [(Online)](http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae)
 
-Licensing
-=========
+# Licensing
 
-The license this source code is released under is the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0. In some cases, the GPL license does apply. However, in the majority of the cases, the license in effect is the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0 as the computational code is heavily dependent on Armadilllo, which use the MPL license that enables us to recast our code to use the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0. See the LICENSE file for full text. Otherwise, please consult [TLDR Legal](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0)) or [GNU](https://www.gnu.org/licenses/agpl-3.0.en.html) which will provide a synopsis of the restrictions placed upon the code. Please note, this does NOT excuse you from talking about licensing with a lawyer!
+The license this source code is released under is the GNU AFFERO GENERAL
+PUBLIC LICENSE (AGPL) v3.0. In some cases, the GPL license does apply.
+However, in the majority of the cases, the license in effect is the GNU
+AFFERO GENERAL PUBLIC LICENSE (AGPL) v3.0 as the computational code is
+heavily dependent on Armadilllo, which use the MPL license that enables
+us to recast our code to use the GNU AFFERO GENERAL PUBLIC LICENSE
+(AGPL) v3.0. See the LICENSE file for full text. Otherwise, please
+consult [TLDR
+Legal](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-\(agpl-3.0\))
+or [GNU](https://www.gnu.org/licenses/agpl-3.0.en.html) which will
+provide a synopsis of the restrictions placed upon the code. Please
+note, this does NOT excuse you from talking about licensing with a
+lawyer\!
+
+<div id="refs" class="references">
+
+<div id="ref-guerrier2013wavelet">
+
+Guerrier, Stéphane, Jan Skaloud, Yannick Stebler, and Maria-Pia
+Victoria-Feser. 2013. “Wavelet-Variance-Based Estimation for Composite
+Stochastic Processes.” *Journal of the American Statistical Association*
+108 (503). Taylor & Francis: 1021–30.
+
+</div>
+
+</div>
