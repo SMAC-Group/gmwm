@@ -51,7 +51,7 @@ Xt = gen_gts(n = n, model = model)
 
 Once we have data, we can see what the wavelet variance looks like:
 
-```{r, fig.align='center', fig.width=6, fig.height=4}
+```{r, fig.align='center', fig.width=4, fig.height=3}
 # Compute Haar WV
 wv_Xt = wvar(Xt)
 plot(wv_Xt)
