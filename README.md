@@ -14,35 +14,73 @@ downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/gmwm)](http://www.r-pkg.org/pkg/gmwm)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--19-yellowgreen.svg)](https://github.com/SMAC-Group/gmwm)
 
-# `gmwm` R Package <a href="https://data-analytics-lab.net/"><img src="man/figures/logo.png" align="right" alt=" " width="215"></a>
+# `gmwm` R Package <a href="https://data-analytics-lab.net/"><img src="man/figures/logo.png" align="right" alt=" " width="230"></a>
 
 This repository holds the Generalized Method of Wavelet Moments (GMWM) R
-package. This estimation technique uses the wavelet variance in a
-moment-matching spirit to estimate parameters of time series models such
-as ARMA or state-space models. A robust version of the GMWM is also
-implemented in this package together with a tailored made method for
-inertial sensors calibration, which typically deals with very large
-sample sizes. (Guerrier et al. 2013)
+package. This estimation technique was introduces in Guerrier et al.
+(2013) and uses the wavelet variance in a moment-matching spirit to
+estimate parameters of time series models such as ARMA or state-space
+models.
 
-Below are examples of the capabilities of the `gmwm` package.
+The GMWM was initially motivated by the need to estimate the parameters
+of complex state-space models used in various engineering applications.
+In short, this approach uses the quantity called Wavelet Variance (WV)
+in the spirit of a GMM estimator. This method is often the only feasible
+estimation approach that can be applied for complex models which are
+used in engineering and natural sciences. In particular, the GMWM is
+computationally efficient and, unlike most likelihood-based techniques,
+it can be applied to massive time dependent datasets which are becoming
+increasingly common. For example, one of the first applications of this
+method was in the field of engineering where the GMWM was used to solve
+“sensor calibration” problems which are of great interest in different
+domains such as Aerospace, Robotics or Geomatics and entails large
+amounts of data (typically tens of millions of observations). In this
+context the GMWM has been demonstrated to represent a considerable
+improvement compared to benchmark methods (see e.g. Stebler et al. 2014
+for details) both in terms of statistical accuracy and computational
+efficiency.
 
-To start, let’s generate some data:
+Building on the generality and flexibility of the GMWM, the estimation
+framework was enlarged to also include robust estimators, leading to a
+robust version of GMWM (RGMWM), in Guerrier et al. (2020). Due to its
+computational efficiency, the GMWM is able to easily estimate complex
+time series and spatial models in circumstances where traditional
+methods have considerable computational and numerical issues, adding the
+robust estimation layer with only a marginal increase in computational
+complexity.
+
+Below are examples of the features of the `gmwm` package.
+
+To start, let’s generate a time series from a simple model, which is a
+AR(1) process with measurement error (white noise):
 
 ``` r
-## Data generation ##
+# Sample size
+n = 10^4
+
 # Specify model
-m = AR1(phi = .98, sigma2 = .01) + WN(sigma2 = 1)
+model = AR1(phi = .98, sigma2 = .02) + WN(sigma2 = 1)
 
 # Generate Data
-d = gen_gts(10000, m)
+Xt = gen_gts(n = n, model = model)
 ```
 
-Once we have data, we can see what the wavelet variance looks like for
-the data with the classical and robust wavelet variances.
+Once we have data, we can see what the wavelet variance looks like:
 
 ``` r
-# Calculate the classical wavelet variance with the Haar filter
-wv.classical = wvar(d)
+# Compute Haar WV
+wv_Xt = wvar(Xt)
+plot(wv_Xt)
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" />
+
+``` r
+wv_Yt = wvar(Yt)
+In the second time series, we introduce a few (1%) of "extreme" (outliers):
+# Copy data and add "outliers"
+Yt = Xt
+Yt[sample(1:n, round(0.01*n))] = rnorm(round(0.01*n), 0, 3^2)
 
 # Plot the data
 plot(wv.classical)
@@ -142,17 +180,6 @@ o = gmwm_imu(model, sim.ts, robust = TRUE, eff = 0.6)
 summary(o)
 ```
 
-# Install Instructions
-
-To install the `gmwm` package, there are three options: CRAN (Stable),
-GitHub (Developmental), or SMAC (stable - offline).
-
-## Recommended R Interface
-
-We firmly recommend that any users of this package use the [RStudio
-IDE](https://www.rstudio.com/products/rstudio/download/) over the
-default R GUI.
-
 ## Installing the package through CRAN (Stable)
 
 The installation process with CRAN is the simplest
@@ -225,52 +252,6 @@ devtools::install_github("SMAC-Group/gmwm")
 devtools::install_github("SMAC-Group/gmwm", build_vignettes = TRUE)
 ```
 
-## Installing the package from SMAC-Group.com (Stable - offline)
-
-Lastly, we will be offering a source .tar that is able to be install
-offline - after being downloaded - on the
-[smac-group.com](http://www.smac-group.com) website.
-
-``` r
-# Install the dependencies
-install.packages(c("RcppArmadillo","ggplot2","scales","devtools","knitr","rmarkdown"))
-
-# Local installation
-setwd("path_to_file_GMWM_2.0.0.tar.gz")
-install.packages("GMWM", repos = NULL, type="source")
-```
-
-## Supplementary data package
-
-To test the package performance on real-world data that is *stationary*
-or work with some of the examples, you will need to download and install
-the `imudata` and/or the `datapkg` R package.
-
-To do so, please use the following installation method within the `gmwm`
-R package:
-
-``` r
-# Install the imudata package containing real world IMU data sets
-gmwm::install_imudata()
-
-# Install the datapkg package containing miscellaneous data sets
-gmwm::install_datapkg()
-```
-
-For more information about the `imudata` and `datapkg` package, see the
-<https://github.com/SMAC-Group/imudata> and
-<https://github.com/SMAC-Group/datapkg>.
-
-# User Guides
-
-Various guides ship with package or are available on
-<http://smac-group.com/> to provide insight into how to use the
-different methods. At the present time, the following vignettes are
-available:
-
-1.  Process to Haar Wavelet Variance
-    [(Online)](http://smac-group.com/computing/process-to-haar-wavelet-variance-formulae)
-
 # Licensing
 
 The license this source code is released under is the GNU AFFERO GENERAL
@@ -289,12 +270,29 @@ lawyer\!
 
 <div id="refs" class="references">
 
+<div id="ref-guerrier2020robust">
+
+Guerrier, Stéphane, Roberto Molinari, Maria-Pia Victoria-Feser, and
+Haotian Xu. 2020. “Robust Two-Step Wavelet-Based Inference for Time
+Series Models.”
+
+</div>
+
 <div id="ref-guerrier2013wavelet">
 
 Guerrier, Stéphane, Jan Skaloud, Yannick Stebler, and Maria-Pia
 Victoria-Feser. 2013. “Wavelet-Variance-Based Estimation for Composite
 Stochastic Processes.” *Journal of the American Statistical Association*
 108 (503). Taylor & Francis: 1021–30.
+
+</div>
+
+<div id="ref-stebler2014generalized">
+
+Stebler, Yannick, Stephane Guerrier, Jan Skaloud, and Maria-Pia
+Victoria-Feser. 2014. “Generalized Method of Wavelet Moments for
+Inertial Navigation Filter Design.” *IEEE Transactions on Aerospace and
+Electronic Systems* 50 (3). IEEE: 2269–83.
 
 </div>
 
