@@ -1,12 +1,12 @@
 Package: gmwm
 Type: Package
 Title: Generalized Method of Wavelet Moments
-Version: 3.0.0.1000
-Date: 2016-11-05
+Version: 3.0.0
+Date: 2020-01-19
 Authors@R: c(
     person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
-    person("Stephane", "Guerrier", , "stef.guerrier@gmail.com", c("ctb","cre","cph")),
-    person("Roberto", "Molinari", , "roberto.molinari@hotmail.it", c("ctb", "cph")),
+    person("Stephane", "Guerrier", , "stef.guerrier@gmail.com", c("aut","cre","cph")),
+    person("Roberto", "Molinari", , "roberto.molinari@hotmail.it", c("aut", "cph")),
     person("Wenchao", "Yang", , "wyang40@illinois.edu", c("ctb"))
     )
 URL: https://github.com/SMAC-Group/gmwm
