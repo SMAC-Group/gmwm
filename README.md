@@ -14,7 +14,7 @@ downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/gmwm)](http://www.r-pkg.org/pkg/gmwm)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--19-yellowgreen.svg)](https://github.com/SMAC-Group/gmwm)
 
-# `gmwm` R Package <a href="https://data-analytics-lab.net/"><img src="man/figures/logo.png" align="right" style="width: 5%; height: 5%"/></a>
+# `gmwm` R Package <a href="https://smac-group.com/"><img src="man/figures/logo.png" align="right" style="width: 16%; height: 16%"/></a>
 
 This repository holds the Generalized Method of Wavelet Moments (GMWM) R
 package. This estimation technique uses the wavelet variance in a
