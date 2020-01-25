@@ -153,7 +153,7 @@ output.format = function(out, model.names, scales, N, alpha, robust, eff, B, G, 
 #' So you must enter either AR1() or GM() objects. 
 #' @return A \code{rank.models} object.
 rank_models = function(..., data = NULL, nested = F, bootstrap = F, 
-                       model.type="ssm", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
+                       model.type="imu", alpha = 0.05, robust = F, eff = 0.6, B = 50, G = 1e6, freq = 1, seed = 1337){
   
   if(is.null(data)){
     stop("`data` must not be `NULL`.")

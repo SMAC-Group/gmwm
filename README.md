@@ -12,7 +12,7 @@ version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-
 downloads](http://cranlogs.r-pkg.org/badges/gmwm)](http://www.r-pkg.org/pkg/gmwm)
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/gmwm)](http://www.r-pkg.org/pkg/gmwm)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--19-yellowgreen.svg)](https://github.com/SMAC-Group/gmwm)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--20-yellowgreen.svg)](https://github.com/SMAC-Group/gmwm)
 
 # `gmwm` R Package <a href="https://data-analytics-lab.net/"><img src="man/figures/logo.png" align="right" alt=" " width="230"></a>
 

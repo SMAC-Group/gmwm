@@ -494,7 +494,7 @@ autoplot.wvar = function(object, CI = T, transparence = 0.1, background = 'white
   if (is.na(title)){
     name = if(object$robust){"Robust"} else{ "Classic" }
     p = p +
-      ggtitle(paste0("Haar Wavelet Variance Representation for ", name, " Calculation"))
+      ggtitle(paste0("Haar Wavelet Variance Representation"))
   }
   
   p
