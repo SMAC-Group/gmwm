@@ -276,49 +276,49 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
   }
   
   #if sub processes are linear, fit using weighted least squares, otherwise call c++ code
-  if(all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
-    X_mat  = return_matrix(model = model, y = data)
-    Omega  = return_Omega(data)
-    nu_hat = gmwm::wvar(data)$variance
-    theta_hat = solve(t(X_mat) %*% Omega %*% X_mat) %*% t(X_mat) %*% Omega %*% nu_hat
-    colnames(theta_hat) = 'Estimates'
-    rownames(theta_hat) = model$process.desc
-    ci_h = gmwm::wvar(data)$ci_high
-    ci_l = gmwm::wvar(data)$ci_low
-    sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
-    out = structure(list('estimate' = theta_hat,
-                   'init.guess' = NA,
-                   'wv.empir' = nu_hat,
-                   'ci.low' = ci_l,
-                   'ci.high' = ci_h,
-                   'orgV' = NA,
-                   'V' = NA,
-                   'omega' = NA,
-                   'obj.fun' = NA,
-                   'theo' = sum_theo,
-                   'decomp.theo' = X_mat,
-                   'scales' = 2^seq(floor(log(length(data), 2))), 
-                   'robust' = robust,
-                   'eff' = eff,
-                   'model.type' = model.type,
-                   'compute.v' = compute.v,
-                   'alpha' = alpha,
-                   'expect.diff' = NA,
-                   'N' = N,
-                   'G' = G,
-                   'H' = H,
-                   'K' = K,
-                   'model' = model,
-                   'model.hat' = NA,
-                   'starting' = model$starting,
-                   'seed' = seed,
-                   'freq' = freq,
-                   'dr.slope' = NA), class = "gmwm")
-    estimate = out[[1]]
-    rownames(estimate) = model$process.desc
-    colnames(estimate) = "Estimates" 
-    
-  }else{
+  # if(all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
+  #   X_mat  = return_matrix(model = model, y = data)
+  #   Omega  = return_Omega(data)
+  #   nu_hat = gmwm::wvar(data)$variance
+  #   theta_hat = solve(t(X_mat) %*% Omega %*% X_mat) %*% t(X_mat) %*% Omega %*% nu_hat
+  #   colnames(theta_hat) = 'Estimates'
+  #   rownames(theta_hat) = model$process.desc
+  #   ci_h = gmwm::wvar(data)$ci_high
+  #   ci_l = gmwm::wvar(data)$ci_low
+  #   sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
+  #   out = structure(list('estimate' = theta_hat,
+  #                  'init.guess' = NA,
+  #                  'wv.empir' = nu_hat,
+  #                  'ci.low' = ci_l,
+  #                  'ci.high' = ci_h,
+  #                  'orgV' = NA,
+  #                  'V' = NA,
+  #                  'omega' = NA,
+  #                  'obj.fun' = NA,
+  #                  'theo' = sum_theo,
+  #                  'decomp.theo' = X_mat,
+  #                  'scales' = 2^seq(floor(log(length(data), 2))), 
+  #                  'robust' = robust,
+  #                  'eff' = eff,
+  #                  'model.type' = model.type,
+  #                  'compute.v' = compute.v,
+  #                  'alpha' = alpha,
+  #                  'expect.diff' = NA,
+  #                  'N' = N,
+  #                  'G' = G,
+  #                  'H' = H,
+  #                  'K' = K,
+  #                  'model' = model,
+  #                  'model.hat' = NA,
+  #                  'starting' = model$starting,
+  #                  'seed' = seed,
+  #                  'freq' = freq,
+  #                  'dr.slope' = NA), class = "gmwm")
+  #   estimate = out[[1]]
+  #   rownames(estimate) = model$process.desc
+  #   colnames(estimate) = "Estimates" 
+  #   
+  # }else{
     out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                 p = alpha, compute_v = compute.v, K = K, H = H, G = G,
                 robust=robust, eff = eff)
@@ -329,7 +329,7 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
     init.guess = out[[2]]
     rownames(init.guess) = model$process.desc
     colnames(init.guess) = "Starting" 
-  }
+  #}
   
   # Convert from AR1 to GM
   if(detected_gm){
@@ -348,7 +348,7 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
   model.hat$theta = as.numeric(estimate)
   
   # Release model
-  if(!all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
+  #if(!all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
     out = structure(list(estimate = estimate,
                          init.guess = init.guess,
                          wv.empir = out[[3]], 
@@ -377,7 +377,7 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
                          seed = seed,
                          freq = freq,
                          dr.slope = out[[13]]), class = "gmwm")
-  }
+  #}
   invisible(out)
 }
 
