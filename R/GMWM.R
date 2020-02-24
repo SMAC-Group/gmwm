@@ -1,15 +1,56 @@
+# # test equation of the theoretical wavelet variance for stochastic processes
+# # that can be expressed linearly with respect to the parameters
+# 
+# # load libraries
+# library(avar)
+# library(wv)
+# library(simts)
+# 
+# # WN
+# true_sigma2 = 10
+# Xt = rnorm(1000, sd = sqrt(true_sigma2))
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = true_sigma2/my_wvar$scales, col = "orange", lwd= 2, type ="b")
+# 
+# # RW
+# true_gamma2 = 10
+# my_mod =  simts::RW(gamma2 = true_gamma2)
+# Xt = gen_gts(n = 1000, model = my_mod)
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = ( (my_wvar$scales^2+2) * true_gamma2) / (12*my_wvar$scales) , col = "orange", lwd= 2, type ="b")
+# 
+# # QN
+# true_q2 = 10
+# my_mod =  simts::QN(q2 = true_q2)
+# Xt = gen_gts(n = 1000, model = my_mod)
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = (6 * true_q2) / my_wvar$scales^2 , col = "orange", lwd= 2, type ="b")
+# 
+# # DR
+# true_omega = 10
+# my_mod =  simts::DR(omega = true_omega)
+# Xt = gen_gts(n = 1000, model = my_mod)
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = (my_wvar$scales^2*true_omega^2)/16 , col = "orange", lwd= 2, type ="b")
+
+
 # Define functions used in gmwm fct when processes can be expressed linearly w/ parameters but that do not need to be called by the user
 return_matrix = function(model, y){
   #define tau
   n = length(y)
   J = floor(log2(n))
   J_vec = seq(J)
+  def_scales = 2^J_vec
   
   #define matrix X for linear in parameter processes
-  qn_p = 3 / (2^(2*J_vec))
-  wn_p = 1/(2^(J_vec))
-  rw_p = 2^(J_vec)/3
-  dr_p = 2^((2*J_vec)-1)
+  qn_p = 6 / (def_scales^2)   
+  wn_p = 1/def_scales
+  rw_p = (def_scales^2+2) / (12*def_scales) 
+  dr_p = (def_scales^2)/16  #note that this is linear with omega^2, not omega
   complete_X_mat = cbind(qn_p, wn_p, rw_p, dr_p)
   colnames(complete_X_mat) = c('QN', 'WN', 'RW', 'DR')
   
@@ -20,10 +61,12 @@ return_matrix = function(model, y){
   return(X_mat)
 }
 
+
 return_Omega = function(y){
   wv_y = gmwm::wvar(y)
   return(diag(1/(wv_y$ci_high - wv_y$ci_low)^2))
 }
+
 
 #' Generalized Method of Wavelet Moments (GMWM) for IMUs, ARMA, SSM, and Robust
 #' 
@@ -275,51 +318,55 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
     theta = conv.gm.to.ar1(theta, model$process.desc, freq)
   }
   
-  #if sub processes are linear, fit using weighted least squares, otherwise call c++ code
-  # if(all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
-  #   X_mat  = return_matrix(model = model, y = data)
-  #   Omega  = return_Omega(data)
-  #   nu_hat = gmwm::wvar(data)$variance
-  #   theta_hat = solve(t(X_mat) %*% Omega %*% X_mat) %*% t(X_mat) %*% Omega %*% nu_hat
-  #   colnames(theta_hat) = 'Estimates'
-  #   rownames(theta_hat) = model$process.desc
-  #   ci_h = gmwm::wvar(data)$ci_high
-  #   ci_l = gmwm::wvar(data)$ci_low
-  #   sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
-  #   out = structure(list('estimate' = theta_hat,
-  #                  'init.guess' = NA,
-  #                  'wv.empir' = nu_hat,
-  #                  'ci.low' = ci_l,
-  #                  'ci.high' = ci_h,
-  #                  'orgV' = NA,
-  #                  'V' = NA,
-  #                  'omega' = NA,
-  #                  'obj.fun' = NA,
-  #                  'theo' = sum_theo,
-  #                  'decomp.theo' = X_mat,
-  #                  'scales' = 2^seq(floor(log(length(data), 2))), 
-  #                  'robust' = robust,
-  #                  'eff' = eff,
-  #                  'model.type' = model.type,
-  #                  'compute.v' = compute.v,
-  #                  'alpha' = alpha,
-  #                  'expect.diff' = NA,
-  #                  'N' = N,
-  #                  'G' = G,
-  #                  'H' = H,
-  #                  'K' = K,
-  #                  'model' = model,
-  #                  'model.hat' = NA,
-  #                  'starting' = model$starting,
-  #                  'seed' = seed,
-  #                  'freq' = freq,
-  #                  'dr.slope' = NA), class = "gmwm")
-  #   estimate = out[[1]]
-  #   rownames(estimate) = model$process.desc
-  #   colnames(estimate) = "Estimates" 
-  #   
-  # }else{
-    out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
+  # If all processes are linear in the parameters, then estimate via weighted least square
+  if(all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
+    X_mat  = return_matrix(model = model, y = data)
+    Omega  = return_Omega(data)
+    nu_hat = gmwm::wvar(data)$variance
+    theta_hat = solve(t(X_mat) %*% Omega %*% X_mat) %*% t(X_mat) %*% Omega %*% nu_hat
+    colnames(theta_hat) = 'Estimates'
+    rownames(theta_hat) = model$process.desc
+    
+    #if drift in the model, take the sqrt of the estimate
+    if("DR" %in% rownames(theta_hat)){
+      theta_hat["DR",1] = sqrt(theta_hat["DR",])
+    }
+    ci_h = gmwm::wvar(data)$ci_high
+    ci_l = gmwm::wvar(data)$ci_low
+    sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
+    out = structure(list('estimate' = theta_hat,
+                         'init.guess' = NA,
+                         'wv.empir' = nu_hat,
+                         'ci.low' = ci_l,
+                         'ci.high' = ci_h,
+                         'orgV' = NA,
+                         'V' = NA,
+                         'omega' = NA,
+                         'obj.fun' = NA,
+                         'theo' = sum_theo,
+                         'decomp.theo' = X_mat,
+                         'scales' = 2^seq(floor(log(length(data), 2))),
+                         'robust' = robust,
+                         'eff' = eff,
+                         'model.type' = model.type,
+                         'compute.v' = compute.v,
+                         'alpha' = alpha,
+                         'expect.diff' = NA,
+                         'N' = N,
+                         'G' = G,
+                         'H' = H,
+                         'K' = K,
+                         'model' = model,
+                         'model.hat' = NA,
+                         'starting' = model$starting,
+                         'seed' = seed,
+                         'freq' = freq,
+                         'dr.slope' = NA), class = "gmwm")
+    estimate = out[[1]]
+    rownames(estimate) = model$process.desc
+    colnames(estimate) = "Estimates"
+    
+  }else{out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
                 p = alpha, compute_v = compute.v, K = K, H = H, G = G,
                 robust=robust, eff = eff)
     estimate = out[[1]]
@@ -329,7 +376,7 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
     init.guess = out[[2]]
     rownames(init.guess) = model$process.desc
     colnames(init.guess) = "Starting" 
-  #}
+  }
   
   # Convert from AR1 to GM
   if(detected_gm){
@@ -347,8 +394,8 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
   
   model.hat$theta = as.numeric(estimate)
   
-  # Release model
-  #if(!all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
+  # Release model if not all processes are linear in the parameters
+  if(!all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
     out = structure(list(estimate = estimate,
                          init.guess = init.guess,
                          wv.empir = out[[3]], 
@@ -377,7 +424,7 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
                          seed = seed,
                          freq = freq,
                          dr.slope = out[[13]]), class = "gmwm")
-  #}
+  }
   invisible(out)
 }
 
