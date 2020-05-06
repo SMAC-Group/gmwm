@@ -1,29 +1,74 @@
 # Define functions used in gmwm fct when processes can be expressed linearly w/ parameters but that do not need to be called by the user
-return_matrix = function(model, y){
-  #define tau
-  n = length(y)
-  J = floor(log2(n))
-  J_vec = seq(J)
-  
-  #define matrix X for linear in parameter processes
-  qn_p = 3 / (2^(2*J_vec))
-  wn_p = 1/(2^(J_vec))
-  rw_p = 2^(J_vec)/3
-  dr_p = 2^((2*J_vec)-1)
-  complete_X_mat = cbind(qn_p, wn_p, rw_p, dr_p)
-  colnames(complete_X_mat) = c('QN', 'WN', 'RW', 'DR')
-  
-  #define X_mat
-  X_mat = complete_X_mat[, model$process.desc]
-  
-  #return matrix
-  return(X_mat)
-}
+
+# # test equation of the theoretical wavelet variance for stochastic processes
+# # that can be expressed linearly with respect to the parameters
+# 
+# # load libraries
+# library(avar)
+# library(wv)
+# library(simts)
+# 
+# # WN
+# true_sigma2 = 10
+# Xt = rnorm(1000, sd = sqrt(true_sigma2))
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = true_sigma2/my_wvar$scales, col = "orange", lwd= 2, type ="b")
+# 
+# # RW
+# true_gamma2 = 10
+# my_mod =  simts::RW(gamma2 = true_gamma2)
+# Xt = gen_gts(n = 1000, model = my_mod)
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = ( (my_wvar$scales^2+2) * true_gamma2) / (12*my_wvar$scales) , col = "orange", lwd= 2, type ="b")
+# 
+# # QN
+# true_q2 = 10
+# my_mod =  simts::QN(q2 = true_q2)
+# Xt = gen_gts(n = 1000, model = my_mod)
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = (6 * true_q2) / my_wvar$scales^2 , col = "orange", lwd= 2, type ="b")
+# 
+# # DR
+# true_omega = 10
+# my_mod =  simts::DR(omega = true_omega)
+# Xt = gen_gts(n = 1000, model = my_mod)
+# my_wvar = wvar(Xt)
+# plot(my_wvar)
+# lines(x = my_wvar$scales, y = (my_wvar$scales^2*true_omega^2)/16 , col = "orange", lwd= 2, type ="b")
+
+
+# Define functions used in gmwm fct when processes can be expressed linearly w/ parameters but that do not need to be called by the user
 
 return_Omega = function(y){
   wv_y = gmwm::wvar(y)
   return(diag(1/(wv_y$ci_high - wv_y$ci_low)^2))
 }
+
+return_matrix = function(model, y){
+  #define tau
+  n = length(y)
+  J = floor(log2(n))
+  J_vec = seq(J)
+  def_scales = 2^J_vec
+
+  #define matrix X for linear in parameter processes
+  qn_p = 6 / (def_scales^2)
+  wn_p = 1/def_scales
+  rw_p = (def_scales^2+2) / (12*def_scales)
+  dr_p = (def_scales^2)/16  #note that this is linear with omega^2, not omega
+  complete_X_mat = cbind(qn_p, wn_p, rw_p, dr_p)
+  colnames(complete_X_mat) = c('QN', 'WN', 'RW', 'DR')
+
+  #define X_mat
+  X_mat = complete_X_mat[, model$process.desc]
+
+  #return matrix
+  return(X_mat)
+}
+
 
 #' Generalized Method of Wavelet Moments (GMWM) for IMUs, ARMA, SSM, and Robust
 #' 
@@ -285,6 +330,7 @@ gmwm = function(model, data, model.type="imu", compute.v="auto",
   #   rownames(theta_hat) = model$process.desc
   #   ci_h = gmwm::wvar(data)$ci_high
   #   ci_l = gmwm::wvar(data)$ci_low
+  #   obj_teo = wv::decomp_theoretical_wv(theta = theta_hat, desc = model$process.desc, objdesc = model$obj.desc, tau = nu_hat$scales)
   #   sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
   #   out = structure(list('estimate' = theta_hat,
   #                  'init.guess' = NA,
