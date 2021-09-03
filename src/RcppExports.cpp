@@ -933,6 +933,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gmwm_master_wv_cpp
+arma::field<arma::mat> gmwm_master_wv_cpp(arma::mat wvar, unsigned int N, double expect_diff, arma::mat omega, double ranged, arma::vec theta, const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, bool starting, double alpha, std::string compute_v, unsigned int K, unsigned int H, unsigned int G, bool robust, double eff);
+RcppExport SEXP _gmwm_gmwm_master_wv_cpp(SEXP wvarSEXP, SEXP NSEXP, SEXP expect_diffSEXP, SEXP omegaSEXP, SEXP rangedSEXP, SEXP thetaSEXP, SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP startingSEXP, SEXP alphaSEXP, SEXP compute_vSEXP, SEXP KSEXP, SEXP HSEXP, SEXP GSEXP, SEXP robustSEXP, SEXP effSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type wvar(wvarSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< double >::type expect_diff(expect_diffSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< double >::type ranged(rangedSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type desc(descSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type objdesc(objdescSEXP);
+    Rcpp::traits::input_parameter< std::string >::type model_type(model_typeSEXP);
+    Rcpp::traits::input_parameter< bool >::type starting(startingSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< std::string >::type compute_v(compute_vSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type H(HSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool >::type robust(robustSEXP);
+    Rcpp::traits::input_parameter< double >::type eff(effSEXP);
+    rcpp_result_gen = Rcpp::wrap(gmwm_master_wv_cpp(wvar, N, expect_diff, omega, ranged, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff));
+    return rcpp_result_gen;
+END_RCPP
+}
 // guess_initial
 arma::vec guess_initial(const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, std::string model_type, unsigned int num_param, double expect_diff, unsigned int N, const arma::mat& wv, const arma::vec& tau, double ranged, unsigned int G);
 RcppExport SEXP _gmwm_guess_initial(SEXP descSEXP, SEXP objdescSEXP, SEXP model_typeSEXP, SEXP num_paramSEXP, SEXP expect_diffSEXP, SEXP NSEXP, SEXP wvSEXP, SEXP tauSEXP, SEXP rangedSEXP, SEXP GSEXP) {
@@ -2354,6 +2381,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_gmwm_gmwm_engine", (DL_FUNC) &_gmwm_gmwm_engine, 8},
     {"_gmwm_gmwm_update_cpp", (DL_FUNC) &_gmwm_gmwm_update_cpp, 17},
     {"_gmwm_gmwm_master_cpp", (DL_FUNC) &_gmwm_gmwm_master_cpp, 13},
+    {"_gmwm_gmwm_master_wv_cpp", (DL_FUNC) &_gmwm_gmwm_master_wv_cpp, 17},
     {"_gmwm_guess_initial", (DL_FUNC) &_gmwm_guess_initial, 10},
     {"_gmwm_ar1_draw", (DL_FUNC) &_gmwm_ar1_draw, 4},
     {"_gmwm_arma_draws", (DL_FUNC) &_gmwm_arma_draws, 3},

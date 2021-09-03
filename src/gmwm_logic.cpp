@@ -244,13 +244,13 @@ arma::field<arma::mat> gmwm_update_cpp(arma::vec theta,
 //' @backref src/gmwm_logic.h
 // [[Rcpp::export]]
 arma::field<arma::mat> gmwm_master_cpp(arma::vec& data, 
-                                      arma::vec theta,
-                                      const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
-                                      std::string model_type, bool starting,
-                                      double alpha, 
-                                      std::string compute_v, unsigned int K, unsigned int H,
-                                      unsigned int G, 
-                                      bool robust, double eff){
+                                       arma::vec theta,
+                                       const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                                       std::string model_type, bool starting,
+                                       double alpha, 
+                                       std::string compute_v, unsigned int K, unsigned int H,
+                                       unsigned int G, 
+                                       bool robust, double eff){
   
   // Obtain counts of the different models we need to work with
   std::map<std::string, int> models = count_models(desc);
@@ -328,9 +328,9 @@ arma::field<arma::mat> gmwm_master_cpp(arma::vec& data,
       V = Vout(0);
     }
   }else{
-     V = fast_cov_cpp(wvar.col(2), wvar.col(1));
+    V = fast_cov_cpp(wvar.col(2), wvar.col(1));
   }
-
+  
   // Obtain the Omega matrix
   arma::mat omega = arma::inv(diagmat(V));
   
@@ -369,7 +369,7 @@ arma::field<arma::mat> gmwm_master_cpp(arma::vec& data,
         theta = theta2;
         starting = false;
       }
-
+      
     }
     
     guessed_theta = theta;
@@ -385,20 +385,20 @@ arma::field<arma::mat> gmwm_master_cpp(arma::vec& data,
   // Enable bootstrapping
   if(compute_v == "bootstrap"){
     for(unsigned int k = 0; k < K; k++){
-        // Create the full V matrix
-        V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false);
+      // Create the full V matrix
+      V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false);
       
-        // Update the omega matrix
-        omega = arma::inv(diagmat(V));
-        
-        // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
-        theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
-        
-        // Optim may return a very small value. In this case, instead of saying its zero (yielding a transform issue), make it EPSILON.
-        theta = code_zero(theta);
+      // Update the omega matrix
+      omega = arma::inv(diagmat(V));
+      
+      // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
+      theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
+      
+      // Optim may return a very small value. In this case, instead of saying its zero (yielding a transform issue), make it EPSILON.
+      theta = code_zero(theta);
     }
   }
-
+  
   
   if(desc[0] == "SARIMA" && desc.size() == 1){
     
@@ -410,10 +410,10 @@ arma::field<arma::mat> gmwm_master_cpp(arma::vec& data,
   } 
   
   // Order AR1s / GM so largest phi is first!
-   if(models["AR1"] > 1 || models["GM"] > 1){
-     theta = order_AR1s(theta, desc, objdesc);
-   }
-
+  if(models["AR1"] > 1 || models["GM"] > 1){
+    theta = order_AR1s(theta, desc, objdesc);
+  }
+  
   // Obtain the objective value function
   arma::vec obj_value(1);
   obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
@@ -424,7 +424,159 @@ arma::field<arma::mat> gmwm_master_cpp(arma::vec& data,
   // Decomposition of the WV.
   arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
   arma::vec theo = decomp_to_theo_wv(decomp_theo);
+  
+  // Export information back
+  arma::field<arma::mat> out(13);
+  out(0) = theta;
+  out(1) = guessed_theta;
+  out(2) = wv_empir;
+  out(3) = ci_lo;
+  out(4) = ci_hi;
+  out(5) = V;
+  out(6) = orgV;
+  out(7) = expect_diff;
+  out(8) = theo;
+  out(9) = decomp_theo;
+  out(10) = obj_value;
+  out(11) = omega;
+  out(12) = dr_s;
+  return out;
+}
 
+
+
+
+
+//' @title Master Wrapper for the GMWM Estimator (using WV and Omega as inputs)
+//' @description This function compute the GMWM Estimator, and an initial test estimate.
+//' @param wvar A \code{mat} containing the empirical WV (col1), lower bound (col2) and upper bound (col3).
+//' @param N     A \code{integer} corresponding to the length of the original data.
+//' @param expect_diff A \code{double} corresponding to the empirical mean of the first difference of the original data.
+//' @param omega A \code{matrix} corresponding to the weight matrix of the GMWM estimator.
+//' @param ranged A \code{double} corresponding to the scaled range of the original data (i.e. (max - min)/length). 
+//' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+//' @param desc A \code{vector<string>} indicating the models that should be considered.
+//' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+//' @param model_type A \code{string} that represents the model transformation
+//' @param starting A \code{bool} that indicates whether the supplied values are guessed (T) or are user-based (F).
+//' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100
+//' @param compute_v A \code{string} that describes what kind of covariance matrix should be computed.
+//' @param K An \code{int} that controls how many times theta is updated.
+//' @param H An \code{int} that controls how many bootstrap replications are done.
+//' @param G An \code{int} that controls how many guesses at different parameters are made.
+//' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+//' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+//' @return A \code{field<mat>} that contains a list of ever-changing estimates...
+//' @author JJB, SG
+//' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+//' @keywords internal
+//' @export
+//' @backref src/gmwm_logic.cpp
+//' @backref src/gmwm_logic.h
+// [[Rcpp::export]]
+arma::field<arma::mat> gmwm_master_wv_cpp(arma::mat wvar,
+                                          unsigned int N,
+                                          double expect_diff,
+                                          arma::mat omega,
+                                          double ranged,
+                                          arma::vec theta,
+                                          const std::vector<std::string>& desc, const arma::field<arma::vec>& objdesc, 
+                                          std::string model_type, bool starting,
+                                          double alpha, 
+                                          std::string compute_v, unsigned int K, unsigned int H,
+                                          unsigned int G, 
+                                          bool robust, double eff){
+  
+  // Obtain counts of the different models we need to work with
+  std::map<std::string, int> models = count_models(desc);
+  
+  // ------ Variable Declarations
+  
+  // Extract
+  arma::vec wv_empir = wvar.col(0);
+  arma::vec ci_lo = wvar.col(1);
+  arma::vec ci_hi = wvar.col(2);
+  
+  // Number of Scales (J)
+  unsigned int nlevels = wv_empir.n_elem;
+  
+  // Number of parameters
+  unsigned int np = theta.n_elem;
+  
+  // Guessed values of Theta (user supplied or generated)
+  arma::vec guessed_theta = theta;
+
+  
+  //-------------------------
+  // Obtain Covariance Matrix
+  //-------------------------
+  
+  arma::mat V = fast_cov_cpp(ci_hi, ci_lo);
+  
+  // Store the original V matrix (in case of bootstrapping) for use in the update function
+  arma::mat orgV = V;
+  
+  // Calculate the values of the Scales 
+  arma::vec scales = scales_cpp(nlevels);
+  
+  // Guess starting values for the theta parameters
+  if(starting){
+    
+    // Always run guessing algorithm
+    theta = guess_initial(desc, objdesc, model_type, np, expect_diff, N, wvar, scales, ranged, G);
+    guessed_theta = theta;
+  }
+  
+  // Obtain the GMWM estimator's estimates.
+  theta = gmwm_engine(theta, desc, objdesc, model_type, 
+                      wv_empir, omega, scales, starting);
+  
+  // Optim may return a very small value. In this case, instead of saying its zero (yielding a transform issue), make it EPSILON.
+  theta = code_zero(theta);
+  
+  // Enable bootstrapping
+  if(compute_v == "bootstrap"){
+    for(unsigned int k = 0; k < K; k++){
+      // Create the full V matrix
+      V = cov_bootstrapper(theta, desc, objdesc, N, robust, eff, H, false);
+      
+      // Update the omega matrix
+      omega = arma::inv(diagmat(V));
+      
+      // The theta update in this case MUST not use Yannick's starting algorithm. Hence, the false value.
+      theta = gmwm_engine(theta, desc, objdesc, model_type, wv_empir, omega, scales, false);
+      
+      // Optim may return a very small value. In this case, instead of saying its zero (yielding a transform issue), make it EPSILON.
+      theta = code_zero(theta);
+    }
+  }
+  
+  
+  if(desc[0] == "SARIMA" && desc.size() == 1){
+    
+    arma::vec temp = objdesc(0);
+    unsigned int p = temp(0);
+    if(p != 0 && invert_check(arma::join_cols(arma::ones<arma::vec>(1), -theta.rows(0, p - 1))) == false){
+      Rcpp::Rcout << "WARNING: This ARMA model contains AR coefficients that are NON-STATIONARY!" << std::endl;
+    }
+  } 
+  
+  // Order AR1s / GM so largest phi is first!
+  if(models["AR1"] > 1 || models["GM"] > 1){
+    theta = order_AR1s(theta, desc, objdesc);
+  }
+  
+  // Obtain the objective value function
+  arma::vec obj_value(1);
+  obj_value(0) = getObjFun(theta, desc, objdesc,  model_type, omega, wv_empir, scales); 
+  
+  arma::vec dr_s(1);
+  dr_s(0) = ranged;
+  
+  // Decomposition of the WV.
+  arma::mat decomp_theo = decomp_theoretical_wv(theta, desc, objdesc, scales);
+  arma::vec theo = decomp_to_theo_wv(decomp_theo);
+  
   // Export information back
   arma::field<arma::mat> out(13);
   out(0) = theta;

@@ -1207,6 +1207,36 @@ gmwm_master_cpp <- function(data, theta, desc, objdesc, model_type, starting, al
     .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
 }
 
+#' @title Master Wrapper for the GMWM Estimator (using WV and Omega as inputs)
+#' @description This function compute the GMWM Estimator, and an initial test estimate.
+#' @param wvar A \code{mat} containing the empirical WV (col1), lower bound (col2) and upper bound (col3).
+#' @param N     A \code{integer} corresponding to the length of the original data.
+#' @param expect_diff A \code{double} corresponding to the empirical mean of the first difference of the original data.
+#' @param omega A \code{matrix} corresponding to the weight matrix of the GMWM estimator.
+#' @param ranged A \code{double} corresponding to the scaled range of the original data (i.e. (max - min)/length). 
+#' @param theta A \code{vec} with dimensions N x 1 that contains user-supplied initial values for parameters
+#' @param desc A \code{vector<string>} indicating the models that should be considered.
+#' @param objdesc A \code{field<vec>} containing a list of parameters (e.g. AR(1) = c(1,1), ARMA(p,q) = c(p,q,1))
+#' @param model_type A \code{string} that represents the model transformation
+#' @param starting A \code{bool} that indicates whether the supplied values are guessed (T) or are user-based (F).
+#' @param alpha A \code{double} that handles the alpha level of the confidence interval (1-alpha)*100
+#' @param compute_v A \code{string} that describes what kind of covariance matrix should be computed.
+#' @param K An \code{int} that controls how many times theta is updated.
+#' @param H An \code{int} that controls how many bootstrap replications are done.
+#' @param G An \code{int} that controls how many guesses at different parameters are made.
+#' @param robust A \code{bool} that indicates whether the estimation should be robust or not.
+#' @param eff A \code{double} that specifies the amount of efficiency required by the robust estimator.
+#' @return A \code{field<mat>} that contains a list of ever-changing estimates...
+#' @author JJB, SG
+#' @references Wavelet variance based estimation for composite stochastic processes, S. Guerrier and Robust Inference for Time Series Models: a Wavelet-Based Framework, S. Guerrier
+#' @keywords internal
+#' @export
+#' @backref src/gmwm_logic.cpp
+#' @backref src/gmwm_logic.h
+gmwm_master_wv_cpp <- function(wvar, N, expect_diff, omega, ranged, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff) {
+    .Call('_gmwm_gmwm_master_wv_cpp', PACKAGE = 'gmwm', wvar, N, expect_diff, omega, ranged, theta, desc, objdesc, model_type, starting, alpha, compute_v, K, H, G, robust, eff)
+}
+
 #' @title Randomly guess a starting parameter
 #' @description Sets starting parameters for each of the given parameters. 
 #' @param desc A \code{vector<string>} that contains the model's components.
