@@ -23,7 +23,8 @@ License: AGPL-3
 Maintainer: Stephane Guerrier <stef.guerrier@gmail.com>
 Depends: 
     R (>= 3.3),
-    ggplot2 (>= 2.1.0)
+    wv,
+    simts
 Imports: 
     Rcpp (>= 0.12.7),
     scales,
@@ -42,6 +43,6 @@ Suggests:
     knitr,
     rmarkdown,
     imudata (>= 2.0.0)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 SystemRequirements: C++11

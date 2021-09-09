@@ -4,8 +4,18 @@
 \alias{all_bootstrapper}
 \title{Bootstrap for Everything!}
 \usage{
-all_bootstrapper(theta, desc, objdesc, scales, model_type, N, robust, eff,
-  alpha, H)
+all_bootstrapper(
+  theta,
+  desc,
+  objdesc,
+  scales,
+  model_type,
+  N,
+  robust,
+  eff,
+  alpha,
+  H
+)
 }
 \arguments{
 \item{theta}{A \code{vector} with dimensions N x 1 that contains user-supplied initial values for parameters}

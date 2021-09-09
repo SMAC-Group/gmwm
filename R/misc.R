@@ -57,9 +57,9 @@ paperSetting = function(){
 #' @return A \code{vector} containing \code{n} colors
 #' @author John Colby
 #' @keywords internal
-ggColor <- function(n) {
+ggColor <- function(n, alpha = 1) {
   hues = seq(15, 375, length=n+1)
-  rev(hcl(h=hues, l=70, c=100)[1:n])
+  rev(hcl(h=hues, l=70, c=100, alpha = alpha)[1:n])
 }
 
 #' @title Get the model in a \code{gmwm} object

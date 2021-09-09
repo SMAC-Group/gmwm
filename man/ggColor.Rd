@@ -4,7 +4,7 @@
 \alias{ggColor}
 \title{Emulate ggplot2 default color palette}
 \usage{
-ggColor(n)
+ggColor(n, alpha = 1)
 }
 \arguments{
 \item{n}{An \code{integer} indicating how many colors user wants.}

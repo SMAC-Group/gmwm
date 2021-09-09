@@ -4,8 +4,7 @@
 \alias{gen_sarima}
 \title{Generate Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model}
 \usage{
-gen_sarima(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L,
-  n_start = 0L)
+gen_sarima(N, ar, d, ma, sar, sd, sma, sigma2 = 1.5, s = 12L, n_start = 0L)
 }
 \arguments{
 \item{N}{An \code{integer} for signal length.}

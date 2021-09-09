@@ -1,0 +1,47 @@
+Package: gmwm
+Type: Package
+Title: Generalized Method of Wavelet Moments
+Version: 3.0.0
+Date: 2020-01-19
+Authors@R: c(
+    person("James", "Balamuta", , "james.balamuta@gmail.com", c("aut", "cph")),
+    person("Stephane", "Guerrier", , "stef.guerrier@gmail.com", c("aut","cre","cph")),
+    person("Roberto", "Molinari", , "roberto.molinari@hotmail.it", c("aut", "cph")),
+    person("Wenchao", "Yang", , "wyang40@illinois.edu", c("ctb"))
+    )
+URL: https://github.com/SMAC-Group/gmwm
+BugReports: https://github.com/SMAC-Group/gmwm/issues
+Description: Generalized Method of Wavelet Moments (GMWM) is an estimation
+    technique for the parameters of time series models. It uses the wavelet variance
+    in a moment matching approach that makes it particularly suitable for the
+    estimation of standard time series and certain state-space models. Furthermore, there exists a robust
+    implementation of GMWM, which allows the robust estimation of various state-space
+    models and ARIMA models. Lastly, the package allows to easily
+    generate complex time series data, perform different wavelet decompositions, and
+    visualizations.
+License: AGPL-3
+Maintainer: Stephane Guerrier <stef.guerrier@gmail.com>
+Depends: 
+    R (>= 3.3),
+    ggplot2 (>= 2.1.0)
+Imports: 
+    Rcpp (>= 0.12.7),
+    scales,
+    grid,
+    reshape2,
+    utils,
+    stats,
+    methods,
+    graphics,
+    grDevices
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown,
+    imudata (>= 2.0.0)
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+SystemRequirements: C++11

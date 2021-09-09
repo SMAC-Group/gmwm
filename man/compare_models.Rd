@@ -4,15 +4,27 @@
 \alias{compare_models}
 \title{Graphically Compare GMWM Model Fit}
 \usage{
-compare_models(..., display.model = T, show.theo.wv = F,
-  facet.label = NULL, background = "white", transparence = 0.05,
-  CI.color = NULL, line.color = NULL, line.type = NULL,
-  point.size = NULL, point.shape = NULL,
-  title = "Comparison of GMWM Models", title.size = 18,
-  axis.label.size = 16, axis.tick.size = 11, facet.label.size = 13,
+compare_models(
+  ...,
+  display.model = T,
+  show.theo.wv = F,
+  facet.label = NULL,
+  background = "white",
+  transparence = 0.05,
+  CI.color = NULL,
+  line.color = NULL,
+  line.type = NULL,
+  point.size = NULL,
+  point.shape = NULL,
+  title = "Comparison of GMWM Models",
+  title.size = 18,
+  axis.label.size = 16,
+  axis.tick.size = 11,
+  facet.label.size = 13,
   facet.label.background = "#003C7D33",
   axis.x.label = expression(paste("Scale ", tau)),
-  axis.y.label = expression(paste("Wavelet Variance ", nu)))
+  axis.y.label = expression(paste("Wavelet Variance ", nu))
+)
 }
 \arguments{
 \item{...}{Several \code{gmwm} objects.}

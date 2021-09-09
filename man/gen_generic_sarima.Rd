@@ -4,8 +4,7 @@
 \alias{gen_generic_sarima}
 \title{Generate Generic Seasonal Autoregressive Order P - Moving Average Order Q (SARMA(p,q)x(P,Q)) Model}
 \usage{
-gen_generic_sarima(N, theta_values, objdesc, sigma2 = 1.5,
-  n_start = 0L)
+gen_generic_sarima(N, theta_values, objdesc, sigma2 = 1.5, n_start = 0L)
 }
 \arguments{
 \item{N}{An \code{integer} for signal length.}

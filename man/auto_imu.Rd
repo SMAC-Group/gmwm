@@ -4,9 +4,17 @@
 \alias{auto_imu}
 \title{Automatically select appropriate model for IMU}
 \usage{
-auto_imu(data, model = 3 * AR1() + WN() + RW() + QN() + DR(),
-  bootstrap = F, alpha = 0.05, robust = F, eff = 0.6, B = 50,
-  G = 1e+06, seed = 1337)
+auto_imu(
+  data,
+  model = 3 * AR1() + WN() + RW() + QN() + DR(),
+  bootstrap = F,
+  alpha = 0.05,
+  robust = F,
+  eff = 0.6,
+  B = 50,
+  G = 1e+06,
+  seed = 1337
+)
 }
 \arguments{
 \item{data}{A \code{vector}, \code{matrix}, \code{data.frame}, or \code{imu} object with either 1, 3, or 6 columns.}

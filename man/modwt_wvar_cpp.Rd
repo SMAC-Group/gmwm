@@ -4,8 +4,16 @@
 \alias{modwt_wvar_cpp}
 \title{Computes the (MODWT) wavelet variance}
 \usage{
-modwt_wvar_cpp(signal, nlevels, robust, eff, alpha, ci_type, strWavelet,
-  decomp)
+modwt_wvar_cpp(
+  signal,
+  nlevels,
+  robust,
+  eff,
+  alpha,
+  ci_type,
+  strWavelet,
+  decomp
+)
 }
 \arguments{
 \item{signal}{A \code{vec} that contains the data.}

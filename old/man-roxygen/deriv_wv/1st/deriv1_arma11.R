@@ -1,0 +1,12 @@
+#' @section Process Haar WV First Derivative:
+#' Taking the derivative with respect to \eqn{\phi}{phi} yields:
+#' \deqn{ \frac{\partial }{{\partial \phi }}\nu _j^2\left( {\phi ,\theta ,{\sigma ^2}} \right) = \frac{{2{\sigma ^2}}}{{{{(\phi  - 1)}^4}{{(\phi  + 1)}^2}\tau _j^2}}\left( \begin{array}{cc}
+#' &{\tau _j}\left( { - {{(\theta  + 1)}^2}(\phi  - 1){{(\phi  + 1)}^2} - 2\left( {{\phi ^2} - 1} \right)(\theta  + \phi )(\theta \phi  + 1){\phi ^{\frac{{{\tau _j}}}{2} - 1}} + \left( {{\phi ^2} - 1} \right)(\theta \phi  + 1)(\theta  + \phi ){\phi ^{{\tau _j} - 1}}} \right) \\
+#' &- \left( {{\theta ^2}((3\phi  + 2)\phi  + 1) + 2\theta \left( {\left( {{\phi ^2} + \phi  + 3} \right)\phi  + 1} \right) + (3\phi  + 2)\phi  + 1} \right)\left( {{\phi ^{{\tau _j}}} - 4{\phi ^{\frac{{{\tau _j}}}{2}}} + 3} \right) \\ 
+#' \end{array}  \right)}{ (1/((-1 + phi)^4*(1 + phi)^2*tau[j]^2))*2*sigma2*((-(3 - 4*phi^(tau[j]/2) + phi^tau[j]))*(1 + phi*(2 + 3*phi) + theta^2*(1 + phi*(2 + 3*phi)) + 2*theta*(1 + phi*(3 + phi + phi^2))) + ((-(1 + theta)^2)*(-1 + phi)*(1 + phi)^2 - 2*phi^(tau[j]/2 - 1)*(theta + phi)*(1 + theta*phi)*(-1 + phi^2) + phi^(tau[j] - 1)*(theta + phi)*(1 + theta*phi)*(-1 + phi^2))*tau[j])}
+#' 
+#' Taking the derivative with respect to \eqn{\theta}{theta} yields:
+#' \deqn{\frac{\partial }{{\partial \theta }}\nu _j^2\left( {\phi ,\theta ,{\sigma ^2}} \right) = \frac{{2{\sigma ^2}\left( {(\theta  + 1)\left( {{\phi ^2} - 1} \right){\tau _j} + \left( {2\theta \phi  + {\phi ^2} + 1} \right)\left( {{\phi ^{{\tau _j}}} - 4{\phi ^{\frac{{{\tau _j}}}{2}}} + 3} \right)} \right)}}{{{{(\phi  - 1)}^3}(\phi  + 1)\tau _j^2}}}{(2*sigma2*((1 + 2*theta*phi + phi^2)*(3 - 4*phi^(tau[j]/2) + phi^tau[j]) +(1 + theta)*(-1 + phi^2)*tau[j])) / ((-1 + phi)^3*(1 + phi)*tau[j]^2)}
+#' 
+#' Taking the derivative with respect to \eqn{\sigma^2}{sigma^2} yields:
+#' \deqn{\frac{\partial }{{\partial \sigma ^2 }}\nu _j^2\left( {\phi ,\theta ,{\sigma ^2}} \right) = \frac{2 \sigma ^2 \left(\left(\phi ^2-1\right) \tau _j+2 \phi  \left(\phi ^{\tau _j}-4 \phi ^{\frac{\tau _j}{2}}+3\right)\right)}{(\phi -1)^3 (\phi +1) \tau _j^2}}{((-2*((-(theta + phi))*(1 + theta*phi)*(3 - 4*phi^(tau[j]/2) + phi^tau[j]) - (1/2)*(1 + theta)^2*(-1 + phi^2)*tau[j]))/((-1 + phi)^3*(1 + phi)*tau[j]^2))}

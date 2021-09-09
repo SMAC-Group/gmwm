@@ -1,0 +1,123 @@
+---
+title: "Test"
+output: html_document
+---
+
+# Standard GMWM 
+
+```{r, cache = TRUE}
+library(gmwm)
+
+# Simulate data
+set.seed(1842)
+n = 10^6
+model = WN(sigma2 = 1) + AR1(phi = 0.995, sigma2 = 10^(-4)) + RW(gamma2 = 10^(-6))
+Xt = gen_gts(n = n, model = model)
+wv = wvar4gmwm(Xt)
+```
+
+```{r, cache = TRUE}
+# Plot WV (we can add a function to avoid $wv... a detail)
+plot(wv$wv)
+```
+
+```{r, cache = TRUE}
+# Fit GMWM
+estim = gmwm2(WN() + AR1() + RW(), wv)
+estim
+plot(estim)
+```
+
+There is a problem with the plot... I think Lionel made a mistake in the last commit. I didn't investigate but should be easy to fix.
+
+```{r, cache = TRUE}
+# Let's add some "vibrations"
+A = 0.4
+B = 1/100
+Xt = as.numeric(Xt) + A*sin(2*pi*B*(1:n))
+wv = wvar4gmwm(Xt)
+
+# Plot WV
+plot(wv$wv)
+```
+
+This is creating a problem in the middle!
+
+```{r, cache = TRUE}
+# Fit GMWM
+estim2 = gmwm2(WN() + AR1() + RW(), wv)
+estim2
+plot(estim2)
+```
+
+The fit is not that good. Let's use some good starting values...
+
+```{r, cache = TRUE}
+estim3 = gmwm2(model, wv)
+estim3
+plot(estim3)
+```
+
+Still doesn't work so let's remove scales 5 to 8...
+
+```{r, cache = TRUE}
+# Let's remove some scales
+# Fit GMWM
+estim4 = gmwm2(model, wv, remove_scales = 5:8)
+estim4
+plot(estim4)  
+```
+
+Looks better!
+
+# Multisignal GMWM 
+
+```{r}
+library(gmwm)
+
+# Simulate data
+set.seed(1842)
+n = 10^6
+
+model1 = WN(sigma2 = runif(1, 0.9, 1.1)) + AR1(phi = runif(1, 0.99, 0.999), sigma2 = 10^(-4)) + RW(gamma2 = 10^(-6))
+model2 = WN(sigma2 = runif(1, 0.9, 1.1)) + AR1(phi = runif(1, 0.99, 0.999), sigma2 = 10^(-4)) + RW(gamma2 = 10^(-6))
+model3 = WN(sigma2 = runif(1, 0.9, 1.1)) + AR1(phi = runif(1, 0.99, 0.999), sigma2 = 10^(-4)) + RW(gamma2 = 10^(-6))
+model4 = WN(sigma2 = runif(1, 0.9, 1.1)) + AR1(phi = runif(1, 0.99, 0.999), sigma2 = 10^(-4)) + RW(gamma2 = 10^(-6))
+model5 = WN(sigma2 = runif(1, 0.9, 1.1)) + AR1(phi = runif(1, 0.99, 0.999), sigma2 = 10^(-4)) + RW(gamma2 = 10^(-6))
+
+Xt1 = gen_gts(n = n, model = model1)
+Xt2 = gen_gts(n = n, model = model2)
+Xt3 = gen_gts(n = n, model = model3)
+Xt4 = gen_gts(n = n, model = model4)
+Xt5 = gen_gts(n = n, model = model5)
+
+compare_wvar(wvar(Xt1), wvar(Xt2), wvar(Xt3), wvar(Xt4), wvar(Xt5), split = F)
+```
+
+```{r}
+Xt = cbind(as.numeric(Xt1), as.numeric(Xt2), as.numeric(Xt3), as.numeric(Xt4), as.numeric(Xt5))
+wv = wvar4gmwm(Xt)
+estim = gmwm2(WN() + AR1() + RW(), wv)
+estim
+```
+
+Let's check the results
+
+```{r}
+plot(NA, xlim = c(1, 10^6), ylim = c(10^(-3), 10^(2)), log = "xy", xlab = "Scale", ylab = "WV")
+
+scales = wv$wv[[1]]$scales
+for (k in 1:5){
+  lines(scales, wv$wv[[k]]$variance, col = k + 1)
+  lines(scales, wv$wv[[k]]$ci_low, col = k + 1, lty = 2)
+  lines(scales, wv$wv[[k]]$ci_high, col = k + 1, lty = 2)
+}
+
+lines(scales, wv$wv_mat[,1], col = "blue2", lwd = 2, pch = 16, type = "b", cex = 1.5)
+
+theo = ar1_to_wv(phi = 0, sigma2 = estim$estimate[1], tau = scales) + 
+  ar1_to_wv(phi = estim$estimate[2], sigma2 = estim$estimate[3], tau = scales) +
+  rw_to_wv(gamma2 = estim$estimate[4], tau = scales)
+
+lines(scales, theo, col = "orange", lwd = 2, pch = 1, type = "b", cex = 1.5)
+```

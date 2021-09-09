@@ -4,8 +4,19 @@
 \alias{output.format}
 \title{Formats the rank.models (auto.imu) object}
 \usage{
-output.format(out, model.names, scales, N, alpha, robust, eff, B, G, seed,
-  freq = 1)
+output.format(
+  out,
+  model.names,
+  scales,
+  N,
+  alpha,
+  robust,
+  eff,
+  B,
+  G,
+  seed,
+  freq = 1
+)
 }
 \arguments{
 \item{out}{A \code{list} containing the model matrix}

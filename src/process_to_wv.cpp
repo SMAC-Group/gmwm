@@ -27,11 +27,6 @@
 //' @template misc/haar_wv_formulae_link
 //' @backref src/process_to_wv.cpp
 //' @backref src/process_to_wv.h
-//' @examples
-//' # Calculates the Haar WV for an ARMA(2,3).
-//' wv.theo = arma_to_wv(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9))
-//' @seealso \code{\link{ARMAtoMA_cpp}}, \code{\link{ARMAacf_cpp}}, and \code{\link{arma11_to_wv}}
-// [[Rcpp::export]]
 arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau) {
   
   arma::vec n = arma::sort(tau/2);
@@ -73,8 +68,6 @@ arma::vec arma_to_wv(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau) {
 //' @param alpha A \code{double} indicating the cutoff.
 //' @return A \code{vec} containing the wavelet variance of the ARMA process.
 //' @keywords internal
-//' @seealso \code{\link{arma_to_wv_app}}
-// [[Rcpp::export]]
 double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha = 0.99){
   arma::vec obj = abs(ARMAacf_cpp(ar,ma,last_tau -1));
   
@@ -100,11 +93,6 @@ double acf_sum(arma::vec ar, arma::vec ma, unsigned int last_tau, double alpha =
 //' @template misc/haar_wv_formulae_link
 //' @backref src/process_to_wv.cpp
 //' @backref src/process_to_wv.h
-//' @examples
-//' # Performs an approximation of the Haar WV for an ARMA(2,3).
-//' wv.theo = arma_to_wv_app(c(.23,.43), c(.34,.41,.59), 3, 2^(1:9), .9)
-//' @seealso \code{\link{ARMAtoMA_cpp}}, \code{\link{ARMAacf_cpp}}, \code{\link{acf_sum}} and \code{\link{arma_to_wv}}
-// [[Rcpp::export]]
 arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma2, arma::vec tau, double alpha = 0.9999) {
   
   arma::vec n = arma::sort(tau/2);
@@ -182,12 +170,6 @@ arma::vec arma_to_wv_app(arma::vec ar, arma::vec ma, double sigma2, arma::vec ta
 //' @template misc/haar_wv_formulae_link
 //' @backref src/process_to_wv.cpp
 //' @backref src/process_to_wv.h
-//' @seealso \code{\link{arma_to_wv}}
-//' @examples
-//' ntau = 7
-//' tau = 2^(1:ntau)
-//' wv.theo = arma11_to_wv(0.3, 0.1, 1, tau)
-// [[Rcpp::export]]
 arma::vec arma11_to_wv(double phi, double theta, double sigma2, const arma::vec& tau){
   
   unsigned int size_tau = tau.n_elem;
@@ -219,12 +201,6 @@ arma::vec arma11_to_wv(double phi, double theta, double sigma2, const arma::vec&
 //' @template misc/haar_wv_formulae_link
 //' @backref src/process_to_wv.cpp
 //' @backref src/process_to_wv.h
-//' @seealso \code{\link{arma_to_wv}}, \code{\link{arma11_to_wv}}
-//' @examples
-//' ntau = 7
-//' tau = 2^(1:ntau)
-//' wv.theo = ar1_to_wv(.63, 1, tau)
-// [[Rcpp::export]]
 arma::vec ar1_to_wv(double phi, double sigma2, const arma::vec& tau){
   unsigned int size_tau = tau.n_elem;
   arma::vec temp_term(size_tau);
@@ -252,12 +228,6 @@ arma::vec ar1_to_wv(double phi, double sigma2, const arma::vec& tau){
 //' @template misc/haar_wv_formulae_link
 //' @backref src/process_to_wv.cpp
 //' @backref src/process_to_wv.h
-//' @seealso \code{\link{arma_to_wv}}, \code{\link{arma11_to_wv}}
-//' @examples
-//' ntau = 7
-//' tau = 2^(1:ntau)
-//' wv.theo = ma1_to_wv(.3, 1, tau)
-// [[Rcpp::export]]
 arma::vec ma1_to_wv(double theta, double sigma2, const arma::vec& tau){
   return sigma2 * (square(theta + 1.0) * tau - 6.0 * theta)/arma::square(tau);
 }
@@ -272,11 +242,6 @@ arma::vec ma1_to_wv(double theta, double sigma2, const arma::vec& tau){
 //' @template misc/haar_wv_formulae_link
 //' @backref src/process_to_wv.cpp
 //' @backref src/process_to_wv.h
-//' @examples
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = qn_to_wv(.42, tau)
-// [[Rcpp::export]]
 arma::vec qn_to_wv(double q2, const arma::vec& tau){
   return 6.0*q2/arma::square(tau);
 }
@@ -288,11 +253,6 @@ arma::vec qn_to_wv(double q2, const arma::vec& tau){
 //' @return A \code{vec} containing the wavelet variance of the white noise.
 //' @template to_wv/haar_wn
 //' @template misc/haar_wv_formulae_link
-//' @examples
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = wn_to_wv(1, tau)
-// [[Rcpp::export]]
 arma::vec wn_to_wv(double sigma2, arma::vec tau){
   return sigma2/tau;
 }
@@ -305,11 +265,6 @@ arma::vec wn_to_wv(double sigma2, arma::vec tau){
 //' @return A \code{vec} containing the wavelet variance of the random walk.
 //' @template to_wv/haar_rw
 //' @template misc/haar_wv_formulae_link
-//' @examples
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = rw_to_wv(.37, tau)
-// [[Rcpp::export]]
 arma::vec rw_to_wv(double gamma2, const arma::vec& tau){
   return gamma2*((arma::square(tau) + 2.0)/(12.0*tau));
 }
@@ -322,11 +277,6 @@ arma::vec rw_to_wv(double gamma2, const arma::vec& tau){
 //' @return A \code{vec} containing the wavelet variance of the drift.
 //' @template to_wv/haar_dr
 //' @template misc/haar_wv_formulae_link
-//' @examples
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = dr_to_wv(-2.3, tau)
-// [[Rcpp::export]]
 arma::vec dr_to_wv(double omega, const arma::vec& tau){
 	return square(omega)*arma::square(tau)/16.0;
 }
@@ -340,13 +290,6 @@ arma::vec dr_to_wv(double omega, const arma::vec& tau){
 //' @template misc/tau
 //' @return A \code{vec} containing the wavelet variance of the model.
 //' @template misc/haar_wv_formulae_link
-//' @examples
-//' model = AR1(.3,2) + RW(.21) + DR(.001)
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = theoretical_wv(model$theta, model$desc, model$objdesc, tau)
-//' @keywords internal
-// [[Rcpp::export]]
 arma::vec theoretical_wv(const arma::vec& theta, 
                          const std::vector<std::string>& desc,
                          const arma::field<arma::vec>& objdesc, const arma::vec& tau){
@@ -441,14 +384,6 @@ arma::vec theoretical_wv(const arma::vec& theta,
 //' @param objdesc A \code{field<vec>} containing a list of object descriptors.
 //' @template misc/tau
 //' @return A \code{mat} containing the wavelet variance of each process in the model
-//' @template misc/haar_wv_formulae_link
-//' @examples
-//' model = AR1(.3,2) + DR(.001)
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = decomp_theoretical_wv(model$theta, model$desc, model$objdesc, tau)
-//' @keywords internal
-// [[Rcpp::export]]
 arma::mat decomp_theoretical_wv(const arma::vec& theta, 
                                 const std::vector<std::string>& desc,
                                 const arma::field<arma::vec>& objdesc, const arma::vec& tau){
@@ -540,14 +475,6 @@ arma::mat decomp_theoretical_wv(const arma::vec& theta,
 //' @param decomp A \code{mat} with scales as rows and processes as columns
 //' @return A \code{vec} containing the wavelet variance of the process for the overall model
 //' @template misc/haar_wv_formulae_link
-//' @examples
-//' model = AR1(.3,2) + DR(.001)
-//' ntau = 8
-//' tau = 2^(1:ntau)
-//' wv.theo = decomp_theoretical_wv(model$theta, model$desc, model$objdesc, tau)
-//' wv.total = decomp_to_theo_wv(wv.theo)
-//' @keywords internal
-// [[Rcpp::export]]
 arma::vec decomp_to_theo_wv(const arma::mat& decomp){
 
   return arma::sum(decomp, 1);

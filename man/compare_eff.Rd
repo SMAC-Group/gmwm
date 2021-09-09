@@ -4,14 +4,27 @@
 \alias{compare_eff}
 \title{Graphically Compare Classical with Robust GMWM Models}
 \usage{
-compare_eff(..., display.eff = T, order.eff = T, facet.label = NULL,
-  background = "white", transparence = 0.05, CI.color = NULL,
-  line.color = NULL, line.type = NULL, point.size = NULL,
-  point.shape = NULL, title = NULL, title.size = 18,
-  axis.label.size = 16, axis.tick.size = 11, facet.label.size = 13,
+compare_eff(
+  ...,
+  display.eff = T,
+  order.eff = T,
+  facet.label = NULL,
+  background = "white",
+  transparence = 0.05,
+  CI.color = NULL,
+  line.color = NULL,
+  line.type = NULL,
+  point.size = NULL,
+  point.shape = NULL,
+  title = NULL,
+  title.size = 18,
+  axis.label.size = 16,
+  axis.tick.size = 11,
+  facet.label.size = 13,
   facet.label.background = "#003C7D33",
   axis.x.label = expression(paste("Scale ", tau)),
-  axis.y.label = expression(paste("Wavelet Variance ", nu)))
+  axis.y.label = expression(paste("Wavelet Variance ", nu))
+)
 }
 \arguments{
 \item{...}{Several \code{gmwm} objects, and they must be constrcuted by the same data and same model. Or one \code{rgmwm} object created by \code{\link{rgmwm}} function.}

@@ -4,8 +4,7 @@
 \alias{packageVersionCRAN}
 \title{Latest Version of Package on CRAN}
 \usage{
-packageVersionCRAN(pkg,
-  cran_url = "http://cran.r-project.org/web/packages/")
+packageVersionCRAN(pkg, cran_url = "http://cran.r-project.org/web/packages/")
 }
 \arguments{
 \item{pkg}{Name of Package}

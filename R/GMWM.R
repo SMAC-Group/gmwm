@@ -42,85 +42,57 @@
 
 # Define functions used in gmwm fct when processes can be expressed linearly w/ parameters but that do not need to be called by the user
 
-return_Omega = function(y){
-  wv_y = gmwm::wvar(y)
-  return(diag(1/(wv_y$ci_high - wv_y$ci_low)^2))
-}
+# ## TO REMOVE???
+# return_Omega = function(y){
+#   wv_y = gmwm::wvar(y)
+#   return(diag(1/(wv_y$ci_high - wv_y$ci_low)^2))
+# }
+# 
+# ## TO REMOVE???
+# return_matrix = function(model, y){
+#   #define tau
+#   n = length(y)
+#   J = floor(log2(n))
+#   J_vec = seq(J)
+#   def_scales = 2^J_vec
+# 
+#   #define matrix X for linear in parameter processes
+#   qn_p = 6 / (def_scales^2)
+#   wn_p = 1/def_scales
+#   rw_p = (def_scales^2+2) / (12*def_scales)
+#   dr_p = (def_scales^2)/16  #note that this is linear with omega^2, not omega
+#   complete_X_mat = cbind(qn_p, wn_p, rw_p, dr_p)
+#   colnames(complete_X_mat) = c('QN', 'WN', 'RW', 'DR')
+# 
+#   #define X_mat
+#   X_mat = complete_X_mat[, model$process.desc]
+# 
+#   #return matrix
+#   return(X_mat)
+# }
 
-return_matrix = function(model, y){
-  #define tau
-  n = length(y)
-  J = floor(log2(n))
-  J_vec = seq(J)
-  def_scales = 2^J_vec
-
-  #define matrix X for linear in parameter processes
-  qn_p = 6 / (def_scales^2)
-  wn_p = 1/def_scales
-  rw_p = (def_scales^2+2) / (12*def_scales)
-  dr_p = (def_scales^2)/16  #note that this is linear with omega^2, not omega
-  complete_X_mat = cbind(qn_p, wn_p, rw_p, dr_p)
-  colnames(complete_X_mat) = c('QN', 'WN', 'RW', 'DR')
-
-  #define X_mat
-  X_mat = complete_X_mat[, model$process.desc]
-
-  #return matrix
-  return(X_mat)
-}
-
-# TO DOCUMENT
-#' @export
-wvar4gmwm = function(x, decomp = "modwt", filter = "haar", nlevels = NULL, alpha = 0.05, robust = FALSE, eff = 0.6, freq = 1, from.unit = NULL, to.unit = NULL, ...){
-  if (is.matrix(x) && ncol(x) > 1){
-    K = ncol(x)
-    N = nrow(x)
-    J = floor(log2(N))
-    wv = vector(mode = "list", length = K)
-    wv_var = wv_low = wv_hi = rep(0, J)
-    mean_diff = 0
-    Omega = matrix(0, J, J)
-    for (k in 1:K){
-      wv[[k]] = wvar.default(x[,k], decomp = decomp, filter = filter, nlevels = nlevels, alpha = 0.05, robust = robust, eff = eff, freq = freq, from.unit = from.unit, to.unit = to.unit)
-      wv_var = wv_var + wv[[k]]$variance/K
-      wv_low = wv_low + wv[[k]]$ci_low/K
-      wv_hi = wv_hi + wv[[k]]$ci_high/K
-      Omega = Omega + diag(1/(wv[[k]]$ci_high - wv[[k]]$ci_low)^2)
-      mean_diff = mean_diff + mean(diff(x[,1]))
-    }
-    
-    wv_mat = cbind(wv_var, wv_low, wv_hi)
-    ranged = (max(x) - min(x))/N
-    J = length(wv_var)
-    
-    list(wv = wv, wv_mat = wv_mat, mean_diff = mean_diff, N = N, ranged = ranged, Omega = Omega, J = J)
-  }else{
-    wv = wvar.default(x, decomp = decomp, filter = filter, nlevels = nlevels, alpha = 0.05, robust = robust, eff = eff, freq = freq, from.unit = from.unit, to.unit = to.unit)
-    wv_mat = cbind(wv$variance, wv$ci_low, wv$ci_high)
-    mean_diff = mean(diff(x))
-    N = length(x)
-    ranged = (max(x) - min(x))/N
-    J = length(wv$variance)
-    Omega = diag(1/(wv$ci_high - wv$ci_low)^2)
-    list(wv = wv, wv_mat = wv_mat, mean_diff = mean_diff, N = N, ranged = ranged, Omega = Omega, J = J)
-  }
-}
 
 # TO DOCUMENT
 #' @export
-gmwm2 = function(model, wv, model.type="imu", compute.v="auto", remove_scales = NULL,
-                robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
-                freq = 1){
+gmwm_wvar = function(model, wv, model.type="imu", compute.v="auto", remove_scales = NULL, Omega = NULL,
+                     alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
+                     freq = 1){
   
   # ADD SOME CHECKS HERE!
-  if (!is.null(remove_scales)){
-    nb_to_remove = length(remove_scales)
-    min_omega = min(diag(wv$Omega))/10^4
-    for (k in 1:nb_to_remove){
-      wv$Omega[remove_scales[k], remove_scales[k]] = min_omega
-    }
+  # Define Omega 
+  if (is.null(Omega)){
+    Omega = diag(1/(wv$ci_high - wv$ci_low)^2)
   }
   
+  # ADD SOME CHECKS HERE!
+  # Remove scales that shouldn't be considered
+  if (!is.null(remove_scales)){
+    nb_to_remove = length(remove_scales)
+    min_omega = min(diag(Omega))/10^4
+    for (k in 1:nb_to_remove){
+      Omega[remove_scales[k], remove_scales[k]] = min_omega
+    }
+  }
   
   # Do we have a valid model?
   if(!is.ts.model(model)){
@@ -180,17 +152,16 @@ gmwm2 = function(model, wv, model.type="imu", compute.v="auto", remove_scales = 
          "parameters to estimate.")
   }
   
-  if(robust){
+  if(wv$robust){
     np = np+1
     if(np > nlevels){
       stop("Please supply a longer signal / time series in order to use the GMWM. This is because we at least need the same number of scales as parameters to estimate.")
     }
     
-    if(eff > 0.99){
+    if(wv$eff > 0.99){
       stop("The efficiency specified is too close to the classical case. Use `robust = FALSE`")
     }
   }
-  
   
   # Compute fast covariance if large sample, otherwise, bootstrap.
   if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "diag" &&
@@ -258,11 +229,12 @@ gmwm2 = function(model, wv, model.type="imu", compute.v="auto", remove_scales = 
   # }else{
   
   # Standard GMWM using WV as input 
-  out = .Call('_gmwm_gmwm_master_wv_cpp', PACKAGE = 'gmwm', wv$wv_mat,
-              wv$N, wv$mean_diff, wv$Omega, wv$ranged,
+  wv_mat = cbind(wv$variance, wv$ci_low, wv$ci_high)
+  out = .Call('_gmwm_gmwm_master_wv_cpp', PACKAGE = 'gmwm', wv_mat,
+              wv$N, wv$mean_diff, Omega, wv$ranged,
               theta, desc, obj, model.type, starting = model$starting,
               p = alpha, compute_v = compute.v, K = K, H = H, G = G,
-              robust=robust, eff = eff)
+              robust = wv$robust, eff = wv$eff)
   
   estimate = out[[1]]
   rownames(estimate) = model$process.desc
@@ -303,8 +275,8 @@ gmwm2 = function(model, wv, model.type="imu", compute.v="auto", remove_scales = 
                        theo = out[[9]],
                        decomp.theo = out[[10]],
                        scales = scales, 
-                       robust = robust,
-                       eff = eff,
+                       robust = wv$robust,
+                       eff = wv$eff,
                        model.type = model.type,
                        compute.v = compute.v,
                        alpha = alpha,
@@ -318,7 +290,9 @@ gmwm2 = function(model, wv, model.type="imu", compute.v="auto", remove_scales = 
                        starting = model$starting,
                        seed = seed,
                        freq = freq,
-                       dr.slope = out[[13]]), class = "gmwm")
+                       dr.slope = out[[13]],
+                       wv = wv,
+                       remove_scales = remove_scales), class = "gmwm")
   #}
   invisible(out)
 }
@@ -459,496 +433,113 @@ gmwm2 = function(model, wv, model.type="imu", compute.v="auto", remove_scales = 
 #' #guided.arma = gmwm(ARMA(2,2), data, model.type="ssm")
 #' adv.arma = gmwm(ARMA(ar=c(0.8897, -0.4858), ma = c(-0.2279, 0.2488), sigma2=0.1796),
 #'                 data, model.type="ssm")
-gmwm = function(model, data, model.type="imu", compute.v="auto", 
-                robust=FALSE, eff=0.6, alpha = 0.05, seed = 1337, G = NULL, K = 1, H = 100,
-                freq = 1){
+gmwm_data = function(model, data, model.type = "imu", compute.v = "auto", remove_scales = NULL, 
+                     Omega = NULL, robust = FALSE, eff = 0.6, alpha = 0.05, seed = 1337, 
+                     G = NULL, K = 1, H = 100, freq = 1){
   
-  # Check data object
-  if(is.gts(data)){
-    freq = attr(data, 'freq')
-    data = data[,1]
+    wv = wvar(data, robust = robust, eff = eff)
     
-  } else if(is.lts(data)){
-    freq = attr(data, 'freq')
-    data = data[ ,ncol(data)]
-    
-  } else if((is.imu(data) || is.data.frame(data) || is.matrix(data))){
-    if(ncol(data) > 1){
-      stop("`gmwm` and `gmwm.imu` can only process one signal at a time.")
-    }
-    if(is.imu(data)){
-      freq = attr(data, 'freq')
-    }
-  } else if(is.ts(data)){
-    freq = attr(data,'tsp')[3]
-  }
-  
-  # Do we have a valid model?
-  if(!is.ts.model(model)){
-    stop("`model` must be created from a `ts.model` object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
-  }
-  
-  # Information Required by GMWM:
-  desc = model$desc
-  
-  obj = model$obj.desc
-  
-  np = model$plength
-  
-  N = length(data)
-  
-  starting = model$starting
-  
-  # Input guessing
-  #G=0 #modified because caused error : Error in round(x) : non-numeric argument to mathematical function"
-  #if starting, g = 0
-  #else is.null(G) 
-  #virer le starting et mettre dans eslse
-  if((is.null(G)) || !is.wholenumber(G)){
-    if(N > 10000){
-      G = 1e6
-    }else{
-      G = 20000
-    }
-  }
-  
-  # For reproducibility
-  set.seed(seed)
-  
-  num.models = count_models(desc)
-  
-  # Identifiability issues
-  if(any(num.models[c("DR","QN","RW","WN")]  > 1)){
-    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
-  }
-  
-  if(num.models["GM"]> 0 & num.models["AR1"] > 0){
-    stop("Please either use `GM()` or `AR1()` model components. Do not mix them.")
-  }
-  
-  # Model type issues
-  model.type = tolower(model.type)
-  if(model.type != "imu" && model.type != "ssm"){
-    stop("Model Type must be either `ssm` or `imu`!")
-  }
-  
-  # Verify Scales and Parameter Space
-  nlevels =  floor(log2(length(data)))
-  
-  if(np > nlevels){
-    stop("Please supply a longer signal / time series in order to use the GMWM.",
-         "This is because we need at least the same number of scales as",
-         "parameters to estimate.")
-  }
-  
-  if(robust){
-    np = np+1
-    if(np > nlevels){
-      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we at least need the same number of scales as parameters to estimate.")
-    }
-    
-    if(eff > 0.99){
-      stop("The efficiency specified is too close to the classical case. Use `robust = FALSE`")
-    }
-  }
-
-  
-  # Compute fast covariance if large sample, otherwise, bootstrap.
-  if(compute.v == "auto" || ( compute.v != "fast" && compute.v != "diag" &&
-                              compute.v != "full" && compute.v != "bootstrap" )){
-    compute.v = "fast"
-  }
-  
-  theta = model$theta
-  
-  detected_gm = any(model$desc == "GM")
-  
-  if(detected_gm && freq == 1){
-    warning("'freq' is set to 1 by default this impacts the `GM()` parameters. See ?GM for more details.")
-  }
-  
-  # Convert from GM to AR1
-  if(!starting && detected_gm){
-    theta = conv.gm.to.ar1(theta, model$process.desc, freq)
-  }
-  
-  #if sub processes are linear, fit using weighted least squares, otherwise call c++ code
-  # if(all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
-  #   X_mat  = return_matrix(model = model, y = data)
-  #   Omega  = return_Omega(data)
-  #   nu_hat = gmwm::wvar(data)$variance
-  #   theta_hat = solve(t(X_mat) %*% Omega %*% X_mat) %*% t(X_mat) %*% Omega %*% nu_hat
-  #   colnames(theta_hat) = 'Estimates'
-  #   rownames(theta_hat) = model$process.desc
-  #   ci_h = gmwm::wvar(data)$ci_high
-  #   ci_l = gmwm::wvar(data)$ci_low
-  #   obj_teo = wv::decomp_theoretical_wv(theta = theta_hat, desc = model$process.desc, objdesc = model$obj.desc, tau = nu_hat$scales)
-  #   sum_theo = if(is.vector(X_mat)){sum_theo = X_mat}else if(is.matrix(X_mat)){sum_theo = rowSums(X_mat)}
-  #   out = structure(list('estimate' = theta_hat,
-  #                  'init.guess' = NA,
-  #                  'wv.empir' = nu_hat,
-  #                  'ci.low' = ci_l,
-  #                  'ci.high' = ci_h,
-  #                  'orgV' = NA,
-  #                  'V' = NA,
-  #                  'omega' = NA,
-  #                  'obj.fun' = NA,
-  #                  'theo' = sum_theo,
-  #                  'decomp.theo' = obj_teo,
-  #                  'scales' = 2^seq(floor(log(length(data), 2))), 
-  #                  'robust' = robust,
-  #                  'eff' = eff,
-  #                  'model.type' = model.type,
-  #                  'compute.v' = compute.v,
-  #                  'alpha' = alpha,
-  #                  'expect.diff' = NA,
-  #                  'N' = N,
-  #                  'G' = G,
-  #                  'H' = H,
-  #                  'K' = K,
-  #                  'model' = model,
-  #                  'model.hat' = NA,
-  #                  'starting' = model$starting,
-  #                  'seed' = seed,
-  #                  'freq' = freq,
-  #                  'dr.slope' = NA), class = "gmwm")
-  #   estimate = out[[1]]
-  #   rownames(estimate) = model$process.desc
-  #   colnames(estimate) = "Estimates" 
-  #   
-  # }else{
-  
-    # Standard GMWM using data as input
-    out = .Call('_gmwm_gmwm_master_cpp', PACKAGE = 'gmwm', data, theta, desc, obj, model.type, starting = model$starting,
-                p = alpha, compute_v = compute.v, K = K, H = H, G = G,
-                robust=robust, eff = eff)
-    estimate = out[[1]]
-    rownames(estimate) = model$process.desc
-    colnames(estimate) = "Estimates" 
-    
-    init.guess = out[[2]]
-    rownames(init.guess) = model$process.desc
-    colnames(init.guess) = "Starting" 
-  #}
-  
-  # Convert from AR1 to GM
-  if(detected_gm){
-    estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, freq)
-    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, freq)
-  }
-  
-  # Wrap this into the C++ Lib
-  scales = .Call('_gmwm_scales_cpp', PACKAGE = 'gmwm', nlevels)
-  
-  # Create a new model object.
-  model.hat = model
-  
-  model.hat$starting = F  
-  
-  model.hat$theta = as.numeric(estimate)
-  
-  # Release model
-  #if(!all(model$process.desc %in% c('QN', 'WN', 'RW', 'DR'))){
-    out = structure(list(estimate = estimate,
-                         init.guess = init.guess,
-                         wv.empir = out[[3]], 
-                         ci.low = out[[4]], 
-                         ci.high = out[[5]],
-                         orgV = out[[7]],
-                         V = out[[6]],
-                         omega = out[[12]],
-                         obj.fun = out[[11]],
-                         theo = out[[9]],
-                         decomp.theo = out[[10]],
-                         scales = scales, 
-                         robust = robust,
-                         eff = eff,
-                         model.type = model.type,
-                         compute.v = compute.v,
-                         alpha = alpha,
-                         expect.diff = out[[8]],
-                         N = N,
-                         G = G,
-                         H = H,
-                         K = K,
-                         model = model,
-                         model.hat = model.hat,
-                         starting = model$starting,
-                         seed = seed,
-                         freq = freq,
-                         dr.slope = out[[13]]), class = "gmwm")
-  #}
-  invisible(out)
+    gmwm_wvar(model = model, 
+              wv = wv, 
+              model.type = model.type, 
+              compute.v = compute.v, 
+              remove_scales = remove_scales, 
+              Omega = Omega,
+              alpha = alpha, 
+              seed = seed, 
+              G = G, 
+              K = K, 
+              H = H,
+              freq = freq)
 }
 
 
-#' Update (Robust) GMWM object for IMU or SSM 
-#' 
-#' Provides a way to estimate different models over the previously estimated 
-#' wavelet variance values and covariance matrix. 
+# TO DOCUMENT + USEMETHOD (SEE WVAR)
 #' @export
-#' @param object  A \code{gmwm} object.
-#' @param model   A \code{ts.model} object containing one of the allowed models
-#' @param ...     Additional parameters (not used)
-#' @return A \code{gmwm} object with the structure: 
-#' \describe{
-#'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
-#'  \item{init.guess}{Initial Starting Values given to the Optimization Algorithm}
-#'  \item{wv.empir}{The data's empirical wavelet variance}
-#'  \item{ci.low}{Lower Confidence Interval}
-#'  \item{ci.high}{Upper Confidence Interval}
-#'  \item{orgV}{Original V matrix}
-#'  \item{V}{Updated V matrix (if bootstrapped)}
-#'  \item{omega}{The V matrix inversed}
-#'  \item{obj.fun}{Value of the objective function at Estimated Parameter Values}
-#'  \item{theo}{Summed Theoretical Wavelet Variance}
-#'  \item{decomp.theo}{Decomposed Theoretical Wavelet Variance by Process}
-#'  \item{scales}{Scales of the GMWM Object}
-#'  \item{robust}{Indicates if parameter estimation was done under robust or classical}
-#'  \item{eff}{Level of efficiency of robust estimation}
-#'  \item{model.type}{Models being guessed}
-#'  \item{compute.v}{Type of V matrix computation}
-#'  \item{augmented}{Indicates moments have been augmented}
-#'  \item{alpha}{Alpha level used to generate confidence intervals}
-#'  \item{expect.diff}{Mean of the First Difference of the Signal}
-#'  \item{N}{Length of the Signal}
-#'  \item{G}{Number of Guesses Performed}
-#'  \item{H}{Number of Bootstrap replications}
-#'  \item{K}{Number of V matrix bootstraps}
-#'  \item{model}{\code{ts.model} supplied to gmwm}
-#'  \item{model.hat}{A new value of \code{ts.model} object supplied to gmwm}
-#'  \item{starting}{Indicates whether the procedure used the initial guessing approach}
-#'  \item{seed}{Randomization seed used to generate the guessing values}
-#'  \item{freq}{Frequency of data}
-#' }
-#' @details
-#' The motive behind this function is to allow for reuse of the \code{\link{gmwm}}
-#' object's computation of the wavelet variance and covariance matrix. The
-#' function permits this by allowing for the underlying time series model to
-#' be changed at will. As a result, the function is particular useful for 
-#' working with large time series objects. Alternatively, one can also use this
-#' function to supply a custom diagonal weighting matrix by modifying the
-#' \code{\link{gmwm}} object.
-#' @examples
-#' # AR
-#' set.seed(1336)
-#' n = 200
-#' exact.model = AR1(phi=.99, sigma2 = 0.01) + WN(sigma2=1)
-#' data = gen_gts(n, exact.model)
-#' 
-#' # Create an initial model that is not accurate
-#' bad.model = gmwm(AR1(), data = data)
-#' 
-#' # Models can contain specific parameters e.g.
-#' updated.model = update(bad.model, exact.model)
-#' 
-#' # Or...
-#' updated.model.guided = update(bad.model, AR1()+AR1())
-update.gmwm = function(object, model, ...){
-  # Do we have a valid model?
-  if(!is.ts.model(model)){
-    stop("`model` must be created from a `ts.model` object using a supported component (e.g. AR1(), ARMA(p,q), DR(), RW(), QN(), and WN(). ")
-  }
-  
-  # Information Required by GMWM:
-  desc = model$desc
-  
-  obj = model$obj.desc
-  
-  np = model$plength
-  
-  # Information used in summary.gmwm:
-  summary.desc = model$desc
-  
-  num.models = count_models(desc)
-  
-  # Set seed for reproducibility
-  
-  set.seed(object$seed)
-  
-  # Identifiability issues
-  if(any( num.models[c("DR","QN","RW","WN")] >1)){
-    stop("Two instances of either: DR, QN, RW, or WN has been detected. As a result, the model will have identifiability issues. Please submit a new model.")
-  }
-  
-  if(num.models["GM"]> 0 & num.models["AR1"] > 0){
-    stop("Please either use `GM()` or `AR1()` model components. Do not mix them.")
-  }
-  
-  # ID error:
-  if( sum(num.models) == 1 & num.models["SARIMA"] == 1 & model$starting){
-    warning("ARMA starting guesses using update.gmwm are NOT based on CSS but an alternative algorithm.")
-  }
-  
-  if(np > length(object$scales)){
-    stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need  at least  the same number of scales as parameters to estimate.")
-  }
-  
-  if(object$robust){
-    np = np+1
-    if(np > length(object$scales)){
-      stop("Please supply a longer signal / time series in order to use the GMWM. This is because we need one additional scale since robust requires the amount of parameters + 1 to estimate.")
+mgmwm = function(model, input, model.type = "imu", compute.v = "auto", remove_scales = NULL, 
+                 Omega = NULL, alpha = 0.05, seed = 1337, 
+                 G = NULL, K = 1, H = 100, freq = 1){
+  if (class(input[[1]])[1] == "wvar"){
+    # Number of samples
+    M = length(input)
+    
+    # Find largest J
+    Js =  rep(NA, M)
+    for (i in 1:M){
+      Js[i] = input[[i]]$J
     }
-  }
-  
-  
-  detected_gm = any(model$desc == "GM")
-
-  # Convert from GM to AR1
-  if(!object$starting && detected_gm){
-    model$theta = conv.gm.to.ar1(model$theta, model$process.desc, object$freq)
-  }
-  
-  out = .Call('_gmwm_gmwm_update_cpp', PACKAGE = 'gmwm',
-                  model$theta,
-                  desc, obj, 
-                  object$model.type, object$N, object$expect.diff, object$dr.slope,
-                  object$orgV, object$scales, cbind(object$wv.empir,object$ci.low,object$ci.high), # needed WV info
-                  model$starting, 
-                  object$compute.v, object$K, object$H,
-                  object$G, 
-                  object$robust, object$eff)
-
-  estimate = out[[1]]
-  
-  model.hat = model
-  
-  model.hat$starting = F  
-  
-  model.hat$theta = as.numeric(estimate)
-  
-  object$model.hat = model.hat
-  
-  rownames(estimate) = model$process.desc
-  init.guess = out[[2]]
-  rownames(init.guess) = model$process.desc
-  
-  # Convert from AR1 to GM
-  if(detected_gm){
-    estimate[,1] = conv.ar1.to.gm(estimate[,1], model$process.desc, object$freq)
-    init.guess[,1] = conv.ar1.to.gm(init.guess[,1], model$process.desc, object$freq)
-  }
-  
-  object$estimate = estimate
-  object$init.guess = init.guess
-  
-  object$V = out[[3]]
-  object$theo = out[[4]]
-  object$decomp.theo = out[[5]]
-  
-  object$starting = model$starting
-
-  invisible(object)
-}
-
-
-#' GMWM for (Robust) Inertial Measurement Units (IMUs)
-#' 
-#' Performs the GMWM estimation procedure using a parameter transform and sampling
-#' scheme specific to IMUs.
-#' @param model     A \code{ts.model} object containing one of the allowed models.
-#' @param data      A \code{matrix} or \code{data.frame} object with only column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
-#' @param compute.v A \code{string} indicating the type of covariance matrix solver. "fast", "bootstrap", "asymp.diag", "asymp.comp", "fft"
-#' @param robust    A \code{boolean} indicating whether to use the robust computation (TRUE) or not (FALSE).
-#' @param eff       A \code{double} between 0 and 1 that indicates the efficiency.
-#' @param ...       Other arguments passed to the main \code{\link[gmwm]{gmwm}} function
-#' @details 
-#' This version of the \code{\link[gmwm]{gmwm}} function has customized settings
-#' ideal for modeling with an IMU object. If you seek to model with an Gauss 
-#' Markov, \code{\link[gmwm]{GM}}, object. Please note results depend on the
-#' \code{freq} specified in the data construction step within the 
-#' \code{\link[gmwm]{imu}}. If you wish for results to be stable but lose the 
-#' ability to interpret with respect to \code{freq}, then use 
-#' \code{\link[gmwm]{AR1}} terms.
-#' @return A \code{gmwm} object with the structure: 
-#' \describe{
-#'  \item{estimate}{Estimated Parameters Values from the GMWM Procedure}
-#'  \item{init.guess}{Initial Starting Values given to the Optimization Algorithm}
-#'  \item{wv.empir}{The data's empirical wavelet variance}
-#'  \item{ci.low}{Lower Confidence Interval}
-#'  \item{ci.high}{Upper Confidence Interval}
-#'  \item{orgV}{Original V matrix}
-#'  \item{V}{Updated V matrix (if bootstrapped)}
-#'  \item{omega}{The V matrix inversed}
-#'  \item{obj.fun}{Value of the objective function at Estimated Parameter Values}
-#'  \item{theo}{Summed Theoretical Wavelet Variance}
-#'  \item{decomp.theo}{Decomposed Theoretical Wavelet Variance by Process}
-#'  \item{scales}{Scales of the GMWM Object}
-#'  \item{robust}{Indicates if parameter estimation was done under robust or classical}
-#'  \item{eff}{Level of efficiency of robust estimation}
-#'  \item{model.type}{Models being guessed}
-#'  \item{compute.v}{Type of V matrix computation}
-#'  \item{augmented}{Indicates moments have been augmented}
-#'  \item{alpha}{Alpha level used to generate confidence intervals}
-#'  \item{expect.diff}{Mean of the First Difference of the Signal}
-#'  \item{N}{Length of the Signal}
-#'  \item{G}{Number of Guesses Performed}
-#'  \item{H}{Number of Bootstrap replications}
-#'  \item{K}{Number of V matrix bootstraps}
-#'  \item{model}{\code{ts.model} supplied to gmwm}
-#'  \item{model.hat}{A new value of \code{ts.model} object supplied to gmwm}
-#'  \item{starting}{Indicates whether the procedure used the initial guessing approach}
-#'  \item{seed}{Randomization seed used to generate the guessing values}
-#'  \item{freq}{Frequency of data}
-#' }
-#' @examples 
-#' \dontrun{
-#' # Example data generation
-#' data = gen_gts(10000, GM(beta = 0.25, sigma2_gm = 1), freq = 5)
-#' results = gmwm_imu(GM(),data)
-#' inference = summary(results)
-#' }
-gmwm_imu = function(model, data, compute.v = "fast", robust = F, eff = 0.6, ...){
-  
-  x = gmwm(model = model, 
-       data = data, 
-       compute.v = compute.v,
-       model.type = "imu",
-       robust = robust, 
-       eff = eff,
-       ...
-       )
-  class(x) = c("gmwm_imu","gmwm")
-  
-  x
-}
-
-
-#' GMWM for Robust/Classical Comparison
-#'
-#' Creates a \code{rgmwm} object to compare the results generated by robust/classical method.
-#' @param model A \code{ts.model} object containing one of the allowed models.
-#' @param data  A \code{matrix} or \code{data.frame} object with only one column (e.g. \eqn{N \times 1}{ N x 1 }), or a \code{lts} object, or a \code{gts} object. 
-#' @param eff   A \code{double vector} between 0 and 1 that indicates the efficiency.
-#' @param ...   Other arguments passed to the main \code{\link{gmwm}} function.
-#' @return A \code{rgmwm} object
-#' @details 
-#' By default, the \code{rgmwm} function will fit a classical \code{\link{gmwm}}
-#' object. From there, the user has the ability to specify any \code{eff} that is
-#' less than or equal to 0.99. 
-#' @examples 
-#' set.seed(8836)
-#' x = gen_gts(1000, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
-#' obj = rgmwm(2*AR1()+WN(), data = x)
-#' compare_eff(obj)
-rgmwm = function(model, data, eff = c(0.9, 0.8, 0.6), ...){ 
-  
-  len = length(eff) + 1
-  obj.list = vector('list', length = len)
-  
-  # Allocate i = 1 for classical, i > 1 are varying robust efficiencies.
-  for(i in seq_len(len)) {
-    if(i != 1L) {
-      obj.list[[i]] = gmwm(model = model, data = data, 
-                           robust = TRUE, eff = eff[i-1], ...) 
-    } else {
-      obj.list[[i]] = gmwm(model = model, data = data, robust = FALSE, ...)
+    Jmax = max(Js)
+    
+    # Construct WV array
+    wv_array = array(NA, c(Jmax, 3, M))
+    
+    for (i in 1:M){
+      wv_array[1:Js[i], 1:3, i] = cbind(input[[i]]$variance, input[[i]]$ci_low, input[[i]]$ci_high)
     }
+    
+    # Compute Omega
+    if (is.null(Omega)){
+      Omega = matrix(0, Jmax, Jmax)
+      for (i in 1:M){
+        Omega[1:Js[i], 1:Js[i]] = Omega[1:Js[i], 1:Js[i]] + diag(1/(input[[i]]$ci_high - input[[i]]$ci_low)^2)
+      }
+    }
+    
+    # Compute mean WV
+    wv_input = input[[which.max(Js)]]
+    wv_input$variance = apply(wv_array[,1,], 1, mean, na.rm = TRUE)
+    
+    # Fit Standard GMWM
+    fit = gmwm_wvar(model = model, 
+              wv = wv_input, 
+              model.type = model.type, 
+              compute.v = compute.v, 
+              remove_scales = remove_scales, 
+              Omega = Omega,
+              alpha = alpha, 
+              seed = seed, 
+              G = G, 
+              K = K, 
+              H = H,
+              freq = freq)
+    
+    out = list(wv = wv_input, wv_array = wv_array, fit = fit, names = names(input))
+    class(out) = "mgmwm"
+    return(out)
+  }else{
+    print("Not implemented :(")
   }
-  
-  class(obj.list) = 'rgmwm'
-  obj.list
 }
+
+
+# TO DOCUMENT + USEMETHOD (SEE WVAR)
+#' @export
+gmwm = function(model, input, model.type = "imu", compute.v = "auto", remove_scales = NULL, 
+                     Omega = NULL, robust = FALSE, eff = 0.6, alpha = 0.05, seed = 1337, 
+                     G = NULL, K = 1, H = 100, freq = 1){
+  
+  # ADD CHECKS
+  if (class(input)[1] == "wvar"){
+    return(gmwm_wvar(model = model, 
+              wv = input, 
+              model.type = model.type, 
+              compute.v = compute.v, 
+              remove_scales = remove_scales, 
+              Omega = Omega,
+              alpha = alpha, 
+              seed = seed, 
+              G = G, 
+              K = K, 
+              H = H,
+              freq = freq))
+  }else{
+    return(gmwm_data(model = model, data = input, model.type = model.type, 
+              compute.v = compute.v, remove_scales = remove_scales, 
+              Omega = Omega, robust = robust, eff = eff, alpha = alpha, 
+              seed = seed, G = G, K = K, H = H, freq = freq))
+  }
+}
+
 
 #' Print gmwm object
 #'
@@ -974,7 +565,7 @@ print.gmwm = function(x, ...){
   print(x$estimate)
 
   cat("\n* The initial values of the parameters used in the minimization of the GMWM objective function \n  were", 
-      {if(x$starting) paste0("generated by the program underneath seed: ",x$seed,".") else "supplied by YOU!"},"\n\n")
+      {if(x$starting) paste0("generated by the program underneath seed: ",x$seed,".") else "supplied by you."},"\n\n")
 }
 
 
@@ -1225,434 +816,282 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
                           
 }
 
-#' Wrapper to Graph Solution of the Generalized Method of Wavelet Moments
-#'
-#' Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
-#' @method plot gmwm
+# TO DOCUMENT + ADD OPTIONS
+#' @title plot method for GMWM
+#' @method  plot gmwm
 #' @export
-#' @param x A \code{GMWM} object
-#' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
-#' @template CommonParams
-#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
-#' @author JJB, Wenchao
-#' @examples
-#' # AR
-#' set.seed(1336)
-#' n = 200
-#' x = gen_ar1(n, phi=.1, sigma2 = 1) + gen_ar1(n,phi=0.95, sigma2 = .1)
-#' mod = gmwm(AR1(), data=x, model.type="imu")
-#' plot(mod)
-plot.gmwm = function(x, process.decomp = TRUE, background = 'white', CI = T, transparence = 0.1, bw = F, 
-                         CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-                         point.size = NULL,point.shape = NULL,
-                         title = NULL, title.size= 15, 
-                         axis.label.size = 13, axis.tick.size = 11, 
-                         axis.x.label = expression(paste("Scale ", tau)),
-                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                         legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
-                         legend.text.size = 13, ... ){
+plot.gmwm = function(x, decomp = TRUE,
+                     add_legend_gwmw = TRUE, 
+                     ylab_gmwm = NULL,
+                     col_theo = "#F47F24",
+                     pch_theo = 1,
+                     cex_theo = 1.25,
+                     lwd_theo = 1.25,
+                     add_legend = TRUE,
+                     legend_pos = NULL,
+                     col_wv = NULL,
+                     col_ci = NULL){
   
-  autoplot.gmwm(x, process.decomp = process.decomp, background = background, CI = CI, transparence = transparence, bw = bw, 
-                 CI.color = CI.color, line.type = line.type, line.color = line.color,
-                 point.size = point.size, point.shape = point.shape,
-                 title = title, title.size= title.size, 
-                 axis.label.size = axis.label.size, axis.tick.size = axis.tick.size , 
-                 axis.x.label = axis.x.label,
-                 axis.y.label = axis.y.label,
-                 legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-                 legend.text.size = legend.text.size)
   
-}
-
-
-#' Graph Solution of the Generalized Method of Wavelet Moments
-#' 
-#' Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
-#' @method autoplot gmwm
-#' @export
-#' @keywords internal
-#' @param object A \code{GMWM} object
-#' @param process.decomp A \code{boolean} that indicates whether the decomposed processes should be plotted or not
-#' @template CommonParams
-#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
-#' @author JJB, Wenchao
-#' @examples
-#' # AR
-#' set.seed(1336)
-#' n = 200
-#' x = gen_gts(n, AR1(phi = .1, sigma2 = 1) + AR1(phi = 0.95, sigma2 = .1))
-#' mod = gmwm(AR1(), data = x, model.type = "imu")
-#' autoplot(mod)
-#' 
-#' mod = gmwm(2*AR1(), data = x)
-#' autoplot(mod)
-autoplot.gmwm = function(object, process.decomp = FALSE, background = 'white', CI = T, transparence = 0.1, bw = F, 
-                     CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-                     point.size = NULL,point.shape = NULL,
-                     title = NULL, title.size= 15, 
-                     axis.label.size = 13, axis.tick.size = 11, 
-                     axis.x.label = expression(paste("Scale ", tau)),
-                     axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                     legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
-                     legend.text.size = 13, ... ){
+  # SOME CHECKS SHOULD BE ADDED
   
-  ## check parameters
-  if( !(background %in% c('grey','gray', 'white')) ){
-    warning("Parameter background: No such option. Set background to 'white'")
-    background = 'white'
-  }
-  
-  L = length(object$model$desc) + 1 # Find number of latent processes
-  if(process.decomp==T && L==2){
-    process.decomp = F #one latent process: no need to show decompsed process
-    message("Since the model contains only one process, 'process.decomp' is set to FALSE.")
-  }
-  
-  if(!process.decomp){
-    if(CI == T) {numLabel = 3}else {numLabel = 2}
+  if (is.null(ylab_gmwm)){
+    ylab = expression(paste("Wavelet Variance ", nu^2, sep = ""))
   }else{
-    if(!bw && (L-1)> 8){warning('Object has more than 8 latent processes, but the palette has only 8 colors')}
-    if(CI == T) {numLabel = 2+L}else{numLabel = 1+L}
+    ylab = ylab_gmwm
   }
   
-  params = c('line.type', 'line.color', 'point.size','point.shape','legend.label')
-  requireLength = rep(numLabel, 5)
-  default = list(NULL, NULL, NULL, NULL, NULL)
-  nullIsFine = rep(T, 5)
-  checkParams(params = params, require.len = requireLength, default = default, null.is.fine = nullIsFine)
-  
-  
-  if(!is.null(legend.label) && anyDuplicated(legend.label) >0){
-    warning('Parameter legend.label contains duplicate elements. Add white spaces to each element to avoid this.')
-    legend.label = addSpaceIfDuplicate(legend.label)
+  # Line and CI colors
+  if (is.null(col_wv)){
+    col_wv = "darkblue"
   }
   
-  #freq converstion
-  object$scales = object$scales/object$freq
+  if (is.null(col_ci)){
+    col_ci = hcl(h = 210, l = 65, c = 100, alpha = 0.2)
+  }
   
-  ## call
-  if(process.decomp){
-    # plot individually
-    autoplot.gmwm2(object, background = background, CI = CI, transparence = transparence, bw = bw, 
-                   CI.color = CI.color, line.type = line.type, line.color = line.color,
-                   point.size = point.size, point.shape = point.shape,
-                   title = title, title.size= title.size, 
-                   axis.label.size = axis.label.size, axis.tick.size = axis.tick.size , 
-                   axis.x.label = axis.x.label,
-                   axis.y.label = axis.y.label,
-                   legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-                   legend.text.size = legend.text.size)
+  par(mar=c(5.1, 5.1, 1, 12))
+  plot(x$wv, legend_position = NA, ylab = ylab, 
+       col_ci = col_ci, col_wv = col_wv)
+  
+  if (decomp){
+    M = ncol(x$decomp.theo)
+    wv_cols = ggColor(M + 1)[-1]
+    
+    for (m in 1:M){
+      lines(x$scales, x$decomp.theo[,m], 
+            col = wv_cols[m])
+    }
   }
-  else{
-    autoplot.gmwm1(object, background = background, CI = CI, transparence = transparence, bw = bw, 
-                  CI.color = CI.color, line.type = line.type, line.color = line.color,
-                  point.size = point.size, point.shape = point.shape,
-                  title = title, title.size= title.size, 
-                  axis.label.size = axis.label.size, axis.tick.size = axis.tick.size , 
-                  axis.x.label = axis.x.label,
-                  axis.y.label = axis.y.label,
-                  legend.title = legend.title,  legend.label = legend.label, legend.key.size = legend.key.size, legend.title.size = legend.title.size, 
-                  legend.text.size = legend.text.size )
+  
+  lines(x$scales, apply(x$decomp.theo, 1, sum), 
+        col = col_theo, pch = pch_theo, type = "b", 
+        cex = cex_theo, lwd = lwd_theo)
+  
+  if (!is.null(x$remove_scales)){
+    # ADD CHECKS HERE
+    points(x$scales[x$remove_scales], x$wv.empir[x$remove_scales], col = "red3", pch = 4, lwd = 3, cex = 1.5)
   }
+  
+  # TO DO: CHECK PLACEMEMENT OF LEGEND
+  # Legend 
+  if (add_legend == TRUE){
+    
+    if (x$robust == TRUE){
+      legend_names = c("Robust GMWM:", "Implied WV")
+    }else{
+      legend_names = c("Standard GMWM:", "Implied WV")
+    }
+    
+    
+    col_leg = c(NA, col_theo)
+    pch_leg = c(NA, pch_theo)
+    cex_leg = c(NA, 1.2*cex_theo)
+    lwd_leg = c(NA, lwd_theo)
+    lty_leg = c(NA, 1)
+    pt_lwd = c(1, 1)
+    
+    CI_conf = 1 - x$alpha
+    
+    if (x$robust == TRUE){
+      wv_title_part1 = "Empirical Robust WV "
+    }else{
+      wv_title_part1 = "Empirical WV "
+    }
+    
+    legend_names = c(legend_names, 
+                     as.expression(bquote(paste(.(wv_title_part1), hat(nu)^2))), 
+                     as.expression(bquote(paste("CI(",hat(nu)^2,", ",.(CI_conf),")"))))
+    
+    col_leg = c(col_leg, col_wv, col_ci) 
+    lty_leg = c(lty_leg, 1, NA)
+    pch_leg = c(pch_leg, 16, 15)
+    cex_leg = c(cex_leg, 1.25, 3)
+    lwd_leg = c(lwd_leg, 1, NA) 
+    pt_lwd = c(pt_lwd, 1, 1)
+    
+    if (decomp){
+      legend_names = c(legend_names, NA, "Latent Processes:", strsplit(x$model$print,split=' + ', fixed=TRUE)[[1]])
+      col_leg = c(col_leg, NA, NA, wv_cols)
+      lty_leg = c(lty_leg, NA, NA, rep(1, M))
+      pch_leg = c(pch_leg, NA, NA, rep(NA, M))
+      cex_leg = c(cex_leg, NA, NA, rep(1, M))
+      lwd_leg = c(lwd_leg, NA, NA, rep(1, M))
+      pt_lwd = c(pt_lwd, NA, NA, rep(1, M))
+    }
+    
+    if (!is.null(x$remove_scales)){
+      legend_names = c(legend_names, NA, "Discarded Scales")
+      col_leg = c(col_leg, NA, "red3")
+      lty_leg = c(lty_leg, NA, NA)
+      pch_leg = c(pch_leg, NA, 4)
+      cex_leg = c(cex_leg, NA, 1.5)
+      lwd_leg = c(lwd_leg, NA, NA)
+      pt_lwd = c(pt_lwd, NA, 3)
+    }
+    
+    legend("topleft", legend_names,  inset=c(1.03,0.1),
+           bty='n', xpd=TRUE,
+           col = col_leg,
+           pch = pch_leg,
+           pt.cex = cex_leg,
+           pt.lwd = pt_lwd,
+           lwd = lwd_leg,
+           cex = 0.95)
+  }
+  par(mar=c(5.1, 4.1, 4.1, 2.1))
 }
 
 
-#' Graph Solution of the Generalized Method of Wavelet Moments for Each Process
-#'
-#' Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM for each latent process.
-#' @method autoplot gmwm2
+# TO DOCUMENT + ADD OPTIONS
+#' @title plot method for MGMWM
+#' @method  plot mgmwm
 #' @export
-#' @keywords internal
-#' @param object A \code{GMWM} object
-#' @template CommonParams
-#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM for each latent process.
-#' @author JJB, Wenchao
-autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0.1, bw = F, 
-                          CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-                          point.size = NULL,point.shape = NULL,
-                          title = NULL, title.size= 15, 
-                          axis.label.size = 13, axis.tick.size = 11, 
-                          axis.x.label = expression(paste("Scale ", tau)),
-                          axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                          legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
-                          legend.text.size = 13,...){
-  #require package: grid
-  .x=low=high=trans_breaks=trans_format=math_format=value=variable=process=NULL
+plot.mgmwm = function(x, decomp = TRUE,
+                     add_legend_gwmw = TRUE, 
+                     ylab_gmwm = NULL,
+                     col_theo = "#F47F24",
+                     pch_theo = 1,
+                     cex_theo = 1.25,
+                     lwd_theo = 1.25,
+                     add_legend = TRUE,
+                     legend_pos = NULL,
+                     col_wv = NULL,
+                     col_ci = NULL){
   
-  # Find number of latent processes
-  L = length(object$model$desc) + 1
   
-  # Get names of latent processes
-  # Avoids file system naming issue (e.g. image1, image22, image3)
-  nlen = nchar(L)
-  nom = sprintf(paste0("z%0",nlen,"d"),1:L)
+  # SOME CHECKS SHOULD BE ADDED
   
-  Set1 = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628" ,"#F781BF", "#999999")
-  modulus = (L-1)%/% 8
-  remainder = (L-1)%% 8
-  process.color = c( rep(Set1, times = modulus), Set1[1:remainder] )
-  process.bw_color = gray.colors(L-1, start = 0.2, end = max( max(1, L-2)/(L-1), 0.7))
-  
-  # Make sure process.label does not have duplicates
-  process.label1 = addSpaceIfDuplicate(object$model$desc)
-  
-  #process.label2 = paste0(object$model$desc, collapse = '+')
-  process.label2 = bquote("Implied WV "~nu*"("*hat(theta)*")")
-  process.label = c(process.label1, process.label2)
-  
-  if(CI == T){
-    if(is.null(line.type)){line.type = c('solid','dotted', rep('solid', L) )}
-    if(length(line.type)==L+2){line.type = c(line.type[1:2], line.type[2], tail(line.type,L))}
-    
-    if(is.null(line.color)){line.color = c( "#003C7D", "#999999", process.color, "#F47F24")}
-    if(bw){
-      line.color = c("#b2b2b2", "#404040", process.bw_color, "#000000")
-      CI.color = "grey50"
-    }
-    if(length(line.color)==L+2){line.color = c(line.color[1:2], line.color[2], tail(line.color,L) )}
-    
-    if(is.null(point.size)){point.size = c(5,0,rep(0,L-1),5)}
-    if(length(point.size)==L+2){point.size = c(point.size[1:2], point.size[2], tail(point.size,L) )}
-    
-    if(is.null(point.shape)){point.shape = c(20, 46, rep(46,L-1), 1) }
-    if(length(point.shape)==L+2){point.shape = c(point.shape[1:2], point.shape[2], tail(point.shape,L) )}
-    
-    if(is.null(legend.label)){
-      #legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
-      #                                         expression(paste("CI(", hat(nu)," , 0.95)" )),
-      #                                        process.label)
-      legend.label = c(bquote("Empirical WV "~hat(nu)), 
-                       bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ),
-                       process.label) 
-    }
-    
-    df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
-                    process = rep(nom, each = length(object$scales)))
-    
-    WV = data.frame(emp = object$wv.empir, low = object$ci.low, high = object$ci.high, scale = object$scales)
-    melt.wv = melt(WV, id.vars = 'scale')
-    
-    breaks = c('emp','low',nom)
-    legend.fill = c(NA, CI.color, rep(NA, L) )
-    legend.linetype = c(line.type[1], 'blank', line.type[4:length(line.type)])
-    legend.pointshape = c(point.shape[1],NA, point.shape[4:length(point.shape)])
-    ##legend.pointsize = c(point.size[1:2],0) DON'T NEED THIS LINE
-    
+  if (is.null(ylab_gmwm)){
+    ylab = expression(paste("Wavelet Variance ", nu^2, sep = ""))
   }else{
-    if(is.null(line.type)){line.type = c('solid', rep('solid', L))}
-    
-    if(is.null(line.color)){line.color = c( "#003C7D", process.color, "#F47F24")}
-    if(bw){
-      #line.color = c("#000000", "#b2b2b2", "#404040")
-      line.color = c("#b2b2b2", process.bw_color, "#000000" )
-    }
-    
-    if(is.null(point.size)){point.size = c(5, rep(0,L-1), 5)}
-    if(is.null(point.shape)){point.shape =c(20, rep(46,L-1), 1 ) }
-    
-    if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
-                                               process.label)}
-    
-    df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
-                    process = rep(nom, each = length(object$scales)))
-    WV = data.frame(emp = object$wv.empir, scale = object$scales)
-    melt.wv = melt(WV, id.vars = 'scale')
-    
-    breaks = c('emp', nom)
-    #legend.fill = c(rep(NA, L+1))
-    #legend.linetype = c(line.type[1:(L+1)],'blank')
-    #legend.pointshape = c(point.shape[1:(L+1)],NA)
+    ylab = ylab_gmwm
   }
   
-  p = ggplot() + 
-    geom_line( data = melt.wv, mapping = aes(x = scale, y = value, color = variable, linetype = variable) )+
-    geom_point(data = melt.wv, mapping = aes(x = scale, y = value, color = variable, size = variable, shape = variable))
-  
-  p = p + geom_line(data = df, mapping = aes(x = scale, y = WV,color = process, linetype = process)) + 
-    geom_point(data = df, mapping = aes(x = scale, y = WV, color = process, size = process, shape = process)) + 
-    
-    scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
-    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks, labels = legend.label)+
-    scale_size_manual(name = legend.title, values = c(point.size), breaks = breaks, labels = legend.label) +
-    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label)
-  
-  if(CI){
-    p = p +
-      geom_ribbon(data = WV, mapping = aes(x = scale, y = NULL,ymin =low, ymax = high ), fill = CI.color, alpha = transparence, show.legend = T) +
-      #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
-      guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
+  # Line and CI colors
+  if (is.null(col_wv)){
+    col_wv = "darkblue"
   }
   
-  p = p +  
-    scale_y_log10( breaks = trans_breaks("log10", function(x) 10^x),
-                   labels = trans_format("log10", math_format(10^.x)) ) +
-    
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) +
-    
-    coord_cartesian(ylim = c(0.8* min( c(object$ci.low, object$wv.empir) ), 1.05*max( c(object$wv.empir, object$ci.high))) )
+  par(mar=c(5.1, 5.1, 1, 12))
+  plot(x$wv, legend_position = NA, ylab = ylab, 
+       col_wv = col_wv, ci_wv = FALSE)
   
-  if( background == 'white' || bw){
-    p = p + theme_bw() 
-  }
-  
-  p = p +
-    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
-    theme(
-      plot.title = element_text(size= title.size),
-      axis.title.y = element_text(size= axis.label.size),
-      axis.text.y  = element_text(size= axis.tick.size),
-      axis.title.x = element_text(size= axis.label.size),
-      axis.text.x  = element_text(size= axis.tick.size),
-      legend.key.size = unit(legend.key.size, "cm"),
-      legend.text = element_text(size = legend.text.size),  
-      legend.title = element_text(size = legend.title.size),
-      legend.background = element_rect(fill="transparent"),
-      legend.text.align = 0 )
-    
-  
-  if (is.null(title)){
-    if(object$robust){
-      p = p + ggtitle("Haar Wavelet Variance Robust Representation")
-    }
-    else{
-      p = p + ggtitle("Haar Wavelet Variance Classical Representation")
-    }
-  }
-  
-  p
-}
-
-
-#' Graph Solution of the Generalized Method of Wavelet Moments Non-individually
-#' 
-#' Creates a graph containing the empirical and theoretical wavelet variances constructed via GMWM.
-#' @method autoplot gmwm1
-#' @export
-#' @keywords internal
-#' @param object A \code{GMWM} object
-#' @template CommonParams
-#' @return A ggplot2 panel containing the graph of the empirical and theoretical wavelet variance under the constructed GMWM.
-#' @author JJB, Wenchao
-autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0.1, bw = F, 
-                         CI.color = "#003C7D", line.type = NULL, line.color = NULL,
-                         point.size = NULL, point.shape = NULL,
-                         title = NULL, title.size= 15, 
-                         axis.label.size = 13, axis.tick.size = 11, 
-                         axis.x.label = expression(paste("Scale ", tau)),
-                         axis.y.label = expression(paste("Wavelet Variance ", nu)),
-                         legend.title = '',  legend.label = NULL, legend.key.size = 1, legend.title.size = 13, 
-                         legend.text.size = 13, ...){
-  #require pakage: scales, grid
-  low=high=emp=theo=trans_breaks=trans_format=math_format=.x=value=variable=NULL
-
-  temp = data.frame( emp = object$wv.empir,
-                     low = object$ci.low,
-                     high = object$ci.high,
-                     theo = object$theo,
-                     scale = object$scales)
-  
-  if(CI == T){
-    if(is.null(line.type)){line.type = c('solid', 'dotted', 'solid')}
-    if(length(line.type)==3){line.type = c(line.type[1:2], line.type[2:3])}
-    
-    if(is.null(line.color)){line.color = c("#003C7D", "#999999" , "#F47F24")}
-    if(bw){
-      line.color = c("#b2b2b2", "#404040", "#000000")
-      CI.color = "grey50"
-    }
-    if(length(line.color)==3){line.color = c(line.color[1:2],line.color[2:3])}
-    
-    if(is.null(point.size)){point.size = c(5, 0, 5)}
-    if(length(point.size)==3){point.size = c(point.size[1:2],point.size[2:3])}
-    
-    if(is.null(point.shape)){point.shape = c(20, 46, 1) }
-    if(length(point.shape)==3){point.shape = c(point.shape[1:2],point.shape[2:3])}
-    
-    if(is.null(legend.label)){
-      #legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
-      #                                         expression(paste("CI(", hat(nu)," , 0.95)" )),
-      #                                         expression(paste("Implied WV ", nu,"(",hat(theta),")")) )
-      
-      legend.label = c(bquote("Empirical WV "~hat(nu)), 
-                       bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ),
-                       bquote("Implied WV "~nu*"("*hat(theta)*")")) 
-    }
-    
-    WV = melt(temp, id.vars = 'scale')
-    breaks = c('emp','low','theo')
-    legend.fill = c(NA,CI.color,NA )
-    legend.linetype = c(line.type[1],'blank', tail(line.type,1) )
-    legend.pointshape = c(point.shape[1], NA, tail(point.shape,1) )
-    #legend.pointsize = c(point.size[1:2],0)
+  if (decomp){
+    M1 = ncol(x$fit$decomp.theo)
+    M2 = dim(x$wv_array)[3]
   }else{
-    if(is.null(line.type)){line.type = c('solid','solid')}
-    if(is.null(line.color)){line.color = c("#003C7D", "#F47F24")}
-    if(bw){
-      line.color = c("#b2b2b2", "#000000")}
-    if(is.null(point.size)){point.size = c(5,5)}
-    if(is.null(point.shape)){point.shape = c(20,1) }
-    if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))),
-                                               expression(paste("Implied WV ", nu,"(",hat(theta),")"))    )}
+    M1 = 0
+    M2 = dim(x$wv_array)[3]
+  }
+  
+  M = M1 + M2
+  wv_cols = ggColor(M)
+  wv_cols_trans = ggColor(M, alpha = 0.15)
+  
+  scales = 2^(1:dim(x$wv_array)[1])/x$fit$freq
+  
+  for (i in 1:M2){
+    wv_current = na.omit(x$wv_array[,,i])
+    J_current = nrow(wv_current)
+    lines(scales[1:J_current], wv_current[,1], col = wv_cols[i], lwd = 1.25, lty = 2)
+    polygon(c(scales[1:J_current], rev(scales[1:J_current])),
+            c(wv_current[,2], rev(wv_current[,3])), col = wv_cols_trans[i],
+            border = NA)
+  }
     
-    WV = melt(temp, id.vars = 'scale', measure.vars = c('emp', 'theo'))
-    breaks = c('emp','theo')
-    #legend.color = c(NA,NA)
+  for (i in 1:M1){
+      lines(scales, x$fit$decomp.theo[,i], 
+            col = wv_cols[i + M2], lwd = 1.5)
   }
   
-  p = ggplot(data = WV, mapping = aes(x = scale)) + geom_line(aes(y = value, color = variable, linetype = variable)) +
-    geom_point(aes(y = value, shape = variable, size = variable, color = variable)) + 
-    scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label) +
-    scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks,labels = legend.label)+
+  lines(scales, apply(x$fit$decomp.theo, 1, sum), 
+        col = col_theo, pch = pch_theo, type = "b", 
+        cex = cex_theo, lwd = lwd_theo)
+  
+  if (!is.null(x$fit$remove_scales)){
+    # ADD CHECKS HERE
+    points(x$fit$scales[x$fit$remove_scales], x$fit$wv.empir[x$fit$remove_scales], col = "red3", pch = 4, lwd = 3, cex = 1.5)
+  }
+  
+  # TO DO: CHECK PLACEMEMENT OF LEGEND
+  # Legend 
+  if (add_legend == TRUE){
     
-    scale_size_manual(name = legend.title, values = c(point.size),breaks = breaks,labels = legend.label) +
-    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label) 
-  
-  if(CI){
-    p = p +
-      geom_ribbon(data = temp, mapping = aes(ymin = low, ymax = high),fill = CI.color, show.legend = T,alpha = transparence) +
-      
-      #scale_fill_manual(name = legend.title, values = c(color.CI,'red'), breaks = breaks, labels = legend.label) +
-      guides(colour = guide_legend(override.aes = list(fill = legend.fill, linetype = legend.linetype, shape = legend.pointshape)))
-  }
-  
-  #decide where to place the legend
-  legendPlace = placeLegend(temp$emp[1], temp$low[ length(temp$low) ], temp$high[ length(temp$high)])    
-  p = p + 
-    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x))) + 
-    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                  labels = trans_format("log10", math_format(10^.x)))
-  
-  if( background == 'white' || bw){
-    p = p + theme_bw() 
-  }
-  
-  p = p +
-    xlab(axis.x.label) + ylab(axis.y.label) + ggtitle(title) +
-    theme(
-      plot.title = element_text(size= title.size),
-      axis.title.y = element_text(size= axis.label.size),
-      axis.text.y  = element_text(size= axis.tick.size),
-      axis.title.x = element_text(size= axis.label.size),
-      axis.text.x  = element_text(size= axis.tick.size),
-      legend.key.size = unit(legend.key.size, "cm"),
-      legend.text = element_text(size = legend.text.size),  
-      legend.title = element_text(size = legend.title.size),
-      legend.background = element_rect(fill="transparent"),
-      legend.text.align = 0 )
-  # if(!bw){p = p + theme(legend.background = element_rect(fill="gray90", size=.5, linetype="dotted"))}
-  if (is.null(title)){
-    if(object$robust){
-      p = p + ggtitle("Haar Wavelet Variance Robust Representation")
+    if (x$fit$robust == TRUE){
+      legend_names = c("Robust MGMWM:", "Implied WV")
+    }else{
+      legend_names = c("Standard MGMWM:", "Implied WV")
     }
-    else{
-      p = p + ggtitle("Haar Wavelet Variance Classical Representation")
+    
+    
+    col_leg = c(NA, col_theo)
+    pch_leg = c(NA, pch_theo)
+    cex_leg = c(NA, 1.2*cex_theo)
+    lwd_leg = c(NA, lwd_theo)
+    lty_leg = c(NA, 1)
+    pt_lwd = c(1, 1)
+    
+    CI_conf = 1 - x$alpha
+    
+    if (x$fit$robust == TRUE){
+      wv_title_part1 = "Mean Robust WV "
+    }else{
+      wv_title_part1 = "Mean WV "
     }
+    
+    legend_names = c(legend_names, 
+                     as.expression(bquote(paste(.(wv_title_part1), hat(nu)^2))))
+    
+    col_leg = c(col_leg, col_wv) 
+    lty_leg = c(lty_leg, 1)
+    pch_leg = c(pch_leg, 16)
+    cex_leg = c(cex_leg, 1.25)
+    lwd_leg = c(lwd_leg, 1) 
+    pt_lwd = c(pt_lwd, 1)
+    
+    if (decomp){
+      legend_names = c(legend_names, NA, "Latent Processes:", strsplit(x$fit$model$print,split=' + ', fixed=TRUE)[[1]])
+      col_leg = c(col_leg, NA, NA, wv_cols[(M2 + 1):(M1 + M2)])
+      lty_leg = c(lty_leg, NA, NA, rep(1, M1))
+      pch_leg = c(pch_leg, NA, NA, rep(NA, M1))
+      cex_leg = c(cex_leg, NA, NA, rep(1, M1))
+      lwd_leg = c(lwd_leg, NA, NA, rep(1, M1))
+      pt_lwd = c(pt_lwd, NA, NA, rep(1, M1))
+    }
+    
+    if (!is.null(x$fit$remove_scales)){
+      legend_names = c(legend_names, NA, "Discarded Scales")
+      col_leg = c(col_leg, NA, "red3")
+      lty_leg = c(lty_leg, NA, NA)
+      pch_leg = c(pch_leg, NA, 4)
+      cex_leg = c(cex_leg, NA, 1.5)
+      lwd_leg = c(lwd_leg, NA, NA)
+      pt_lwd = c(pt_lwd, NA, 3)
+    }
+    
+    if (is.null(x$names)){
+      x$names = as.character(1:M2)
+    }
+    legend_names = c(legend_names, NA, "Samples:", x$names)
+    col_leg = c(col_leg, NA, NA, wv_cols_trans[(1):(M2)])
+    lty_leg = c(lty_leg, NA, NA, rep(2, M2))
+    pch_leg = c(pch_leg, NA, NA, rep(15, M2))
+    cex_leg = c(cex_leg, NA, NA, rep(2, M2))
+    lwd_leg = c(lwd_leg, NA, NA, rep(1, M2))
+    pt_lwd = c(pt_lwd, NA, NA, rep(1, M2))
+    
+    legend("topleft", legend_names,  inset=c(1.03,0.1),
+           bty='n', xpd=TRUE,
+           col = col_leg,
+           pch = pch_leg,
+           pt.cex = cex_leg,
+           pt.lwd = pt_lwd,
+           lwd = lwd_leg,
+           cex = 0.95)
   }
-  p
+  par(mar=c(5.1, 4.1, 4.1, 2.1))
 }
-
 
 
 

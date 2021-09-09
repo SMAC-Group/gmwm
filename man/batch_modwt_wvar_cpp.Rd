@@ -4,8 +4,16 @@
 \alias{batch_modwt_wvar_cpp}
 \title{Computes the MO/DWT wavelet variance for multiple processes}
 \usage{
-batch_modwt_wvar_cpp(signal, nlevels, robust, eff, alpha, ci_type,
-  strWavelet, decomp)
+batch_modwt_wvar_cpp(
+  signal,
+  nlevels,
+  robust,
+  eff,
+  alpha,
+  ci_type,
+  strWavelet,
+  decomp
+)
 }
 \arguments{
 \item{signal}{A \code{matrix} that contains the same number of observations per dataset}

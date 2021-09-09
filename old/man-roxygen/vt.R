@@ -1,0 +1,1 @@
+#' @templateVar supported_process `AR1`, `DR`, `RW`, `WN`, and `QN`

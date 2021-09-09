@@ -1,0 +1,118 @@
+---
+title: "Demo"
+output: html_document
+---
+
+# Simulate data
+
+```{r, cache=TRUE}
+library(gmwm)
+n = 2.5*10^5
+model = WN(sigma2 = 1) + AR(phi = 0.999, sigma2 = 10^(-5))
+Xt = gen_gts(n = n, model = model)
+```
+
+There are some problems with `simts` but this can be fixed later.
+
+# Fit GMWM using WV as input
+
+```{r, cache=TRUE}
+wv_Xt = wvar(Xt)
+plot(wv_Xt)
+estim = gmwm(model, wv_Xt)
+estim
+plot(estim)
+```
+
+# Fit GMWM using data as input
+
+```{r, cache=TRUE}
+estim = gmwm(model, Xt)
+estim
+plot(estim)
+```
+
+We can see that the results are the same.
+
+# Fit Robust GMWM using WV as input
+
+```{r, cache = TRUE}
+wv_Xt = wvar(Xt, robust = TRUE)
+plot(wv_Xt)
+estim = gmwm_wvar(model, wv_Xt)
+estim
+plot(estim)
+```
+
+# Fit Robust GMWM using data as input
+
+```{r, cache = TRUE}
+estim = gmwm(model, Xt, robust = TRUE)
+estim
+plot(estim)
+```
+
+# Removing some scales
+
+```{r, cache = TRUE}
+# Testing removing some scales
+wv_Xt = wvar(Xt)
+plot(wv_Xt)
+
+# Making the first scales looks weird!
+wv_Xt$variance[1:2] = wv_Xt$variance[1:2] + c(5, 1)
+wv_Xt$ci_low[1:2] = wv_Xt$ci_low[1:2] + c(5, 1)
+wv_Xt$ci_high[1:2] = wv_Xt$ci_high[1:2] + c(5, 1)
+plot(wv_Xt)
+```
+
+Fit GMWM which doesn't work well...
+
+```{r, cache = TRUE}
+estim = gmwm(model, wv_Xt)
+estim
+plot(estim)
+```
+
+Let's remove the first two scales...
+
+```{r, cache = TRUE}
+estim = gmwm(model, wv_Xt, remove_scales = 1:2)
+estim
+plot(estim)
+```
+
+# Use custom $\Omega$ matrix
+
+```{r, cache = TRUE}
+wv_Xt = wvar(Xt)
+estim = gmwm(model, wv_Xt)
+estim
+plot(estim)
+
+estim = gmwm(model, wv_Xt, Omega = diag(rep(1, wv_Xt$J)))
+estim
+plot(estim)
+```
+
+# First try at MGMWM
+
+```{r, cache = TRUE}
+model = WN(sigma2 = 1) + AR(phi = 0.999, sigma2 = 10^(-5))
+Xt = gen_gts(n = n, model = model)
+wv_Xt = wvar(Xt)
+
+model = WN(sigma2 = 1.03) + AR(phi = 0.9995, sigma2 = 0.5*10^(-5))
+Yt = gen_gts(n = 4*n, model = model)
+wv_Yt = wvar(Yt)
+
+model = WN(sigma2 = 0.98) + AR(phi = 0.999, sigma2 = 10^(-5))
+Zt = gen_gts(n = 2*n, model = model)
+wv_Zt = wvar(Zt)
+
+compare_wvar(wv_Xt, wv_Yt, wv_Zt)
+wv = list(dataX = wv_Xt, dataY = wv_Yt, dataZ = wv_Zt)
+estim = mgmwm(model, wv)
+estim$fit   # We can add a nice print/summary function
+plot(estim)
+```
