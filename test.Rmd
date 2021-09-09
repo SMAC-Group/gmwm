@@ -116,3 +116,12 @@ estim = mgmwm(model, wv)
 estim$fit   # We can add a nice print/summary function
 plot(estim)
 ```
+
+Let's try the trim option...
+
+```{r, cache = TRUE}
+estim = mgmwm(model, wv, trim = 0.4)
+estim$fit   # We can add a nice print/summary function
+plot(estim)
+```
+```

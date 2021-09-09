@@ -456,7 +456,7 @@ gmwm_data = function(model, data, model.type = "imu", compute.v = "auto", remove
 
 # TO DOCUMENT + USEMETHOD (SEE WVAR)
 #' @export
-mgmwm = function(model, input, model.type = "imu", compute.v = "auto", remove_scales = NULL, 
+mgmwm = function(model, input, model.type = "imu", compute.v = "auto", remove_scales = NULL, trim = 0,
                  Omega = NULL, alpha = 0.05, seed = 1337, 
                  G = NULL, K = 1, H = 100, freq = 1){
   if (class(input[[1]])[1] == "wvar"){
@@ -487,7 +487,7 @@ mgmwm = function(model, input, model.type = "imu", compute.v = "auto", remove_sc
     
     # Compute mean WV
     wv_input = input[[which.max(Js)]]
-    wv_input$variance = apply(wv_array[,1,], 1, mean, na.rm = TRUE)
+    wv_input$variance = apply(wv_array[,1,], 1, mean, na.rm = TRUE, trim = trim)
     
     # Fit Standard GMWM
     fit = gmwm_wvar(model = model, 
