@@ -821,8 +821,8 @@ predict.gmwm = function(object, data.in.gmwm, n.ahead = 1, ...){
 #' @method  plot gmwm
 #' @export
 plot.gmwm = function(x, decomp = TRUE,
-                     add_legend_gwmw = TRUE, 
-                     ylab_gmwm = NULL,
+                     xlab = NULL,
+                     ylab = NULL,
                      col_theo = "#F47F24",
                      pch_theo = 1,
                      cex_theo = 1.25,
@@ -834,22 +834,7 @@ plot.gmwm = function(x, decomp = TRUE,
   
   
   # SOME CHECKS SHOULD BE ADDED
-  
-  if (is.null(ylab_gmwm)){
-    ylab = expression(paste("Wavelet Variance ", nu^2, sep = ""))
-  }else{
-    ylab = ylab_gmwm
-  }
-  
-  # Line and CI colors
-  if (is.null(col_wv)){
-    col_wv = "darkblue"
-  }
-  
-  if (is.null(col_ci)){
-    col_ci = hcl(h = 210, l = 65, c = 100, alpha = 0.2)
-  }
-  
+
   par(mar=c(5.1, 5.1, 1, 12))
   plot(x$wv, legend_position = NA, ylab = ylab, 
        col_ci = col_ci, col_wv = col_wv)
@@ -948,8 +933,8 @@ plot.gmwm = function(x, decomp = TRUE,
 #' @method  plot mgmwm
 #' @export
 plot.mgmwm = function(x, decomp = TRUE,
-                     add_legend_gwmw = TRUE, 
-                     ylab_gmwm = NULL,
+                     xlab = NULL,
+                     ylab = NULL,
                      col_theo = "#F47F24",
                      pch_theo = 1,
                      cex_theo = 1.25,
@@ -961,20 +946,9 @@ plot.mgmwm = function(x, decomp = TRUE,
   
   
   # SOME CHECKS SHOULD BE ADDED
-  
-  if (is.null(ylab_gmwm)){
-    ylab = expression(paste("Wavelet Variance ", nu^2, sep = ""))
-  }else{
-    ylab = ylab_gmwm
-  }
-  
-  # Line and CI colors
-  if (is.null(col_wv)){
-    col_wv = "darkblue"
-  }
-  
+
   par(mar=c(5.1, 5.1, 1, 12))
-  plot(x$wv, legend_position = NA, ylab = ylab, 
+  plot(x$wv, legend_position = NA, xlab = xlab, ylab = ylab, 
        col_wv = col_wv, ci_wv = FALSE)
   
   if (decomp){
