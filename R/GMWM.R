@@ -836,6 +836,9 @@ plot.gmwm = function(x, decomp = TRUE,
   
   
   # SOME CHECKS SHOULD BE ADDED
+  
+  if(is.null(col_wv)) {col_wv="#003C7D"}
+  if(is.null(col_ci)) {col_ci="#003C7D"}
 
   par(mar=c(5.1, 5.1, 1, 12))
   plot(x$wv, legend_position = NA, ylab = ylab, 
@@ -949,6 +952,9 @@ plot.mgmwm = function(x, decomp = TRUE,
   
   # SOME CHECKS SHOULD BE ADDED
 
+  if(is.null(col_wv)) {col_wv="#003C7D"}
+  if(is.null(col_ci)) {col_ci="#003C7D"}  
+  
   par(mar=c(5.1, 5.1, 1, 12))
   plot(x$wv, legend_position = NA, xlab = xlab, ylab = ylab, 
        col_wv = col_wv, ci_wv = FALSE)
