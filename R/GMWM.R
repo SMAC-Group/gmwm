@@ -487,7 +487,9 @@ mgmwm = function(model, input, model.type = "imu", compute.v = "auto", remove_sc
     
     # Compute mean WV
     wv_input = input[[which.max(Js)]]
-    wv_input$variance = apply(wv_array[,1,], 1, mean, na.rm = TRUE, trim = as.integer(trim))
+    if (M > 1) {
+      wv_input$variance = apply(wv_array[,1,], 1, mean, na.rm = TRUE, trim = as.integer(trim))
+    }
     
     # Fit Standard GMWM
     fit = gmwm_wvar(model = model, 
