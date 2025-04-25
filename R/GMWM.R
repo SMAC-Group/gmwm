@@ -1402,20 +1402,31 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   
   if(CI == T){
     if(is.null(line.type)){line.type = c('solid','dotted', rep('solid', L) )}
-    if(length(line.type)==L+2){line.type = c(line.type[1:2], line.type[2], tail(line.type,L))}
+    if(length(line.type)==L+2){
+      line.type = setNames(c(line.type[1:2], line.type[2], tail(line.type,L)), c("emp", "low", "high", nom))
+      }
     
-    if(is.null(line.color)){line.color = c( "#003C7D", "#999999", process.color, "#F47F24")}
+    if(is.null(line.color)){
+      line.color <- c("#003C7D", "#999999", process.color, "#F47F24")
+    }
+    
     if(bw){
-      line.color = c("#b2b2b2", "#404040", process.bw_color, "#000000")
+      line.color <- c("#b2b2b2", "#404040", process.bw_color, "#000000")
       CI.color = "grey50"
     }
-    if(length(line.color)==L+2){line.color = c(line.color[1:2], line.color[2], tail(line.color,L) )}
+    if(length(line.color)==L+2){
+      line.color = setNames(c(line.color[1:2], line.color[2], tail(line.color,L) ), c("emp", "low", "high", nom))
+      }
     
     if(is.null(point.size)){point.size = c(5,0,rep(0,L-1),5)}
-    if(length(point.size)==L+2){point.size = c(point.size[1:2], point.size[2], tail(point.size,L) )}
+    if(length(point.size)==L+2){
+      point.size = setNames(c(point.size[1:2], point.size[2], tail(point.size,L) ), c("emp", "low", "high", nom))
+      }
     
     if(is.null(point.shape)){point.shape = c(20, 46, rep(46,L-1), 1) }
-    if(length(point.shape)==L+2){point.shape = c(point.shape[1:2], point.shape[2], tail(point.shape,L) )}
+    if(length(point.shape)==L+2){
+      point.shape = setNames(c(point.shape[1:2], point.shape[2], tail(point.shape,L) ), c("emp", "low", "high", nom))
+      }
     
     if(is.null(legend.label)){
       #legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
@@ -1425,6 +1436,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
                        bquote("CI("*hat(nu)*", "*.(1 - object$alpha)*")" ),
                        process.label) 
     }
+    
     
     df = data.frame(scale = rep(object$scales,L), WV = c(as.vector(object$decomp.theo), object$theo), 
                     process = rep(nom, each = length(object$scales)))
@@ -1441,10 +1453,12 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
   }else{
     if(is.null(line.type)){line.type = c('solid', rep('solid', L))}
     
-    if(is.null(line.color)){line.color = c( "#003C7D", process.color, "#F47F24")}
+    if(is.null(line.color)){
+      line.color <- c("#003C7D", process.color, "#F47F24")
+      }
     if(bw){
       #line.color = c("#000000", "#b2b2b2", "#404040")
-      line.color = c("#b2b2b2", process.bw_color, "#000000" )
+      line.color <- c("#b2b2b2", process.bw_color, "#000000")
     }
     
     if(is.null(point.size)){point.size = c(5, rep(0,L-1), 5)}
@@ -1468,7 +1482,7 @@ autoplot.gmwm2 = function(object, CI = T, background = 'white', transparence = 0
     geom_line( data = melt.wv, mapping = aes(x = scale, y = value, color = variable, linetype = variable) )+
     geom_point(data = melt.wv, mapping = aes(x = scale, y = value, color = variable, size = variable, shape = variable))
   
-  p = p + geom_line(data = df, mapping = aes(x = scale, y = WV,color = process, linetype = process)) + 
+  p = p + geom_line(data = df, mapping = aes(x = scale, y = WV, color = process, linetype = process)) + 
     geom_point(data = df, mapping = aes(x = scale, y = WV, color = process, size = process, shape = process)) + 
     
     scale_linetype_manual(name = legend.title, values = c(line.type),breaks = breaks, labels = legend.label ) +
@@ -1556,18 +1570,26 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     if(is.null(line.type)){line.type = c('solid', 'dotted', 'solid')}
     if(length(line.type)==3){line.type = c(line.type[1:2], line.type[2:3])}
     
-    if(is.null(line.color)){line.color = c("#003C7D", "#999999" , "#F47F24")}
+    if(is.null(line.color)){
+      line.color = c("#003C7D", "#999999" , "#F47F24")
+      }
     if(bw){
       line.color = c("#b2b2b2", "#404040", "#000000")
       CI.color = "grey50"
     }
-    if(length(line.color)==3){line.color = c(line.color[1:2],line.color[2:3])}
+    if(length(line.color)==3){
+      line.color = setNames(c(line.color[1:2],line.color[2:3]), c("emp", "low", "high", "theo"))
+      }
     
     if(is.null(point.size)){point.size = c(5, 0, 5)}
-    if(length(point.size)==3){point.size = c(point.size[1:2],point.size[2:3])}
+    if(length(point.size)==3){
+      point.size = setNames(c(point.size[1:2],point.size[2:3]), c("emp", "low", "high", "theo"))
+      }
     
     if(is.null(point.shape)){point.shape = c(20, 46, 1) }
-    if(length(point.shape)==3){point.shape = c(point.shape[1:2],point.shape[2:3])}
+    if(length(point.shape)==3){
+      point.shape = setNames(c(point.shape[1:2],point.shape[2:3]), c("emp", "low", "high", "theo"))
+      }
     
     if(is.null(legend.label)){
       #legend.label = c(expression(paste("Empirical WV ", hat(nu))), 
@@ -1580,7 +1602,9 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     }
     
     WV = melt(temp, id.vars = 'scale')
-    breaks = c('emp','low','theo')
+    print(WV)
+    breaks = c('emp','low','high','theo')
+    breaks2 = c('emp','low','theo')
     legend.fill = c(NA,CI.color,NA )
     legend.linetype = c(line.type[1],'blank', tail(line.type,1) )
     legend.pointshape = c(point.shape[1], NA, tail(point.shape,1) )
@@ -1589,24 +1613,26 @@ autoplot.gmwm1 = function(object, CI = T, background = 'white', transparence = 0
     if(is.null(line.type)){line.type = c('solid','solid')}
     if(is.null(line.color)){line.color = c("#003C7D", "#F47F24")}
     if(bw){
-      line.color = c("#b2b2b2", "#000000")}
+      line.color = c("#b2b2b2", "#000000")
+      }
     if(is.null(point.size)){point.size = c(5,5)}
     if(is.null(point.shape)){point.shape = c(20,1) }
     if(is.null(legend.label)){legend.label = c(expression(paste("Empirical WV ", hat(nu))),
                                                expression(paste("Implied WV ", nu,"(",hat(theta),")"))    )}
     
     WV = melt(temp, id.vars = 'scale', measure.vars = c('emp', 'theo'))
-    breaks = c('emp','theo')
+    breaks = breaks2 = c('emp','theo')
     #legend.color = c(NA,NA)
   }
+  
   
   p = ggplot(data = WV, mapping = aes(x = scale)) + geom_line(aes(y = value, color = variable, linetype = variable)) +
     geom_point(aes(y = value, shape = variable, size = variable, color = variable)) + 
     scale_linetype_manual(name = legend.title, values = c(line.type), breaks = breaks, labels = legend.label) +
     scale_shape_manual(name = legend.title, values = c(point.shape), breaks = breaks,labels = legend.label)+
     
-    scale_size_manual(name = legend.title, values = c(point.size),breaks = breaks,labels = legend.label) +
-    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks, labels = legend.label) 
+    scale_size_manual(name = legend.title, values = c(point.size),breaks = breaks2,labels = legend.label) +
+    scale_color_manual(name = legend.title,values = c(line.color), breaks = breaks2, labels = legend.label) 
   
   if(CI){
     p = p +
